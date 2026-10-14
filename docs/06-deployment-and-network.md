@@ -26,6 +26,8 @@ non-loopback IPv4 addresses and the audience URL, and opens
 | Windows | Windows Firewall prompt on first run — user must allow *Private networks*. Provide a note/screenshot. Port 80/443 may be held by other software (IIS, Skype); auto-fallback to 8080 (HTTP) / 8443 (HTTPS). |
 | Linux | Port 80 needs `setcap 'cap_net_bind_service=+ep'` or run on 8080 + redirect. Optional systemd unit file in `deploy/`. |
 
+Ready-made service files for systemd, launchd and Windows Task Scheduler are in `deploy/`; day-to-day deployment advice is in [usage-guide.md](usage-guide.md).
+
 Cross-compile with `GOOS/GOARCH`; CI produces release artifacts for all targets.
 
 ## Network topology

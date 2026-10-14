@@ -193,6 +193,7 @@
     clear: '[clear]\n', blank: '[blank]\n', fullscreen: '[fullscreen: INTERMISSION]\n', section: '[section: Act 1, Scene 1]\n',
     note: '[note: reminder for the operator]\n', comment: '<!-- a comment nobody sees -->\n',
     loop: '[loop: 10s]\n[fullscreen: Welcome!]\nPlease silence your phones\n[/loop]\n',
+    song: '[song: Title of the song]\nFirst line of the lyrics\nSecond line of the lyrics\n[/song]\n',
   };
   async function stepScript(p) {
     const show = curShow(); if (!show) return go('show');
@@ -224,7 +225,7 @@
       diagList.replaceChildren(...shown.map((d) => h('li', { class: d.severity, onclick: () => jump(d.line) }, h('span', { class: 'ln' }, 'Line ' + d.line), d.message)),
         ...(summary ? [h('li', { class: 'info' }, summary.message)] : []));
       cueList.replaceChildren(...a.cues.map((c) => h('li', { class: c.kind === 'section' || c.kind === 'note' ? 'op' : '', title: 'Line ' + c.line },
-        h('span', { class: 'k' }, ICON[c.kind] || ''), c.kind === 'caption' ? (c.speaker ? c.speaker + ': ' : '') + c.text.replace(/\n/g, ' ⏎ ') : (c.label || c.text || c.kind.toUpperCase()))));
+        h('span', { class: 'k' }, c.sung ? '🎵' : ICON[c.kind] || ''), c.kind === 'caption' ? (c.speaker ? c.speaker + ': ' : '') + c.text.replace(/\n/g, ' ⏎ ') : (c.label || c.text || c.kind.toUpperCase()))));
     }
     function jump(line) {
       const rows = ta.value.split('\n'); let pos = 0;
@@ -260,6 +261,7 @@
       const t = (atLineStart ? '' : '\n') + text;
       ta.setRangeText(t, s, e, 'end'); ta.focus(); changed();
     }
+    function insertInline(text) { ta.setRangeText(text, ta.selectionStart, ta.selectionEnd, 'end'); ta.focus(); changed(); }
     function loadText(text) { ta.value = text; changed(); }
     async function readFile(f) { if (f) loadText(await f.text()); }
 
@@ -272,7 +274,11 @@
 
     const tools = h('div', { class: 'tools' },
       ...[['Clear', 'clear'], ['Blank', 'blank'], ['Fullscreen text', 'fullscreen'], ['Section', 'section'], ['Operator note', 'note'], ['Comment', 'comment'], ['Loop', 'loop']].map(([l, k]) => h('button', { onclick: () => insert(SNIPPETS[k]) }, l)),
-      h('button', { onclick: pickImage }, 'Image…'));
+      h('button', { onclick: pickImage }, 'Image…'),
+      h('span', { class: 'tools-sep', 'aria-hidden': 'true' }, '|'),
+      h('button', { onclick: () => insert(SNIPPETS.song), title: 'A song: every line becomes a sung lyric' }, '🎵 Song'),
+      h('button', { onclick: () => insertInline('♪ '), title: 'Insert a music note', 'aria-label': 'Insert a music note' }, '♪'),
+      h('button', { onclick: () => insertInline('♫ '), title: 'Insert beamed music notes', 'aria-label': 'Insert beamed music notes' }, '♫'));
     async function pickImage() {
       const names = (A.analysis.assets || []).map((a) => a.name);
       if (!names.length) { toast('Upload images in the Images step first'); return; }
@@ -297,6 +303,7 @@
       ['(thunder rumbles)', 'Shown as a sound or stage direction'], ['line one \\', 'A backslash at the end joins the next line into the same caption'], ['[[ … ]]', 'Several lines in one caption'],
       ['<!-- comment -->', 'A comment: never shown to anyone'], ['[note: text]', 'A reminder shown to the operator only'], ['[section: Act 2]', 'A bookmark for the operator'],
       ['[clear]  [blank]', 'Clear the captions / blank the screen'], ['[image: file.png | caption]', 'Fullscreen image (also  ![caption](file.png) )'], ['[fullscreen: text]', 'Fullscreen text'],
+      ['~ lyric ~', 'A sung line, shown between ♪ notes'], ['[song: Title] … [/song]', 'A whole song: every line inside is a sung lyric'], ['♪  ♫', 'Music notes can be typed or pasted anywhere; the ♪ and ♫ buttons insert them'],
       ['[loop: 10s] … [/loop]', 'Repeating items for pre-show or intermission. Add  | 15s  to an item to change its time'], ['# …', 'Reserved for headings; the line is ignored'],
     ];
     return h('details', { class: 'card' }, h('summary', {}, 'Script cheat sheet'), h('table', { class: 'cheat' }, ...rows.map(([a, b]) => h('tr', {}, h('td', {}, a), h('td', {}, b)))));

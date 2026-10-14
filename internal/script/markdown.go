@@ -16,7 +16,7 @@ func RenderInline(s string) (htmlOut, plain string) {
 }
 
 // Escapable lists the characters a backslash can escape in script text.
-const Escapable = `\*_#[]:()!`
+const Escapable = `\*_#[]:()!~`
 
 const escapable = Escapable
 

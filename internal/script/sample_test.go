@@ -33,6 +33,15 @@ func TestSampleScriptParsesClean(t *testing.T) {
 			t.Errorf("sample script should demonstrate %s", k)
 		}
 	}
+	sung := 0
+	for _, c := range r.Cues {
+		if c.Sung {
+			sung++
+		}
+	}
+	if sung < 5 {
+		t.Errorf("sample should include a song, found %d sung lines", sung)
+	}
 	if r.Cues[0].Kind != KindLoop {
 		t.Error("sample should open with a pre-show loop")
 	}

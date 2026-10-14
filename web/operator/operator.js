@@ -97,7 +97,7 @@
     ol.replaceChildren();
     S.rows = S.cues.map((c) => {
       const li = document.createElement('li');
-      li.className = 'cue k-' + c.kind + (c.stage ? ' stage' : '');
+      li.className = 'cue k-' + c.kind + (c.stage ? ' stage' : '') + (c.sung ? ' sung' : '');
       li.dataset.i = c.index;
       const gut = document.createElement('span'); gut.className = 'gut';
       const body = document.createElement('div'); body.className = 'body';

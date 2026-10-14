@@ -28,6 +28,9 @@ type parser struct {
 	i     int // index of the line being processed
 	res   *Result
 	opts  Options
+
+	song     bool // inside [song] ... [/song]: every caption is a sung lyric
+	songLine int
 }
 
 // Parse parses a script. It never fails: problems become Diagnostics and the
@@ -41,6 +44,9 @@ func Parse(src string, opts Options) Result {
 	src = stripComments(src, &res)
 	p := &parser{lines: strings.Split(src, "\n"), res: &res, opts: opts}
 	p.run()
+	if p.song {
+		p.diag(p.songLine, SevError, "[song] was opened but never closed with [/song]. The lyrics so far were kept.")
+	}
 
 	for i := range res.Cues {
 		res.Cues[i].Index = i
@@ -163,23 +169,54 @@ func (p *parser) multiLine(start int) {
 	p.diag(start, SevError, "[[ was opened but never closed with ]]. The block was skipped.")
 }
 
+// singMarks reports whether a line is written as a lyric with the ~ shorthand
+// ("~ lyric ~" or "~ lyric") and returns it without the markers.
+func singMarks(l string) (string, bool) {
+	t := strings.TrimSpace(l)
+	switch {
+	case t == "~":
+		return "", true
+	case strings.HasPrefix(t, "~ "):
+		t = strings.TrimSpace(t[2:])
+		if t == "~" {
+			return "", true
+		}
+		return strings.TrimSpace(strings.TrimSuffix(t, " ~")), true
+	}
+	return l, false
+}
+
 func (p *parser) caption(lines []string, lineNo int) {
 	c := Cue{Kind: KindCaption, Line: lineNo}
 	if m := speakerRe.FindStringSubmatch(lines[0]); m != nil {
 		c.Speaker = m[1]
 		lines[0] = m[2]
 	}
+	_, shorthand := singMarks(lines[0])
+	c.Sung = p.song || shorthand
 	var hs, ps []string
 	for _, l := range lines {
 		if htmlTagRe.MatchString(l) {
 			p.diag(lineNo, SevInfo, "HTML is not supported; %q will appear as plain text. Use **bold** or *italic* instead.", htmlTagRe.FindString(l))
 		}
+		if c.Sung {
+			l, _ = singMarks(l)
+			l = strings.TrimSpace(strings.TrimSuffix(strings.TrimSpace(l), " ~")) // a closing marker on a later line
+		}
 		h, t := RenderInline(l)
+		if c.Sung {
+			// Lyrics sit between musical notes; an empty lyric is just a note.
+			if t == "" {
+				h, t = "♪", "♪"
+			} else {
+				h, t = "♪ "+h+" ♪", "♪ "+t+" ♪"
+			}
+		}
 		hs, ps = append(hs, h), append(ps, t)
 	}
 	c.HTML = strings.Join(hs, "<br>")
 	c.Text = strings.Join(ps, "\n")
-	if c.Speaker == "" && strings.HasPrefix(c.Text, "(") && strings.HasSuffix(c.Text, ")") {
+	if c.Speaker == "" && !c.Sung && strings.HasPrefix(c.Text, "(") && strings.HasSuffix(c.Text, ")") {
 		c.Stage = true
 	}
 	p.res.Cues = append(p.res.Cues, c)
@@ -211,6 +248,22 @@ func (p *parser) directive(raw string, lineNo int) {
 			Item: &Item{Kind: "text", HTML: h, Text: t}})
 	case "loop":
 		p.loop(lineNo, args)
+	case "song":
+		if p.song {
+			p.diag(lineNo, SevWarning, "[song] can't go inside another song. Close the first one with [/song].")
+			return
+		}
+		p.song, p.songLine = true, lineNo
+		if args != "" { // the title is a bookmark for the operator
+			h, t := RenderInline(args)
+			p.res.Cues = append(p.res.Cues, Cue{Kind: KindSection, Line: lineNo, Text: "♪ " + t, HTML: "♪ " + h})
+		}
+	case "/song":
+		if !p.song {
+			p.diag(lineNo, SevWarning, "[/song] has no matching [song]. The line was skipped.")
+			return
+		}
+		p.song = false
 	case "section", "note":
 		if args == "" {
 			p.diag(lineNo, SevWarning, "[%s] needs some text, e.g. [%s: Act 2]. The line was skipped.", name, name)

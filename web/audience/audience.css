@@ -29,6 +29,8 @@ body.projector { cursor: none; }
 .cap { margin: 0 0 .55em; overflow-wrap: anywhere; animation: rise .25s ease-out; }
 .cap .spk { display: block; font-size: .55em; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); opacity: .9; }
 .cap.stage { font-style: italic; }
+/* Sung lyrics: between musical notes (added by the server), in italics and a little looser. */
+.cap.sung { font-style: italic; letter-spacing: .01em; }
 .cap strong { font-weight: 800; }
 @keyframes rise { from { opacity: 0; transform: translateY(.4em); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .cap, #fs > * { animation: none !important; } }

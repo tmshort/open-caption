@@ -11,8 +11,10 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"os/exec"
 	"os/signal"
 	"path/filepath"
+	"runtime"
 	"sync"
 	"syscall"
 	"time"
@@ -33,6 +35,7 @@ func main() {
 		httpAddr  = flag.String("http-addr", env("OPEN_CAPTION_HTTP_ADDR", ""), "HTTP listen address, e.g. :80")
 		httpsAddr = flag.String("https-addr", env("OPEN_CAPTION_HTTPS_ADDR", ""), "HTTPS listen address, e.g. :443 (enables HTTPS)")
 		logFile   = flag.String("log-file", env("OPEN_CAPTION_LOG", ""), "also append log lines to this file")
+		noBrowser = flag.Bool("no-browser", false, "do not open the setup page in a browser at startup")
 		showVer   = flag.Bool("version", false, "print version and exit")
 		dev       = flag.Bool("dev", false, "DEVELOPMENT ONLY: enable unauthenticated /dev/* control endpoints")
 		devShow   = flag.String("script", "", "with --dev: load this script file as the active show")
@@ -156,6 +159,9 @@ func main() {
 	}
 	api.SetListeners(lis)
 	log.Printf("open-caption %s running; operator page: /operator, setup page: /admin. Press Ctrl+C to stop.", version)
+	if cfg.Defaults.OpenBrowser && !*noBrowser && !*dev {
+		openBrowser(firstURL("http", lis.HTTPAddr) + "admin")
+	}
 	<-ctx.Done()
 	log.Printf("shutting down (saving show position)...")
 	wg.Wait()
@@ -237,4 +243,31 @@ func env(k, def string) string {
 		return v
 	}
 	return def
+}
+
+// firstURL returns the local URL (ending in "/") for a bound address.
+func firstURL(scheme, bound string) string {
+	_, port, err := net.SplitHostPort(bound)
+	if err != nil || port == "" || (scheme == "http" && port == "80") || (scheme == "https" && port == "443") {
+		return scheme + "://localhost/"
+	}
+	return scheme + "://localhost:" + port + "/"
+}
+
+// openBrowser opens url in the default browser; failure is harmless (for example on a headless server).
+func openBrowser(url string) {
+	var cmd *exec.Cmd
+	switch runtime.GOOS {
+	case "darwin":
+		cmd = exec.Command("open", url)
+	case "windows":
+		cmd = exec.Command("rundll32", "url.dll,FileProtocolHandler", url)
+	default:
+		cmd = exec.Command("xdg-open", url)
+	}
+	if err := cmd.Start(); err != nil {
+		log.Printf("could not open a browser (%v); open %s yourself", err, url)
+		return
+	}
+	go cmd.Wait()
 }

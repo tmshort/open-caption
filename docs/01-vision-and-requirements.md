@@ -48,6 +48,7 @@ simultaneous shows, internet-facing deployment.
 - **REQ-023** Import validates the script and reports errors/warnings with line numbers *without* blocking the preview.
 - **REQ-024** Images (PNG/JPG/GIF/WebP; no SVG) are uploaded/managed in the setup UI and referenced by filename. Missing references are flagged. The server does not rescale; browsers scale to fit. Audience pages prefetch upcoming images.
 - **REQ-025** **Loops**: a block of mixed fullscreen items (images/text), each shown for its own duration (default from config), repeating. Used for pre-show and intermission. A loop that is the first cue auto-starts on activation; any other loop starts when the operator presses NEXT on it.
+- **REQ-027** Musicals: lyrics can be marked with a `~` shorthand or a `[song]` block, are shown in italics between ♪ notes, and music notes can be inserted from the editor (doc 03, *Songs and lyrics*).
 - **REQ-026** (Planned) Multiple languages: one script per language, identical in structure, each identified by a language directive; the audience's language is detected from `Accept-Language` (default `en`), with a picker and a `?lang=` URL form.
 
 ### Operator

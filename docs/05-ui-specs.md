@@ -22,7 +22,7 @@ Goal: a first-time volunteer can finish without reading documentation.
   - Editor pane (monospace, line numbers) + Diagnostics pane. Clicking a diagnostic jumps to the line.
   - Live preview of the parsed cue list (kinds shown as icons: 💬 caption, 🖼 image, ⛶ fullscreen, 🔁 loop, ⬛ blank, 🧹 clear, 📑 section, 📝 note).
   - A "Script help" slide-out showing the syntax cheatsheet with copy-able examples (content of doc 03: Markdown subset, directives, loops).
-  - Insert-directive toolbar buttons (Clear, Blank, Image…, Fullscreen text, Section, Loop) so authors never type brackets by hand.
+  - Insert-directive toolbar buttons (Clear, Blank, Image…, Fullscreen text, Section, Loop, 🎵 Song, and ♪ / ♫ to insert music notes at the cursor) so authors never type brackets by hand.
   - Re-import warns if cue count differs and the show is live.
 - **Images**: PNG/JPG/GIF/WebP only (no SVG); files over 1 MB get a "large — may load slowly for many devices" warning, since images are sent unscaled. Grid of uploads with thumbnails; drag-drop multi-upload; shows "used in lines 12, 40" or "unused"; missing-but-referenced images listed at top with an upload-in-place button.
 - **Look**: theme (defaults to pure black background / white text for accessibility; background/text/accent colors, system font choices, base size), speaker display (off / label / per-character colors; default label, no color), idle message (overrides the config default). Live preview in a phone-shaped and a projector-shaped frame.

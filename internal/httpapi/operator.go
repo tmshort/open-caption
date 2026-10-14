@@ -35,6 +35,7 @@ type CueView struct {
 	Speaker string     `json:"speaker,omitempty"`
 	Text    string     `json:"text,omitempty"`
 	Stage   bool       `json:"stage,omitempty"`
+	Sung    bool       `json:"sung,omitempty"`
 	Label   string     `json:"label,omitempty"`
 	Period  float64    `json:"period,omitempty"`
 	Items   []ItemView `json:"items,omitempty"`
@@ -59,7 +60,7 @@ func itemView(it script.Item) ItemView {
 func cueViews(cues []script.Cue) []CueView {
 	out := make([]CueView, len(cues))
 	for i, c := range cues {
-		v := CueView{Index: i, Kind: string(c.Kind), Line: c.Line, Speaker: c.Speaker, Text: c.Text, Stage: c.Stage, Period: c.Period}
+		v := CueView{Index: i, Kind: string(c.Kind), Line: c.Line, Speaker: c.Speaker, Text: c.Text, Stage: c.Stage, Sung: c.Sung, Period: c.Period}
 		if c.Item != nil {
 			v.Label = itemView(*c.Item).Label
 		}

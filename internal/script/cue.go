@@ -38,6 +38,7 @@ type Cue struct {
 	HTML    string  `json:"html,omitempty"` // caption: generated, escaped HTML
 	Text    string  `json:"text,omitempty"` // plain text (operator display, search)
 	Stage   bool    `json:"stage,omitempty"`
+	Sung    bool    `json:"sung,omitempty"`   // a lyric: shown between musical notes
 	Item    *Item   `json:"item,omitempty"`   // image / fullscreen
 	Items   []Item  `json:"items,omitempty"`  // loop
 	Period  float64 `json:"period,omitempty"` // loop default seconds; 0 = config default
@@ -75,4 +76,4 @@ type Options struct {
 // DirectiveNames lists every command a script may use as [name] or [name: ...].
 // Help text and tests are checked against this list, so adding a directive
 // without documenting it fails the build's tests.
-var DirectiveNames = []string{"clear", "blank", "image", "fullscreen", "loop", "section", "note", "language"}
+var DirectiveNames = []string{"clear", "blank", "image", "fullscreen", "loop", "section", "note", "song", "language"}

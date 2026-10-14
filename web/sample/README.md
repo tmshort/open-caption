@@ -1,7 +1,7 @@
 # Sample show
 
 `sample-script.md` is a short made-up scene that demonstrates every script
-feature (captions, speakers, stage directions, bold/italic, multi-line
+feature (captions, speakers, stage directions, songs and sung lyrics (music notes), bold/italic, multi-line
 captions, comments, operator notes, sections, images, fullscreen text, and
 loops for pre-show and intermission). The pictures in `assets/` are plain
 colored placeholders.

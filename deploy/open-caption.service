@@ -1,0 +1,31 @@
+# systemd unit for running open-caption on Linux as a background service.
+#
+#   sudo useradd --system --create-home --home-dir /var/lib/open-caption opencaption
+#   sudo install -m 0755 open-caption /usr/local/bin/open-caption
+#   sudo cp deploy/open-caption.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now open-caption
+#
+# The first start creates /var/lib/open-caption/config.yaml with random passwords. Read them with:
+#   sudo cat /var/lib/open-caption/config.yaml
+# (They are printed once to the journal too: sudo journalctl -u open-caption | head -20)
+[Unit]
+Description=open-caption open-captioning server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=opencaption
+ExecStart=/usr/local/bin/open-caption --data /var/lib/open-caption --no-browser --log-file /var/lib/open-caption/open-caption.log
+Restart=on-failure
+RestartSec=2
+# Allow listening on port 80 without running as root.
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/open-caption
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

@@ -44,6 +44,7 @@ type CaptionItem struct {
 	HTML    string `json:"html"`
 	Text    string `json:"text"`
 	Stage   bool   `json:"stage,omitempty"`
+	Sung    bool   `json:"sung,omitempty"`
 }
 
 // State is the audience-visible state.
@@ -479,7 +480,7 @@ func (e *Engine) applyTo(st *State, c script.Cue, emit func(string, any)) {
 	switch c.Kind {
 	case script.KindCaption:
 		e.nextID++
-		it := CaptionItem{ID: e.nextID, Speaker: c.Speaker, HTML: c.HTML, Text: c.Text, Stage: c.Stage}
+		it := CaptionItem{ID: e.nextID, Speaker: c.Speaker, HTML: c.HTML, Text: c.Text, Stage: c.Stage, Sung: c.Sung}
 		st.Mode, st.Fullscreen = ModeCaptions, nil
 		st.Scrollback = append(st.Scrollback, it)
 		if over := len(st.Scrollback) - e.cfg.ScrollbackMax; over > 0 {

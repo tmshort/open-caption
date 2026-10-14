@@ -292,3 +292,71 @@ func TestDirectiveRegistryIsHandled(t *testing.T) {
 		}
 	}
 }
+
+func TestSingShorthand(t *testing.T) {
+	cases := []struct {
+		in, text, html string
+		sung           bool
+	}{
+		{"~ Row, row, row your boat ~", "♪ Row, row, row your boat ♪", "♪ Row, row, row your boat ♪", true},
+		{"~ no closing marker", "♪ no closing marker ♪", "", true},
+		{"~", "♪", "♪", true},
+		{"~ ~", "♪", "♪", true},
+		{"~ *Let* it go ~", "♪ Let it go ♪", "♪ <em>Let</em> it go ♪", true},
+		{"about ~5 minutes", "about ~5 minutes", "", false},
+		{"~5 minutes", "~5 minutes", "", false},
+		{`\~ not a lyric`, "~ not a lyric", "", false},
+		{"♪ typed directly ♪", "♪ typed directly ♪", "", false},
+	}
+	for _, c := range cases {
+		r := Parse(c.in, Options{})
+		if len(r.Cues) != 1 || r.Cues[0].Text != c.text || r.Cues[0].Sung != c.sung || (c.html != "" && r.Cues[0].HTML != c.html) {
+			t.Errorf("%q: got %+v", c.in, r.Cues)
+		}
+	}
+	r := Parse("ELSA: ~ Let it go ~", Options{})
+	if r.Cues[0].Speaker != "ELSA" || !r.Cues[0].Sung || r.Cues[0].Text != "♪ Let it go ♪" {
+		t.Errorf("speaker + lyric: %+v", r.Cues[0])
+	}
+	r = Parse("[[\n~ Row, row,\nrow your boat ~\n]]", Options{})
+	if r.Cues[0].Text != "♪ Row, row, ♪\n♪ row your boat ♪" || !r.Cues[0].Sung {
+		t.Errorf("multi-line lyric: %q", r.Cues[0].Text)
+	}
+	if r := Parse("(~ hums ~)", Options{}); r.Cues[0].Sung {
+		t.Error("a parenthetical is not a lyric")
+	}
+}
+
+func TestSongBlock(t *testing.T) {
+	src := "[song: Memory]\nMidnight, not a sound\n\nGRIZABELLA: Has the moon lost her memory?\n[note: hold the last chord]\n[/song]\nAfter the song"
+	r := Parse(src, Options{})
+	if got := kinds(r); strings.Join(strs(got), ",") != "section,caption,caption,note,caption" {
+		t.Fatalf("kinds %v %+v", got, r.Diagnostics)
+	}
+	if r.Cues[0].Text != "♪ Memory" || !r.Cues[1].Sung || r.Cues[1].Text != "♪ Midnight, not a sound ♪" ||
+		!r.Cues[2].Sung || r.Cues[2].Speaker != "GRIZABELLA" || r.Cues[4].Sung || r.Cues[4].Text != "After the song" {
+		t.Errorf("%+v", r.Cues)
+	}
+	for _, d := range r.Diagnostics {
+		if d.Severity != SevInfo {
+			t.Errorf("unexpected %+v", d)
+		}
+	}
+	// untitled song, closing without opening, nesting, unclosed (lyrics are kept)
+	if r := Parse("[song]\nla\n[/song]", Options{}); len(r.Cues) != 1 || !r.Cues[0].Sung {
+		t.Errorf("untitled: %+v", r.Cues)
+	}
+	if r := Parse("[/song]", Options{}); !hasDiag(r, SevWarning, "no matching [song]") {
+		t.Errorf("%+v", r.Diagnostics)
+	}
+	if r := Parse("[song]\n[song]\nla\n[/song]", Options{}); !hasDiag(r, SevWarning, "inside another song") || len(r.Cues) != 1 {
+		t.Errorf("%+v", r)
+	}
+	r = Parse("[song: X]\nla la\nli li", Options{})
+	if !hasDiag(r, SevError, "[song] was opened but never closed") || len(r.Cues) != 3 {
+		t.Errorf("unclosed: %+v %+v", r.Cues, r.Diagnostics)
+	}
+	if r := Parse("[loop]\n[song]\n[/loop]", Options{}); !hasDiag(r, SevWarning, "[song] can't go inside a loop") {
+		t.Errorf("song in loop: %+v", r.Diagnostics)
+	}
+}

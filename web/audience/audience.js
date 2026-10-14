@@ -48,7 +48,7 @@
 
   function captionEl(c) {
     const p = document.createElement('p');
-    p.className = 'cap' + (c.stage ? ' stage' : '');
+    p.className = 'cap' + (c.stage ? ' stage' : '') + (c.sung ? ' sung' : '');
     p.dataset.id = c.id;
     if (c.speaker && state.theme.speakers !== 'hidden') {
       const s = document.createElement('span');

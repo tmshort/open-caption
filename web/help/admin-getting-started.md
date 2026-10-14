@@ -19,8 +19,13 @@ Setting up a show takes six steps. The row of buttons across the top of the page
 
 A script is just text. Each line is one caption, and one press of the spacebar sends one line. Read [Writing a script](topic:admin-writing-a-script), or create the sample show and look at how it is written. A starter you can download is at [/help/sample-script.md](/help/sample-script.md).
 
+## Planning the equipment
+
+For what to buy, where to put the WiFi access point, and a day-of checklist, read the **usage guide** (`docs/usage-guide.md` in the project) and the **venue network guide** (`docs/venue-network-guide.md`).
+
 ## Where to go next
 
+- [Musicals](topic:admin-musicals)
 - [Writing a script](topic:admin-writing-a-script)
 - [Loops: pre-show and intermission](topic:admin-loops)
 - [Troubleshooting](topic:admin-troubleshooting)

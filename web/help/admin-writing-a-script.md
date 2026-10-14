@@ -21,6 +21,27 @@ HAMLET: To be, or not to be, **that** is the question.
 OPHELIA: My *lord*?
 ```
 
+## Songs and music
+
+For a musical, show lyrics between music notes (♪). There are three ways, from quickest to most flexible:
+
+- **Type or paste the notes yourself.** ♪ and ♫ work anywhere in the script. In the editor, the **♪** and **♫** buttons insert them at the cursor.
+- **Start a line with `~`.** The line is treated as a sung lyric: it is shown in italics with a ♪ added at each end, and the `~` itself is not shown. A closing `~` is optional. This also works after a speaker's name.
+- **Wrap a whole song in `[song]` and `[/song]`.** Every line inside is sung, so you do not need a `~` on each one. The title after the colon is a bookmark for the operator only. Notes, clears and blanks can still go inside.
+
+```script
+OLIVER: ~ Where is love? ~
+~ Row, row, row your boat
+
+[song: The Tea Song]
+MARGARET: Oh, the kettle sings its song,
+EDWIN: Whistling all day long
+[note: hold the last chord]
+[/song]
+```
+
+A tilde in the middle of a line, such as `about ~5 minutes`, is just text. To start an ordinary line with one, write `\~`. See [Musicals](topic:admin-musicals) for more advice.
+
 ## Several lines in one caption
 
 End a line with a backslash to join it with the next line, or put the lines between `[[` and `]]`.
@@ -61,6 +82,7 @@ A line in square brackets is a command. Names are not case-sensitive.
 | `![caption](file.png)` | The same, written the Markdown way |
 | `[fullscreen: text]` | Show large text full screen. For several lines use `[fullscreen]` … `[/fullscreen]` |
 | `[loop]` … `[/loop]` | A repeating set of full-screen items for pre-show or intermission. See [Loops](topic:admin-loops) |
+| `[song: title]` … `[/song]` | A song: every line inside is shown as a sung lyric. See [Songs and music](topic:admin-musicals) |
 | `[section: name]` | A bookmark for the operator |
 | `[note: text]` | A note for the operator |
 | `[language: es]` | Marks a translated script. See [Languages](topic:admin-languages) |
@@ -81,7 +103,7 @@ An image, fullscreen text or blank stays on the audience screens until the opera
 
 ## Special characters
 
-Put a backslash before a character to show it literally instead of treating it as formatting: `\*`, `\_`, `\#`, `\[`, `\]`, `\:`, `\(`, `\)`, `\!` and `\\` (a backslash itself). For example, a caption that must begin with a number sign is written `\# 1 hit`, and `HAMLET\: not a speaker` shows the colon without making a speaker label.
+Put a backslash before a character to show it literally instead of treating it as formatting: `\*`, `\_`, `\#`, `\[`, `\]`, `\:`, `\(`, `\)`, `\!`, `\~` and `\\` (a backslash itself). For example, a caption that must begin with a number sign is written `\# 1 hit`, and `HAMLET\: not a speaker` shows the colon without making a speaker label.
 
 ```script
 \# 1 hit of the season
@@ -98,5 +120,6 @@ The Script step lists problems with line numbers. Click one to jump to the line.
 - **"[loop] was opened but never closed"** — add `[/loop]` after the last item. The same applies to `[fullscreen]` blocks, `[[` blocks and comments.
 - **"HTML is not supported"** — use `**bold**` and `*italic*` instead of tags.
 - **"can't go inside a loop"** — loops hold only pictures and text.
+- **"[song] was opened but never closed"** — add `[/song]` after the last lyric. The lyrics you wrote are still kept.
 
 Errors never stop you from saving. The part with the error is skipped, and the rest of the script still works.

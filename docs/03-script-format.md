@@ -57,6 +57,7 @@ is the item's display time (only meaningful inside a loop).
 | `[fullscreen: text]` | Fullscreen centered large text until the next cue (Markdown formatting allowed) |
 | `[fullscreen]` … `[/fullscreen]` | Same, multi-line text |
 | `[loop]` … `[/loop]` / `[loop: 10s]` | Looping fullscreen items (see *Loops*) |
+| `[song]` … `[/song]` / `[song: title]` | Every caption inside is a sung lyric (see *Songs and lyrics*) |
 | `[section: name]` | Operator-only marker/bookmark; no audience effect |
 | `[note: text]` | Operator-only note shown inline in the operator view (e.g. "wait for door slam") |
 | `[language: es]` or `[language: es \| Español]` | First line of a translated script, with an optional display name for the picker; see *Languages* |
@@ -115,6 +116,18 @@ Behavior (see doc 02 for the state model):
 - **Restarting.** There is no restart command. Back "backs into" the loop: after
   NEXT ended it, or after STOP, Back restores the loop **running from its first item**.
 
+### Songs and lyrics (musicals)
+
+Lyrics are captions flagged as *sung*. The server shows a sung caption in italics between music notes: `♪ lyric ♪`. Three ways to write one:
+
+| Write | Result |
+|-------|--------|
+| `~ lyric ~` (closing `~` optional) | a sung caption; the `~` markers are removed and ♪ added at both ends |
+| `[song]` … `[/song]` or `[song: Title]` … `[/song]` | every caption inside is sung; the title becomes an operator-only `section` cue `♪ Title` |
+| a literal `♪` or `♫` anywhere | ordinary text, unchanged (no italics) |
+
+Details: `~` alone (or `~ ~`) is a bare `♪`. The marker works after a speaker (`ELSA: ~ Let it go`). A `~` that is not followed by a space, or is not at the start of the line, is plain text; `\~` escapes it. Inside `[song]`, `[note]`, `[section]`, `[clear]`, `[blank]` and images still work, and a speaker label is kept. If `[song]` is never closed, the lyrics are kept and an error is reported. Songs cannot nest or appear inside a loop. For multi-line captions (`[[ … ]]` or a trailing backslash), a leading `~` makes every line of the caption sung.
+
 ### Speaker detection
 
 A leading label is a speaker if it matches `^[A-Z][A-Z0-9 .'\-]{0,29}:\s+\S`
@@ -160,6 +173,7 @@ type Cue struct {
     Kind    CueKind
     Line    int         // 1-based source line (start)
     Speaker string      // caption only
+    Sung    bool        // lyric: Text/HTML already include the surrounding ♪ notes
     HTML    string      // caption: generated, escaped HTML
     Text    string      // plain text (operator display, search)
     Item    *Item       // image / fullscreen

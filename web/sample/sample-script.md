@@ -72,6 +72,18 @@ MARGARET: Look at that sky.
 
 MARGARET: Well. That went better than expected.
 
+<!-- MUSIC: a song. Everything between [song] and [/song] is sung, so each line is
+     shown between music notes (a note symbol is added for you). The title appears
+     for the operator only. For a single sung line, put a ~ at the start instead. -->
+[song: The Tea Song]
+MARGARET: Oh, the kettle sings its song,
+MARGARET: Whistling all day long,
+EDWIN: And the tea goes cold, cold, cold,
+[note: Both together on the last line]
+Cold as a garden gate
+[/song]
+~ Tea for two, and two for tea ~
+
 [section: Intermission]
 <!-- INTERMISSION: a loop that starts when the operator presses the spacebar on it.
      SHIFT+Q stops the loop and blanks the screen. The spacebar ends it and sends

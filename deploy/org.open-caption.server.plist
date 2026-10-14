@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  macOS: start open-caption automatically when you log in.
+
+    mkdir -p ~/open-caption && cp open-caption ~/open-caption/
+    cp deploy/org.open-caption.server.plist ~/Library/LaunchAgents/
+    # edit the two paths below if you used a different folder, then:
+    launchctl load ~/Library/LaunchAgents/org.open-caption.server.plist
+
+  Stop it with:  launchctl unload ~/Library/LaunchAgents/org.open-caption.server.plist
+  Logs:          ~/open-caption/open-caption.log
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>org.open-caption.server</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/YOURNAME/open-caption/open-caption</string>
+    <string>--data</string><string>/Users/YOURNAME/open-caption/data</string>
+    <string>--no-browser</string>
+    <string>--log-file</string><string>/Users/YOURNAME/open-caption/open-caption.log</string>
+  </array>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><true/>
+</dict>
+</plist>
