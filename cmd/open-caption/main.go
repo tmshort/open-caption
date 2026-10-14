@@ -86,6 +86,14 @@ func main() {
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGHUP)
+	go func() {
+		if s, ok := <-sigs; ok {
+			log.Printf("received %v; shutting down", s)
+			stop()
+		}
+	}()
 	var wg sync.WaitGroup
 	serve := func(scheme string, l config.Listener, srvTLS *tls.Config) {
 		ln, err := listen(l)
@@ -121,9 +129,11 @@ func main() {
 	if cfg.HTTPS.Enabled {
 		serve("https", config.Listener{Addr: cfg.HTTPS.Addr, FallbackAddr: cfg.HTTPS.FallbackAddr}, tlsConfig(cfg))
 	}
-	log.Printf("open-caption %s running; operator page: /operator, setup page: /admin", version)
+	log.Printf("open-caption %s running; operator page: /operator, setup page: /admin. Press Ctrl+C to stop.", version)
 	<-ctx.Done()
+	log.Printf("shutting down (saving show position)...")
 	wg.Wait()
+	log.Printf("stopped")
 }
 
 func tlsConfig(cfg config.Config) *tls.Config {
