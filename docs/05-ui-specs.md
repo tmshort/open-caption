@@ -78,7 +78,7 @@ Behavior:
 
   Space must call `preventDefault` to avoid page scroll. Key repeat is ignored; a command is debounced (~120 ms) to prevent double-fire, while the UI optimistically shows pending state and reconciles with the server response.
 - **Safety**: clicking a cue in the list opens a "Jump here?" confirmation (single click select, Enter/second-click confirm) so accidental taps don't change the screen. Jumps never replay intermediate lines onto the audience view as a flood — they set the resulting state.
-- **Loops**: while a loop runs, the header shows `🔁 LOOP RUNNING — item 2/4` with a STOP button; after STOP it shows `⬛ BLANK (loop stopped)`. The cue after the loop is already highlighted as NEXT. A loop that is the first cue auto-starts when the show is activated, so the operator opens on `🔁 LOOP RUNNING` with the first caption as NEXT.
+- **Loops**: while a loop runs, the header shows `🔁 LOOP RUNNING — item 2/4` with a STOP button; after STOP it shows `⬛ BLANK (loop stopped)`. The cue after the loop is already highlighted as NEXT. Back restarts a loop: after NEXT ended it, or after STOP, Back puts it back running from its first item (there is no separate restart button). A loop that is the first cue auto-starts when the show is activated, so the operator opens on `🔁 LOOP RUNNING` with the first caption as NEXT.
 - **Status indicators**: connection state (green/yellow/red); audience count; warning if another session claims control; "Last sent n seconds ago".
 - **Touch layout** (phone/tablet): large bottom Next/Back buttons; swipe not used (accidental). Wake lock requested.
 - **Dark theme default** (theater is dark; low glare). The operator page uses its own login (operator password). Optional "stage-dark" red-tinted mode.
@@ -95,6 +95,7 @@ Principle: **no interaction needed.** Controls, if any, are hidden/minimal.
 - **Idle**: before the show starts, shows the configured message and a subtle "connected" indicator.
 - **Connection**: a small unobtrusive status dot; if offline > 5 s shows "Reconnecting…" overlay while retaining the last text visible underneath, and auto-recovers on reconnect (re-snapshot). Reconnect backoff 0.5 s → 5 s with jitter.
 - **Keep awake**: request Screen Wake Lock on load and on first user visibility change; on iOS Safari where unavailable, silent hidden `<video>` loop fallback (documented, off by default). Page shows a one-time tiny hint "Tip: turn off Auto-Lock to keep captions on" only when wake lock fails.
+- **Language** (when the show has more than one language): the page starts in the language matched from the browser's `Accept-Language` header, or the default (`en`). A small picker in a corner lists the available languages; choosing one navigates to `/?lang=xx`, so the URL form (e.g. on a lobby QR code) works identically. With a single language there is no picker. The page never blocks on a choice.
 - **Optional local controls** (collapsed, appear on tap/click in a corner): text size − / +, light/dark toggle. Stored in `localStorage`; never required.
 - **Projector mode** (`?display=projector`): font scale ×1.5 by default, hidden cursor, no controls, no connection dot unless offline.
 - **Responsive**: font size uses `clamp()` with `vw`/`vh` units relative to the theme `scalePct`; works portrait and landscape; safe-area insets for iPhone.

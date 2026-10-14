@@ -18,7 +18,8 @@ All JSON is UTF-8.
 | GET | `/captive-api` | RFC 8908 captive-portal JSON (doc 06) |
 
 Query parameters on `/` and `/events`: `?display=projector`, `?size=<pct>`,
-`?theme=light|dark`, `?lang=<code>` (planned, doc 03).
+`?theme=light|dark`, `?lang=<code>` (planned, doc 03). If `lang` is absent, the server picks one from the
+`Accept-Language` request header, falling back to `defaults.language` (`en`).
 
 ### Pages and authentication
 
@@ -123,6 +124,7 @@ the server's retained buffer, the server sends a `snapshot`. Clients treat a
 {
   "seq": 1042,
   "lang": "en",
+  "languages": [{"code": "en", "name": "English"}, {"code": "es", "name": "Español"}],
   "mode": "captions",            // idle | captions | blank
   "scrollback": [ /* CaptionItem[] */ ],
   "fullscreen": null,            // or Item

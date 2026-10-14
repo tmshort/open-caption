@@ -6,7 +6,7 @@ with zero markup; extra features are opt-in and read naturally to a human.
 
 **No embedded HTML.** Formatting uses Markdown only. Any `<tag>` in the text is
 shown literally (escaped) and produces an info diagnostic, never executed.
-This also means the server needs no HTML sanitizer: it escapes all text and
+(HTML comments are the one exception; see rule 4.) This also means the server needs no HTML sanitizer: it escapes all text and
 emits only the small set of tags it generates itself.
 
 ## Basic rules
@@ -17,9 +17,13 @@ emits only the small set of tags it generates itself.
 3. A caption longer than the screen **wraps automatically**. The author decides
    how to split speeches into lines to match the style of the performance;
    the system never splits or merges lines.
-4. Lines starting with `#` are **ignored** for now (Markdown headings are
-   reserved for future use, e.g. as section markers). This also makes `#` usable
-   for comments. A caption that must begin with a literal `#` is written `\#`.
+4. **Comments** are written `<!-- like this -->` and may span several lines.
+   Comments are never shown to anyone. (This is the only HTML the format accepts.)
+   To leave a message for the **operator**, use `[note: text]` instead; it is
+   visible in the operator view but never sent to the audience.
+   Lines starting with `#` are Markdown headings: they are **reserved for future
+   use** (e.g. as section markers) and ignored for now, so don't use `#` for
+   comments. A caption that must begin with a literal `#` is written `\#`.
 5. Lines in **square brackets** are **directives** (commands), case-insensitive.
 6. An optional upper-case speaker prefix `NAME: text` is rendered as a label
    (see *Speaker detection*).
@@ -55,7 +59,7 @@ is the item's display time (only meaningful inside a loop).
 | `[loop]` … `[/loop]` / `[loop: 10s]` | Looping fullscreen items (see *Loops*) |
 | `[section: name]` | Operator-only marker/bookmark; no audience effect |
 | `[note: text]` | Operator-only note shown inline in the operator view (e.g. "wait for door slam") |
-| `[language: es]` | First line of a translated script; see *Languages* |
+| `[language: es]` or `[language: es \| Español]` | First line of a translated script, with an optional display name for the picker; see *Languages* |
 
 Names are forgiving: `[Clear]`, `[CLEAR SCREEN]`, `[clear screen]` all work.
 An unknown directive produces a warning and the line is skipped (never shown
@@ -108,6 +112,8 @@ Behavior (see doc 02 for the state model):
   caption). Back (undo) after that returns to the loop.
 - **Stopping.** The operator's STOP command (Shift+Q) stops the loop and leaves a
   blank screen. NEXT then proceeds as usual.
+- **Restarting.** There is no restart command. Back "backs into" the loop: after
+  NEXT ended it, or after STOP, Back restores the loop **running from its first item**.
 
 ### Speaker detection
 
@@ -131,7 +137,9 @@ compares each translation against the primary and reports structural mismatches
 (cue count/kind) with line numbers. One operator NEXT advances *every*
 language to the same cue index; the operator sees the primary language.
 Image assets may differ per language by using different filenames at the same
-position. The audience chooses a language with `/?lang=es` (default: primary).
+position. The audience gets a language automatically from the browser's `Accept-Language`
+header, can switch with a picker, and can be sent directly to `/?lang=es`
+(see doc 05). The default is `en` (the `defaults.language` setting) when nothing matches.
 
 ## Parsed model (Go)
 
@@ -181,6 +189,8 @@ Each is reported with a line number and a plain-English message:
 - warning: `Line 17: unknown command [fade]. This line was skipped.`
 - warning: `Line 63: captions can't go inside a loop. This line was skipped.`
 - error: `Line 88: [loop] was opened but never closed.`
+- error: `Line 12: comment <!-- was opened but never closed.`
+- info: `Line 30: lines starting with # are reserved for headings and were ignored. Use <!-- comment --> for comments or [note: …] for operator notes.`
 - info: `Line 5: HTML is not supported; "<b>" will appear as plain text. Use **bold** instead.`
 - info: summary — `312 captions, 4 images, 2 loops, 3 sections`.
 
@@ -190,7 +200,7 @@ makes fixing easy (line list, click to jump to the line in the editor).
 ## Complete example
 
 ```
-# The Odd Couple — captions v3
+<!-- The Odd Couple — captions v3 -->
 [loop: 10s]
 [image: sponsors.png | 15s]
 Welcome to **The Odd Couple**

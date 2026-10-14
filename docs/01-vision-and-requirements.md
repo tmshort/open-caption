@@ -44,11 +44,11 @@ multiple simultaneous shows, internet-facing deployment.
 ### Script
 - **REQ-020** Import a Markdown/text script (`.md` or `.txt`, both parsed as Markdown, UTF-8) via upload or paste; re-import without losing assets.
 - **REQ-021** Each non-blank script line is a caption (long lines wrap; the author controls splitting); non-technical authors can add human-readable directives (clear screen, images, fullscreen text, loops) (doc 03).
-- **REQ-022** Formatting is a Markdown subset (bold/italic, images). Raw HTML is **not** supported; it is displayed as literal text with a diagnostic.
+- **REQ-022** Formatting is a Markdown subset (bold/italic, images). Raw HTML is **not** supported; it is displayed as literal text with a diagnostic. Exception: `<!-- -->` comments. `[note: …]` is an operator-only note; `#` is reserved for future headings.
 - **REQ-023** Import validates the script and reports errors/warnings with line numbers *without* blocking the preview.
 - **REQ-024** Images (PNG/JPG/GIF/WebP; no SVG) are uploaded/managed in the setup UI and referenced by filename. Missing references are flagged. The server does not rescale; browsers scale to fit. Audience pages prefetch upcoming images.
 - **REQ-025** **Loops**: a block of mixed fullscreen items (images/text), each shown for its own duration (default from config), repeating. Used for pre-show and intermission. A loop that is the first cue auto-starts on activation; any other loop starts when the operator presses NEXT on it.
-- **REQ-026** (Planned) Multiple languages: one script per language, identical in structure, each identified by a language directive; the audience selects a language by URL.
+- **REQ-026** (Planned) Multiple languages: one script per language, identical in structure, each identified by a language directive; the audience's language is detected from `Accept-Language` (default `en`), with a picker and a `?lang=` URL form.
 
 ### Operator
 - **REQ-030** Spacebar (NEXT) advances to the next cue — the same command for captions, for starting a loop, and for ending a loop. **STOP** (Shift+Q) stops a running loop and leaves a blank screen. Other keys: back, blank, clear, jump (doc 05).

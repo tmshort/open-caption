@@ -20,11 +20,10 @@ that reflect it. Add new questions at the bottom.
 | Q11 | Ports; languages? | Try 80/443, fall back to 8080/8443 with a warning; all settings in `config.yaml`. Multi-language later: one identical-structure script per language, `[language: xx]` first | 01 (REQ-005/026), 02, 03, 06 |
 | Q12 | Guest network reachability? | A requirement of the venue's guest network (documented as a prerequisite) | 06 |
 | Q13 | License? | Apache-2.0 (`LICENSE` added) | 01 (REQ-007) |
+| Q14 | Language selection UX? | Auto-detect from `Accept-Language`; otherwise default `en`; a picker (shown only with >1 language) navigates to `/?lang=xx`, so the URL form also works | 01, 02, 03, 04, 05 |
+| Q16 | Comment syntax? | `<!-- … -->` for comments (never shown); `[note: text]` for operator-visible, audience-hidden notes; `#` reserved for future headings (ignored with an info diagnostic) | 01, 03 |
+| Q15 | Restarting a stopped loop? | No restart button: Back "backs into" the loop and restarts it from item 0 | 02, 03, 05 |
 
 ## Open
 
-| # | Question | Leaning | Affects |
-|---|----------|---------|---------|
-| Q14 | Language selection UX: URL only (`/?lang=es`), or also a small picker on the audience page (the page must otherwise need no interaction)? | URL/QR per language, plus an optional picker in the corner | 03, 05 |
-| Q15 | Should a loop that is stopped (blank) be restartable by the operator without Back? | Yes: a "Restart loop" button (not a key) later; v1 uses Back | 05 |
-| Q16 | Markdown headings as future section markers vs. comments. | Ignored in v1; revisit | 03 |
+None at present.

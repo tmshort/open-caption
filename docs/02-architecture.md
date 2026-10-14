@@ -82,7 +82,7 @@
 - **Auto-start:** when a show is activated or reset, if the first audience-visible cue is a
   `loop` it is applied immediately (pre-show). Otherwise state is `idle` (idle message shown).
 - **Undo (Back)** restores the previous LiveState snapshot from the history stack
-  (bounded, e.g. 100); a loop that was running at that point resumes from item 0.
+  (bounded, e.g. 100); a loop that was running at that point restarts from item 0. This is how the operator restarts a loop: Back after STOP, or after NEXT ended it, "backs into" it.
 - **Jump-to-cue** computes the state as if cues up to N were applied in order
   (scrollback rebuilt from the most recent `clear`; a loop cue at N-1 starts), so
   jumping is deterministic and never floods clients with intermediate events.
@@ -93,6 +93,12 @@ Each language has its own parsed script of identical structure. The engine keeps
 one cursor; applying a cue updates one `LiveState` per language, and the hub
 routes events by the client's `lang`. v1 ships with a single language but the
 event stream, `LiveState.lang`, and the show model already carry it.
+
+**Language selection** (per request to `/`): an explicit `?lang=xx` wins; otherwise the
+server matches the `Accept-Language` header (quality values respected, regional tags
+fall back to the base language, e.g. `es-MX` → `es`) against the languages the active
+show provides; otherwise it uses `defaults.language` (`en`). Responses carry
+`Vary: Accept-Language`.
 
 ## Package layout (proposed)
 
