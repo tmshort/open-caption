@@ -1,4 +1,4 @@
-module github.com/tshort/open-caption
+module github.com/tmshort/open-caption
 
 go 1.22
 

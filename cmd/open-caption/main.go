@@ -14,8 +14,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/tshort/open-caption/internal/config"
-	"github.com/tshort/open-caption/internal/httpapi"
+	"github.com/tmshort/open-caption/internal/config"
+	"github.com/tmshort/open-caption/internal/httpapi"
 )
 
 var version = "dev"

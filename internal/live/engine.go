@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/tshort/open-caption/internal/script"
+	"github.com/tmshort/open-caption/internal/script"
 )
 
 // Audience modes.

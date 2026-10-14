@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/tshort/open-caption/internal/config"
+	"github.com/tmshort/open-caption/internal/config"
 )
 
 func TestHealthz(t *testing.T) {
