@@ -91,8 +91,8 @@ Responses: `200` with the new `OperatorState`; `409` with current state if
 
 ## Audience event stream — `GET /events`
 
-`Content-Type: text/event-stream`. Heartbeat comment `: ping` every 15 s; the
-client reconnects if no bytes arrive for 40 s. Each event has `id: <seq>`,
+`Content-Type: text/event-stream`. A `ping` event (`event: ping`, `data: {}`) every 15 s; it is a real
+event rather than a comment because `EventSource` can't observe comments. The client reconnects if it sees no event for 40 s. Each event has `id: <seq>`,
 `event: <type>`, `data: <json>`.
 
 | Event | When | Data |
@@ -102,7 +102,7 @@ client reconnects if no bytes arrive for 40 s. Each event has `id: <seq>`,
 | `clear` | Scrollback emptied | `{seq}` |
 | `blank` | Blank on/off. `on` also dismisses any fullscreen item/loop | `{seq, on}` |
 | `fullscreen` | Fullscreen item set (including each step of a running loop) | `{seq, item: Item}` |
-| `preload` | Upcoming image URLs changed | `{seq, urls: [..]}` |
+| `preload` | Upcoming image URLs changed. A hint with **no `id`/`seq`**; always delivered, may arrive between sequenced events | `{urls: [..]}` |
 | `theme` | Theme changed | `{seq, theme}` |
 | `reload` | Clients should reload the page (server upgraded) | `{}` |
 

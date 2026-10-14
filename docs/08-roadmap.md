@@ -6,7 +6,7 @@ Each milestone is shippable and ends with a demoable result. Tasks reference req
 - [x] Add Apache-2.0 headers/`NOTICE` as needed (REQ-007)
 - [x] `go mod init`, repo layout per doc 02, Makefile/`just` with build/test/lint, cross-compile targets (REQ-001)
 - [x] GitHub Actions: test + build matrix (macOS, Windows, Linux)
-- [x] `GET /healthz`, config/data-dir resolution (REQ-004); [ ] embedded static assets (REQ-002) — with the first web page in M2
+- [x] `GET /healthz`, config/data-dir resolution (REQ-004); [x] embedded static assets (REQ-002)
 
 ## M1 — Script engine (no UI)
 - [x] `script.Parse` with cues, directives, comments, speakers, multi-line, diagnostics (REQ-020–023, 025)
@@ -16,10 +16,10 @@ Each milestone is shippable and ends with a demoable result. Tasks reference req
 - [x] Table-driven, property (jump == sequential) and fuzz tests (golden files still to add)
 
 ## M2 — Audience stream + display
-- [ ] Hub + SSE `/events` with snapshot/heartbeat/reconnect semantics (REQ-010, 011, 013)
-- [ ] Audience page: scroll, fullscreen text/image, blank, server-driven loops, image preload, reconnect overlay (REQ-040–042)
-- [ ] Temporary dev endpoint to advance via curl → first end-to-end demo
-- [ ] Load-test tool; verify 200-client target (REQ-010)
+- [x] Hub + SSE `/events` with snapshot/heartbeat/reconnect semantics (REQ-010, 011, 013)
+- [x] Audience page: scroll, fullscreen text/image, blank, server-driven loops, image preload, reconnect overlay (REQ-040–042)
+- [x] Temporary dev endpoint (`--dev`, `--script`, `--assets`) to advance via curl → first end-to-end demo
+- [x] Load-test tool (`cmd/loadtest`); 200 clients p95 5 ms, 500 clients p95 8 ms, 32 MB RSS (local, 2026-10-14)
 
 ## M3 — Operator
 - [ ] Auth: separate admin/operator passwords, login form + session cookie, rate limit (REQ-051)

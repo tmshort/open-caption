@@ -16,6 +16,7 @@ import (
 
 	"github.com/tmshort/open-caption/internal/config"
 	"github.com/tmshort/open-caption/internal/httpapi"
+	"github.com/tmshort/open-caption/internal/script"
 )
 
 var version = "dev"
@@ -26,6 +27,9 @@ func main() {
 		cfgPath  = flag.String("config", env("OPEN_CAPTION_CONFIG", ""), "config file (default: <data dir>/config.yaml)")
 		httpAddr = flag.String("http-addr", env("OPEN_CAPTION_HTTP_ADDR", ""), "HTTP listen address, e.g. :80")
 		showVer  = flag.Bool("version", false, "print version and exit")
+		dev      = flag.Bool("dev", false, "DEVELOPMENT ONLY: enable unauthenticated /dev/* control endpoints")
+		devShow  = flag.String("script", "", "with --dev: load this script file as the active show")
+		devAsset = flag.String("assets", "", "with --dev: directory of images for --script")
 	)
 	flag.Parse()
 	if *showVer {
@@ -60,7 +64,33 @@ func main() {
 			cfg.Path, cfg.AdminPassword, cfg.OperatorPassword)
 	}
 
-	srv := &http.Server{Handler: httpapi.New(cfg, version).Handler(), ReadHeaderTimeout: 10 * time.Second}
+	api := httpapi.New(cfg, version)
+	if *dev {
+		api.EnableDev()
+		log.Printf("WARNING: --dev enabled: /dev/* control endpoints are UNAUTHENTICATED")
+		if *devShow != "" {
+			b, err := os.ReadFile(*devShow)
+			if err != nil {
+				log.Fatalf("script: %v", err)
+			}
+			var names []string
+			if *devAsset != "" {
+				ents, _ := os.ReadDir(*devAsset)
+				for _, e := range ents {
+					names = append(names, e.Name())
+				}
+			}
+			res := script.Parse(string(b), script.Options{Assets: names})
+			for _, d := range res.Diagnostics {
+				if d.Severity != script.SevInfo {
+					log.Printf("script line %d: %s: %s", d.Line, d.Severity, d.Message)
+				}
+			}
+			api.Runtime().SetShow("dev", *devAsset, res.Cues, httpapi.DefaultTheme(cfg.Defaults.IdleMessage))
+			log.Printf("loaded %d cues from %s", len(res.Cues), *devShow)
+		}
+	}
+	srv := &http.Server{Handler: api.Handler(), ReadHeaderTimeout: 10 * time.Second}
 	ln, err := listen(cfg.HTTP)
 	if err != nil {
 		log.Fatalf("listen: %v", err)
