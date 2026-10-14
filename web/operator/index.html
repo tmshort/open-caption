@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Operator</title>
+<link rel="stylesheet" href="/static/operator/operator.css">
+</head>
+<body class="viewonly">
+<form id="login" hidden>
+  <h1>Operator</h1>
+  <label>Operator password <input id="pw" type="password" name="password" autocomplete="current-password" required></label>
+  <button>Sign in</button>
+  <p id="loginerr" role="alert"></p>
+</form>
+
+<div id="app" hidden>
+  <header>
+    <b id="show">—</b>
+    <span id="live" class="badge">NOT LIVE</span>
+    <span id="viewers" title="Audience devices connected">👥 0</span>
+    <span id="ctrl"></span>
+    <button id="takeover" hidden>Take over</button>
+    <span class="grow"></span>
+    <button id="reset" class="quiet">Restart show…</button>
+    <button id="logout" class="quiet">Sign out</button>
+    <i id="dot" title="Connection"></i>
+  </header>
+  <div id="banner" hidden></div>
+  <ol id="list" aria-label="Script"></ol>
+  <div id="jumpbar" hidden>
+    <span id="jumptext"></span>
+    <button id="jumpgo" class="primary">Jump here (Enter)</button>
+    <button id="jumpcancel">Cancel (Esc)</button>
+  </div>
+  <div id="toast" role="status"></div>
+  <footer>
+    <input id="search" type="search" placeholder="Search script ( / )" aria-label="Search script">
+    <button id="back" title="Back (Backspace)">◀ Back</button>
+    <button id="next" class="primary" title="Next (Space)">NEXT ▶<small>Space</small></button>
+    <button id="stop" title="Stop loop (Shift+Q)" hidden>■ STOP loop<small>Shift+Q</small></button>
+    <button id="blank" title="Blank screen (B)">Blank<small>B</small></button>
+    <button id="clear" title="Clear captions (C)">Clear<small>C</small></button>
+    <button id="message" title="Send a one-off message">Message…</button>
+  </footer>
+</div>
+
+<dialog id="msgdlg">
+  <form method="dialog">
+    <h2>Send a message to the audience</h2>
+    <textarea id="msgtext" rows="3" maxlength="500" placeholder="e.g. The show will resume shortly" required></textarea>
+    <p class="hint">Shown fullscreen until the next line is sent. Use <b>Back</b> to undo.</p>
+    <menu><button value="cancel" formnovalidate>Cancel</button><button id="msgsend" value="send" class="primary">Send</button></menu>
+  </form>
+</dialog>
+<dialog id="resetdlg">
+  <form method="dialog">
+    <h2>Restart the show?</h2>
+    <p>The audience screens will clear and the script returns to the beginning.</p>
+    <menu><button value="cancel">Cancel</button><button id="resetgo" value="go" class="primary">Restart</button></menu>
+  </form>
+</dialog>
+<script src="/static/operator/operator.js"></script>
+</body>
+</html>

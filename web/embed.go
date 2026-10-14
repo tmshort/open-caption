@@ -7,3 +7,13 @@ import "embed"
 //
 //go:embed audience
 var Audience embed.FS
+
+// Operator holds the operator page (/operator).
+//
+//go:embed operator
+var Operator embed.FS
+
+// Admin holds the setup page (/admin).
+//
+//go:embed admin
+var Admin embed.FS

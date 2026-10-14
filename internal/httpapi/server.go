@@ -15,13 +15,17 @@ type Server struct {
 	cfg     config.Config
 	version string
 	rt      *Runtime
+	auth    *auth
 	dev     bool
 }
 
 // New creates a Server with an empty runtime.
 func New(cfg config.Config, version string) *Server {
-	return &Server{cfg: cfg, version: version, rt: NewRuntime(cfg)}
+	return &Server{cfg: cfg, version: version, rt: NewRuntime(cfg), auth: newAuth(cfg.AdminPassword, cfg.OperatorPassword)}
 }
+
+// Close stops background work and flushes live state.
+func (s *Server) Close() { s.rt.Close() }
 
 // Runtime exposes the show runtime (for wiring and tests).
 func (s *Server) Runtime() *Runtime { return s.rt }
@@ -38,6 +42,9 @@ func (s *Server) Handler() http.Handler {
 		writeJSON(w, http.StatusOK, map[string]any{"version": s.version, "protocol": 1})
 	})
 	s.audienceRoutes(mux)
+	s.authRoutes(mux)
+	s.operatorRoutes(mux)
+	s.adminRoutes(mux)
 	if s.dev {
 		s.devRoutes(mux)
 	}

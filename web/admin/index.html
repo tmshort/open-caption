@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Setup</title>
+<link rel="stylesheet" href="/static/admin/admin.css">
+</head>
+<body>
+<main>
+  <h1>Open Caption — Setup</h1>
+  <form id="login" hidden>
+    <p>Enter the <strong>admin</strong> password. It was printed in the console the first time the server started, and is in <code>config.yaml</code>.</p>
+    <label>Admin password <input id="pw" type="password" name="password" autocomplete="current-password" required autofocus></label>
+    <button>Sign in</button>
+    <p id="err" role="alert"></p>
+  </form>
+  <section id="app" hidden>
+    <p>Signed in. The setup screens (shows, scripts, images, look) are coming next.</p>
+    <p><a href="/operator">Open the operator page</a></p>
+    <button id="logout">Sign out</button>
+  </section>
+</main>
+<script src="/static/admin/admin.js"></script>
+</body>
+</html>

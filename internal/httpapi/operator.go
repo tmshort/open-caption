@@ -1,0 +1,226 @@
+package httpapi
+
+import (
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io"
+	"io/fs"
+	"net/http"
+	"time"
+
+	"github.com/tmshort/open-caption/internal/live"
+	"github.com/tmshort/open-caption/internal/script"
+	"github.com/tmshort/open-caption/web"
+)
+
+const (
+	pageCSP    = "default-src 'self'; img-src 'self' data:; style-src 'self'; frame-ancestors 'none'"
+	maxCmdBody = 8 << 10
+)
+
+// ItemView is a fullscreen item as the operator sees it: names only, never image URLs (REQ-031).
+type ItemView struct {
+	Kind    string  `json:"kind"`
+	Label   string  `json:"label"`
+	Seconds float64 `json:"seconds,omitempty"`
+}
+
+// CueView is one row of the operator's script list.
+type CueView struct {
+	Index   int        `json:"index"`
+	Kind    string     `json:"kind"`
+	Line    int        `json:"line"`
+	Speaker string     `json:"speaker,omitempty"`
+	Text    string     `json:"text,omitempty"`
+	Stage   bool       `json:"stage,omitempty"`
+	Label   string     `json:"label,omitempty"`
+	Period  float64    `json:"period,omitempty"`
+	Items   []ItemView `json:"items,omitempty"`
+}
+
+func itemView(it script.Item) ItemView {
+	v := ItemView{Kind: it.Kind, Seconds: it.Seconds}
+	switch it.Kind {
+	case "image":
+		v.Label = it.Image
+		if it.Caption != "" {
+			v.Label += " — " + it.Caption
+		}
+	case "text":
+		v.Label = it.Text
+	default:
+		v.Label = "blank"
+	}
+	return v
+}
+
+func cueViews(cues []script.Cue) []CueView {
+	out := make([]CueView, len(cues))
+	for i, c := range cues {
+		v := CueView{Index: i, Kind: string(c.Kind), Line: c.Line, Speaker: c.Speaker, Text: c.Text, Stage: c.Stage, Period: c.Period}
+		if c.Item != nil {
+			v.Label = itemView(*c.Item).Label
+		}
+		for _, it := range c.Items {
+			v.Items = append(v.Items, itemView(it))
+		}
+		out[i] = v
+	}
+	return out
+}
+
+func (s *Server) operatorRoutes(mux *http.ServeMux) {
+	sub, _ := fs.Sub(web.Operator, "operator")
+	static := http.StripPrefix("/static/operator/", http.FileServer(http.FS(sub)))
+	mux.HandleFunc("GET /operator", func(w http.ResponseWriter, r *http.Request) { servePage(w, sub, "index.html") })
+	mux.HandleFunc("GET /static/operator/", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "no-cache")
+		w.Header().Set("X-Content-Type-Options", "nosniff")
+		static.ServeHTTP(w, r)
+	})
+
+	op := func(h http.HandlerFunc) http.HandlerFunc { return s.require(RoleOperator, h) }
+	mux.HandleFunc("GET /api/operator/state", op(s.operatorState))
+	mux.HandleFunc("GET /api/operator/stream", op(s.operatorStream))
+	mux.HandleFunc("POST /api/operator/claim", op(func(w http.ResponseWriter, r *http.Request) {
+		var req struct{ Takeover bool }
+		json.NewDecoder(http.MaxBytesReader(w, r.Body, maxCmdBody)).Decode(&req)
+		ok := s.rt.Claim(principal(r).Token, req.Takeover)
+		code := http.StatusOK
+		if !ok {
+			code = http.StatusConflict
+		}
+		writeJSON(w, code, map[string]any{"ok": ok, "payload": s.rt.OperatorPayload()})
+	}))
+
+	command := func(name string, fn func(*live.Engine, cmdBody) (live.OperatorState, error)) {
+		mux.HandleFunc("POST /api/operator/"+name, op(func(w http.ResponseWriter, r *http.Request) {
+			s.runCommand(w, r, fn)
+		}))
+	}
+	command("next", func(e *live.Engine, b cmdBody) (live.OperatorState, error) { return e.Next(b.rev()) })
+	command("back", func(e *live.Engine, b cmdBody) (live.OperatorState, error) { return e.Back(b.rev()) })
+	command("stop", func(e *live.Engine, b cmdBody) (live.OperatorState, error) { return e.Stop(b.rev()) })
+	command("jump", func(e *live.Engine, b cmdBody) (live.OperatorState, error) { return e.Jump(b.Index, b.rev()) })
+	command("blank", func(e *live.Engine, b cmdBody) (live.OperatorState, error) { return e.SetBlank(b.On, b.rev()) })
+	command("clear", func(e *live.Engine, b cmdBody) (live.OperatorState, error) { return e.Clear(b.rev()) })
+	command("reset", func(e *live.Engine, b cmdBody) (live.OperatorState, error) { return e.Reset(b.rev()) })
+	command("message", func(e *live.Engine, b cmdBody) (live.OperatorState, error) {
+		if len(b.Text) == 0 || len(b.Text) > 500 {
+			return e.Operator(), errBadRequest
+		}
+		return e.Message(b.Text, b.rev())
+	})
+}
+
+var errBadRequest = errors.New("bad request")
+
+type cmdBody struct {
+	Rev   *int64 `json:"rev"`
+	Index int    `json:"index"`
+	On    bool   `json:"on"`
+	Text  string `json:"text"`
+}
+
+// rev returns the client's revision, or -1 (skip the check) if it sent none.
+func (b cmdBody) rev() int64 {
+	if b.Rev == nil {
+		return -1
+	}
+	return *b.Rev
+}
+
+func servePage(w http.ResponseWriter, sub fs.FS, name string) {
+	b, err := fs.ReadFile(sub, name)
+	if err != nil {
+		http.NotFound(w, nil)
+		return
+	}
+	h := w.Header()
+	h.Set("Content-Type", "text/html; charset=utf-8")
+	h.Set("Content-Security-Policy", pageCSP)
+	h.Set("X-Content-Type-Options", "nosniff")
+	h.Set("Cache-Control", "no-store")
+	w.Write(b)
+}
+
+func (s *Server) operatorState(w http.ResponseWriter, r *http.Request) {
+	p := s.rt.OperatorPayload()
+	writeJSON(w, http.StatusOK, map[string]any{
+		"payload": p, "cues": cueViews(s.rt.Engine().Cues()), "me": SID(principal(r).Token),
+		"role": principal(r).Role,
+	})
+}
+
+func (s *Server) runCommand(w http.ResponseWriter, r *http.Request, fn func(*live.Engine, cmdBody) (live.OperatorState, error)) {
+	p := principal(r)
+	if !s.rt.IsController(p.Token) {
+		writeJSON(w, http.StatusConflict, map[string]any{"error": "another operator is in control", "payload": s.rt.OperatorPayload()})
+		return
+	}
+	var body cmdBody
+	if err := json.NewDecoder(http.MaxBytesReader(w, r.Body, maxCmdBody)).Decode(&body); err != nil && !errors.Is(err, io.EOF) {
+		writeErr(w, http.StatusBadRequest, "bad request")
+		return
+	}
+	_, err := s.rt.Do(func(e *live.Engine) (live.OperatorState, error) { return fn(e, body) })
+	resp := map[string]any{"payload": s.rt.OperatorPayload()}
+	code := http.StatusOK
+	switch {
+	case err == nil:
+	case errors.Is(err, live.ErrStale):
+		code, resp["error"] = http.StatusConflict, "the show moved on; your view was out of date"
+	case errors.Is(err, live.ErrEnd):
+		resp["notice"] = "End of script"
+	case errors.Is(err, live.ErrNoUndo):
+		resp["notice"] = "Nothing to undo"
+	case errors.Is(err, live.ErrNoLoop):
+		resp["notice"] = "No loop is running"
+	case errors.Is(err, live.ErrBadCue), errors.Is(err, errBadRequest):
+		code, resp["error"] = http.StatusBadRequest, err.Error()
+	default:
+		code, resp["error"] = http.StatusInternalServerError, err.Error()
+	}
+	writeJSON(w, code, resp)
+}
+
+// operatorStream pushes OperatorPayload on every change (SSE).
+func (s *Server) operatorStream(w http.ResponseWriter, r *http.Request) {
+	rc := http.NewResponseController(w)
+	tok := principal(r).Token
+	cl := s.rt.OpHub.Subscribe()
+	s.rt.streamOpen(tok)
+	defer func() { s.rt.OpHub.Unsubscribe(cl); s.rt.streamClose(tok) }()
+
+	h := w.Header()
+	h.Set("Content-Type", "text/event-stream")
+	h.Set("Cache-Control", "no-cache")
+	h.Set("X-Accel-Buffering", "no")
+	rc.SetWriteDeadline(time.Time{})
+
+	b, _ := json.Marshal(s.rt.OperatorPayload())
+	fmt.Fprintf(w, "retry: 1000\n\nevent: opstate\ndata: %s\n\n", b)
+	if rc.Flush() != nil {
+		return
+	}
+	tick := time.NewTicker(heartbeat)
+	defer tick.Stop()
+	for {
+		select {
+		case <-r.Context().Done():
+			return
+		case f, ok := <-cl.C:
+			if !ok {
+				return
+			}
+			if _, err := w.Write(f.Data); err != nil || rc.Flush() != nil {
+				return
+			}
+		case <-tick.C:
+			if _, err := w.Write([]byte("event: ping\ndata: {}\n\n")); err != nil || rc.Flush() != nil {
+				return
+			}
+		}
+	}
+}

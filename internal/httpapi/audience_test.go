@@ -89,11 +89,12 @@ func devServer(t *testing.T, src string, maxClients int) (*Server, *httptest.Ser
 	cfg := config.Default()
 	cfg.Audience.MaxClients = maxClients
 	s := New(cfg, "test")
+	t.Cleanup(s.Close)
 	s.EnableDev()
 	dir := t.TempDir()
 	os.WriteFile(filepath.Join(dir, "curtain.jpg"), []byte("\xff\xd8\xffjpeg"), 0o644)
 	os.WriteFile(filepath.Join(dir, "notes.txt"), []byte("secret"), 0o644)
-	s.Runtime().SetShow("demo", dir, script.Parse(src, script.Options{}).Cues, DefaultTheme("Soon"))
+	s.Runtime().SetShow("demo", "Demo", dir, script.Parse(src, script.Options{}).Cues, DefaultTheme("Soon"))
 	ts := httptest.NewServer(s.Handler())
 	t.Cleanup(ts.Close)
 	return s, ts, dir

@@ -3,6 +3,7 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
 	"flag"
 	"fmt"
 	"log"
@@ -11,11 +12,13 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"sync"
 	"syscall"
 	"time"
 
 	"github.com/tmshort/open-caption/internal/config"
 	"github.com/tmshort/open-caption/internal/httpapi"
+	"github.com/tmshort/open-caption/internal/netinfo"
 	"github.com/tmshort/open-caption/internal/script"
 )
 
@@ -23,13 +26,14 @@ var version = "dev"
 
 func main() {
 	var (
-		dataDir  = flag.String("data", env("OPEN_CAPTION_DATA", ""), "data directory (default: <user config dir>/open-caption)")
-		cfgPath  = flag.String("config", env("OPEN_CAPTION_CONFIG", ""), "config file (default: <data dir>/config.yaml)")
-		httpAddr = flag.String("http-addr", env("OPEN_CAPTION_HTTP_ADDR", ""), "HTTP listen address, e.g. :80")
-		showVer  = flag.Bool("version", false, "print version and exit")
-		dev      = flag.Bool("dev", false, "DEVELOPMENT ONLY: enable unauthenticated /dev/* control endpoints")
-		devShow  = flag.String("script", "", "with --dev: load this script file as the active show")
-		devAsset = flag.String("assets", "", "with --dev: directory of images for --script")
+		dataDir   = flag.String("data", env("OPEN_CAPTION_DATA", ""), "data directory (default: <user config dir>/open-caption)")
+		cfgPath   = flag.String("config", env("OPEN_CAPTION_CONFIG", ""), "config file (default: <data dir>/config.yaml)")
+		httpAddr  = flag.String("http-addr", env("OPEN_CAPTION_HTTP_ADDR", ""), "HTTP listen address, e.g. :80")
+		httpsAddr = flag.String("https-addr", env("OPEN_CAPTION_HTTPS_ADDR", ""), "HTTPS listen address, e.g. :443 (enables HTTPS)")
+		showVer   = flag.Bool("version", false, "print version and exit")
+		dev       = flag.Bool("dev", false, "DEVELOPMENT ONLY: enable unauthenticated /dev/* control endpoints")
+		devShow   = flag.String("script", "", "with --dev: load this script file as the active show")
+		devAsset  = flag.String("assets", "", "with --dev: directory of images for --script")
 	)
 	flag.Parse()
 	if *showVer {
@@ -59,55 +63,123 @@ func main() {
 	if *httpAddr != "" {
 		cfg.HTTP.Addr = *httpAddr
 	}
+	if *httpsAddr != "" {
+		cfg.HTTPS.Enabled, cfg.HTTPS.Addr = true, *httpsAddr
+	}
 	if cfg.Generated {
 		fmt.Printf("\nFirst run: created %s\n  admin password:    %s\n  operator password: %s\n(Keep these; they are stored in plain text in that file.)\n\n",
 			cfg.Path, cfg.AdminPassword, cfg.OperatorPassword)
 	}
 
 	api := httpapi.New(cfg, version)
+	defer api.Close()
+	rt := api.Runtime()
+	rt.EnablePersistence(filepath.Join(cfg.DataDir, "live.json"))
 	if *dev {
-		api.EnableDev()
-		log.Printf("WARNING: --dev enabled: /dev/* control endpoints are UNAUTHENTICATED")
-		if *devShow != "" {
-			b, err := os.ReadFile(*devShow)
-			if err != nil {
-				log.Fatalf("script: %v", err)
-			}
-			var names []string
-			if *devAsset != "" {
-				ents, _ := os.ReadDir(*devAsset)
-				for _, e := range ents {
-					names = append(names, e.Name())
-				}
-			}
-			res := script.Parse(string(b), script.Options{Assets: names})
-			for _, d := range res.Diagnostics {
-				if d.Severity != script.SevInfo {
-					log.Printf("script line %d: %s: %s", d.Line, d.Severity, d.Message)
-				}
-			}
-			api.Runtime().SetShow("dev", *devAsset, res.Cues, httpapi.DefaultTheme(cfg.Defaults.IdleMessage))
-			log.Printf("loaded %d cues from %s", len(res.Cues), *devShow)
-		}
+		loadDevShow(api, cfg, *devShow, *devAsset)
 	}
-	srv := &http.Server{Handler: api.Handler(), ReadHeaderTimeout: 10 * time.Second}
-	ln, err := listen(cfg.HTTP)
-	if err != nil {
-		log.Fatalf("listen: %v", err)
+	if rt.Restore() {
+		log.Printf("resumed the previous show position")
 	}
-	log.Printf("open-caption %s listening on http://%s/", version, ln.Addr())
+	handler := api.Handler()
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
-	go func() {
-		<-ctx.Done()
-		sctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-		defer cancel()
-		srv.Shutdown(sctx)
-	}()
-	if err := srv.Serve(ln); err != nil && err != http.ErrServerClosed {
-		log.Fatal(err)
+	var wg sync.WaitGroup
+	serve := func(scheme string, l config.Listener, srvTLS *tls.Config) {
+		ln, err := listen(l)
+		if err != nil {
+			log.Fatalf("listen %s: %v", scheme, err)
+		}
+		srv := &http.Server{Handler: handler, ReadHeaderTimeout: 10 * time.Second, TLSConfig: srvTLS}
+		for _, u := range urls(scheme, ln.Addr()) {
+			log.Printf("audience/operator URL: %s", u)
+		}
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			<-ctx.Done()
+			sctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+			defer cancel()
+			srv.Shutdown(sctx)
+		}()
+		go func() {
+			var err error
+			if srvTLS != nil {
+				err = srv.ServeTLS(ln, "", "")
+			} else {
+				err = srv.Serve(ln)
+			}
+			if err != nil && err != http.ErrServerClosed {
+				log.Fatal(err)
+			}
+		}()
 	}
+
+	serve("http", cfg.HTTP, nil)
+	if cfg.HTTPS.Enabled {
+		serve("https", config.Listener{Addr: cfg.HTTPS.Addr, FallbackAddr: cfg.HTTPS.FallbackAddr}, tlsConfig(cfg))
+	}
+	log.Printf("open-caption %s running; operator page: /operator, setup page: /admin", version)
+	<-ctx.Done()
+	wg.Wait()
+}
+
+func tlsConfig(cfg config.Config) *tls.Config {
+	var cert tls.Certificate
+	var err error
+	if cfg.HTTPS.CertFile != "" {
+		cert, err = tls.LoadX509KeyPair(cfg.HTTPS.CertFile, cfg.HTTPS.KeyFile)
+	} else {
+		host, _ := os.Hostname()
+		cert, err = netinfo.EnsureSelfSigned(filepath.Join(cfg.DataDir, "tls"), host, netinfo.LocalIPs())
+		log.Printf("HTTPS is using a self-signed certificate: browsers will show a warning until it is accepted")
+	}
+	if err != nil {
+		log.Fatalf("https: %v", err)
+	}
+	return &tls.Config{Certificates: []tls.Certificate{cert}, MinVersion: tls.VersionTLS12}
+}
+
+func urls(scheme string, addr net.Addr) []string {
+	_, port, _ := net.SplitHostPort(addr.String())
+	def := map[string]string{"http": "80", "https": "443"}[scheme]
+	suffix := ""
+	if port != def {
+		suffix = ":" + port
+	}
+	out := []string{fmt.Sprintf("%s://localhost%s/", scheme, suffix)}
+	for _, ip := range netinfo.LocalIPs() {
+		out = append(out, fmt.Sprintf("%s://%s%s/", scheme, ip, suffix))
+	}
+	return out
+}
+
+func loadDevShow(api *httpapi.Server, cfg config.Config, scriptPath, assetsDir string) {
+	api.EnableDev()
+	log.Printf("WARNING: --dev enabled: /dev/* control endpoints are UNAUTHENTICATED")
+	if scriptPath == "" {
+		return
+	}
+	b, err := os.ReadFile(scriptPath)
+	if err != nil {
+		log.Fatalf("script: %v", err)
+	}
+	var names []string
+	if assetsDir != "" {
+		ents, _ := os.ReadDir(assetsDir)
+		for _, e := range ents {
+			names = append(names, e.Name())
+		}
+	}
+	res := script.Parse(string(b), script.Options{Assets: names})
+	for _, d := range res.Diagnostics {
+		if d.Severity != script.SevInfo {
+			log.Printf("script line %d: %s: %s", d.Line, d.Severity, d.Message)
+		}
+	}
+	api.Runtime().SetShow("dev", filepath.Base(scriptPath), assetsDir, res.Cues, httpapi.DefaultTheme(cfg.Defaults.IdleMessage))
+	log.Printf("loaded %d cues from %s", len(res.Cues), scriptPath)
 }
 
 // listen binds the configured address, falling back (with a warning) if it is unavailable.

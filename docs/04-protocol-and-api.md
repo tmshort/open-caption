@@ -86,7 +86,13 @@ everywhere an operator session is; the reverse is not true.
 | POST | `/api/operator/message` | `{text}` | Ad-hoc one-off fullscreen/caption text |
 | POST | `/api/operator/reset` | | Return to start (confirm in UI) |
 
-Responses: `200` with the new `OperatorState`; `409` with current state if
+Request bodies are JSON; `rev` is optional (omitted = no staleness check). `jump` takes `index`, `blank` takes `on`, `message` takes `text` (1–500 chars).
+
+Operator state is pushed on `/api/operator/stream` as `opstate` events carrying `{op: OperatorState, audience, controller (public session id), cuesVer, show}`; when `cuesVer` changes the page re-fetches `/api/operator/state` for the cue list. Operators see image **names only** (`CueView`), never image URLs.
+
+`claim` returns `409 {ok:false}` if another live operator holds control and `takeover` was not set. A controller whose stream is closed keeps control for 30 s so a reload doesn't lose it.
+
+Responses: `200` with the new `OperatorState` and, for harmless no-ops, a `notice` ("End of script", "Nothing to undo", "No loop is running"); `409` with current state if
 `rev` is stale or the caller isn't the controller; `401` if not logged in.
 
 ## Audience event stream — `GET /events`

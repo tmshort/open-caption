@@ -37,6 +37,10 @@ type Hub struct {
 	clients map[*Client]struct{}
 	max     int
 	dropped int64
+
+	// OnChange, if set before use, is called (outside the hub lock) after the
+	// client count changes. It must not block.
+	OnChange func()
 }
 
 // New creates a hub accepting at most max clients (<=0: unlimited).
@@ -51,7 +55,16 @@ func (h *Hub) Subscribe() *Client {
 	}
 	c := &Client{C: make(chan Frame, bufSize)}
 	h.clients[c] = struct{}{}
+	h.changed()
 	return c
+}
+
+// changed must be called with h.mu held; the callback runs asynchronously so
+// it can never deadlock against the hub.
+func (h *Hub) changed() {
+	if h.OnChange != nil {
+		go h.OnChange()
+	}
 }
 
 // Unsubscribe removes a client. It is safe to call more than once.
@@ -61,6 +74,7 @@ func (h *Hub) Unsubscribe(c *Client) {
 	if _, ok := h.clients[c]; ok {
 		delete(h.clients, c)
 		close(c.C)
+		h.changed()
 	}
 }
 
@@ -75,6 +89,7 @@ func (h *Hub) Broadcast(f Frame) {
 			delete(h.clients, c)
 			close(c.C)
 			h.dropped++
+			h.changed()
 		}
 	}
 }

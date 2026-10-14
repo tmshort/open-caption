@@ -1,8 +1,12 @@
 package httpapi
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"net/url"
+	"os"
+	"path/filepath"
 	"sync"
 	"time"
 
@@ -55,30 +59,99 @@ type Runtime struct {
 	cfg config.Config
 	Hub *hub.Hub
 
+	// OpHub carries operator-level state updates (/api/operator/stream).
+	OpHub *hub.Hub
+
 	mu          sync.RWMutex
 	gen         int
 	showID      string
+	showName    string
+	cuesVer     int
 	assetsDir   string
 	theme       Theme
 	engine      *live.Engine
 	lastPreload []string
+
+	ctrlMu   sync.Mutex
+	ctrl     string // session token of the controlling operator
+	ctrlSeen time.Time
+	streams  map[string]int
+
+	opDirty   chan struct{}
+	saveDirty chan struct{}
+	livePath  string
+	quit      chan struct{}
+	wg        sync.WaitGroup
 }
+
+// controllerLease is how long a controller with no open stream stays in control.
+const controllerLease = 30 * time.Second
 
 // NewRuntime creates a runtime with no show loaded (audience sees the idle message).
 func NewRuntime(cfg config.Config) *Runtime {
-	rt := &Runtime{cfg: cfg, Hub: hub.New(cfg.Audience.MaxClients), theme: DefaultTheme(cfg.Defaults.IdleMessage)}
-	rt.SetShow("", "", nil, rt.theme)
+	rt := &Runtime{cfg: cfg, Hub: hub.New(cfg.Audience.MaxClients), OpHub: hub.New(0),
+		theme: DefaultTheme(cfg.Defaults.IdleMessage), streams: map[string]int{},
+		opDirty: make(chan struct{}, 1), saveDirty: make(chan struct{}, 1), quit: make(chan struct{})}
+	rt.Hub.OnChange = rt.notify
+	rt.SetShow("", "", "", nil, rt.theme)
+	rt.wg.Add(1)
+	go rt.opLoop()
 	return rt
+}
+
+// Close stops background goroutines and the engine, flushing live state.
+func (rt *Runtime) Close() {
+	close(rt.quit)
+	rt.wg.Wait()
+	rt.Flush()
+	rt.Engine().Close()
+}
+
+// notify marks operator state and saved state as dirty. It never blocks.
+func (rt *Runtime) notify() {
+	select {
+	case rt.opDirty <- struct{}{}:
+	default:
+	}
+	select {
+	case rt.saveDirty <- struct{}{}:
+	default:
+	}
+}
+
+func (rt *Runtime) opLoop() {
+	defer rt.wg.Done()
+	var saveTimer <-chan time.Time
+	for {
+		select {
+		case <-rt.quit:
+			return
+		case <-rt.opDirty:
+			b, _ := json.Marshal(rt.OperatorPayload())
+			rt.OpHub.Broadcast(hub.Frame{Data: hub.FormatEvent(-1, "opstate", b)})
+		case <-rt.saveDirty:
+			rt.mu.RLock()
+			persist := rt.livePath != ""
+			rt.mu.RUnlock()
+			if persist && saveTimer == nil {
+				saveTimer = time.After(250 * time.Millisecond) // debounce (docs/02)
+			}
+		case <-saveTimer:
+			saveTimer = nil
+			rt.Flush()
+		}
+	}
 }
 
 // SetShow swaps in a show's cues (and resets live state), then pushes a
 // snapshot to every connected client.
-func (rt *Runtime) SetShow(id, assetsDir string, cues []script.Cue, theme Theme) {
+func (rt *Runtime) SetShow(id, name, assetsDir string, cues []script.Cue, theme Theme) {
 	rt.mu.Lock()
 	rt.gen++
+	rt.cuesVer++
 	gen := rt.gen
 	old := rt.engine
-	rt.showID, rt.assetsDir, rt.theme = id, assetsDir, theme
+	rt.showID, rt.showName, rt.assetsDir, rt.theme = id, name, assetsDir, theme
 	rt.engine = live.New(cues, live.Config{DefaultLoopSeconds: rt.cfg.Defaults.LoopItemSeconds,
 		ScrollbackMax: rt.cfg.Audience.ScrollbackLines}, func(ev live.Event) { rt.onEvent(gen, ev) })
 	rt.lastPreload = nil
@@ -87,6 +160,7 @@ func (rt *Runtime) SetShow(id, assetsDir string, cues []script.Cue, theme Theme)
 		old.Close()
 	}
 	rt.broadcastSnapshot()
+	rt.notify()
 }
 
 // Engine returns the current engine.
@@ -184,6 +258,7 @@ func (rt *Runtime) onEvent(gen int, ev live.Event) {
 		return
 	}
 	rt.Hub.Broadcast(hub.Frame{Seq: ev.Seq, Data: hub.FormatEvent(ev.Seq, ev.Type, b)})
+	rt.notify()
 }
 
 func (rt *Runtime) broadcastSnapshot() {
@@ -235,4 +310,140 @@ func (rt *Runtime) refreshPreload() {
 	rt.mu.Unlock()
 	b, _ := json.Marshal(map[string]any{"urls": list})
 	rt.Hub.Broadcast(hub.Frame{Seq: 0, Data: hub.FormatEvent(-1, "preload", b)})
+}
+
+// --- operator control (REQ-034): one controlling operator at a time ---
+
+// SID is the public identifier of a session token (safe to send to browsers).
+func SID(token string) string {
+	h := sha256.Sum256([]byte("sid:" + token))
+	return hex.EncodeToString(h[:6])
+}
+
+func (rt *Runtime) ctrlLiveLocked() bool {
+	return rt.ctrl != "" && (rt.streams[rt.ctrl] > 0 || time.Since(rt.ctrlSeen) < controllerLease)
+}
+
+// Claim makes token the controller if nobody live holds control, or if takeover is set.
+func (rt *Runtime) Claim(token string, takeover bool) bool {
+	rt.ctrlMu.Lock()
+	ok := false
+	if rt.ctrl == token || !rt.ctrlLiveLocked() || takeover {
+		rt.ctrl, rt.ctrlSeen, ok = token, time.Now(), true
+	}
+	rt.ctrlMu.Unlock()
+	rt.notify()
+	return ok
+}
+
+// IsController reports whether token currently controls the show, refreshing its lease.
+func (rt *Runtime) IsController(token string) bool {
+	rt.ctrlMu.Lock()
+	defer rt.ctrlMu.Unlock()
+	if rt.ctrl != token {
+		return false
+	}
+	rt.ctrlSeen = time.Now()
+	return true
+}
+
+func (rt *Runtime) streamOpen(token string) {
+	rt.ctrlMu.Lock()
+	rt.streams[token]++
+	rt.ctrlMu.Unlock()
+}
+
+func (rt *Runtime) streamClose(token string) {
+	rt.ctrlMu.Lock()
+	if rt.streams[token]--; rt.streams[token] <= 0 {
+		delete(rt.streams, token)
+	}
+	if token == rt.ctrl {
+		rt.ctrlSeen = time.Now()
+	}
+	rt.ctrlMu.Unlock()
+	rt.notify()
+}
+
+// ControllerSID returns the live controller's public id, or "".
+func (rt *Runtime) ControllerSID() string {
+	rt.ctrlMu.Lock()
+	defer rt.ctrlMu.Unlock()
+	if rt.ctrlLiveLocked() {
+		return SID(rt.ctrl)
+	}
+	return ""
+}
+
+// OperatorPayload is what operator streams carry on every change.
+type OperatorPayload struct {
+	Op         live.OperatorState `json:"op"`
+	Audience   int                `json:"audience"`
+	Controller string             `json:"controller"`
+	CuesVer    int                `json:"cuesVer"`
+	Show       struct {
+		ID   string `json:"id"`
+		Name string `json:"name"`
+	} `json:"show"`
+}
+
+// OperatorPayload snapshots the operator-visible state.
+func (rt *Runtime) OperatorPayload() OperatorPayload {
+	rt.mu.RLock()
+	eng, ver, id, name := rt.engine, rt.cuesVer, rt.showID, rt.showName
+	rt.mu.RUnlock()
+	p := OperatorPayload{Op: eng.Operator(), Audience: rt.Hub.Count(), Controller: rt.ControllerSID(), CuesVer: ver}
+	p.Show.ID, p.Show.Name = id, name
+	return p
+}
+
+// --- persistence (REQ-012) ---
+
+type savedLive struct {
+	ShowID string         `json:"showId"`
+	State  live.Persisted `json:"state"`
+}
+
+// EnablePersistence turns on debounced saving of live state to path.
+func (rt *Runtime) EnablePersistence(path string) {
+	rt.mu.Lock()
+	rt.livePath = path
+	rt.mu.Unlock()
+}
+
+// Flush writes live state now (no-op if persistence is off or no show is loaded).
+func (rt *Runtime) Flush() {
+	rt.mu.RLock()
+	path, id, eng := rt.livePath, rt.showID, rt.engine
+	rt.mu.RUnlock()
+	if path == "" || id == "" {
+		return
+	}
+	b, err := json.Marshal(savedLive{ShowID: id, State: eng.Export()})
+	if err != nil {
+		return
+	}
+	os.MkdirAll(filepath.Dir(path), 0o755)
+	tmp := path + ".tmp"
+	if os.WriteFile(tmp, b, 0o600) == nil {
+		os.Rename(tmp, path)
+	}
+}
+
+// Restore reloads saved live state if it belongs to the currently loaded show.
+func (rt *Runtime) Restore() bool {
+	rt.mu.RLock()
+	path, id, eng := rt.livePath, rt.showID, rt.engine
+	rt.mu.RUnlock()
+	b, err := os.ReadFile(path)
+	if path == "" || err != nil {
+		return false
+	}
+	var sv savedLive
+	if json.Unmarshal(b, &sv) != nil || sv.ShowID != id {
+		return false
+	}
+	eng.Restore(sv.State)
+	rt.refreshPreload()
+	return true
 }

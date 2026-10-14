@@ -84,6 +84,7 @@ type OperatorState struct {
 	NextIndex int         `json:"nextIndex"` // next audience-visible cue, -1 at the end
 	Total     int         `json:"total"`
 	Live      bool        `json:"live"`
+	Mode      string      `json:"mode"` // audience mode: idle | captions | blank
 	Loop      *LoopStatus `json:"loop"`
 }
 
@@ -171,7 +172,7 @@ func (e *Engine) Operator() OperatorState {
 
 func (e *Engine) operatorLocked() OperatorState {
 	o := OperatorState{Seq: e.st.Seq, Rev: e.rev, Cursor: e.cursor, NextIndex: e.visibleFrom(e.cursor),
-		Total: len(e.cues), Live: e.touched}
+		Total: len(e.cues), Live: e.touched, Mode: e.st.Mode}
 	if e.loop != nil {
 		o.Loop = &LoopStatus{Cue: e.loop.cue, Item: e.loop.item}
 	}

@@ -22,10 +22,11 @@ Each milestone is shippable and ends with a demoable result. Tasks reference req
 - [x] Load-test tool (`cmd/loadtest`); 200 clients p95 5 ms, 500 clients p95 8 ms, 32 MB RSS (local, 2026-10-14)
 
 ## M3 — Operator
-- [ ] Auth: separate admin/operator passwords, login form + session cookie, rate limit (REQ-051)
-- [ ] HTTP + optional HTTPS listeners (provided cert or self-signed) (REQ-006)
-- [ ] Operator UI at `/operator`: list, keyboard control (NEXT/Space, STOP/Shift+Q), indicators, jump, ad-hoc message, controller claim/takeover (REQ-030–036)
-- [ ] Audience count and health (REQ-033)
+- [x] Auth: separate admin/operator passwords, login form + session cookie, rate limit (REQ-051)
+- [x] HTTP + optional HTTPS listeners (provided cert or self-signed) (REQ-006)
+- [x] Operator UI at `/operator`: list, keyboard control (NEXT/Space, STOP/Shift+Q), indicators, jump, ad-hoc message, controller claim/takeover (REQ-030–036)
+- [x] Audience count and health (REQ-033)
+- [x] Live state persisted to `live.json` and restored on restart (REQ-012)
 
 ## M4 — Setup
 - [ ] Shows CRUD, script editor + diagnostics, asset upload/management (REQ-020, 024, 054)
