@@ -92,6 +92,10 @@ type OperatorState struct {
 type Config struct {
 	DefaultLoopSeconds float64
 	ScrollbackMax      int
+	// StartSeq is the sequence number the first event follows. A replacement
+	// engine continues the previous engine's numbering so connected clients,
+	// which drop events they believe they have seen, never miss any.
+	StartSeq int64
 }
 
 type snapshot struct {
@@ -136,6 +140,7 @@ func New(cues []script.Cue, cfg Config, sink func(Event)) *Engine {
 		sink = func(Event) {}
 	}
 	e := &Engine{cues: cues, cfg: cfg, sink: sink}
+	e.st.Seq = cfg.StartSeq
 	e.initialLocked()
 	return e
 }

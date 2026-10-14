@@ -5,9 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"path/filepath"
+	"sync"
 
 	"github.com/tmshort/open-caption/internal/config"
 	"github.com/tmshort/open-caption/internal/live"
+	"github.com/tmshort/open-caption/internal/show"
 )
 
 // Server holds shared dependencies for handlers.
@@ -17,15 +20,38 @@ type Server struct {
 	rt      *Runtime
 	auth    *auth
 	dev     bool
+	store   *show.Store
+
+	lmu       sync.Mutex
+	listeners Listeners
+
+	rmu        sync.Mutex
+	rehearsals map[string]*Runtime // admin session token -> isolated rehearsal
 }
 
 // New creates a Server with an empty runtime.
 func New(cfg config.Config, version string) *Server {
-	return &Server{cfg: cfg, version: version, rt: NewRuntime(cfg), auth: newAuth(cfg.AdminPassword, cfg.OperatorPassword)}
+	s := &Server{cfg: cfg, version: version, rt: NewRuntime(cfg), auth: newAuth(cfg.AdminPassword, cfg.OperatorPassword),
+		rehearsals: map[string]*Runtime{}}
+	if cfg.DataDir != "" {
+		if st, err := show.NewStore(filepath.Join(cfg.DataDir, "shows"), cfg.Defaults.Language, cfg.Defaults.IdleMessage); err == nil {
+			s.store = st
+		}
+	}
+	return s
 }
 
 // Close stops background work and flushes live state.
-func (s *Server) Close() { s.rt.Close() }
+func (s *Server) Close() {
+	s.rmu.Lock()
+	rts := s.rehearsals
+	s.rehearsals = map[string]*Runtime{}
+	s.rmu.Unlock()
+	for _, rt := range rts {
+		rt.Close()
+	}
+	s.rt.Close()
+}
 
 // Runtime exposes the show runtime (for wiring and tests).
 func (s *Server) Runtime() *Runtime { return s.rt }

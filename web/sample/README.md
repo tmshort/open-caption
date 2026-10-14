@@ -10,7 +10,7 @@ Try it:
 
 ```
 make build
-./bin/open-caption --dev --script examples/sample/sample-script.md --assets examples/sample/assets --http-addr :8080
+./bin/open-caption --dev --script web/sample/sample-script.md --assets web/sample/assets --http-addr :8080
 ```
 
 Then open `http://localhost:8080/operator` (operator password is in

@@ -16,7 +16,7 @@ import (
 const (
 	heartbeat = 15 * time.Second
 	// audienceCSP: same-origin only; no external requests (doc 06).
-	audienceCSP = "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; frame-ancestors 'none'"
+	audienceCSP = "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; frame-ancestors 'self'"
 )
 
 func (s *Server) audienceRoutes(mux *http.ServeMux) {
@@ -36,22 +36,22 @@ func (s *Server) audienceRoutes(mux *http.ServeMux) {
 		w.Header().Set("X-Content-Type-Options", "nosniff")
 		static.ServeHTTP(w, r)
 	})
-	mux.HandleFunc("GET /events", s.handleEvents)
+	mux.HandleFunc("GET /events", func(w http.ResponseWriter, r *http.Request) { s.serveEvents(w, r, s.rt) })
 	mux.HandleFunc("GET /assets/{show}/{file}", s.handleAsset)
 }
 
 // handleEvents streams audience events (docs/04). Subscribe first, then take
 // the snapshot, then drop buffered frames the snapshot already covers; that
 // ordering guarantees no event is missed or applied twice.
-func (s *Server) handleEvents(w http.ResponseWriter, r *http.Request) {
+func (s *Server) serveEvents(w http.ResponseWriter, r *http.Request, rt *Runtime) {
 	rc := http.NewResponseController(w)
-	cl := s.rt.Hub.Subscribe()
+	cl := rt.Hub.Subscribe()
 	if cl == nil {
 		w.Header().Set("Retry-After", "2")
 		http.Error(w, "too many viewers", http.StatusServiceUnavailable)
 		return
 	}
-	defer s.rt.Hub.Unsubscribe(cl)
+	defer rt.Hub.Unsubscribe(cl)
 
 	h := w.Header()
 	h.Set("Content-Type", "text/event-stream")
@@ -60,7 +60,7 @@ func (s *Server) handleEvents(w http.ResponseWriter, r *http.Request) {
 	h.Set("X-Accel-Buffering", "no")
 	rc.SetWriteDeadline(time.Time{})
 
-	snap := s.rt.State()
+	snap := rt.State()
 	b, _ := json.Marshal(snap)
 	w.Write([]byte("retry: 1000\n\n"))
 	w.Write(formatSnapshot(snap.Seq, b))

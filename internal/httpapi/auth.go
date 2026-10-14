@@ -189,6 +189,7 @@ func (s *Server) authRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/logout", func(w http.ResponseWriter, r *http.Request) {
 		if c, err := r.Cookie(cookieName); err == nil {
 			s.auth.revoke(c.Value)
+			s.dropRehearsal(c.Value)
 		}
 		http.SetCookie(w, &http.Cookie{Name: cookieName, Value: "", Path: "/", HttpOnly: true, MaxAge: -1,
 			SameSite: http.SameSiteStrictMode, Secure: r.TLS != nil})

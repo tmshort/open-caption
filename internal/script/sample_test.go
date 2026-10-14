@@ -8,7 +8,7 @@ import (
 
 // The shipped sample script must parse with no warnings or errors, given its images.
 func TestSampleScriptParsesClean(t *testing.T) {
-	dir := filepath.Join("..", "..", "examples", "sample")
+	dir := filepath.Join("..", "..", "web", "sample")
 	b, err := os.ReadFile(filepath.Join(dir, "sample-script.md"))
 	if err != nil {
 		t.Fatal(err)

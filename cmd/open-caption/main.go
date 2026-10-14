@@ -78,6 +78,8 @@ func main() {
 	rt.EnablePersistence(filepath.Join(cfg.DataDir, "live.json"))
 	if *dev {
 		loadDevShow(api, cfg, *devShow, *devAsset)
+	} else if api.BootActive() {
+		log.Printf("loaded the active show")
 	}
 	if rt.Restore() {
 		log.Printf("resumed the previous show position")
@@ -95,10 +97,16 @@ func main() {
 		}
 	}()
 	var wg sync.WaitGroup
+	var lis httpapi.Listeners
 	serve := func(scheme string, l config.Listener, srvTLS *tls.Config) {
 		ln, err := listen(l)
 		if err != nil {
 			log.Fatalf("listen %s: %v", scheme, err)
+		}
+		if scheme == "http" {
+			lis.HTTPAddr, lis.HTTPConfigured = ln.Addr().String(), l.Addr
+		} else {
+			lis.HTTPSAddr, lis.HTTPSConfigured = ln.Addr().String(), l.Addr
 		}
 		srv := &http.Server{Handler: handler, ReadHeaderTimeout: 10 * time.Second, TLSConfig: srvTLS}
 		for _, u := range urls(scheme, ln.Addr()) {
@@ -129,6 +137,7 @@ func main() {
 	if cfg.HTTPS.Enabled {
 		serve("https", config.Listener{Addr: cfg.HTTPS.Addr, FallbackAddr: cfg.HTTPS.FallbackAddr}, tlsConfig(cfg))
 	}
+	api.SetListeners(lis)
 	log.Printf("open-caption %s running; operator page: /operator, setup page: /admin. Press Ctrl+C to stop.", version)
 	<-ctx.Done()
 	log.Printf("shutting down (saving show position)...")

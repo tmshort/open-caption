@@ -17,3 +17,8 @@ var Operator embed.FS
 //
 //go:embed admin
 var Admin embed.FS
+
+// Sample holds the example show (script + placeholder images).
+//
+//go:embed sample/sample-script.md sample/assets
+var Sample embed.FS

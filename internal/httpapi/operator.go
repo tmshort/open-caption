@@ -15,7 +15,8 @@ import (
 )
 
 const (
-	pageCSP    = "default-src 'self'; img-src 'self' data:; style-src 'self'; frame-ancestors 'none'"
+	// frame-ancestors 'self' lets Setup embed the operator and audience pages for rehearsal.
+	pageCSP    = "default-src 'self'; img-src 'self' data:; style-src 'self'; frame-ancestors 'self'"
 	maxCmdBody = 8 << 10
 )
 
@@ -70,6 +71,9 @@ func cueViews(cues []script.Cue) []CueView {
 	return out
 }
 
+// resolver finds the runtime a request should act on (nil: none available).
+type resolver func(r *http.Request) *Runtime
+
 func (s *Server) operatorRoutes(mux *http.ServeMux) {
 	sub, _ := fs.Sub(web.Operator, "operator")
 	static := http.StripPrefix("/static/operator/", http.FileServer(http.FS(sub)))
@@ -80,23 +84,39 @@ func (s *Server) operatorRoutes(mux *http.ServeMux) {
 		static.ServeHTTP(w, r)
 	})
 
-	op := func(h http.HandlerFunc) http.HandlerFunc { return s.require(RoleOperator, h) }
-	mux.HandleFunc("GET /api/operator/state", op(s.operatorState))
-	mux.HandleFunc("GET /api/operator/stream", op(s.operatorStream))
-	mux.HandleFunc("POST /api/operator/claim", op(func(w http.ResponseWriter, r *http.Request) {
+	s.operatorAPI(mux, "/api/operator/", RoleOperator, func(*http.Request) *Runtime { return s.rt })
+}
+
+// operatorAPI registers the live-control API under prefix, acting on whichever
+// runtime resolve returns. The real show uses it at /api/operator/, and each
+// admin's rehearsal at /api/admin/rehearsal/, so both behave identically.
+func (s *Server) operatorAPI(mux *http.ServeMux, prefix, role string, resolve resolver) {
+	guard := func(h func(http.ResponseWriter, *http.Request, *Runtime)) http.HandlerFunc {
+		return s.require(role, func(w http.ResponseWriter, r *http.Request) {
+			rt := resolve(r)
+			if rt == nil {
+				writeErr(w, http.StatusNotFound, "no rehearsal is running; start one from Setup")
+				return
+			}
+			h(w, r, rt)
+		})
+	}
+	mux.HandleFunc("GET "+prefix+"state", guard(s.operatorState))
+	mux.HandleFunc("GET "+prefix+"stream", guard(s.operatorStream))
+	mux.HandleFunc("POST "+prefix+"claim", guard(func(w http.ResponseWriter, r *http.Request, rt *Runtime) {
 		var req struct{ Takeover bool }
 		json.NewDecoder(http.MaxBytesReader(w, r.Body, maxCmdBody)).Decode(&req)
-		ok := s.rt.Claim(principal(r).Token, req.Takeover)
+		ok := rt.Claim(principal(r).Token, req.Takeover)
 		code := http.StatusOK
 		if !ok {
 			code = http.StatusConflict
 		}
-		writeJSON(w, code, map[string]any{"ok": ok, "payload": s.rt.OperatorPayload()})
+		writeJSON(w, code, map[string]any{"ok": ok, "payload": rt.OperatorPayload()})
 	}))
 
 	command := func(name string, fn func(*live.Engine, cmdBody) (live.OperatorState, error)) {
-		mux.HandleFunc("POST /api/operator/"+name, op(func(w http.ResponseWriter, r *http.Request) {
-			s.runCommand(w, r, fn)
+		mux.HandleFunc("POST "+prefix+name, guard(func(w http.ResponseWriter, r *http.Request, rt *Runtime) {
+			runCommand(w, r, rt, fn)
 		}))
 	}
 	command("next", func(e *live.Engine, b cmdBody) (live.OperatorState, error) { return e.Next(b.rev()) })
@@ -145,18 +165,18 @@ func servePage(w http.ResponseWriter, sub fs.FS, name string) {
 	w.Write(b)
 }
 
-func (s *Server) operatorState(w http.ResponseWriter, r *http.Request) {
-	p := s.rt.OperatorPayload()
+func (s *Server) operatorState(w http.ResponseWriter, r *http.Request, rt *Runtime) {
+	p := rt.OperatorPayload()
 	writeJSON(w, http.StatusOK, map[string]any{
-		"payload": p, "cues": cueViews(s.rt.Engine().Cues()), "me": SID(principal(r).Token),
+		"payload": p, "cues": cueViews(rt.Engine().Cues()), "me": SID(principal(r).Token),
 		"role": principal(r).Role,
 	})
 }
 
-func (s *Server) runCommand(w http.ResponseWriter, r *http.Request, fn func(*live.Engine, cmdBody) (live.OperatorState, error)) {
+func runCommand(w http.ResponseWriter, r *http.Request, rt *Runtime, fn func(*live.Engine, cmdBody) (live.OperatorState, error)) {
 	p := principal(r)
-	if !s.rt.IsController(p.Token) {
-		writeJSON(w, http.StatusConflict, map[string]any{"error": "another operator is in control", "payload": s.rt.OperatorPayload()})
+	if !rt.IsController(p.Token) {
+		writeJSON(w, http.StatusConflict, map[string]any{"error": "another operator is in control", "payload": rt.OperatorPayload()})
 		return
 	}
 	var body cmdBody
@@ -164,8 +184,8 @@ func (s *Server) runCommand(w http.ResponseWriter, r *http.Request, fn func(*liv
 		writeErr(w, http.StatusBadRequest, "bad request")
 		return
 	}
-	_, err := s.rt.Do(func(e *live.Engine) (live.OperatorState, error) { return fn(e, body) })
-	resp := map[string]any{"payload": s.rt.OperatorPayload()}
+	_, err := rt.Do(func(e *live.Engine) (live.OperatorState, error) { return fn(e, body) })
+	resp := map[string]any{"payload": rt.OperatorPayload()}
 	code := http.StatusOK
 	switch {
 	case err == nil:
@@ -186,12 +206,12 @@ func (s *Server) runCommand(w http.ResponseWriter, r *http.Request, fn func(*liv
 }
 
 // operatorStream pushes OperatorPayload on every change (SSE).
-func (s *Server) operatorStream(w http.ResponseWriter, r *http.Request) {
+func (s *Server) operatorStream(w http.ResponseWriter, r *http.Request, rt *Runtime) {
 	rc := http.NewResponseController(w)
 	tok := principal(r).Token
-	cl := s.rt.OpHub.Subscribe()
-	s.rt.streamOpen(tok)
-	defer func() { s.rt.OpHub.Unsubscribe(cl); s.rt.streamClose(tok) }()
+	cl := rt.OpHub.Subscribe()
+	rt.streamOpen(tok)
+	defer func() { rt.OpHub.Unsubscribe(cl); rt.streamClose(tok) }()
 
 	h := w.Header()
 	h.Set("Content-Type", "text/event-stream")
@@ -199,7 +219,7 @@ func (s *Server) operatorStream(w http.ResponseWriter, r *http.Request) {
 	h.Set("X-Accel-Buffering", "no")
 	rc.SetWriteDeadline(time.Time{})
 
-	b, _ := json.Marshal(s.rt.OperatorPayload())
+	b, _ := json.Marshal(rt.OperatorPayload())
 	fmt.Fprintf(w, "retry: 1000\n\nevent: opstate\ndata: %s\n\n", b)
 	if rc.Flush() != nil {
 		return

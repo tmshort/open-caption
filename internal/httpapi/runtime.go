@@ -66,6 +66,7 @@ type Runtime struct {
 	gen         int
 	showID      string
 	showName    string
+	assetBase   string // URL prefix for image assets ("" = /assets/<showID>/)
 	cuesVer     int
 	assetsDir   string
 	theme       Theme
@@ -151,9 +152,13 @@ func (rt *Runtime) SetShow(id, name, assetsDir string, cues []script.Cue, theme 
 	rt.cuesVer++
 	gen := rt.gen
 	old := rt.engine
+	var startSeq int64
+	if old != nil {
+		startSeq = old.Snapshot().Seq + 1
+	}
 	rt.showID, rt.showName, rt.assetsDir, rt.theme = id, name, assetsDir, theme
 	rt.engine = live.New(cues, live.Config{DefaultLoopSeconds: rt.cfg.Defaults.LoopItemSeconds,
-		ScrollbackMax: rt.cfg.Audience.ScrollbackLines}, func(ev live.Event) { rt.onEvent(gen, ev) })
+		ScrollbackMax: rt.cfg.Audience.ScrollbackLines, StartSeq: startSeq}, func(ev live.Event) { rt.onEvent(gen, ev) })
 	rt.lastPreload = nil
 	rt.mu.Unlock()
 	if old != nil {
@@ -197,7 +202,11 @@ func (rt *Runtime) item(it *script.Item) *AudItem {
 	}
 	switch it.Kind {
 	case "image":
-		return &AudItem{Kind: "image", Src: "/assets/" + url.PathEscape(rt.showID) + "/" + url.PathEscape(it.Image), Caption: it.Caption}
+		base := rt.assetBase
+		if base == "" {
+			base = "/assets/" + url.PathEscape(rt.showID) + "/"
+		}
+		return &AudItem{Kind: "image", Src: base + url.PathEscape(it.Image), Caption: it.Caption}
 	case "text":
 		return &AudItem{Kind: "text", HTML: it.HTML}
 	}
@@ -261,10 +270,71 @@ func (rt *Runtime) onEvent(gen int, ev live.Event) {
 	rt.notify()
 }
 
+// broadcastSnapshot pushes a full snapshot to every client. The frame carries
+// Seq 0 so the per-connection "already covered by my snapshot" filter never drops it.
 func (rt *Runtime) broadcastSnapshot() {
 	s := rt.State()
 	b, _ := json.Marshal(s)
-	rt.Hub.Broadcast(hub.Frame{Seq: s.Seq, Data: hub.FormatEvent(s.Seq, live.EvSnapshot, b)})
+	rt.Hub.Broadcast(hub.Frame{Seq: 0, Data: hub.FormatEvent(s.Seq, live.EvSnapshot, b)})
+}
+
+// SetAssetBase sets the URL prefix for image assets (used by rehearsal runtimes).
+func (rt *Runtime) SetAssetBase(base string) {
+	rt.mu.Lock()
+	rt.assetBase = base
+	rt.mu.Unlock()
+}
+
+// SetTheme changes the look and pushes it to every connected client.
+func (rt *Runtime) SetTheme(t Theme) {
+	rt.mu.Lock()
+	rt.theme = t
+	rt.mu.Unlock()
+	rt.broadcastSnapshot()
+}
+
+// ReplaceCues swaps in an edited script. If the show is not live it is reset
+// (so a leading loop starts correctly); if live, the cursor is kept by index.
+// It reports whether the cue count changed.
+func (rt *Runtime) ReplaceCues(cues []script.Cue) (countChanged, wasLive bool) {
+	eng := rt.Engine()
+	wasLive = eng.Operator().Live
+	if wasLive {
+		countChanged = eng.ReplaceCues(cues)
+	} else {
+		countChanged = len(cues) != len(eng.Cues())
+		eng.ReplaceCues(cues)
+		eng.Reset(-1)
+	}
+	rt.mu.Lock()
+	rt.cuesVer++
+	rt.mu.Unlock()
+	rt.refreshPreload()
+	rt.notify()
+	return countChanged, wasLive
+}
+
+// SavedShowID returns the show id recorded in live.json, if any.
+func (rt *Runtime) SavedShowID() string {
+	rt.mu.RLock()
+	path := rt.livePath
+	rt.mu.RUnlock()
+	b, err := os.ReadFile(path)
+	if path == "" || err != nil {
+		return ""
+	}
+	var sv savedLive
+	if json.Unmarshal(b, &sv) != nil {
+		return ""
+	}
+	return sv.ShowID
+}
+
+// Theme returns the current theme.
+func (rt *Runtime) Theme() Theme {
+	rt.mu.RLock()
+	defer rt.mu.RUnlock()
+	return rt.theme
 }
 
 // preloadFor lists the next few image URLs at or after the cursor.
@@ -446,4 +516,12 @@ func (rt *Runtime) Restore() bool {
 	eng.Restore(sv.State)
 	rt.refreshPreload()
 	return true
+}
+
+// SetName changes the displayed show name without resetting anything.
+func (rt *Runtime) SetName(name string) {
+	rt.mu.Lock()
+	rt.showName = name
+	rt.mu.Unlock()
+	rt.notify()
 }
