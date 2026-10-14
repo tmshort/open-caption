@@ -6,6 +6,23 @@ An operator follows the live show and presses a key to release the next caption
 line. Every audience device on the guest WiFi (phone, tablet, desktop, or a
 browser on a projector) shows the captions live, with no interaction required.
 
+## Quick start
+
+```
+make build
+./bin/open-caption
+```
+
+The first run creates `config.yaml` (in your user config folder; the path is printed) with random
+**admin** and **operator** passwords, printed once in the console. Then:
+
+- **Setup:** open `http://localhost/admin` (or the `:8080` address printed if port 80 was busy), sign in with the admin password, and follow the six steps. "Create a sample show" is a good first try.
+- **Operator:** `/operator` (the operator password; the admin password also works). Space sends the next line.
+- **Audience:** the address shown in Setup → Go Live, or its QR code. Devices must be on the same WiFi.
+- **Help:** the **Help** button on Setup and Operator, or see [docs/venue-network-guide.md](docs/venue-network-guide.md) for the WiFi side.
+
+`make test` runs the tests; `make dist` builds binaries for macOS, Windows and Linux. A browser smoke test lives in `test/e2e/`.
+
 ## Spec-driven workflow
 
 The documents in `docs/` are the source of truth. Code follows the specs; if
