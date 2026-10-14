@@ -15,7 +15,7 @@ All JSON is UTF-8.
 | GET | `/events` | SSE stream of live state (below) |
 | GET | `/assets/{showId}/{file}` | Image assets of the active show (cacheable) |
 | GET | `/healthz` | `200 ok` |
-| GET | `/captive-api` | RFC 8908 captive-portal JSON (doc 06) |
+| GET | `/captive-api` | RFC 8908 captive-portal API: `application/captive+json` `{"captive": false, "user-portal-url": "<scheme>://<host>/"}`. Always reports not captive; clients require HTTPS with a trusted certificate (doc 06) |
 
 Query parameters on `/` and `/events`: `?display=projector`, `?size=<pct>`,
 `?theme=light|dark`, `?lang=<code>` (planned, doc 03). If `lang` is absent, the server picks one from the

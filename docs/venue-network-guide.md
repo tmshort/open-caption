@@ -29,9 +29,9 @@ In order of effort:
 1. **QR code** — Setup → Go Live → "Print a QR sign". Put it in the lobby and the program. No network changes needed.
 2. **Port 80** — if the program runs on port 80, the address has no `:port`. On Linux, allow it with `sudo setcap 'cap_net_bind_service=+ep' ./open-caption`.
 3. **A local name** — add a DNS host entry on the router for the captioning computer, for example `captions.theater` → `192.168.1.10`. Most routers (OpenWrt, Pi-hole, UniFi, Omada, dnsmasq-based) allow a "local DNS record" or "host override".
-4. **Send guests there automatically.** Two options:
+4. **Send guests there automatically.** Options:
    - **Splash page / captive portal** on the access point pointing at the audience address. The AP's built-in "guest portal" feature works with an external URL (UniFi: Hotspot → external portal; OpenWrt: nodogsplash `RedirectURL`). Make sure it lets the page load without a login.
-   - **DHCP option 114 (RFC 8910)**. Set the "captive portal API URI" DHCP option to `http://<server-address>/captive-api`. Recent iPhones, iPads and Android devices then know the network is not captive and offer the page. The program answers that address with `{"captive": false, "user-portal-url": "http://<server-address>/"}`.
+   - **DHCP option 114 (RFC 8910) and `/captive-api`.** The program answers `GET /captive-api` the way RFC 8908 describes: `{"captive": false, "user-portal-url": "http://<server-address>/"}`. If your network already hands out option 114 ("Captive-Portal API URI"), you can point it at that address. Be aware of what it does: it tells devices the network is *not* a captive portal and publishes the page's address. It does **not** make phones open the captions page by themselves (that needs `"captive": true`, which the program never sends). The RFC also requires the API address to be **https with a certificate the devices trust**, so a plain `http://` option 114 address or the program's self-signed certificate will be ignored. This is experimental and untested on real devices: use the QR sign, or your access point's splash page, to get people to the page.
 5. **mDNS** (`open-caption.local`) is not provided yet. Many guest networks block multicast anyway.
 
 The program does not run its own DHCP or DNS server, on purpose: it would clash with the venue's router.

@@ -93,6 +93,15 @@ For most theaters, the simplest way is best: start the program by hand before ea
 
 If the computer should start the server by itself after a reboot, the [`deploy/`](../deploy/) folder has ready-made files for Linux (systemd), macOS (launchd) and Windows (Task Scheduler). Each begins with its own install steps.
 
+### Getting people to the page
+
+In order of reliability:
+
+1. **The QR code and sign** (Setup → Go Live → *Print a QR sign for the lobby*). Put it on the wall, in the program and on the seat-back card. This is what to rely on.
+2. **A short address.** On port 80 there is no `:port` to type. A name such as `captions.theater` (a local DNS entry on the router) is easier to remember than numbers.
+3. **The access point's splash page** (a "guest portal" or "captive portal" that redirects to your address after joining). This is configured on the router or access point, not in this program. See [venue-network-guide.md](venue-network-guide.md).
+4. **DHCP option 114 and `/captive-api` (advanced, experimental).** Option 114 is a DHCP setting that points devices at a "captive portal API". The program answers that API at `/captive-api` (for example `https://<address>/captive-api`) with "this network is not captive" and the page's address. Two cautions: it **does not make phones open the captions page by themselves**, and the standard (RFC 8910/8908) requires **HTTPS with a certificate the devices trust**, so a plain `http://` setting or the program's self-signed certificate is ignored. Only set it up if the venue already uses option 114 and can provide a trusted certificate. It has not been tested on real devices.
+
 ### Ports and addresses
 
 - By default the server listens on **port 80**, so the audience address needs no port number, for example `http://192.168.1.10/`. If something else is using port 80, or the operating system does not allow it, the server tells you and uses **port 8080** instead; the audience address then ends in `:8080`. On Linux, port 80 needs permission (`sudo setcap 'cap_net_bind_service=+ep' ./open-caption`) unless you use the systemd file, which grants it.
