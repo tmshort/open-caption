@@ -66,6 +66,7 @@ func main() {
 	if *httpsAddr != "" {
 		cfg.HTTPS.Enabled, cfg.HTTPS.Addr = true, *httpsAddr
 	}
+	log.Printf("config file: %s (data directory: %s)", cfg.Path, cfg.DataDir)
 	if cfg.Generated {
 		fmt.Printf("\nFirst run: created %s\n  admin password:    %s\n  operator password: %s\n(Keep these; they are stored in plain text in that file.)\n\n",
 			cfg.Path, cfg.AdminPassword, cfg.OperatorPassword)
@@ -163,7 +164,7 @@ func loadDevShow(api *httpapi.Server, cfg config.Config, scriptPath, assetsDir s
 	}
 	b, err := os.ReadFile(scriptPath)
 	if err != nil {
-		log.Fatalf("script: %v", err)
+		log.Fatalf("cannot read the --script file: %v", err)
 	}
 	var names []string
 	if assetsDir != "" {
@@ -188,8 +189,8 @@ func listen(l config.Listener) (net.Listener, error) {
 	if err == nil {
 		return ln, nil
 	}
-	if l.FallbackAddr == "" {
-		return nil, err
+	if l.FallbackAddr == "" || l.FallbackAddr == l.Addr {
+		return nil, fmt.Errorf("%w\n  (is another program, or another copy of open-caption, already using that port? try --http-addr :8081)", err)
 	}
 	log.Printf("WARNING: cannot listen on %s (%v); falling back to %s", l.Addr, err, l.FallbackAddr)
 	return net.Listen("tcp", l.FallbackAddr)
