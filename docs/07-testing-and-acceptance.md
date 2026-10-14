@@ -19,14 +19,16 @@
 - Help: every parser directive/escape/diagnostic is documented in `web/help/` (test); every fenced example parses without errors; sample script parses clean; opening help on `/operator` pauses show-control keys; help works with no network.
 - Escaping: `<script>`, `onerror=`, `javascript:` links, `<img src=http…>` in script text are rendered as literal text; Markdown links are not clickable; image refs only resolve to uploaded assets.
 - Engine: advance past end (no-op + signal "end of script"); back at start; jump forward/backward equals sequential; `clear` mid-history then undo restores scrollback; fullscreen followed by caption dismisses fullscreen; restart restores cursor and scrollback.
-- Concurrency: two operator sessions advancing simultaneously → exactly one advance applied, other gets 409.
+- Concurrency: two operator sessions advancing with the same `rev` → exactly one NEXT applied, other gets 409; a NEXT sent while a loop ticks (seq changed, rev unchanged) succeeds.
+- Rehearsal: commands on `/api/admin/rehearsal/*` never reach audience clients or change `live.json`, even while a real show is live.
+- Security: first-run passwords never appear in any HTTP response; beyond `audience.max_clients`, `/events` returns 503.
 - SSE: slow client doesn't delay others; overflow closes the slow client; heartbeat arrives; late joiner receives scrollback.
 
 ## Performance targets (verified by load test)
 
 - 200 concurrent audience connections: operator keypress → last client receives event p95 ≤ 250 ms, p99 ≤ 500 ms.
 - Server RSS < 150 MB at 200 clients; CPU < 10% of one core while idle-connected.
-- 500 clients degrade gracefully (no crash).
+- 500 clients degrade gracefully (no crash); connections beyond `audience.max_clients` (default 500) receive 503 and retry with backoff.
 
 ## Acceptance checklist (pre-release, in venue conditions if possible)
 

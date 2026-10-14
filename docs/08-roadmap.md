@@ -31,6 +31,7 @@ Each milestone is shippable and ends with a demoable result. Tasks reference req
 - [ ] Shows CRUD, script editor + diagnostics, asset upload/management (REQ-020, 024, 054)
 - [ ] Theme editor with live previews (REQ-045)
 - [ ] Wizard flow, network panel, QR page (REQ-050, 053)
+- [ ] Rehearsal mode: isolated engine, `/api/admin/rehearsal/*`, preview pane (wizard Test step)
 - [ ] Live-mode guard rails (REQ-052)
 - [ ] Export/import show zip
 
@@ -38,7 +39,6 @@ Each milestone is shippable and ends with a demoable result. Tasks reference req
 - [ ] Wake-lock handling, iOS quirks, projector mode (REQ-043, 044)
 - [ ] Help viewer and topics for admins and operators, incl. script conventions and sample script; help-coverage tests (REQ-037)
 - [ ] Accessibility pass (REQ-063)
-- [ ] Rehearsal mode
 - [ ] `/captive-api`, venue network guide (doc 06)
 - [ ] Support bundle, logging (REQ-061)
 - [ ] Device matrix testing and acceptance checklist (doc 07)

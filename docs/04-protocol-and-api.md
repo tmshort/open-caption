@@ -47,7 +47,7 @@ everywhere an operator session is; the reverse is not true.
 
 | Method | Path | Description |
 |--------|------|-------------|
-| POST | `/api/login` | `{role: "admin"\|"operator", password}` → sets cookie; rate-limited (5 attempts/min/IP) |
+| POST | `/api/login` | `{role: "admin"\|"operator", password}` → sets cookie; role `operator` accepts the operator **or** admin password, role `admin` only the admin password; rate-limited (5 attempts/min/IP) |
 | POST | `/api/logout` | Clears the session |
 
 ### Setup API — admin session required
@@ -63,6 +63,9 @@ everywhere an operator session is; the reverse is not true.
 | POST | `/api/admin/shows/{id}/assets` | multipart image upload: png/jpg/gif/webp only (SVG rejected); 10 MB limit; stored as-is (no server-side scaling); response includes a `large: true` flag above 1 MB |
 | GET/DELETE | `/api/admin/shows/{id}/assets/{file}` | |
 | POST | `/api/admin/shows/{id}/activate` | Make active (blocked if live unless `force`) |
+| POST | `/api/admin/rehearsal/start` | Create an isolated rehearsal engine for this session (doc 02) |
+| POST | `/api/admin/rehearsal/{next,back,stop,jump,blank,clear,reset}` | Same bodies/semantics as `/api/operator/*`, applied to the rehearsal engine only |
+| GET | `/api/admin/rehearsal/events` | SSE of the rehearsal's audience-view events (drives the preview pane) |
 | GET | `/api/admin/settings` | Effective config (passwords redacted) |
 | GET | `/api/admin/network` | Host IPs, ports, audience URL(s); QR PNG at `/api/admin/network/qr.png` |
 | GET | `/api/admin/support-bundle` | Zip of logs + config (passwords redacted) |
@@ -74,17 +77,17 @@ everywhere an operator session is; the reverse is not true.
 | GET | `/api/operator/state` | | `OperatorState` + cue list |
 | GET | `/api/operator/stream` | | SSE of operator events (cursor, audience count, controller, loop) |
 | POST | `/api/operator/claim` | `{takeover:bool}` | Become the controlling operator |
-| POST | `/api/operator/next` | `{seq}` | NEXT: send the next cue. If the cue is a loop, starts it. If a loop is running, ends it and sends the next cue |
-| POST | `/api/operator/back` | `{seq}` | Undo last NEXT |
-| POST | `/api/operator/stop` | `{seq}` | STOP: stop a running loop and leave a blank screen |
-| POST | `/api/operator/jump` | `{index, seq}` | Set cursor to a cue; rebuilds the resulting state without replaying cues |
+| POST | `/api/operator/next` | `{rev}` | NEXT: send the next cue. If the cue is a loop, starts it. If a loop is running, ends it and sends the next cue |
+| POST | `/api/operator/back` | `{rev}` | Undo the last operator action (NEXT, STOP, blank, clear, message). Backing into a loop restarts it from its first item |
+| POST | `/api/operator/stop` | `{rev}` | STOP: stop a running loop and leave a blank screen |
+| POST | `/api/operator/jump` | `{index, rev}` | Set cursor to a cue; rebuilds the resulting state without replaying cues |
 | POST | `/api/operator/blank` | `{on:bool}` | Ad-hoc blank toggle |
 | POST | `/api/operator/clear` | | Ad-hoc clear |
 | POST | `/api/operator/message` | `{text}` | Ad-hoc one-off fullscreen/caption text |
 | POST | `/api/operator/reset` | | Return to start (confirm in UI) |
 
 Responses: `200` with the new `OperatorState`; `409` with current state if
-`seq` is stale or the caller isn't the controller; `401` if not logged in.
+`rev` is stale or the caller isn't the controller; `401` if not logged in.
 
 ## Audience event stream — `GET /events`
 
@@ -147,6 +150,7 @@ the server's retained buffer, the server sends a `snapshot`. Clients treat a
 // OperatorState
 {
   "seq": 1042,
+  "rev": 311,                  // operator-command revision; send this with commands
   "cursor": 57,                  // index of the NEXT cue
   "total": 312,
   "controller": "session-id|null",
@@ -161,7 +165,7 @@ Operator payloads for image cues contain only `{kind:"image", name:"curtain.jpg"
 ## Concurrency and ordering
 
 - The engine owns `LiveState` behind one mutex/goroutine; each mutation (including loop timer ticks) yields exactly one `seq` increment and one event.
-- The hub broadcasts in `seq` order; per-client buffered channel (size 32). Overflow ⇒ close that connection (client reconnects → snapshot).
+- The hub broadcasts in `seq` order; per-client buffered channel (size 32). Overflow ⇒ close that connection (client reconnects → snapshot). Beyond `audience.max_clients`, `/events` returns `503`.
 
 ## Versioning
 

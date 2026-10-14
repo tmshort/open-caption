@@ -26,4 +26,6 @@ that reflect it. Add new questions at the bottom.
 
 ## Open
 
-None at present.
+None. A consistency review on 2026-10-14 resolved the following gaps (no decision needed, recorded for traceability):
+operator commands use a separate `rev` counter so loop ticks can't cause 409s; "live" is defined; rehearsal is an isolated engine;
+first-run passwords are console-only; Back undoes any operator action; any cue ends a running loop; scope text updated for loops and planned multi-language.

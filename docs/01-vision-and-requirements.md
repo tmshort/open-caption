@@ -18,11 +18,11 @@ with the stage. Nothing to install, nothing to click.
 ## Scope
 
 In scope: one server process on one host; script import; live operation;
-audience display; image/fullscreen/pre-show support.
+audience display; image, fullscreen and loop (pre-show/intermission) support.
 
 Out of scope (v1): cloud hosting, user accounts, automatic speech
-recognition / auto-follow of the show, audio, multi-language selection,
-multiple simultaneous shows, internet-facing deployment.
+recognition / auto-follow of the show, audio, multiple
+simultaneous shows, internet-facing deployment.
 
 ## Functional requirements
 
@@ -38,7 +38,7 @@ multiple simultaneous shows, internet-facing deployment.
 ### Capacity and resilience
 - **REQ-010** Support at least 200 concurrent audience clients (venue has ~150 seats; requirement is >75). Caption latency from operator keypress to render ≤ 250 ms at p95 on a LAN under that load.
 - **REQ-011** Audience clients reconnect automatically after network loss or device sleep and show the *current* state without user action.
-- **REQ-012** Server restart resumes at the previously active show and cue position.
+- **REQ-012** Server restart resumes at the previously active show, cue position and on-screen state; a loop that was running restarts from its first item.
 - **REQ-013** A client joining mid-show immediately sees current state plus recent scrollback.
 
 ### Script
@@ -53,7 +53,7 @@ multiple simultaneous shows, internet-facing deployment.
 ### Operator
 - **REQ-030** Spacebar (NEXT) advances to the next cue — the same command for captions, for starting a loop, and for ending a loop. **STOP** (Shift+Q) stops a running loop and leaves a blank screen. Other keys: back, blank, clear, jump (doc 05).
 - **REQ-031** Operator view shows already-sent cues, the current cue, and upcoming cues. Image/fullscreen cues appear as an indicator (icon + name), never the image itself.
-- **REQ-032** Operator can jump to any cue (click/search) and undo/redo advances.
+- **REQ-032** Operator can jump to any cue (click/search) and undo (Back) the last operator action; going forward again is just NEXT.
 - **REQ-033** Operator view shows live audience count and connection health.
 - **REQ-034** Only one operator controls at a time; others are view-only, with explicit takeover.
 - **REQ-035** Operator can work from a laptop keyboard, and also from a tablet/phone (large Next button; optional Bluetooth clicker maps to keys).

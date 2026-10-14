@@ -18,7 +18,7 @@ emits only the small set of tags it generates itself.
    how to split speeches into lines to match the style of the performance;
    the system never splits or merges lines.
 4. **Comments** are written `<!-- like this -->` and may span several lines.
-   Comments are never shown to anyone. (This is the only HTML the format accepts.)
+   Comments are never shown to anyone. A comment may also appear inside a line; it is removed, and a line left empty is ignored. (This is the only HTML the format accepts.)
    To leave a message for the **operator**, use `[note: text]` instead; it is
    visible in the operator view but never sent to the audience.
    Lines starting with `#` are Markdown headings: they are **reserved for future
@@ -93,7 +93,7 @@ Please silence your phones
 ```
 
 - Each item is `[image: …]`, `[fullscreen: …]`, `![](file)`, or a **plain line of
-  text** (shown as fullscreen text). `[blank | 3s]` is also allowed as a pause item.
+  text** (shown as fullscreen text). `[blank: 3s]` is also allowed as a pause item.
 - An item's display time is its trailing duration (`| 15s`); otherwise the
   loop's period (`[loop: 10s]`); otherwise `defaults.loop_item_seconds` from
   `config.yaml` (default 10 s).

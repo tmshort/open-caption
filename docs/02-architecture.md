@@ -31,7 +31,7 @@
    events never leave a client wrong because the snapshot is always sufficient.
 3. **Server is the only source of truth.** Clients render state; they never
    decide what comes next. Operator position is held server-side.
-4. **No CGO, no DB.** Persistence is JSON files plus uploaded assets on disk,
+4. **No CGO, no DB.** Persistence is JSON/YAML files plus uploaded assets on disk,
    written atomically (write temp + rename). Fine for the data volumes involved.
 5. **Standard library first.** `net/http` (Go 1.22+ pattern routing), `crypto/tls`, `embed`.
    Allowed dependencies (all Apache-2.0-compatible): a YAML parser
@@ -63,6 +63,15 @@
   - `theme`, `lang`, `seq`
 - **OperatorState** (operator-only): `cursor` (index of the next cue), `history` stack for undo, loop status, controller id, audience count.
 
+**Live** means: the active show's engine has applied at least one cue (or a loop is
+running) since it was activated or last reset. Activating a show or `reset` returns it
+to its initial state (not live). REQ-052's guard rails and the activate-`force` rule use this definition.
+
+**Revision (`rev`)**: `LiveState.seq` increases on *every* audience-visible change,
+including each loop item change. Operator commands therefore use a separate counter,
+`OperatorState.rev`, which increases only when an operator command is applied
+(NEXT, Back, STOP, jump, blank, clear, message, reset, activate, takeover) — never on loop ticks.
+
 ### Applying a cue (semantics)
 
 | Cue kind | Effect on audience state |
@@ -74,6 +83,8 @@
 | `loop` | Start the loop: show item 0 fullscreen, advance on the server timer per item duration, wrap around, until the next NEXT or STOP |
 | `section`, `note` | No audience effect; operator-only; auto-passed (never consume a keypress) |
 
+Applying **any** audience-visible cue other than `loop` itself (caption, clear, blank, image, fullscreen) ends a running loop.
+
 - **NEXT** = apply `cue[cursor]` (skipping over `section`/`note`), then move
   `cursor` past it. Because a loop cue is consumed when it starts, the following
   NEXT sends the cue after the loop and thereby ends it.
@@ -81,11 +92,20 @@
   Cursor is unchanged.
 - **Auto-start:** when a show is activated or reset, if the first audience-visible cue is a
   `loop` it is applied immediately (pre-show). Otherwise state is `idle` (idle message shown).
+- **Ad-hoc operator commands** (blank toggle, clear, one-off message) change audience state without moving the cursor; they are pushed on the history stack like cues, so Back undoes them.
 - **Undo (Back)** restores the previous LiveState snapshot from the history stack
   (bounded, e.g. 100); a loop that was running at that point restarts from item 0. This is how the operator restarts a loop: Back after STOP, or after NEXT ended it, "backs into" it.
 - **Jump-to-cue** computes the state as if cues up to N were applied in order
   (scrollback rebuilt from the most recent `clear`; a loop cue at N-1 starts), so
   jumping is deterministic and never floods clients with intermediate events.
+
+### Rehearsal
+
+The setup wizard's Test step runs the operator UI against an **isolated engine
+instance** owned by the admin session. It uses the same code and endpoints shape
+as live control (`/api/admin/rehearsal/*`, doc 04) but publishes only to that
+session's preview pane, never to audience clients, and never touches `live.json`.
+It can't affect, or be affected by, the live show.
 
 ### Languages (planned)
 
@@ -124,9 +144,10 @@ without a network.
 ## Authentication
 
 - Two roles with **separate passwords**: `admin` (pages `/admin`) and `operator` (page `/operator`). An admin session also satisfies operator checks.
-- Passwords live in **plaintext in `config.yaml`** (initial design; the file is created with mode 0600). On first run, if no config exists, the server generates it with random passwords and prints them to the console and shows them on the `/admin` login page the first time.
+- Passwords live in **plaintext in `config.yaml`** (initial design; the file is created with mode 0600). On first run, if no config exists, the server generates it with random passwords and prints them to the console.
 - Login is an HTML form posting to `/api/login`, producing an HttpOnly, SameSite=Strict cookie (`Secure` over HTTPS). **No HTTP Basic auth** (poor password-manager support).
-- Audience routes (`/`, `/events`, `/assets/*`) are public and cannot reach any mutating endpoint.
+- Audience routes (the public table in doc 04: `/`, `/events`, `/assets/*`, `/healthz`, `/captive-api`) are open and cannot reach any mutating endpoint. Help (`/help`) requires a session.
+- The generated first-run passwords are printed to the **console only**; they are never sent to a browser, because the login page is reachable from the guest network. (The config file itself is the other place to find them.)
 - Intended for a trusted LAN; not hardened for the public internet (documented).
 
 ## Configuration (`config.yaml`)
@@ -177,5 +198,7 @@ The parsed cue list is derived from the script on load, not stored.
 ## Error handling principles
 
 - Script parse errors never crash the server; invalid lines become warnings and are skipped or rendered as plain captions (spec in doc 03).
-- Operator commands are idempotent where possible and carry the client's last-seen `seq`; a stale command (`seq` mismatch for jump/advance) returns 409 with the current state so two operator tabs can't double-advance.
+- Operator commands carry the client's last-seen `rev` (not `seq`, which changes on every loop tick); a stale `rev` returns 409 with the current state so two operator tabs can't double-advance, while a loop ticking in the background never causes a spurious 409.
+- Beyond `audience.max_clients`, `/events` returns 503 and the page retries with backoff.
 - Never block the engine on a slow client.
+- The show-level idle message (Look step) overrides `defaults.idle_message`.
