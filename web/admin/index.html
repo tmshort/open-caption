@@ -22,12 +22,18 @@
     <span id="live" class="pill live" hidden>● SHOW IS LIVE</span>
     <span class="grow"></span>
     <span id="viewers" class="pill" title="Audience devices connected">👥 0</span>
+    <button id="helpbtn" class="quiet">Help</button>
     <a class="quiet" href="/operator">Operator page</a>
     <button id="logout" class="quiet">Sign out</button>
   </header>
   <nav id="steps" aria-label="Setup steps"></nav>
   <main id="panel"></main>
 </div>
+
+<aside id="help" hidden aria-label="Help">
+  <div class="bar"><b>Help</b><button id="helpclose">Close</button></div>
+  <iframe title="Help topics" src="about:blank"></iframe>
+</aside>
 
 <dialog id="dlg">
   <form method="dialog">

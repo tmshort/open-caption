@@ -245,11 +245,27 @@
   $('reset').addEventListener('click', () => $('resetdlg').showModal());
   $('resetdlg').addEventListener('close', () => { if ($('resetdlg').returnValue === 'go') send('reset'); });
 
+  // ---- help ----
+  // While help is open every show-control key is ignored, so reading help can never send a line.
+  let helpOpen = false;
+  function openHelp(topic) {
+    helpOpen = true;
+    document.body.classList.add('helpopen');
+    $('help').hidden = false;
+    $('help').querySelector('iframe').src = '/help?role=operator&embed=1&topic=' + (topic || 'operator-running-the-show');
+    $('help').querySelector('iframe').focus();
+  }
+  function closeHelp() { helpOpen = false; document.body.classList.remove('helpopen'); $('help').hidden = true; $('help').querySelector('iframe').src = 'about:blank'; document.body.focus(); }
+  $('helpbtn').addEventListener('click', () => (helpOpen ? closeHelp() : openHelp()));
+  $('helpclose').addEventListener('click', closeHelp);
+  window.addEventListener('message', (e) => { if (e.origin === location.origin && e.data && e.data.type === 'help-close') closeHelp(); });
+
   // ---- keyboard ----
   // Keys are ignored while typing or while a dialog is open, so they can never advance the show by accident.
   let lastKey = 0;
   document.addEventListener('keydown', (e) => {
     if (e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
+    if (helpOpen) { if (e.key === 'Escape' || e.key === 'F1' || e.key === '?') { e.preventDefault(); closeHelp(); } return; }
     if (document.querySelector('dialog[open]')) return;
     const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);
     if (typing) return;
@@ -265,6 +281,7 @@
       case '/': $('search').focus(); break;
       case 'Home': $('resetdlg').showModal(); break;
       case 'Escape': clearSel(); break;
+      case '?': case 'F1': openHelp(); break;
       default: handled = false;
     }
     if (handled) { e.preventDefault(); if (document.activeElement && document.activeElement.blur && document.activeElement.tagName === 'BUTTON') document.activeElement.blur(); lastKey = now; }

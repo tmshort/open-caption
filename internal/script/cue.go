@@ -71,3 +71,8 @@ type Options struct {
 	// are checked against it. When nil, references are not checked.
 	Assets []string
 }
+
+// DirectiveNames lists every command a script may use as [name] or [name: ...].
+// Help text and tests are checked against this list, so adding a directive
+// without documenting it fails the build's tests.
+var DirectiveNames = []string{"clear", "blank", "image", "fullscreen", "loop", "section", "note", "language"}

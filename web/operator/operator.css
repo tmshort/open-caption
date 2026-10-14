@@ -55,6 +55,11 @@ header .grow { flex: 1; }
 footer { display: flex; gap: .6rem; padding: .6rem .9rem calc(.6rem + env(safe-area-inset-bottom)); background: var(--panel); border-top: 1px solid #2a2a31; flex-wrap: wrap; align-items: stretch; }
 footer #search { flex: 1 1 10rem; min-width: 8rem; }
 #next { min-width: 11rem; font-size: 1.25rem; }
+#help { position: fixed; top: 0; right: 0; bottom: 0; width: min(30rem, 100%); background: var(--panel); border-left: 1px solid #444; z-index: 20; display: flex; flex-direction: column; box-shadow: -8px 0 24px #0008; }
+#help[hidden] { display: none; }
+#help .bar { display: flex; gap: .8rem; align-items: center; padding: .5rem .8rem; border-bottom: 1px solid #333; background: #3d2f00; color: var(--accent); }
+#help .bar b { color: var(--fg); } #help .bar span { flex: 1; font-size: .85rem; } #help iframe { flex: 1; border: 0; background: #fff; }
+@media (min-width: 900px) { body.helpopen #app { margin-right: min(30rem, 100%); } }
 #toast { position: fixed; left: 50%; bottom: 6.5rem; transform: translateX(-50%); background: #000c; border: 1px solid #555; padding: .5rem 1rem; border-radius: 8px; opacity: 0; transition: opacity .2s; pointer-events: none; }
 #toast.show { opacity: 1; }
 body.viewonly footer button:not(#search), body.viewonly #reset { opacity: .35; pointer-events: none; }

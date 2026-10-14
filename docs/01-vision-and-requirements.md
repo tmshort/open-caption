@@ -77,6 +77,6 @@ simultaneous shows, internet-facing deployment.
 
 ## Non-functional requirements
 - **REQ-060** No audience data collection; no cookies required; no analytics.
-- **REQ-061** Server logs to stdout/file with levels; a downloadable support bundle from the UI.
+- **REQ-061** Server logs to the console (and optionally a file via `--log-file`); the last 1000 lines are kept in memory. A downloadable support bundle (settings without passwords, recent log, system facts, show summaries) is available from the Go Live step. *(Log levels are not implemented; messages are plain lines.)*
 - **REQ-062** Cold start < 2 s; binary < 30 MB.
 - **REQ-063** Accessibility: semantic markup, `aria-live="polite"` region on audience page, respects `prefers-reduced-motion`, color-contrast ≥ WCAG AA.

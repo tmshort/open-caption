@@ -28,6 +28,7 @@ Query parameters on `/` and `/events`: `?display=projector`, `?size=<pct>`,
 | GET | `/help` | Help viewer page (topic list + content); `?role=admin\|operator` picks the default topic set |
 | GET | `/help/{topic}` | One topic as rendered HTML fragment (`?format=md` returns the Markdown source) |
 | GET | `/help/sample-script.md` | Downloadable starter script demonstrating every convention |
+| GET | `/api/help/topics`, `/api/help/search?q=` | Topic list (with role) and full-text search |
 
 Help is embedded in the binary (no network needed). It contains no secrets, but
 is served only to logged-in sessions so the audience never sees operator tooling.
@@ -68,7 +69,7 @@ everywhere an operator session is; the reverse is not true.
 | GET | `/api/admin/rehearsal/events` | SSE of the rehearsal's audience-view events (drives the preview pane) |
 | GET | `/api/admin/settings` | Effective config (passwords redacted) |
 | GET | `/api/admin/network` | Host IPs, ports, audience URL(s); QR PNG at `/api/admin/network/qr.png` |
-| GET | `/api/admin/support-bundle` | Zip of logs + config (passwords redacted) |
+| GET | `/api/admin/support-bundle` | Zip: `info.txt`, `config.redacted.yaml`, `log.txt` (last 1000 lines), `shows.txt`. Passwords are never included |
 
 ### Live control API — operator or admin session
 

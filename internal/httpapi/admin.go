@@ -14,9 +14,13 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"runtime"
 	"sort"
 	"strconv"
 	"strings"
+	"time"
+
+	"gopkg.in/yaml.v3"
 
 	qrcode "github.com/skip2/go-qrcode"
 
@@ -207,6 +211,7 @@ func (s *Server) adminRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/admin/shows/{id}/activate", adm(s.activateShow))
 	mux.HandleFunc("GET /api/admin/network", adm(s.network))
 	mux.HandleFunc("GET /api/admin/network/qr.png", adm(s.qr))
+	mux.HandleFunc("GET /api/admin/support-bundle", adm(s.supportBundle))
 	mux.HandleFunc("GET /api/admin/settings", adm(func(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusOK, s.cfg.Redacted())
 	}))
@@ -791,4 +796,63 @@ func (s *Server) startRehearsal(w http.ResponseWriter, r *http.Request) {
 	s.rehearsals[tok] = rt
 	s.rmu.Unlock()
 	writeJSON(w, http.StatusOK, map[string]any{"ok": true, "showId": req.ShowID})
+}
+
+// ---- support bundle (REQ-061) ----
+
+// supportBundle returns a zip with settings (passwords redacted), recent log
+// lines and basic facts about this computer, for sending to whoever helps.
+func (s *Server) supportBundle(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/zip")
+	w.Header().Set("Content-Disposition", `attachment; filename="open-caption-support.zip"`)
+	zw := zip.NewWriter(w)
+	defer zw.Close()
+	put := func(name, text string) {
+		if f, err := zw.Create(name); err == nil {
+			io.WriteString(f, text)
+		}
+	}
+
+	host, _ := os.Hostname()
+	op := s.rt.Engine().Operator()
+	s.lmu.Lock()
+	l := s.listeners
+	s.lmu.Unlock()
+	var info strings.Builder
+	fmt.Fprintf(&info, "open-caption %s\n", s.version)
+	fmt.Fprintf(&info, "generated: %s\n", time.Now().Format(time.RFC3339))
+	fmt.Fprintf(&info, "uptime: %s\n", time.Since(s.started).Round(time.Second))
+	fmt.Fprintf(&info, "go: %s %s/%s\n", runtime.Version(), runtime.GOOS, runtime.GOARCH)
+	fmt.Fprintf(&info, "host: %s\naddresses: %s\n", host, strings.Join(ipStrings(netinfo.LocalIPs()), ", "))
+	fmt.Fprintf(&info, "http: %s (configured %s)\nhttps: %s (configured %s)\n", l.HTTPAddr, l.HTTPConfigured, l.HTTPSAddr, l.HTTPSConfigured)
+	fmt.Fprintf(&info, "data dir: %s\n", s.cfg.DataDir)
+	fmt.Fprintf(&info, "audience devices connected: %d\n", s.rt.Hub.Count())
+	fmt.Fprintf(&info, "active show: %q live=%v cursor=%d of %d mode=%s\n", s.rt.ShowID(), op.Live, op.Cursor, op.Total, op.Mode)
+	put("info.txt", info.String())
+
+	if b, err := yaml.Marshal(s.cfg.Redacted()); err == nil {
+		put("config.redacted.yaml", string(b))
+	}
+	if s.logs != nil {
+		put("log.txt", s.logs.String())
+	}
+	var shows strings.Builder
+	if list, err := s.store.List(); err == nil {
+		for _, m := range list {
+			text, _ := s.store.ReadScript(m.ID, "")
+			a, _ := analyze(text, mustAssets(s.store, m.ID))
+			var errs, warns int
+			for _, d := range a.Diagnostics {
+				switch d.Severity {
+				case "error":
+					errs++
+				case "warning":
+					warns++
+				}
+			}
+			fmt.Fprintf(&shows, "%s  %q  updated %s  cues=%d errors=%d warnings=%d images=%d missing=%d\n",
+				m.ID, m.Name, m.Updated.Format(time.RFC3339), len(a.Cues), errs, warns, len(a.Assets), len(a.Missing))
+		}
+	}
+	put("shows.txt", shows.String())
 }

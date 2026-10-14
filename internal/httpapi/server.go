@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"sync"
+	"time"
 
 	"github.com/tmshort/open-caption/internal/config"
 	"github.com/tmshort/open-caption/internal/live"
@@ -21,6 +22,8 @@ type Server struct {
 	auth    *auth
 	dev     bool
 	store   *show.Store
+	logs    interface{ String() string } // recent log lines for the support bundle (may be nil)
+	started time.Time
 
 	lmu       sync.Mutex
 	listeners Listeners
@@ -32,7 +35,7 @@ type Server struct {
 // New creates a Server with an empty runtime.
 func New(cfg config.Config, version string) *Server {
 	s := &Server{cfg: cfg, version: version, rt: NewRuntime(cfg), auth: newAuth(cfg.AdminPassword, cfg.OperatorPassword),
-		rehearsals: map[string]*Runtime{}}
+		rehearsals: map[string]*Runtime{}, started: time.Now()}
 	if cfg.DataDir != "" {
 		if st, err := show.NewStore(filepath.Join(cfg.DataDir, "shows"), cfg.Defaults.Language, cfg.Defaults.IdleMessage); err == nil {
 			s.store = st
@@ -53,6 +56,21 @@ func (s *Server) Close() {
 	s.rt.Close()
 }
 
+// SetLogSource supplies recent log lines for the support bundle.
+func (s *Server) SetLogSource(l interface{ String() string }) { s.logs = l }
+
+// captiveAPI answers RFC 8908 clients (DHCP option 114): this network is not a
+// captive portal, but here is the page to show people (docs/06).
+func (s *Server) captiveAPI(w http.ResponseWriter, r *http.Request) {
+	scheme := "http"
+	if r.TLS != nil {
+		scheme = "https"
+	}
+	w.Header().Set("Content-Type", "application/captive+json")
+	w.Header().Set("Cache-Control", "private, max-age=60")
+	json.NewEncoder(w).Encode(map[string]any{"captive": false, "user-portal-url": scheme + "://" + r.Host + "/"})
+}
+
 // Runtime exposes the show runtime (for wiring and tests).
 func (s *Server) Runtime() *Runtime { return s.rt }
 
@@ -63,6 +81,7 @@ func (s *Server) EnableDev() { s.dev = true }
 // Handler returns the router.
 func (s *Server) Handler() http.Handler {
 	mux := http.NewServeMux()
+	mux.HandleFunc("GET /captive-api", s.captiveAPI)
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) { fmt.Fprintln(w, "ok") })
 	mux.HandleFunc("GET /api/version", func(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusOK, map[string]any{"version": s.version, "protocol": 1})
@@ -71,6 +90,7 @@ func (s *Server) Handler() http.Handler {
 	s.authRoutes(mux)
 	s.operatorRoutes(mux)
 	s.adminRoutes(mux)
+	s.helpRoutes(mux)
 	if s.dev {
 		s.devRoutes(mux)
 	}

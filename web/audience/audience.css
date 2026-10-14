@@ -63,3 +63,14 @@ body.mode-idle:not(.has-fs) #idle { display: flex; }
 #dot { position: fixed; right: 8px; bottom: 8px; z-index: 9; width: 8px; height: 8px; border-radius: 50%; background: #2ecc71; opacity: .55; }
 #dot.off { background: #e74c3c; opacity: 1; }
 body.projector #dot:not(.off) { display: none; }
+
+#tip { position: fixed; left: 0; right: 0; top: 0; z-index: 8; padding: .6em 1em; text-align: center; background: #ffd400; color: #000; font: 600 1rem/1.3 var(--font); }
+#tip[hidden] { display: none; }
+/* Optional per-device controls: nothing here is ever required. */
+#gear { position: fixed; top: 6px; right: 6px; z-index: 9; width: 2.75rem; height: 2.75rem; border: 0; border-radius: 50%; background: transparent; color: var(--fg); font: 700 1rem var(--font); opacity: .18; cursor: pointer; }
+#gear:hover, #gear:focus-visible, #gear[aria-expanded="true"] { opacity: .85; background: #8883; }
+#ctl { position: fixed; top: 3.4rem; right: 8px; z-index: 9; display: flex; gap: .4rem; padding: .5rem; border-radius: 10px; background: var(--bg); border: 1px solid var(--fg); }
+#ctl[hidden] { display: none; }
+#ctl button { min-width: 3rem; min-height: 2.75rem; padding: 0 .8rem; border: 1px solid var(--fg); border-radius: 8px; background: var(--bg); color: var(--fg); font: 600 1rem var(--font); cursor: pointer; }
+body.projector #gear, body.projector #ctl { display: none; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }

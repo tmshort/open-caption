@@ -51,6 +51,18 @@
   const fmtSize = (n) => (n >= 1 << 20 ? (n / (1 << 20)).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB');
   const curShow = () => A.shows.find((s) => s.id === A.cur) || null;
 
+  // ---- help drawer (topic follows the current step) ----
+  const HELP_TOPIC = { show: 'admin-getting-started', script: 'admin-writing-a-script', images: 'admin-images', look: 'admin-look-and-feel', test: 'admin-getting-started', golive: 'admin-network' };
+  function openHelp(topic) {
+    $('help').hidden = false;
+    $('help').querySelector('iframe').src = '/help?role=admin&embed=1&topic=' + (topic || HELP_TOPIC[A.step] || 'admin-getting-started');
+  }
+  function closeHelp() { $('help').hidden = true; $('help').querySelector('iframe').src = 'about:blank'; }
+  $('helpbtn').addEventListener('click', () => ($('help').hidden ? openHelp() : closeHelp()));
+  $('helpclose').addEventListener('click', closeHelp);
+  window.addEventListener('message', (e) => { if (e.origin === location.origin && e.data && e.data.type === 'help-close') closeHelp(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'F1') { e.preventDefault(); openHelp(); } });
+
   // ---- login ----
   function showLogin() { $('app').hidden = true; $('login').hidden = false; $('pw').focus(); }
   $('login').addEventListener('submit', async (e) => {
@@ -271,7 +283,7 @@
     p.append(
       h('h2', {}, 'Script'),
       h('p', { class: 'hint' }, 'Each line is one caption; one press of the spacebar sends one line. You can paste, type, or drop a .txt or .md file. Click a problem to jump to its line.'),
-      h('div', { class: 'row' }, h('label', { class: 'row' }, 'Open a file:', fileInput), h('span', { class: 'grow' }), status, saveBtn),
+      h('div', { class: 'row' }, h('label', { class: 'row' }, 'Open a file:', fileInput), h('button', { onclick: () => openHelp('admin-writing-a-script') }, 'Script help'), h('span', { class: 'grow' }), status, saveBtn),
       tools,
       h('div', { class: 'editor-grid' }, editor, h('div', {}, h('div', { class: 'card' }, diagTitle, diagList), h('div', { class: 'card' }, h('h3', {}, 'What the operator will step through'), cueList))),
       cheatSheet());
@@ -423,7 +435,8 @@
       h('div', { class: 'card row' },
         h('button', { class: 'primary big', onclick: () => startShow(show), disabled: !a.cues.length }, isActive ? 'Restart the show and open the operator page' : 'Start show'),
         isActive ? h('a', { href: '/operator' }, 'Open the operator page without restarting') : null,
-        h('span', { class: 'hint' }, isActive ? 'This show is active.' : 'Starting makes this the show audiences see.')));
+        h('span', { class: 'hint' }, isActive ? 'This show is active.' : 'Starting makes this the show audiences see.')),
+      h('p', { class: 'hint' }, 'Something not working? ', h('a', { href: '#', onclick: (e) => { e.preventDefault(); openHelp('admin-troubleshooting'); } }, 'Troubleshooting help'), ' · ', h('a', { href: '/api/admin/support-bundle', download: 'support-bundle.zip' }, 'Download a support bundle')));
   }
   async function startShow(show) {
     let r = await api('POST', '/api/admin/shows/' + show.id + '/activate', {});

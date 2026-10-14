@@ -12,17 +12,37 @@
 
   const FONTS = { system: 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif', serif: 'Georgia, "Times New Roman", serif', mono: 'ui-monospace, Menlo, Consolas, monospace' };
 
+  // ---- this device's own preferences (optional; never required) ----
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* storage may be unavailable */ } },
+  };
+  let localStep = parseInt(store.get('oc.step'), 10) || 0; // -3..+6 steps of 15%
+  let lightScheme = store.get('oc.light') === '1';
+  function paintLocal() {
+    const t = state.theme || {}, r = document.documentElement.style;
+    const urlPct = parseInt(params.get('size'), 10);
+    const pct = (urlPct > 0 ? urlPct : (t.scalePct || 100)) * (1 + 0.15 * localStep);
+    r.setProperty('--scale', String(Math.max(0.4, pct / 100) * (projector ? 1.5 : 1)));
+    if (lightScheme) { r.setProperty('--bg', '#ffffff'); r.setProperty('--fg', '#000000'); r.setProperty('--accent', '#000000'); }
+    else {
+      r.setProperty('--bg', t.bg || '#000000'); r.setProperty('--fg', t.fg || '#ffffff');
+      r.setProperty('--accent', t.speakers === 'color' ? (t.accent || t.fg || '#ffffff') : (t.fg || '#ffffff'));
+    }
+    $('scheme').setAttribute('aria-pressed', String(lightScheme));
+    $('scheme').textContent = lightScheme ? 'Light on dark' : 'Dark on light';
+  }
+  $('gear').addEventListener('click', () => { const open = $('ctl').hidden; $('ctl').hidden = !open; $('gear').setAttribute('aria-expanded', String(open)); });
+  $('bigger').addEventListener('click', () => { localStep = Math.min(6, localStep + 1); store.set('oc.step', String(localStep)); paintLocal(); });
+  $('smaller').addEventListener('click', () => { localStep = Math.max(-3, localStep - 1); store.set('oc.step', String(localStep)); paintLocal(); });
+  $('scheme').addEventListener('click', () => { lightScheme = !lightScheme; store.set('oc.light', lightScheme ? '1' : '0'); paintLocal(); });
+
   // ---- rendering ----
   function applyTheme(t) {
     state.theme = t || {};
     const r = document.documentElement.style;
-    if (t.bg) r.setProperty('--bg', t.bg);
-    if (t.fg) r.setProperty('--fg', t.fg);
-    if (t.accent) r.setProperty('--accent', t.speakers === 'color' ? t.accent : t.fg || t.accent);
     r.setProperty('--font', FONTS[t.font] || FONTS.system);
-    const local = parseInt(params.get('size'), 10);
-    const pct = local > 0 ? local : (t.scalePct || 100);
-    r.setProperty('--scale', String((pct / 100) * (projector ? 1.5 : 1)));
+    paintLocal();
     $('idle').textContent = t.idleMessage || '';
   }
 
@@ -47,7 +67,8 @@
     const els = $('captions').children;
     for (let i = 0; i < els.length; i++) {
       const age = els.length - 1 - i;
-      els[i].style.opacity = age === 0 ? '1' : String(Math.max(0.3, 1 - 0.17 * age));
+      // Older lines fade, but never below a level that is still readable.
+      els[i].style.opacity = age === 0 ? '1' : String(Math.max(0.55, 1 - 0.12 * age));
     }
   }
 
@@ -180,13 +201,20 @@
 
   // Keep the screen on where the browser allows it.
   let lock = null;
+  function tip() {
+    if (projector || store.get('oc.tip') === '1') return;
+    store.set('oc.tip', '1');
+    $('tip').hidden = false;
+    setTimeout(() => { $('tip').hidden = true; }, 12000);
+  }
   async function keepAwake() {
+    if (!('wakeLock' in navigator)) { tip(); return; }
     try {
       if ('wakeLock' in navigator && document.visibilityState === 'visible' && !lock) {
         lock = await navigator.wakeLock.request('screen');
         lock.addEventListener('release', () => { lock = null; });
       }
-    } catch (e) { /* not available (e.g. insecure context); the page still works */ }
+    } catch (e) { tip(); }
   }
 
   applyTheme({});

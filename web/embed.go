@@ -22,3 +22,13 @@ var Admin embed.FS
 //
 //go:embed sample/sample-script.md sample/assets
 var Sample embed.FS
+
+// Help holds the help topics (Markdown), named admin-*.md and operator-*.md.
+//
+//go:embed help
+var Help embed.FS
+
+// HelpUI holds the help viewer page.
+//
+//go:embed helpui
+var HelpUI embed.FS

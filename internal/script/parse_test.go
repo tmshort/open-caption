@@ -280,3 +280,15 @@ func FuzzParse(f *testing.F) {
 		}
 	})
 }
+
+// Every registered directive must be understood by the parser.
+func TestDirectiveRegistryIsHandled(t *testing.T) {
+	for _, name := range DirectiveNames {
+		for _, src := range []string{"[" + name + "]", "[" + name + ": x]"} {
+			r := Parse(src, Options{})
+			if hasDiag(r, SevWarning, "Unknown command") {
+				t.Errorf("%s: parser does not know directive %q", src, name)
+			}
+		}
+	}
+}

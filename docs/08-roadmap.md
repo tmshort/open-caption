@@ -37,11 +37,11 @@ Each milestone is shippable and ends with a demoable result. Tasks reference req
 - [x] Export/import show zip
 
 ## M5 — Polish and hardening
-- [ ] Wake-lock handling, iOS quirks, projector mode (REQ-043, 044)
-- [ ] Help viewer and topics for admins and operators, incl. script conventions and sample script; help-coverage tests (REQ-037)
-- [ ] Accessibility pass (REQ-063)
-- [ ] `/captive-api`, venue network guide (doc 06)
-- [ ] Support bundle, logging (REQ-061)
+- [x] Wake-lock handling with a one-time tip when unavailable; optional per-device text size and light/dark controls; projector mode (REQ-043, 044, 045). *(The hidden-video fallback for iOS is not implemented.)*
+- [x] Help viewer and topics for admins and operators, incl. script conventions and sample script; help-coverage tests (REQ-037)
+- [~] Accessibility pass (REQ-063): readable dimming floor, focus outlines, labelled controls, reduced motion; a screen-reader and contrast audit with real devices is still to do
+- [x] `/captive-api`, venue network guide (`docs/venue-network-guide.md`)
+- [x] Support bundle, logging (REQ-061)
 - [ ] Device matrix testing and acceptance checklist (doc 07)
 
 ## Stretch / Later

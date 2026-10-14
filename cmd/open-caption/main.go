@@ -6,6 +6,7 @@ import (
 	"crypto/tls"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"net"
 	"net/http"
@@ -18,6 +19,7 @@ import (
 
 	"github.com/tmshort/open-caption/internal/config"
 	"github.com/tmshort/open-caption/internal/httpapi"
+	"github.com/tmshort/open-caption/internal/logbuf"
 	"github.com/tmshort/open-caption/internal/netinfo"
 	"github.com/tmshort/open-caption/internal/script"
 )
@@ -30,6 +32,7 @@ func main() {
 		cfgPath   = flag.String("config", env("OPEN_CAPTION_CONFIG", ""), "config file (default: <data dir>/config.yaml)")
 		httpAddr  = flag.String("http-addr", env("OPEN_CAPTION_HTTP_ADDR", ""), "HTTP listen address, e.g. :80")
 		httpsAddr = flag.String("https-addr", env("OPEN_CAPTION_HTTPS_ADDR", ""), "HTTPS listen address, e.g. :443 (enables HTTPS)")
+		logFile   = flag.String("log-file", env("OPEN_CAPTION_LOG", ""), "also append log lines to this file")
 		showVer   = flag.Bool("version", false, "print version and exit")
 		dev       = flag.Bool("dev", false, "DEVELOPMENT ONLY: enable unauthenticated /dev/* control endpoints")
 		devShow   = flag.String("script", "", "with --dev: load this script file as the active show")
@@ -40,6 +43,19 @@ func main() {
 		fmt.Println("open-caption", version)
 		return
 	}
+
+	// Logs go to the console, to a short in-memory history (for the support bundle), and optionally a file.
+	logs := logbuf.New(1000)
+	writers := []io.Writer{os.Stderr, logs}
+	if *logFile != "" {
+		f, err := os.OpenFile(*logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o644)
+		if err != nil {
+			log.Fatalf("cannot open --log-file: %v", err)
+		}
+		defer f.Close()
+		writers = append(writers, f)
+	}
+	log.SetOutput(io.MultiWriter(writers...))
 
 	dir := *dataDir
 	if dir == "" {
@@ -73,6 +89,7 @@ func main() {
 	}
 
 	api := httpapi.New(cfg, version)
+	api.SetLogSource(logs)
 	defer api.Close()
 	rt := api.Runtime()
 	rt.EnablePersistence(filepath.Join(cfg.DataDir, "live.json"))

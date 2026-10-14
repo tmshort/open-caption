@@ -22,6 +22,7 @@
     <span id="ctrl"></span>
     <button id="takeover" hidden>Take over</button>
     <span class="grow"></span>
+    <button id="helpbtn" class="quiet" title="Help (?)">Help</button>
     <button id="reset" class="quiet">Restart show…</button>
     <button id="logout" class="quiet">Sign out</button>
     <i id="dot" title="Connection"></i>
@@ -44,6 +45,11 @@
     <button id="message" title="Send a one-off message">Message…</button>
   </footer>
 </div>
+
+<aside id="help" hidden aria-label="Help">
+  <div class="bar"><b>Help</b><span id="helpnote">Keys are paused. Close help to resume.</span><button id="helpclose">Close (Esc)</button></div>
+  <iframe title="Help topics" src="about:blank"></iframe>
+</aside>
 
 <dialog id="msgdlg">
   <form method="dialog">
