@@ -98,11 +98,10 @@ client reconnects if no bytes arrive for 40 s. Each event has `id: <seq>`,
 | Event | When | Data |
 |-------|------|------|
 | `snapshot` | On connect/reconnect; after jump/reset | full `LiveState` |
-| `caption` | Caption appended | `{seq, item: CaptionItem}` |
+| `caption` | Caption appended. Also dismisses any fullscreen item/loop and un-blanks | `{seq, item: CaptionItem}` |
 | `clear` | Scrollback emptied | `{seq}` |
-| `blank` | Blank on/off | `{seq, on}` |
+| `blank` | Blank on/off. `on` also dismisses any fullscreen item/loop | `{seq, on}` |
 | `fullscreen` | Fullscreen item set (including each step of a running loop) | `{seq, item: Item}` |
-| `fullscreen_end` | Fullscreen dismissed | `{seq}` |
 | `preload` | Upcoming image URLs changed | `{seq, urls: [..]}` |
 | `theme` | Theme changed | `{seq, theme}` |
 | `reload` | Clients should reload the page (server upgraded) | `{}` |
@@ -164,7 +163,7 @@ Operator payloads for image cues contain only `{kind:"image", name:"curtain.jpg"
 
 ## Concurrency and ordering
 
-- The engine owns `LiveState` behind one mutex/goroutine; each mutation (including loop timer ticks) yields exactly one `seq` increment and one event.
+- The engine owns `LiveState` behind one mutex; every emitted event (including each loop timer tick) increments `seq` by exactly one. A single operator action may emit more than one event.
 - The hub broadcasts in `seq` order; per-client buffered channel (size 32). Overflow ⇒ close that connection (client reconnects → snapshot). Beyond `audience.max_clients`, `/events` returns `503`.
 
 ## Versioning

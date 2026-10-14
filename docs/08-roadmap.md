@@ -3,17 +3,17 @@
 Each milestone is shippable and ends with a demoable result. Tasks reference requirements.
 
 ## M0 — Skeleton
-- [ ] Add Apache-2.0 headers/`NOTICE` as needed (REQ-007)
-- [ ] `go mod init`, repo layout per doc 02, Makefile/`just` with build/test/lint, cross-compile targets (REQ-001)
-- [ ] GitHub Actions: test + build matrix (macOS, Windows, Linux)
-- [ ] Embedded static assets, `GET /healthz`, config/data-dir resolution (REQ-002, 004)
+- [x] Add Apache-2.0 headers/`NOTICE` as needed (REQ-007)
+- [x] `go mod init`, repo layout per doc 02, Makefile/`just` with build/test/lint, cross-compile targets (REQ-001)
+- [x] GitHub Actions: test + build matrix (macOS, Windows, Linux)
+- [x] `GET /healthz`, config/data-dir resolution (REQ-004); [ ] embedded static assets (REQ-002) — with the first web page in M2
 
 ## M1 — Script engine (no UI)
-- [ ] `script.Parse` with cues, directives, comments, speakers, multi-line, diagnostics (REQ-020–023, 025)
-- [ ] Markdown-subset renderer (bold/italic/images; escapes all HTML) (REQ-022)
-- [ ] `config.yaml` load/generate with random passwords; flag/env overrides (REQ-005)
-- [ ] `live` engine: apply/undo/jump, loops with server-side timer and STOP, snapshots, persistence of cursor (REQ-012, 025, 030)
-- [ ] Golden-file + fuzz tests
+- [x] `script.Parse` with cues, directives, comments, speakers, multi-line, diagnostics (REQ-020–023, 025)
+- [x] Markdown-subset renderer (bold/italic/images; escapes all HTML) (REQ-022)
+- [x] `config.yaml` load/generate with random passwords; flag/env overrides (REQ-005)
+- [x] `live` engine: apply/undo/jump, loops with server-side timer and STOP, snapshots, export/restore (file persistence still to wire up) (REQ-012, 025, 030)
+- [x] Table-driven, property (jump == sequential) and fuzz tests (golden files still to add)
 
 ## M2 — Audience stream + display
 - [ ] Hub + SSE `/events` with snapshot/heartbeat/reconnect semantics (REQ-010, 011, 013)
