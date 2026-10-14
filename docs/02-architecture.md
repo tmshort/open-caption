@@ -10,7 +10,7 @@
                                │  Go server      │◄──────►│  data dir    │
                                │  - HTTP router  │        │  shows/…     │
                                │  - Show engine  │        │  assets/…    │
-                               │  - Hub (fanout) │        │  state.json  │
+                               │  - Hub (fanout) │        │  live.json   │
                                └────────┬────────┘        └──────────────┘
                                         │ SSE (one-way, server → client)
               ┌─────────────────────────┼───────────────────────┐
@@ -24,7 +24,7 @@
    Audience traffic is strictly server→client. SSE is simple, built into browsers
    with automatic reconnect (`Last-Event-ID`), works on iOS Safari, needs no
    third-party library in Go, and proxies cleanly. WebSocket is not needed.
-   The operator's keypress is a tiny `POST /api/live/advance`.
+   The operator's keypress is a tiny `POST /api/operator/next`.
 2. **State-snapshot-first protocol.** The server holds a single authoritative
    `LiveState`. Every event carries a monotonically increasing `seq`. A new or
    reconnecting client first receives a full snapshot, then deltas. Dropped
@@ -33,12 +33,18 @@
    decide what comes next. Operator position is held server-side.
 4. **No CGO, no DB.** Persistence is JSON files plus uploaded assets on disk,
    written atomically (write temp + rename). Fine for the data volumes involved.
-5. **Standard library first.** `net/http` (Go 1.22+ pattern routing), `html/template`
-   not needed beyond a shell, `embed`. Allowed dependencies: an HTML sanitizer
-   (`github.com/microcosm-cc/bluemonday`) and a QR generator
-   (`github.com/skip2/go-qrcode`), or equivalents. Frontend is vanilla JS/CSS
-   with no build step (keeps contributor barrier low and the binary self-contained).
-6. **Fanout design for 200+ clients.** Hub keeps a set of client channels, each
+5. **Standard library first.** `net/http` (Go 1.22+ pattern routing), `crypto/tls`, `embed`.
+   Allowed dependencies (all Apache-2.0-compatible): a YAML parser
+   (`gopkg.in/yaml.v3`) and a QR generator (`github.com/skip2/go-qrcode`), or equivalents.
+   No HTML sanitizer is needed: scripts have no raw HTML; the server escapes all
+   text and emits only the tags it generates from the Markdown subset (doc 03).
+   Frontend is vanilla JS/CSS with no build step (low contributor barrier,
+   self-contained binary).
+6. **Loops are server-driven.** The engine owns the loop timer and publishes each
+   item change as an event, so all devices stay in step and STOP is immediate.
+7. **Plain HTTP and optional HTTPS, side by side.** Both listeners serve the same
+   routes (doc 06).
+8. **Fanout design for 200+ clients.** Hub keeps a set of client channels, each
    with a small buffered queue. A slow client that overflows its buffer is
    dropped and reconnects (receives a fresh snapshot). The event payload is
    serialized once and shared across all clients. 200 clients × few events/min
@@ -46,49 +52,60 @@
 
 ## Domain model
 
-- **Show**: id, name, created/updated, script source text, parsed `Cue[]`, `Assets[]`, `Theme`.
-- **Cue**: `index`, `kind`, `payload`, `source line`, optional `section`/`speaker`. Kinds:
-  `caption`, `clear`, `blank`, `image`, `fullscreen_text`, `fullscreen_html`, `section` (operator-only marker), `slideshow`.
-  See doc 03.
-- **LiveState** (the part broadcast to audience):
-  - `mode`: `preshow | captions | fullscreen | blank`
-  - `scrollback`: ordered list of caption items currently on the scrolling surface (bounded, e.g. last 200)
-  - `fullscreen`: optional `{kind: text|html|image, content}` overlaying everything
-  - `theme`
-  - `seq`
-- **OperatorState** (operator-only): `cursor` (index of the next cue), `history` stack for undo, controller id, audience count.
+- **Show**: id, name, created/updated, one script per language (primary language required; others planned), parsed `Cue[]`, `Assets[]`, `Theme`.
+- **Cue**: `index`, `kind`, payload, source line. Kinds:
+  `caption`, `clear`, `blank`, `image`, `fullscreen`, `loop`, `section` and `note` (operator-only). See doc 03.
+- **LiveState** (the part broadcast to audience, per language):
+  - `mode`: `idle | captions | blank`
+  - `scrollback`: ordered caption items on the scrolling surface (bounded, e.g. last 200)
+  - `fullscreen`: optional item (text or image) overlaying everything
+  - `preload`: upcoming image URLs
+  - `theme`, `lang`, `seq`
+- **OperatorState** (operator-only): `cursor` (index of the next cue), `history` stack for undo, loop status, controller id, audience count.
 
 ### Applying a cue (semantics)
 
 | Cue kind | Effect on audience state |
 |----------|--------------------------|
-| `caption` | Append to scrollback; if fullscreen was active, fullscreen is dismissed and captions resume |
-| `clear` | Empty the scrollback; dismiss fullscreen; show captions surface (empty) |
-| `blank` | Mode `blank` (solid background, nothing shown); scrollback retained |
-| `image` | Fullscreen image until next cue that changes it |
-| `fullscreen_text/html` | Fullscreen text/HTML until next cue |
-| `slideshow` | Fullscreen looping images, timer-driven client-side, until next cue |
-| `section` | No audience effect; operator marker (e.g. "Act 2 Scene 1") |
+| `caption` | Append to scrollback; any fullscreen item or running loop is dismissed and captions resume |
+| `clear` | Empty the scrollback; dismiss fullscreen/loop; show the (empty) captions surface |
+| `blank` | Mode `blank` (background only); scrollback retained |
+| `image`, `fullscreen` | Fullscreen item until the next cue |
+| `loop` | Start the loop: show item 0 fullscreen, advance on the server timer per item duration, wrap around, until the next NEXT or STOP |
+| `section`, `note` | No audience effect; operator-only; auto-passed (never consume a keypress) |
 
-Advance = apply `cue[cursor]`, then `cursor++`. Undo restores the previous
-LiveState snapshot from the history stack (bounded, e.g. 100).
-Jump-to-cue replays state: it computes the resulting state as if cues up to N
-were applied in order (scrollback rebuilt from the most recent `clear`), so
-jumping is deterministic.
+- **NEXT** = apply `cue[cursor]` (skipping over `section`/`note`), then move
+  `cursor` past it. Because a loop cue is consumed when it starts, the following
+  NEXT sends the cue after the loop and thereby ends it.
+- **STOP** (only meaningful while a loop runs): stop the loop timer, set `blank`.
+  Cursor is unchanged.
+- **Auto-start:** when a show is activated or reset, if the first audience-visible cue is a
+  `loop` it is applied immediately (pre-show). Otherwise state is `idle` (idle message shown).
+- **Undo (Back)** restores the previous LiveState snapshot from the history stack
+  (bounded, e.g. 100); a loop that was running at that point resumes from item 0.
+- **Jump-to-cue** computes the state as if cues up to N were applied in order
+  (scrollback rebuilt from the most recent `clear`; a loop cue at N-1 starts), so
+  jumping is deterministic and never floods clients with intermediate events.
+
+### Languages (planned)
+
+Each language has its own parsed script of identical structure. The engine keeps
+one cursor; applying a cue updates one `LiveState` per language, and the hub
+routes events by the client's `lang`. v1 ships with a single language but the
+event stream, `LiveState.lang`, and the show model already carry it.
 
 ## Package layout (proposed)
 
 ```
 cmd/open-caption/        main: flags, wiring, signal handling
 internal/
-  config/                flags/env/data-dir resolution, first-run settings
-  script/                parser, validator, cue model (pure, heavily tested)
+  config/                config.yaml load/generate, flags/env overrides, data-dir resolution
+  script/                parser, validator, Markdown-subset renderer, cue model (pure, heavily tested)
   show/                  show store (CRUD, assets), persistence
-  live/                  engine: LiveState, cursor, history, apply/jump/undo
+  live/                  engine: LiveState, cursor, history, loop timer, apply/jump/undo
   hub/                   SSE fanout, client registry, counters
-  httpapi/               routes, auth middleware, handlers
-  sanitize/              HTML allow-list sanitizer wrapper
-  netinfo/               enumerate host IPs, QR code
+  httpapi/               routes, auth middleware, handlers, HTTP/HTTPS listeners
+  netinfo/               enumerate host IPs, QR code, self-signed cert helper
 web/                     embedded static assets
   setup/  operator/  audience/  shared/
 docs/
@@ -99,25 +116,56 @@ without a network.
 
 ## Authentication
 
-- On first run the server prompts (setup wizard) for an operator PIN; stored hashed (argon2id or bcrypt) in `config.json`.
-- Login sets an HttpOnly session cookie. `/api/admin/*`, `/setup`, `/operator` require it.
-- Audience routes (`/`, `/events`, `/assets/*`) are public. Audience cannot reach any mutating endpoint.
-- Intended for trusted LAN; not hardened for the public internet (documented).
+- Two roles with **separate passwords**: `admin` (pages `/admin`) and `operator` (page `/operator`). An admin session also satisfies operator checks.
+- Passwords live in **plaintext in `config.yaml`** (initial design; the file is created with mode 0600). On first run, if no config exists, the server generates it with random passwords and prints them to the console and shows them on the `/admin` login page the first time.
+- Login is an HTML form posting to `/api/login`, producing an HttpOnly, SameSite=Strict cookie (`Secure` over HTTPS). **No HTTP Basic auth** (poor password-manager support).
+- Audience routes (`/`, `/events`, `/assets/*`) are public and cannot reach any mutating endpoint.
+- Intended for a trusted LAN; not hardened for the public internet (documented).
+
+## Configuration (`config.yaml`)
+
+Everything environment-specific is configurable here; command-line flags and
+`OPEN_CAPTION_*` env vars override it.
+
+```yaml
+admin_password: "…generated…"
+operator_password: "…generated…"
+data_dir: ""                       # default: <user config dir>/open-caption
+http:
+  addr: ":80"
+  fallback_addr: ":8080"           # used with a visible warning if addr can't be bound
+https:
+  enabled: false
+  addr: ":443"
+  fallback_addr: ":8443"
+  cert_file: ""                    # supply both, or leave empty with self_signed: true
+  key_file: ""
+  self_signed: true
+defaults:
+  language: en
+  loop_item_seconds: 10
+  idle_message: "Captions will begin shortly"
+  open_browser: true
+audience:
+  max_clients: 500
+  scrollback_lines: 200
+```
 
 ## Persistence layout
 
 ```
 <data-dir>/
-  config.json             pin hash, listen addr, active show id, defaults
+  config.yaml             settings and passwords (above)
   shows/<id>/
-    show.json             metadata + theme
-    script.txt            original imported text (source of truth)
+    show.yaml             metadata + theme
+    script.<lang>.md      imported script(s), verbatim (source of truth)
     assets/<filename>     uploaded images
   live.json               active show id, cursor, scrollback, mode (written on each change, debounced ≤ 250 ms)
+  tls/                    generated self-signed cert/key (if used)
 ```
 
-Default data dir: OS user-config location (`os.UserConfigDir()/open-caption`), overridable with `--data`.
-The parsed cue list is derived from `script.txt` on load, not stored.
+Default data dir: OS user-config location (`os.UserConfigDir()/open-caption`).
+The parsed cue list is derived from the script on load, not stored.
 
 ## Error handling principles
 

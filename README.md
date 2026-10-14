@@ -21,7 +21,11 @@ behavior needs to change, change the spec first (in the same PR).
 | [docs/06-deployment-and-network.md](docs/06-deployment-and-network.md) | Running on macOS/Windows/Linux, WiFi, DNS/DHCP, QR code |
 | [docs/07-testing-and-acceptance.md](docs/07-testing-and-acceptance.md) | Test strategy, load target, acceptance checklist |
 | [docs/08-roadmap.md](docs/08-roadmap.md) | Milestones and task breakdown |
-| [docs/09-open-questions.md](docs/09-open-questions.md) | Decisions made by default that need confirmation |
+| [docs/09-open-questions.md](docs/09-open-questions.md) | Resolved decisions and remaining open questions |
 
 Requirement IDs (`REQ-…`) are referenced from the other docs and should be
 referenced from tests and commits.
+
+## License
+
+Apache License 2.0 — see [LICENSE](LICENSE).

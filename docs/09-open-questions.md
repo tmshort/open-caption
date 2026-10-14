@@ -1,20 +1,30 @@
-# 09 — Open Questions and Assumed Defaults
+# 09 — Decisions and Open Questions
 
-Each item lists the default assumed in the specs. Confirm or change; update the
-affected docs when decided.
+All original questions are resolved. Each row records the decision and the docs
+that reflect it. Add new questions at the bottom.
 
-| # | Question | Assumed default | Affects |
-|---|----------|-----------------|---------|
-| Q1 | Should Setup and Operator be one app (tabs) or separate URLs? | One app at `/admin` with tabs; `/operator` is a direct link to the Live tab | 05 |
-| Q2 | Is one caption = one script line the right granularity? Some scripts have long speeches that need to be split to fit the screen. | Yes; authors split lines. Possible later helper: "auto-split long lines at N characters" in setup | 03 |
-| Q3 | Is plain HTTP acceptable? Screen Wake Lock needs a secure context (HTTPS) on some browsers; localhost excepted. | HTTP; use video-loop fallback on iOS; revisit optional self-signed/local-CA HTTPS | 06, 05 |
-| Q4 | Is a PIN enough for operator/setup security on a guest-reachable port? | Yes, PIN + rate limiting; optionally allow restricting `/admin` to specific IPs or the host only | 04, 06 |
-| Q5 | SVG uploads? | Rejected in v1 (XSS surface); PNG/JPG/GIF/WebP only | 04, 06 |
-| Q6 | Should the audience see previous captions scroll (a rolling transcript), or only the last N lines? | Rolling scrollback, dimmed with age, bounded at 200 | 02, 05 |
-| Q7 | Can the operator edit a script's text during a live show (typo fix)? | Allowed with confirmation; cursor preserved by cue index, warn if cue count changes | 05 |
-| Q8 | Do you need per-character colors? | Optional speaker colors in Look step; default off | 03, 05 |
-| Q9 | Script source formats beyond `.txt` (e.g., `.docx`, PDF, Final Draft)? | `.txt`/`.md` only in v1 | 03 |
-| Q10 | Pre-show behavior: auto-start loop when show loaded, or only after operator action? | Auto-displays as soon as the show is activated | 03 |
-| Q11 | Port 80 default OK, given the privilege problems on Linux? | Try 80, fall back to 8080 with prominent notice | 06 |
-| Q12 | Does the venue's network allow guest devices to reach a host on the same network? | Unknown; needs venue check before show — see doc 06 | 06 |
-| Q13 | License for the repository | Not set; choose before publishing (MIT/Apache-2.0 typical) | — |
+## Resolved
+
+| # | Question | Decision | Docs |
+|---|----------|----------|------|
+| Q1 | Setup and Operator: one app or separate URLs? | Separate: `/admin` (setup) and `/operator` (live) | 04, 05 |
+| Q2 | Caption granularity? | One script line = one cue; long lines wrap; the author splits lines to match the performance style. No auto-splitting | 03 |
+| Q3 | HTTP vs HTTPS? | Support both side by side, no redirect. ACME/Let's Encrypt is a possible later feature (needs Internet + public name) | 01 (REQ-006), 06 |
+| Q4 | Authentication? | Separate passwords for `/admin` and `/operator`, plaintext in `config.yaml` for now, login form + session cookie, **no HTTP Basic auth**. Config generated on first run with random passwords; admin session also opens `/operator` | 01, 02, 04 |
+| Q5 | SVG? | Not supported. PNG/JPG/GIF/WebP; browser scales; server doesn't rescale. Mitigations: prefetch upcoming images, warn on files > 1 MB | 04, 05, 06 |
+| Q6 | Audience scrollback? | Rolling, dimmed with age, bounded (200) | 02, 05 |
+| Q7 | Edit script during a live show? | Allowed with confirmation; cursor kept by index, warn if cue count changes | 01 (REQ-052), 05 |
+| Q8 | Per-character colors? | Optional; default theme is pure black/white, high contrast, no speaker colors | 01 (REQ-045), 03, 05 |
+| Q9 | Script formats? | Markdown only (`.md`; `.txt` parsed identically). No embedded HTML. Headings ignored for now (reserved) | 01 (REQ-020/022), 03 |
+| Q10 | Pre-show behavior? | A **loop** (mixed images/text, per-item duration, default from config). A loop as the first cue auto-starts on activation; any other loop starts on NEXT. STOP (Shift+Q) → blank screen; NEXT (Space) → cue after the loop | 01 (REQ-025/030), 02, 03, 05 |
+| Q11 | Ports; languages? | Try 80/443, fall back to 8080/8443 with a warning; all settings in `config.yaml`. Multi-language later: one identical-structure script per language, `[language: xx]` first | 01 (REQ-005/026), 02, 03, 06 |
+| Q12 | Guest network reachability? | A requirement of the venue's guest network (documented as a prerequisite) | 06 |
+| Q13 | License? | Apache-2.0 (`LICENSE` added) | 01 (REQ-007) |
+
+## Open
+
+| # | Question | Leaning | Affects |
+|---|----------|---------|---------|
+| Q14 | Language selection UX: URL only (`/?lang=es`), or also a small picker on the audience page (the page must otherwise need no interaction)? | URL/QR per language, plus an optional picker in the corner | 03, 05 |
+| Q15 | Should a loop that is stopped (blank) be restartable by the operator without Back? | Yes: a "Restart loop" button (not a key) later; v1 uses Back | 05 |
+| Q16 | Markdown headings as future section markers vs. comments. | Ignored in v1; revisit | 03 |

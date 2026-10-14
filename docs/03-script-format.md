@@ -1,41 +1,68 @@
 # 03 — Script Format
 
-Design goals: an author can paste in a normal theater script and it works with
-zero markup; extra features are opt-in and read naturally to a human.
+A script is a **Markdown** text file (`.md` or `.txt`; both are parsed the same
+way). Design goals: an author can paste in a normal theater script and it works
+with zero markup; extra features are opt-in and read naturally to a human.
+
+**No embedded HTML.** Formatting uses Markdown only. Any `<tag>` in the text is
+shown literally (escaped) and produces an info diagnostic, never executed.
+This also means the server needs no HTML sanitizer: it escapes all text and
+emits only the small set of tags it generates itself.
 
 ## Basic rules
 
-1. UTF-8 text file (`.txt`; `.md` accepted, treated as plain text). CRLF or LF.
+1. UTF-8 text; CRLF or LF; a leading BOM is ignored.
 2. **Each non-blank line is one caption cue** — one press of the spacebar.
    Blank lines are ignored (use them freely for readability).
-3. Lines starting with `#` are **comments** (ignored). A line that must begin
-   with a literal `#` is written `\#`.
-4. Lines in **square brackets** are **directives** (commands), case-insensitive.
-5. An optional upper-case speaker prefix `NAME: text` is recognized and
-   rendered as a label (see *Speaker detection* below).
-6. Long text wraps automatically; the author never hand-wraps.
-7. To put **several lines in one cue** (e.g. a song lyric couplet), end each
-   line except the last with ` \` (space + backslash), or use a `[[ … ]]` block (below).
+3. A caption longer than the screen **wraps automatically**. The author decides
+   how to split speeches into lines to match the style of the performance;
+   the system never splits or merges lines.
+4. Lines starting with `#` are **ignored** for now (Markdown headings are
+   reserved for future use, e.g. as section markers). This also makes `#` usable
+   for comments. A caption that must begin with a literal `#` is written `\#`.
+5. Lines in **square brackets** are **directives** (commands), case-insensitive.
+6. An optional upper-case speaker prefix `NAME: text` is rendered as a label
+   (see *Speaker detection*).
+7. To put **several lines in one cue** (a song couplet), end each line except
+   the last with `\` (Markdown's hard line break), or use a `[[ … ]]` block.
+
+## Text formatting (Markdown subset)
+
+| Write | Result |
+|-------|--------|
+| `**loud**` | **bold** |
+| `*aside*` or `_aside_` | *italic* |
+| `(thunder rumbles)` — whole line in parentheses | automatically styled as a sound/stage direction |
+| `![Act 1](set.jpg)` — alone on a line | fullscreen image (same as `[image: set.jpg \| Act 1]`) |
+| `\*` `\_` `\#` `\[` `\:` | literal character |
+
+Not supported (shown as plain text): links, lists, tables, blockquotes, code,
+headings (ignored), raw HTML.
 
 ## Directives
 
-All directives are a single line `[name]` or `[name: argument]`.
+A directive is a single line `[name]` or `[name: arguments]`. Arguments are
+separated by `|`. A final argument that looks like a duration (`15s`, `2.5s`)
+is the item's display time (only meaningful inside a loop).
 
-| Directive | Effect | Example |
-|-----------|--------|---------|
-| `[clear]` | Clear the scrolling captions; show empty caption screen | `[clear]` |
-| `[blank]` | Blank screen (background only), captions retained | `[blank]` |
-| `[image: file]` | Fullscreen image until next cue | `[image: curtain.jpg]` |
-| `[image: file, caption text]` | Image with optional caption beneath | `[image: set.jpg, Act 1 – The Garden]` |
-| `[fullscreen: text]` | Fullscreen centered large text | `[fullscreen: INTERMISSION — 15 minutes]` |
-| `[slideshow: a.jpg, b.jpg, c.jpg; 8s]` | Looping fullscreen images, N seconds each (default 8s) | pre-show |
-| `[section: name]` | Operator-only marker/bookmark, no audience effect | `[section: Act 2, Scene 1]` |
-| `[note: text]` | Operator-only note shown inline in the operator view (e.g. "wait for door slam") | `[note: hold for applause]` |
-| `[preshow]` … `[show]` | Marks pre-show region; see below | |
-| `[html]` … `[/html]` | Block of raw HTML shown as a caption | see below |
+| Directive | Effect |
+|-----------|--------|
+| `[clear]` | Clear the scrolling captions; show an empty caption screen |
+| `[blank]` | Blank screen (background only); captions are kept |
+| `[image: file]` / `[image: file \| caption]` | Fullscreen image until the next cue |
+| `[fullscreen: text]` | Fullscreen centered large text until the next cue (Markdown formatting allowed) |
+| `[fullscreen]` … `[/fullscreen]` | Same, multi-line text |
+| `[loop]` … `[/loop]` / `[loop: 10s]` | Looping fullscreen items (see *Loops*) |
+| `[section: name]` | Operator-only marker/bookmark; no audience effect |
+| `[note: text]` | Operator-only note shown inline in the operator view (e.g. "wait for door slam") |
+| `[language: es]` | First line of a translated script; see *Languages* |
 
-Directive names are forgiving: `[Clear]`, `[CLEAR SCREEN]`, `[clear screen]`
-all work. Unknown directive → warning, line is skipped (never shown to the audience).
+Names are forgiving: `[Clear]`, `[CLEAR SCREEN]`, `[clear screen]` all work.
+An unknown directive produces a warning and the line is skipped (never shown
+to the audience).
+
+`section` and `note` cues never consume a keypress: when the operator reaches
+them they are passed over automatically.
 
 ### Multi-line captions
 
@@ -47,75 +74,89 @@ Gently down the stream
 ```
 Everything between `[[` and `]]` is one cue, line breaks preserved.
 
-### Inline HTML
+### Loops
 
-Within any caption line, a limited set of HTML tags is allowed:
-`<b> <i> <u> <em> <strong> <br> <span class="…"> <small> <big>`, plus
-`<img src="file">` (resolved against uploaded assets).
-Everything else is stripped. `<script>`, event handlers, external URLs and
-`style` attributes are always removed. Predefined span classes: `loud`, `whisper`,
-`sfx`, `lyric`, `red`, `green`, `blue`, `yellow`.
-
-Friendly shorthand (Markdown-lite) also works in captions:
-`*italic*`, `**bold**`, and `(parenthetical stage directions)` auto-styled
-as sound/stage text when the whole line is a parenthetical, e.g. `(thunder rumbles)`.
-
-Full HTML block (for fullscreen layouts):
+A loop is a block of fullscreen items shown one after another, repeating, until
+the operator advances. It is used for pre-show and intermission.
 
 ```
-[html]
-<h1>Thanks for coming!</h1>
-<p>Please silence your phones.</p>
-[/html]
+[loop: 10s]
+[image: sponsors.png | 15s]
+[fullscreen: **Welcome to The Odd Couple**]
+Please silence your phones
+[image: cast.jpg | The Cast | 8s]
+[/loop]
 ```
-An `[html]` block is a **fullscreen** cue (sanitized with a wider allow-list:
-headings, paragraphs, lists, images, inline styles limited to color/alignment/size).
-Use `[html: caption]` ... `[/html]` to make it an in-scroll caption instead.
+
+- Each item is `[image: …]`, `[fullscreen: …]`, `![](file)`, or a **plain line of
+  text** (shown as fullscreen text). `[blank | 3s]` is also allowed as a pause item.
+- An item's display time is its trailing duration (`| 15s`); otherwise the
+  loop's period (`[loop: 10s]`); otherwise `defaults.loop_item_seconds` from
+  `config.yaml` (default 10 s).
+- Loops can't be nested. Captions, `[clear]`, `[section]` and `[note]` inside a
+  loop produce a warning and are skipped.
+- The loop is **one cue** with one position in the operator list.
+
+Behavior (see doc 02 for the state model):
+- **Starting.** When the operator presses NEXT on a loop cue, the loop starts
+  automatically and the cursor moves to the cue after the loop.
+- **Pre-show.** If a loop is the first cue in the script (comments, sections and
+  notes don't count), it starts automatically as soon as the show is activated.
+  Before that (and if the script doesn't start with a loop), the audience sees
+  the idle message.
+- **Ending.** NEXT ends the loop and sends the cue after it (same key as for any
+  caption). Back (undo) after that returns to the loop.
+- **Stopping.** The operator's STOP command (Shift+Q) stops the loop and leaves a
+  blank screen. NEXT then proceeds as usual.
 
 ### Speaker detection
 
-A leading label is recognized as a speaker if it matches `^[A-Z][A-Z0-9 .'\-]{0,29}:\s+\S`
-(upper-case word(s) then colon). `HAMLET: To be, or not to be` → speaker
+A leading label is a speaker if it matches `^[A-Z][A-Z0-9 .'\-]{0,29}:\s+\S`
+(upper-case word(s), colon, space). `HAMLET: To be, or not to be` → speaker
 `HAMLET`, text `To be, or not to be`. Mixed-case `Note: this` is not a speaker.
-A show-level setting controls whether speakers are shown, hidden, or colored per-character.
-Speaker detection can be escaped with `\:`.
+Escape with `\:`. A show-level theme setting controls whether speakers are
+hidden, shown as a label, or shown in per-character colors (default: label, no color).
 
-### Pre-show
+### Languages (planned; design reserved now)
 
-Everything before the first `[show]` directive is **pre-show** if the file
-contains a `[preshow]` directive at the top. The pre-show is displayed
-automatically when the show is loaded/idle; the operator ends it by advancing
-past `[show]`. Typical:
+Additional languages are separate script files **identical in structure** to the
+primary one (same cues in the same order and of the same kinds), with a
+language identifier as the first directive:
 
 ```
-[preshow]
-[slideshow: sponsor1.png, sponsor2.png, cast.jpg; 10s]
-[fullscreen: Welcome to The Odd Couple — Please silence your phones]
-[show]
-[clear]
-(lights up)
-OSCAR: Felix, you're late.
+[language: es]
 ```
-
-If no `[preshow]` is present, the show begins at the first cue and the audience
-sees a configurable idle message ("Captions will begin shortly") until then.
+The primary-language script may also declare `[language: en]`. The validator
+compares each translation against the primary and reports structural mismatches
+(cue count/kind) with line numbers. One operator NEXT advances *every*
+language to the same cue index; the operator sees the primary language.
+Image assets may differ per language by using different filenames at the same
+position. The audience chooses a language with `/?lang=es` (default: primary).
 
 ## Parsed model (Go)
 
 ```go
-type CueKind string // caption, clear, blank, image, fullscreen_text, fullscreen_html, slideshow, section, note
+type CueKind string // caption, clear, blank, image, fullscreen, loop, section, note
+
+type Item struct {      // a fullscreen item (used by image/fullscreen cues and in loops)
+    Kind    string      // "text" | "image" | "blank"
+    HTML    string      // generated from Markdown by the server (text)
+    Text    string      // plain text
+    Image   string      // asset filename
+    Caption string
+    Seconds float64     // 0 = use default
+}
 
 type Cue struct {
     Index   int
     Kind    CueKind
-    Line    int      // 1-based source line (start)
-    Speaker string   // caption only
-    HTML    string   // sanitized HTML (caption/fullscreen_html)
-    Text    string   // plain-text version (also used for operator display and search)
-    Image   string   // asset filename (image)
-    Images  []string // slideshow
-    Seconds int      // slideshow per-slide
-    Preshow bool
+    Line    int         // 1-based source line (start)
+    Speaker string      // caption only
+    HTML    string      // caption: generated, escaped HTML
+    Text    string      // plain text (operator display, search)
+    Item    *Item       // image / fullscreen
+    Items   []Item      // loop
+    Period  float64     // loop default period (0 = use config default)
 }
 
 type Diagnostic struct {
@@ -125,6 +166,7 @@ type Diagnostic struct {
 }
 
 type ParseResult struct {
+    Language    string
     Cues        []Cue
     Diagnostics []Diagnostic
 }
@@ -134,23 +176,26 @@ type ParseResult struct {
 
 ## Diagnostics (validation)
 
-Examples, each reported with line number and a plain-English message:
-- warning: `Line 42: image "curtian.jpg" not found. Did you mean "curtain.jpg"?` (fuzzy match)
+Each is reported with a line number and a plain-English message:
+- warning: `Line 42: image "curtian.jpg" not found. Did you mean "curtain.jpg"?`
 - warning: `Line 17: unknown command [fade]. This line was skipped.`
-- error: `Line 88: [html] block opened but never closed.`
-- info: `Line 5: HTML tag <marquee> is not allowed and was removed.`
-- info: summary — `312 captions, 4 images, 3 sections, estimated runtime n/a`.
+- warning: `Line 63: captions can't go inside a loop. This line was skipped.`
+- error: `Line 88: [loop] was opened but never closed.`
+- info: `Line 5: HTML is not supported; "<b>" will appear as plain text. Use **bold** instead.`
+- info: summary — `312 captions, 4 images, 2 loops, 3 sections`.
 
 Errors don't prevent saving; the affected construct is skipped. The setup UI
-must make fixing easy (inline line list, click to jump to line in editor).
+makes fixing easy (line list, click to jump to the line in the editor).
 
 ## Complete example
 
 ```
 # The Odd Couple — captions v3
-[preshow]
-[slideshow: sponsors.png, cast.jpg; 10s]
-[show]
+[loop: 10s]
+[image: sponsors.png | 15s]
+Welcome to **The Odd Couple**
+Please silence your phones
+[/loop]
 
 [section: Act 1, Scene 1]
 [clear]
@@ -164,11 +209,15 @@ I got lost in the kitchen.
 ]]
 
 [section: Intermission]
+[loop: 12s]
 [fullscreen: INTERMISSION — 15 minutes]
-[image: clock.png]
+![Please visit the lobby](lobby.jpg)
+[/loop]
+[section: Act 2]
+[clear]
 ```
 
 ## Round-tripping
 
-The original text is stored verbatim as `script.txt`; the setup UI edits that
-text. There is no lossy intermediate format.
+The original text is stored verbatim as the show's script file; the setup UI
+edits that text. There is no lossy intermediate format.

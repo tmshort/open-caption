@@ -31,6 +31,9 @@ multiple simultaneous shows, internet-facing deployment.
 - **REQ-002** All web assets embedded in the binary (`go:embed`). Nothing fetched from the internet at runtime (the venue network may have no uplink).
 - **REQ-003** The whole system (setup, operator, audience) runs on a single host.
 - **REQ-004** Persistent data lives in one data directory (configurable); no external database.
+- **REQ-005** Settings (ports/addresses, TLS, passwords, defaults) live in a human-editable `config.yaml` (generated on first run); flags/env vars override it.
+- **REQ-006** The server listens on plain HTTP and, optionally, HTTPS (user-supplied cert or generated self-signed) at the same time. Automatic certificates (ACME/Let's Encrypt) are a possible later addition; they need Internet access and a public name and are out of scope for v1.
+- **REQ-007** Licensed under Apache-2.0; dependencies must be license-compatible.
 
 ### Capacity and resilience
 - **REQ-010** Support at least 200 concurrent audience clients (venue has ~150 seats; requirement is >75). Caption latency from operator keypress to render ≤ 250 ms at p95 on a LAN under that load.
@@ -39,21 +42,22 @@ multiple simultaneous shows, internet-facing deployment.
 - **REQ-013** A client joining mid-show immediately sees current state plus recent scrollback.
 
 ### Script
-- **REQ-020** Import a plain-text script file (UTF-8) via upload or paste; re-import without losing assets.
-- **REQ-021** Each script line is a caption by default; non-technical authors can add directives (clear screen, images, fullscreen text, pre-show) using a human-readable syntax (see doc 03).
-- **REQ-022** Inline HTML is supported in captions, sanitized against an allow-list.
+- **REQ-020** Import a Markdown/text script (`.md` or `.txt`, both parsed as Markdown, UTF-8) via upload or paste; re-import without losing assets.
+- **REQ-021** Each non-blank script line is a caption (long lines wrap; the author controls splitting); non-technical authors can add human-readable directives (clear screen, images, fullscreen text, loops) (doc 03).
+- **REQ-022** Formatting is a Markdown subset (bold/italic, images). Raw HTML is **not** supported; it is displayed as literal text with a diagnostic.
 - **REQ-023** Import validates the script and reports errors/warnings with line numbers *without* blocking the preview.
-- **REQ-024** Images are uploaded/managed in the setup UI and referenced by filename from the script. Missing references are flagged.
-- **REQ-025** Pre-show content (images/text, optionally looping slideshow) is expressible in the script.
+- **REQ-024** Images (PNG/JPG/GIF/WebP; no SVG) are uploaded/managed in the setup UI and referenced by filename. Missing references are flagged. The server does not rescale; browsers scale to fit. Audience pages prefetch upcoming images.
+- **REQ-025** **Loops**: a block of mixed fullscreen items (images/text), each shown for its own duration (default from config), repeating. Used for pre-show and intermission. A loop that is the first cue auto-starts on activation; any other loop starts when the operator presses NEXT on it.
+- **REQ-026** (Planned) Multiple languages: one script per language, identical in structure, each identified by a language directive; the audience selects a language by URL.
 
 ### Operator
-- **REQ-030** Spacebar advances to the next cue. Other keys: back, blank, clear, jump (doc 05).
+- **REQ-030** Spacebar (NEXT) advances to the next cue — the same command for captions, for starting a loop, and for ending a loop. **STOP** (Shift+Q) stops a running loop and leaves a blank screen. Other keys: back, blank, clear, jump (doc 05).
 - **REQ-031** Operator view shows already-sent cues, the current cue, and upcoming cues. Image/fullscreen cues appear as an indicator (icon + name), never the image itself.
 - **REQ-032** Operator can jump to any cue (click/search) and undo/redo advances.
 - **REQ-033** Operator view shows live audience count and connection health.
 - **REQ-034** Only one operator controls at a time; others are view-only, with explicit takeover.
 - **REQ-035** Operator can work from a laptop keyboard, and also from a tablet/phone (large Next button; optional Bluetooth clicker maps to keys).
-- **REQ-036** Setup and Operator may be one app with two modes/tabs, but the live surface must not expose destructive setup actions (see REQ-052).
+- **REQ-036** Setup (`/admin`) and Operator (`/operator`) are separate pages with separate passwords; the operator page exposes no setup actions.
 
 ### Audience
 - **REQ-040** One URL, no interaction needed. Page auto-scrolls as captions arrive, newest at bottom, older text dimmed.
@@ -61,12 +65,12 @@ multiple simultaneous shows, internet-facing deployment.
 - **REQ-042** Works on current Safari/iOS, Chrome/Android, desktop Chrome/Firefox/Edge/Safari.
 - **REQ-043** Keeps the screen awake where the browser allows (Wake Lock; fallback video trick as a documented option).
 - **REQ-044** Projector display mode: URL parameter for larger type, no chrome, cursor hidden.
-- **REQ-045** Readable defaults: high contrast, large type, responsive to orientation and screen size. Venue-level theme (colors, font size) set in setup; optional per-device local font-size control that is never required.
+- **REQ-045** Accessibility-first defaults: pure black background / white text, high contrast, large type, responsive to orientation and screen size. Venue-level theme (colors, font size) and optional per-speaker colors set in setup; optional per-device local font-size control that is never required.
 
 ### Configuration and access
-- **REQ-050** First-run experience is a guided wizard: create show → import script → upload images → preview → go live.
-- **REQ-051** Setup and operator interfaces are protected by a PIN/password (set at first run); audience interface is open.
-- **REQ-052** Setup actions that change the script are disabled (or require confirmation) while a show is live.
+- **REQ-050** Setup is a guided wizard: create show → import script → upload images → look → test → go live.
+- **REQ-051** `/admin` and `/operator` each have their own password (plaintext in `config.yaml`, generated on first run), entered via a login form with a session cookie — not HTTP Basic auth. An admin session also works on `/operator`. The audience interface is open.
+- **REQ-052** Script edits during a live show require confirmation (typing the show name); the cursor is preserved by cue index, with a warning if the cue count changes.
 - **REQ-053** The setup UI displays the audience URL and a QR code, plus the list of host IP addresses.
 - **REQ-054** Multiple shows can be stored; one is "active".
 

@@ -4,11 +4,14 @@
 
 ```
 open-caption                       # defaults
-open-caption --addr :80            # listen address (default: :80, falls back to :8080 with a warning if bind fails)
-open-caption --data ~/oc-data      # data directory
-open-caption --no-browser          # don't auto-open the setup page
+open-caption --config ~/oc/config.yaml   # config file (default: <data dir>/config.yaml)
+open-caption --data ~/oc-data            # data directory
+open-caption --http-addr :80 --https-addr :443   # override listen addresses
+open-caption --no-browser                # don't auto-open the setup page
 ```
-Environment variable equivalents: `OPEN_CAPTION_ADDR`, `OPEN_CAPTION_DATA`.
+Every setting (ports, addresses, TLS, passwords, defaults) lives in
+`config.yaml` (doc 02). Flags and `OPEN_CAPTION_*` environment variables override it.
+On first run the config is generated with random admin/operator passwords.
 
 On start, the server logs and shows (in the console and setup UI) all
 non-loopback IPv4 addresses and the audience URL, and opens
@@ -20,7 +23,7 @@ non-loopback IPv4 addresses and the audience URL, and opens
 | OS | Notes |
 |----|-------|
 | macOS | Unsigned binary requires Gatekeeper approval (right-click → Open) unless signed/notarized (stretch goal). Binding port 80 is allowed for non-root on recent macOS. |
-| Windows | Windows Firewall prompt on first run — user must allow *Private networks*. Provide a note/screenshot. Port 80 may be held by other software (IIS, Skype); auto-fallback to 8080. |
+| Windows | Windows Firewall prompt on first run — user must allow *Private networks*. Provide a note/screenshot. Port 80/443 may be held by other software (IIS, Skype); auto-fallback to 8080. |
 | Linux | Port 80 needs `setcap 'cap_net_bind_service=+ep'` or run on 8080 + redirect. Optional systemd unit file in `deploy/`. |
 
 Cross-compile with `GOOS/GOARCH`; CI produces release artifacts for all targets.
@@ -33,6 +36,7 @@ Cross-compile with `GOOS/GOARCH`; CI produces release artifacts for all targets.
                                                       phones / tablets / projector browser
 ```
 
+- **Venue prerequisite:** the guest network must allow guest devices to reach the server host (same subnet/VLAN, or an explicit rule for the server's ports). This is a requirement of the venue's guest network, not something the app can fix; verify before the first show by loading the audience URL from a phone on the guest SSID.
 - The host must be reachable from the guest WiFi subnet. Many "guest network"
   features isolate guests from the *LAN*; the venue must place the server on
   the guest network itself, or allow guest→server on the server's port.
@@ -48,7 +52,7 @@ Cross-compile with `GOOS/GOARCH`; CI produces release artifacts for all targets.
 
 Audiences should type as little as possible. In increasing effort:
 
-1. **QR code** (REQ-053): printable page `/admin/qr` for lobby signage and programs. Highest value, zero infrastructure.
+1. **QR code** (REQ-053): printable page `/admin` → Go Live → QR for lobby signage and programs. Highest value, zero infrastructure.
 2. **Short IP URL**: `http://192.168.1.10` (port 80 so no `:port`).
 3. **Local DNS name**: router DNS entry, e.g. `captions.theater` → server IP (dnsmasq/OpenWrt/Pi-hole/most routers allow a host override).
 4. **Captive-portal-style redirect**: the router redirects guests to the page after joining WiFi. Options, documented in a `docs/venue-network-guide.md` (to be written):
@@ -61,10 +65,11 @@ The app should not run its own DHCP/DNS in v1 (conflicts, privileges, scope).
 
 ## Security posture
 
-- LAN-only; HTTP (no TLS) by default. TLS is not required for captions and a self-signed cert would produce scary browser warnings for the audience. Wake Lock API requires a **secure context** on some browsers — see open question Q3 in doc 09; mitigation is the video fallback.
-- Setup/operator behind PIN; rate-limit login (5 tries/min).
+- LAN-only. **HTTP and HTTPS are both supported**, on separate ports, serving the same routes, and there is **no redirect** from HTTP to HTTPS. HTTP is the default audience URL because a self-signed certificate shows a browser warning. HTTPS is enabled in `config.yaml` with either `cert_file`/`key_file` or `self_signed: true` (generated into `<data>/tls/`). Screen Wake Lock needs a secure context, so audiences on HTTPS keep their screens awake more reliably; on HTTP the video-loop fallback applies.
+- ACME/Let's Encrypt is a possible later feature. It needs Internet access and a publicly resolvable name for validation, which a venue-only network doesn't have (DNS-01 with a real domain is the realistic route).
+- `/admin` and `/operator` use separate passwords from `config.yaml` (plaintext initially, file mode 0600), a login form and session cookie (not HTTP Basic auth); login is rate-limited (5 tries/min).
 - Do not expose the port to the internet. Documented.
-- Uploaded files: type-sniffed, size limited, served with `X-Content-Type-Options: nosniff`; SVG served with `Content-Security-Policy: sandbox` or rasterized/rejected (decision in doc 09).
+- Uploaded files: PNG/JPG/GIF/WebP only (content-sniffed, 10 MB limit), served with `X-Content-Type-Options: nosniff`. SVG is rejected.
 - Audience page CSP: `default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'`.
 
 ## Backups
