@@ -2,6 +2,9 @@
 (() => {
   'use strict';
   const $ = (id) => document.getElementById(id);
+  // In a rehearsal (started from Setup) the same page drives an isolated, private show.
+  const REHEARSAL = new URLSearchParams(location.search).has('rehearsal');
+  const API = REHEARSAL ? '/api/admin/rehearsal' : '/api/operator';
   const S = { cues: [], payload: null, me: '', cuesVer: -1, sel: null, inflight: false, es: null, lastEvent: 0, rows: [] };
 
   const ICON = { clear: '🧹', blank: '⬛', image: '🖼', fullscreen: '⛶', loop: '🔁', section: '📑', note: '📝' };
@@ -28,8 +31,10 @@
 
   // ---- boot / login ----
   async function boot() {
-    const r = await api('GET', '/api/operator/state');
+    const r = await api('GET', API + '/state');
     if (r.status === 401 || r.status === 403) { showLogin(); return; }
+    if (r.status === 404) { document.body.textContent = 'No rehearsal is running. Start one from the Test step in Setup.'; return; }
+    if (REHEARSAL) document.title = 'Rehearsal — Operator';
     $('login').hidden = true;
     $('app').hidden = false;
     S.me = r.data.me;
@@ -47,7 +52,7 @@
   $('logout').addEventListener('click', async () => { if (S.es) S.es.close(); await api('POST', '/api/logout'); showLogin(); });
 
   async function claim(takeover) {
-    const r = await api('POST', '/api/operator/claim', { takeover });
+    const r = await api('POST', API + '/claim', { takeover });
     if (r.data.payload) setPayload(r.data.payload);
     return r.ok;
   }
@@ -56,7 +61,7 @@
   // ---- live updates ----
   function openStream() {
     if (S.es) S.es.close();
-    const es = new EventSource('/api/operator/stream');
+    const es = new EventSource(API + '/stream');
     S.es = es;
     S.lastEvent = Date.now();
     es.addEventListener('opstate', (e) => { S.lastEvent = Date.now(); $('dot').classList.add('on'); setPayload(JSON.parse(e.data)); });
@@ -69,7 +74,7 @@
     const needCues = S.cuesVer !== p.cuesVer;
     S.payload = p;
     if (needCues) {
-      const r = await api('GET', '/api/operator/state');
+      const r = await api('GET', API + '/state');
       if (r.ok) { applyState(r.data.cues, r.data.payload); return; }
     }
     renderStatus();
@@ -162,7 +167,7 @@
   function renderStatus() {
     const p = S.payload; if (!p) return;
     const o = p.op;
-    $('show').textContent = p.show.name || p.show.id || 'No show loaded';
+    $('show').textContent = (REHEARSAL ? 'REHEARSAL — ' : '') + (p.show.name || p.show.id || 'No show loaded');
     const live = $('live'); live.textContent = o.live ? '● LIVE' : 'NOT LIVE'; live.classList.toggle('on', o.live);
     $('viewers').textContent = '👥 ' + p.audience;
     const mine = isController();
@@ -185,7 +190,7 @@
     if (S.inflight) return;
     S.inflight = true;
     try {
-      const r = await api('POST', '/api/operator/' + name, Object.assign({ rev: op().rev }, extra));
+      const r = await api('POST', API + '/' + name, Object.assign({ rev: op().rev }, extra));
       if (r.data.payload) setPayload(r.data.payload);
       if (r.status === 409) toast(r.data.error || 'Out of date — refreshed');
       else if (r.data.notice) toast(r.data.notice);

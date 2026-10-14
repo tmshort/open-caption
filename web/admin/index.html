@@ -7,20 +7,39 @@
 <link rel="stylesheet" href="/static/admin/admin.css">
 </head>
 <body>
-<main>
+<form id="login" hidden>
   <h1>Open Caption — Setup</h1>
-  <form id="login" hidden>
-    <p>Enter the <strong>admin</strong> password. It was printed in the console the first time the server started, and is in <code>config.yaml</code>.</p>
-    <label>Admin password <input id="pw" type="password" name="password" autocomplete="current-password" required autofocus></label>
-    <button>Sign in</button>
-    <p id="err" role="alert"></p>
+  <p>Enter the <strong>admin</strong> password. It was printed in the console the first time the server started, and it is in <code>config.yaml</code>.</p>
+  <label>Admin password <input id="pw" type="password" name="password" autocomplete="current-password" required></label>
+  <button class="primary">Sign in</button>
+  <p id="loginerr" role="alert"></p>
+</form>
+
+<div id="app" hidden>
+  <header>
+    <h1>Open Caption <span>Setup</span></h1>
+    <span id="working" class="pill" title="The show you are working on"></span>
+    <span id="live" class="pill live" hidden>● SHOW IS LIVE</span>
+    <span class="grow"></span>
+    <span id="viewers" class="pill" title="Audience devices connected">👥 0</span>
+    <a class="quiet" href="/operator">Operator page</a>
+    <button id="logout" class="quiet">Sign out</button>
+  </header>
+  <nav id="steps" aria-label="Setup steps"></nav>
+  <main id="panel"></main>
+</div>
+
+<dialog id="dlg">
+  <form method="dialog">
+    <h2 id="dlgtitle"></h2>
+    <div id="dlgbody"></div>
+    <menu>
+      <button type="button" id="dlgcancel">Cancel</button>
+      <button value="ok" id="dlgok" class="primary">OK</button>
+    </menu>
   </form>
-  <section id="app" hidden>
-    <p>Signed in. The setup screens (shows, scripts, images, look) are coming next.</p>
-    <p><a href="/operator">Open the operator page</a></p>
-    <button id="logout">Sign out</button>
-  </section>
-</main>
+</dialog>
+<div id="toast" role="status"></div>
 <script src="/static/admin/admin.js"></script>
 </body>
 </html>

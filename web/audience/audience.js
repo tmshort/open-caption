@@ -10,13 +10,16 @@
   const preloaded = new Set();
   let es = null, lastEvent = 0, backoff = 500, offlineTimer = null, retryTimer = null;
 
+  const FONTS = { system: 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif', serif: 'Georgia, "Times New Roman", serif', mono: 'ui-monospace, Menlo, Consolas, monospace' };
+
   // ---- rendering ----
   function applyTheme(t) {
     state.theme = t || {};
     const r = document.documentElement.style;
     if (t.bg) r.setProperty('--bg', t.bg);
     if (t.fg) r.setProperty('--fg', t.fg);
-    if (t.accent) r.setProperty('--accent', t.accent);
+    if (t.accent) r.setProperty('--accent', t.speakers === 'color' ? t.accent : t.fg || t.accent);
+    r.setProperty('--font', FONTS[t.font] || FONTS.system);
     const local = parseInt(params.get('size'), 10);
     const pct = local > 0 ? local : (t.scalePct || 100);
     r.setProperty('--scale', String((pct / 100) * (projector ? 1.5 : 1)));
@@ -147,7 +150,8 @@
     clearTimeout(retryTimer);
     if (es) es.close();
     const q = params.get('lang') ? '?lang=' + encodeURIComponent(params.get('lang')) : '';
-    es = new EventSource('/events' + q);
+    // A rehearsal (started from Setup) streams from a private, authenticated endpoint.
+    es = new EventSource(params.has('rehearsal') ? '/api/admin/rehearsal/events' : '/events' + q);
     lastEvent = Date.now();
     es.onopen = () => { backoff = 500; setOnline(true); };
     es.onerror = () => {

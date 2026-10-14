@@ -29,12 +29,12 @@ Each milestone is shippable and ends with a demoable result. Tasks reference req
 - [x] Live state persisted to `live.json` and restored on restart (REQ-012)
 
 ## M4 — Setup
-- [ ] Shows CRUD, script editor + diagnostics, asset upload/management (REQ-020, 024, 054)
-- [ ] Theme editor with live previews (REQ-045)
-- [ ] Wizard flow, network panel, QR page (REQ-050, 053)
-- [ ] Rehearsal mode: isolated engine, `/api/admin/rehearsal/*`, preview pane (wizard Test step)
-- [ ] Live-mode guard rails (REQ-052)
-- [ ] Export/import show zip
+- [x] Shows CRUD, script editor + diagnostics, asset upload/management (REQ-020, 024, 054)
+- [x] Theme editor with live previews and contrast check (REQ-045)
+- [x] Wizard flow, network panel, QR page (REQ-050, 053)
+- [x] Rehearsal mode: isolated engine, `/api/admin/rehearsal/*`, preview pane (wizard Test step)
+- [x] Live-mode guard rails (REQ-052)
+- [x] Export/import show zip
 
 ## M5 — Polish and hardening
 - [ ] Wake-lock handling, iOS quirks, projector mode (REQ-043, 044)

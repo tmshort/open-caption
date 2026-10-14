@@ -89,7 +89,7 @@ func analyze(text string, assets []show.Asset) (Analysis, []script.Cue) {
 			note(it, c.Line)
 		}
 	}
-	var missing []Missing
+	missing := []Missing{} // never null in JSON
 	for name, lines := range used {
 		if !have[name] {
 			missing = append(missing, Missing{Name: name, Lines: lines})
