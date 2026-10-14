@@ -21,6 +21,17 @@ Query parameters on `/` and `/events`: `?display=projector`, `?size=<pct>`,
 `?theme=light|dark`, `?lang=<code>` (planned, doc 03). If `lang` is absent, the server picks one from the
 `Accept-Language` request header, falling back to `defaults.language` (`en`).
 
+### Help — admin or operator session
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/help` | Help viewer page (topic list + content); `?role=admin\|operator` picks the default topic set |
+| GET | `/help/{topic}` | One topic as rendered HTML fragment (`?format=md` returns the Markdown source) |
+| GET | `/help/sample-script.md` | Downloadable starter script demonstrating every convention |
+
+Help is embedded in the binary (no network needed). It contains no secrets, but
+is served only to logged-in sessions so the audience never sees operator tooling.
+
 ### Pages and authentication
 
 | Path | Who | Notes |

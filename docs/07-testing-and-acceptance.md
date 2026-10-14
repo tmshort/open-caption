@@ -16,6 +16,7 @@
 - Loops: per-item duration, loop default, config default; loop first in file auto-starts; STOP→blank→NEXT; Back after ending a loop; reconnect mid-loop shows the current item; images in the next loop are preloaded.
 - Auth: separate passwords; admin session works on `/operator`, operator session rejected on `/admin`; no Basic-auth challenge; cookie `Secure` only over HTTPS; HTTP and HTTPS serve the same routes with no redirect.
 - Script: no markup → N captions; comments/blank lines ignored; CRLF; BOM; very long line; unicode/emoji/RTL passthrough; unclosed `[loop]`, raw `<b>` shown literally with an info diagnostic, `<!-- -->` comments (single- and multi-line, unclosed) never reach any client, `[note: …]` reaches only the operator view, `#` lines ignored with an info diagnostic; unknown directive; missing image with fuzzy suggestion; `\#` escape; `[[ ]]` multi-line; speaker detection positives/negatives.
+- Help: every parser directive/escape/diagnostic is documented in `web/help/` (test); every fenced example parses without errors; sample script parses clean; opening help on `/operator` pauses show-control keys; help works with no network.
 - Escaping: `<script>`, `onerror=`, `javascript:` links, `<img src=http…>` in script text are rendered as literal text; Markdown links are not clickable; image refs only resolve to uploaded assets.
 - Engine: advance past end (no-op + signal "end of script"); back at start; jump forward/backward equals sequential; `clear` mid-history then undo restores scrollback; fullscreen followed by caption dismisses fullscreen; restart restores cursor and scrollback.
 - Concurrency: two operator sessions advancing simultaneously → exactly one advance applied, other gets 409.
@@ -43,3 +44,4 @@
 12. [ ] Projector mode readable from the back of the room.
 13. [ ] A second operator tab is view-only until takeover.
 14. [ ] Audience cannot reach any `/api/*` mutating endpoint or `/admin`.
+15. [ ] A new volunteer finds how to add a comment, a note, an image and a loop using only the in-app help.

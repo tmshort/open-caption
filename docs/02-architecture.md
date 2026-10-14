@@ -114,6 +114,7 @@ internal/
   netinfo/               enumerate host IPs, QR code, self-signed cert helper
 web/                     embedded static assets
   setup/  operator/  audience/  shared/
+  help/                  help topics as Markdown (embedded), rendered by the same Markdown code as scripts
 docs/
 ```
 

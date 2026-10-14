@@ -57,6 +57,7 @@ multiple simultaneous shows, internet-facing deployment.
 - **REQ-033** Operator view shows live audience count and connection health.
 - **REQ-034** Only one operator controls at a time; others are view-only, with explicit takeover.
 - **REQ-035** Operator can work from a laptop keyboard, and also from a tablet/phone (large Next button; optional Bluetooth clicker maps to keys).
+- **REQ-037** Built-in help for operators and admins, available from every `/admin` and `/operator` screen, works offline, and includes the script/Markdown conventions with copy-able examples (doc 05, section 4).
 - **REQ-036** Setup (`/admin`) and Operator (`/operator`) are separate pages with separate passwords; the operator page exposes no setup actions.
 
 ### Audience

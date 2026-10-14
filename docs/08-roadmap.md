@@ -36,6 +36,7 @@ Each milestone is shippable and ends with a demoable result. Tasks reference req
 
 ## M5 — Polish and hardening
 - [ ] Wake-lock handling, iOS quirks, projector mode (REQ-043, 044)
+- [ ] Help viewer and topics for admins and operators, incl. script conventions and sample script; help-coverage tests (REQ-037)
 - [ ] Accessibility pass (REQ-063)
 - [ ] Rehearsal mode
 - [ ] `/captive-api`, venue network guide (doc 06)

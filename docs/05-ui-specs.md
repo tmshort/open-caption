@@ -18,7 +18,7 @@ Goal: a first-time volunteer can finish without reading documentation.
 
 ### Steps
 - **Show**: name; list of existing shows with Duplicate / Archive / Delete (confirm).
-- **Script**:
+- **Script**: (a **Help** link here opens the "Writing a script" topic)
   - Drag-and-drop file, "Choose file…", or paste into an editor.
   - Editor pane (monospace, line numbers) + Diagnostics pane. Clicking a diagnostic jumps to the line.
   - Live preview of the parsed cue list (kinds shown as icons: 💬 caption, 🖼 image, ⛶ fullscreen, 🔁 loop, ⬛ blank, 🧹 clear, 📑 section, 📝 note).
@@ -101,6 +101,49 @@ Principle: **no interaction needed.** Controls, if any, are hidden/minimal.
 - **Responsive**: font size uses `clamp()` with `vw`/`vh` units relative to the theme `scalePct`; works portrait and landscape; safe-area insets for iPhone.
 - **Accessibility**: captions container `role="log" aria-live="polite"`; contrast ≥ 7:1 by default; no flashing.
 - **Size budget**: audience page + JS + CSS ≤ 50 KB gzipped, no external requests.
+
+## 4. Help (operators and admins)
+
+Help is part of the product, not an afterthought (REQ-037). It is written for
+volunteers: plain language, short, with examples.
+
+**Access**
+- Every `/admin` and `/operator` screen has a **Help** button in the header and responds to `?` / `F1`. It opens a viewer with a topic list, search, and the current topic's content; it is context-sensitive (opened from the Script step → "Writing a script").
+- Both pages link to the same viewer (`/help`), with the topic list ordered for the user's role.
+- Works offline; content is embedded in the binary.
+- **Operator safety:** while the help viewer is open on `/operator`, show-control keys (Space, Shift+Q, etc.) are disabled, so reading help can't advance the show. A banner reminds the operator "Keys paused — close help (Esc) to resume". Help opens as a panel beside the script where space allows so the operator can keep an eye on the show.
+
+**Format and source.** Topics are Markdown files in `web/help/`, rendered with the same renderer as scripts. Examples are fenced code blocks with **Copy** (and, in the script editor, **Insert at cursor**) buttons.
+
+**Topics for admins**
+1. *Getting started* — the six wizard steps; how to find the audience URL/QR; where passwords are (`config.yaml`).
+2. *Writing a script* — the Markdown conventions (below).
+3. *Images* — formats, sizes, the 1 MB warning, naming, what "missing image" means.
+4. *Loops: pre-show and intermission* — syntax, durations, how the operator starts/stops them.
+5. *Look and feel* — themes, contrast, speaker colors, projector mode.
+6. *Languages* — translated scripts, identical structure, how audiences pick.
+7. *Network and joining* — URL, QR, HTTPS caveats, venue prerequisites.
+8. *Troubleshooting* — port in use, nobody can connect, images slow, script warnings explained.
+
+**Topics for operators**
+1. *Running the show* — one-page summary: NEXT, Back, STOP, what the highlighted line means.
+2. *Keyboard reference* — the table in section 2 (generated from the same key map the page uses, so it can't drift).
+3. *Loops* — how they start, STOP (blank), NEXT (continue), Back (restart).
+4. *Indicators* — connection dot, audience count, controller/takeover, image/loop chips.
+5. *If something goes wrong* — wrong line sent (Back), lost connection, someone else took control, audience can't see captions, send an ad-hoc message, blank/clear.
+
+**"Writing a script" must cover every script convention in doc 03**, each with a short example and the result:
+- one line = one caption (and wrapping; you decide where to break lines)
+- `**bold**`, `*italic*`, `(stage directions)`, `NAME: speaker` labels, `\` line continuation and `[[ … ]]` multi-line captions
+- comments `<!-- … -->` (never shown) versus `[note: …]` (operator only); `#` is reserved for future headings
+- `[clear]`, `[blank]`, `[image: file | caption]`, `![caption](file)`, `[fullscreen: text]`, `[section: name]`
+- `[loop] … [/loop]` with durations
+- `[language: xx | Name]`
+- escaping (`\*`, `\#`, `\[`, `\:`) and that raw HTML isn't supported
+- a "what the warnings mean" list mirroring the diagnostics
+- a link to download the sample script
+
+**Keeping help correct.** The parser's directive/syntax registry is the single list of conventions; a unit test fails if any directive, escape, or diagnostic code has no mention in the help topics, and another parses every fenced example in help to check it produces no errors.
 
 ## Visual design
 
