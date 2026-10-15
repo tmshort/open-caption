@@ -40,7 +40,7 @@ is served only to logged-in sessions so the audience never sees operator tooling
 | `/admin` | admin password | Setup UI |
 | `/operator` | operator **or** admin password | Live control UI |
 
-**Access and request checks.** Before authentication, every request to the Setup/operator pages, scripts, APIs and login is checked against `access.admin_allow` / `access.operator_allow` (doc 02): `403` from an unlisted computer. State-changing `/api/*` requests (POST/PUT/DELETE) are refused with `403` if `Origin` does not match `Host` or `Sec-Fetch-Site` is `cross-site`/`same-site`. `/static/shared/` (speaker colors, fonts) is public.
+**Access and request checks.** Before authentication, every request to the Setup/operator pages, their JavaScript, APIs and login is checked against `access.admin_allow` / `access.operator_allow` (doc 02): `403` from an unlisted computer. State-changing `/api/*` requests (POST/PUT/DELETE) are refused with `403` if `Origin` does not match `Host` or `Sec-Fetch-Site` is `cross-site`/`same-site`. `/static/shared/` (speaker colors, fonts) is public.
 
 Each page shows its own **login form** (HTML form, not HTTP Basic auth, so
 password managers work) and sets an HttpOnly, SameSite=Strict session cookie

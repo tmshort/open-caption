@@ -77,7 +77,7 @@ The app should not run its own DHCP/DNS in v1 (conflicts, privileges, scope).
 - Forged requests (another website, or another port of this computer, making a browser send a request) are refused by an `Origin` / `Sec-Fetch-Site` check on all state-changing API calls.
 - Do not expose the port to the internet. Documented.
 - Uploaded files: PNG/JPG/GIF/WebP only (content-sniffed, 10 MB limit), served with `X-Content-Type-Options: nosniff`. SVG is rejected.
-- Audience page CSP: `default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; frame-ancestors 'self'` (fonts and scripts are all served by the program itself).
+- Audience page CSP: `default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; frame-ancestors 'self'` (fonts and JavaScript are all served by the program itself).
 
 ## Backups
 

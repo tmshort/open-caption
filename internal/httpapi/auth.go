@@ -280,7 +280,7 @@ func (s *Server) allowedFor(role string, r *http.Request) bool {
 
 const notFromHere = "That page is not available from this computer. It can only be opened from the computers listed under access in config.yaml."
 
-// gate protects a page (HTML or its scripts) with the access list.
+// gate protects a page (HTML or its JavaScript) with the access list.
 func (s *Server) gate(role string, h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !s.allowedFor(role, r) {

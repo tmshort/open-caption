@@ -36,7 +36,7 @@
 5. **Standard library first.** `net/http` (Go 1.22+ pattern routing), `crypto/tls`, `embed`.
    Allowed dependencies (all Apache-2.0-compatible): a YAML parser
    (`gopkg.in/yaml.v3`) and a QR generator (`github.com/skip2/go-qrcode`), or equivalents.
-   No HTML sanitizer is needed: scripts have no raw HTML; the server escapes all
+   No HTML sanitizer is needed: show files have no raw HTML; the server escapes all
    text and emits only the tags it generates from the Markdown subset (doc 03).
    Frontend is vanilla JS/CSS with no build step (low contributor barrier,
    self-contained binary).
@@ -162,7 +162,7 @@ test/e2e/                browser end-to-end test (Node + Chrome)
 - Login is an HTML form posting to `/api/login`, producing an HttpOnly, SameSite=Strict cookie (`Secure` over HTTPS). **No HTTP Basic auth** (poor password-manager support).
 - Audience routes (the public table in doc 04: `/`, `/events`, `/assets/*`, `/healthz`, `/captive-api`) are open and cannot reach any mutating endpoint. Help content requires a session.
 - **Sessions survive a restart** (`sessions.json`, hashed tokens, discarded when a password changes), so an operator is not signed out if the program restarts mid-show. Passwords can be changed from the Setup page (written to `config.yaml`, effective at once).
-- **Access lists** (`access.admin_allow`, `access.operator_allow`): which computers may open Setup / the operator page (and sign in to them). Entries: `localhost`, `private`, an address, or a network. An empty list lets anyone try the password (the default); an unreadable list denies everything. The check is made on pages, scripts, APIs and login, so a session cookie does not work from an unlisted computer. An admin address may also use the operator pages. The client address is the TCP peer; proxy headers are not trusted.
+- **Access lists** (`access.admin_allow`, `access.operator_allow`): which computers may open Setup / the operator page (and sign in to them). Entries: `localhost`, `private`, an address, or a network. An empty list lets anyone try the password (the default); an unreadable list denies everything. The check is made on pages, JavaScript, APIs and login, so a session cookie does not work from an unlisted computer. An admin address may also use the operator pages. The client address is the TCP peer; proxy headers are not trusted.
 - **Forged requests:** state-changing `/api/*` requests are refused if the browser says they came from another site or another port of this computer (`Origin` not equal to `Host`, or `Sec-Fetch-Site` cross-site/same-site). Requests with no `Origin` (command-line tools) are allowed; the cookie is also SameSite=Strict.
 - The generated first-run passwords are printed to the **console only**; they are never sent to a browser, because the login page is reachable from the guest network. (The config file itself is the other place to find them.)
 - Intended for a trusted LAN; not hardened for the public internet (documented).

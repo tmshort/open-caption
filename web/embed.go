@@ -8,7 +8,7 @@ import "embed"
 //go:embed audience
 var Audience embed.FS
 
-// Shared holds scripts used by more than one page (such as speaker colors).
+// Shared holds JavaScript used by more than one page (such as speaker colors).
 //
 //go:embed shared
 var Shared embed.FS
