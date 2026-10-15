@@ -44,6 +44,12 @@ Each milestone is shippable and ends with a demoable result. Tasks reference req
 - [x] Support bundle, logging (REQ-061)
 - [ ] Device matrix testing and acceptance checklist (doc 07)
 
+## After M5: hardening and polish
+- [x] Access lists for Setup/operator, forged-request check, scroll-back for the audience, rewritten end-to-end test (`make e2e`, also a CI job), specs reconciled (2026-10-15)
+- [ ] Real-device rehearsal (the largest remaining risk); minimum browser versions to be set from it
+- [ ] Signed/notarized builds, installers, release pipeline
+- [ ] Screen-reader and contrast audit
+
 ## Housekeeping after M5
 - [x] Help ships the guides (`docs/usage-guide.md`, `docs/venue-network-guide.md`) inside the program, rendered with nested lists and in-page links
 - [x] Rename and duplicate shows

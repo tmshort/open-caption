@@ -1,7 +1,7 @@
 VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
 LDFLAGS := -s -w -X main.version=$(VERSION)
 
-.PHONY: build test race fuzz vet dist clean
+.PHONY: build test race fuzz vet e2e dist clean
 build:
 	go build -ldflags "$(LDFLAGS)" -o bin/open-caption ./cmd/open-caption
 test:
@@ -12,6 +12,9 @@ fuzz:
 	go test ./internal/script -run xxx -fuzz FuzzParse -fuzztime 30s
 vet:
 	go vet ./...
+# Browser end-to-end test: needs Node and Chrome (set CHROME to its path if not in the default place).
+e2e: build
+	cd test/e2e && npm install --no-audit --no-fund && node run.js
 # Cross-compile release binaries (REQ-001): no CGO.
 dist:
 	mkdir -p dist

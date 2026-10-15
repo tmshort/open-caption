@@ -4,12 +4,13 @@
 
 | Layer | What | How |
 |-------|------|-----|
-| Unit | `script` parser/validator (table-driven, golden files in `testdata/`), Markdown renderer/escaping, config load/generate, `live` engine (apply/undo/jump determinism), speaker detection | `go test ./...` |
-| Property/fuzz | `script.Parse` never panics, never emits unescaped HTML from input text; engine: `jump(n)` state == sequential apply state | `go test -fuzz` |
-| Integration | httptest server: login, upload, advance, SSE stream receives events in order; reconnect with `Last-Event-ID` yields snapshot | Go tests |
-| Load | N SSE clients (200, 500) + operator advancing at 1/s; measure delivery latency, memory, dropped clients | `cmd/loadtest` Go tool |
-| Browser E2E | Playwright (or chromedp): operator spacebar → audience DOM updates; fullscreen/clear behavior; offline/online reconnect | CI optional/nightly |
-| Manual device | iPhone Safari, iPad Safari, Android Chrome, desktop Chrome/Firefox/Edge, projector | Release checklist below |
+| Unit | `script` parser and validator (table-driven; the shipped sample must parse clean and its Spanish translation must match its structure), Markdown renderer/escaping, language structure check, config load/generate and access lists, `live` engine (apply/undo/jump determinism, persistence), show store, help renderer | `go test ./...` |
+| Property/fuzz | `script.Parse` never panics and never emits unescaped HTML (`FuzzParse`); engine: `jump(n)` state equals sequential apply state, for random scripts | `go test`, `make fuzz` |
+| Consistency | Help covers every script directive, escape and warning; every example in help parses clean; every operator key documented exists in `operator.js`; the guides in `docs/` render with working links and anchors; every bundled font is served | part of `go test ./...` |
+| Integration | httptest servers: login/roles/rate limit/cookie flags, access lists, forged-request refusal, operator flow and takeover, audience SSE (snapshot-then-events, late joiner, loops, 503), languages in lockstep, rehearsal isolation, persistence across restart, settings/passwords, edit conflicts, export/import | `go test ./...` |
+| Load | N SSE clients + the operator advancing; latency percentiles, dropped clients | `cmd/loadtest` (`./bin/open-caption --dev …`) |
+| Browser end-to-end | Real Chrome against the built program: Setup (sample show, edit conflict, Look), rehearsal isolation, live show with two languages, Back/Blank/Clear, songs and voices together, speaker colors, fonts, help pauses keys, scroll-back, language menu, Settings/password change, restart survival | `make e2e` (needs Node + Chrome; runs in CI as a separate job) |
+| Manual device | iPhone Safari, iPad Safari, Android Chrome, desktop Chrome/Firefox/Edge, a projector, a full house on real WiFi | Acceptance checklist below |
 
 ## Key test cases
 
@@ -24,11 +25,17 @@
 - Security: first-run passwords never appear in any HTTP response; beyond `audience.max_clients`, `/events` returns 503.
 - SSE: slow client doesn't delay others; overflow closes the slow client; heartbeat arrives; late joiner receives scrollback.
 
+- Languages: a translation that does not match the main script is reported with its own line number and is not offered; one keypress sends the same cue to every language and a language that drifts is moved back; negotiation by `?lang=`, `Accept-Language` quality values, regional fallback; devices on a language a new show lacks are told to reload; per-language state survives a restart.
+- Songs and voices: `~` shorthand, `[song]`, `[together]` and ` || ` (including mixed spoken/sung, unclosed blocks, escapes).
+- Security: access lists (listed, unlisted, bad entry denies all, cookie from an unlisted computer, admin address may run the show); forged `Origin`/`Sec-Fetch-Site` refused; sessions survive a restart but not a password change; the settings and support bundle never contain passwords.
+- Persistence: undo steps and last-action time survive a restart; two people saving one script is detected.
+
 ## Performance targets (verified by load test)
 
 - 200 concurrent audience connections: operator keypress → last client receives event p95 ≤ 250 ms, p99 ≤ 500 ms.
 - Server RSS < 150 MB at 200 clients; CPU < 10% of one core while idle-connected.
-- 500 clients degrade gracefully (no crash); connections beyond `audience.max_clients` (default 500) receive 503 and retry with backoff.
+- 500 clients degrade gracefully (no crash); connections beyond `audience.max_clients` (default 500, per language) receive 503 and retry with backoff.
+- Measured on one computer (2026-10-14): 200 clients p95 6 ms, 500 clients p95 8 ms, about 32 MB of memory. Real WiFi is the limit, not the program.
 
 ## Acceptance checklist (pre-release, in venue conditions if possible)
 
@@ -47,3 +54,9 @@
 13. [ ] A second operator tab is view-only until takeover.
 14. [ ] Audience cannot reach any `/api/*` mutating endpoint or `/admin`.
 15. [ ] A new volunteer finds how to add a comment, a note, an image and a loop using only the in-app help.
+16. [ ] The same walk-through with a second language: both languages show the same line on one keypress; the language menu and `Accept-Language` pick the right one; a deliberately broken translation is reported and held back.
+17. [ ] A song with lyrics, and two voices together, read correctly on a phone and a projector.
+18. [ ] Scrolling up on a phone to re-read does not lose the live captions, and "back to live" works.
+19. [ ] With `admin_allow: [localhost]`, Setup cannot be opened from a phone on the guest WiFi, and the audience page still works.
+20. [ ] The oldest iPad/iPhone/Android device you expect in the audience shows captions, keeps its screen on (or shows the Auto-Lock tip), and reconnects after being locked.
+21. [ ] Setup and the operator page work on the oldest device you intend to use for them (they need `<dialog>` support: Safari 15.4 or later).

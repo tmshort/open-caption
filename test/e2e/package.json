@@ -1,0 +1,7 @@
+{
+  "name": "open-caption-e2e",
+  "private": true,
+  "description": "Browser end-to-end test for open-caption (drives real Chrome against the built program)",
+  "scripts": { "test": "node run.js" },
+  "dependencies": { "puppeteer-core": "^24.0.0" }
+}

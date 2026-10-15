@@ -111,9 +111,19 @@ In order of reliability:
 ### Security
 
 - The audience page can only read. It cannot change the show or reach the setup and operator pages.
-- Setup and operator each require their own password (stored in plain text in `config.yaml`, which is created readable only by you). Give the operator password to the operator, not the admin password.
+- Setup and operator each require their own password (stored in plain text in `config.yaml`, which is created readable only by you). Give the operator password to the operator, not the admin password. Passwords can be changed from **Settings** in Setup.
+- **Anyone who can reach the server can open the Setup and operator sign-in pages, and over plain `http://` the passwords travel across the WiFi unencrypted.** On a shared guest WiFi that means a curious audience member could capture a password and take control of the captions. Reduce the risk, in this order:
+  1. **Limit which computers may open them.** In `config.yaml`:
+     ```yaml
+     access:
+       admin_allow: [localhost]            # Setup only on the captioning computer itself
+       operator_allow: [192.168.1.50]      # the operator's computer (or a network such as 192.168.1.0/24)
+     ```
+     Entries can be `localhost`, `private` (home/office address ranges), a single address, or a network like `192.168.1.0/24`. An empty list (the default) means any computer. An address in `admin_allow` may also use the operator page. Restart the program after editing. A bad entry stops the program with a message rather than allowing everyone. Settings in Setup shows what is currently allowed.
+  2. **Put the operator on a wired or separate network** that audience devices cannot join, or give the captions network a WPA2 password.
+  3. **Use HTTPS** (`https.enabled` in `config.yaml`) if you can give devices a certificate they trust; a self-signed one makes every device show a warning, and an unencrypted audience address is simpler.
+- A website, or another service on the same computer, cannot make a browser change the show behind your back: requests that did not come from the program's own pages are refused.
 - The program is meant for a private network. **Do not expose it to the internet.**
-- Passwords can be changed from **Settings** in the Setup page (no restart needed) or by editing `config.yaml` and restarting the program. People signed in with a password that changed are signed out. Otherwise logins last 12 hours and survive a restart, so an operator does not have to sign in again if the program is restarted mid-show.
 
 ## Installing and starting
 

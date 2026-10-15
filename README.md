@@ -21,7 +21,9 @@ The first run creates `config.yaml` (in your user config folder; the path is pri
 - **Audience:** the address shown in Setup → Go Live, or its QR code. Devices must be on the same WiFi.
 - **Help:** the **Help** button on Setup and Operator. Read [docs/usage-guide.md](docs/usage-guide.md) (deployment, checklist) and [docs/venue-network-guide.md](docs/venue-network-guide.md) (the WiFi side).
 
-`make test` runs the tests; `make dist` builds binaries for macOS, Windows and Linux. A browser smoke test lives in `test/e2e/`.
+`make test` runs the tests; `make e2e` runs the browser end-to-end test (needs Node and Chrome); `make dist` builds binaries for macOS, Windows and Linux.
+
+**Security note:** anyone who can reach the server can open the Setup and operator sign-in pages, and over plain `http://` passwords cross the WiFi unencrypted. Limit them with `access.admin_allow` / `access.operator_allow` in `config.yaml` (see [docs/usage-guide.md](docs/usage-guide.md#security)).
 
 ## Spec-driven workflow
 

@@ -40,6 +40,8 @@ is served only to logged-in sessions so the audience never sees operator tooling
 | `/admin` | admin password | Setup UI |
 | `/operator` | operator **or** admin password | Live control UI |
 
+**Access and request checks.** Before authentication, every request to the Setup/operator pages, scripts, APIs and login is checked against `access.admin_allow` / `access.operator_allow` (doc 02): `403` from an unlisted computer. State-changing `/api/*` requests (POST/PUT/DELETE) are refused with `403` if `Origin` does not match `Host` or `Sec-Fetch-Site` is `cross-site`/`same-site`. `/static/shared/` (speaker colors, fonts) is public.
+
 Each page shows its own **login form** (HTML form, not HTTP Basic auth, so
 password managers work) and sets an HttpOnly, SameSite=Strict session cookie
 (`Secure` only when served over HTTPS). The admin and operator passwords are
@@ -57,7 +59,8 @@ everywhere an operator session is; the reverse is not true.
 |--------|------|-------------|
 | GET | `/api/admin/shows` | List shows |
 | POST | `/api/admin/shows` | Create `{name}` |
-| GET/PUT/DELETE | `/api/admin/shows/{id}` | Metadata, theme, delete |
+| GET/PUT/DELETE | `/api/admin/shows/{id}` | Metadata (`name`, `lookSaved`), theme (including per-language `idleMessages`), delete |
+| POST | `/api/admin/shows/{id}/duplicate` | `{name?}` copy scripts (every language), images and look |
 | GET | `/api/admin/shows/{id}/script` | Raw text + parsed cues + diagnostics (`?lang=`) |
 | PUT | `/api/admin/shows/{id}/script` | Body: raw script text (`?lang=`) → diagnostics |
 | POST | `/api/admin/shows/{id}/script/validate` | Dry-run parse without saving |
@@ -70,7 +73,9 @@ everywhere an operator session is; the reverse is not true.
 | POST | `/api/admin/rehearsal/start` | Create an isolated rehearsal engine for this session (doc 02) |
 | POST | `/api/admin/rehearsal/{next,back,stop,jump,blank,clear,reset}` | Same bodies/semantics as `/api/operator/*`, applied to the rehearsal engine only |
 | GET | `/api/admin/rehearsal/events` | SSE of the rehearsal's audience-view events (drives the preview pane) |
-| GET | `/api/admin/settings` | Effective config (passwords redacted) |
+| GET | `/api/admin/settings` | Effective config (passwords redacted), settings file and data folder locations, listening ports, `adminAllow`/`operatorAllow` and whether they restrict anyone |
+| PUT | `/api/admin/settings/passwords` | `{admin?, operator?}` (min 6 characters, different from each other) written to `config.yaml`, effective at once; signs out others using a changed password |
+| GET | `/api/admin/settings/operator-password` | The current operator password (for handing over) |
 | GET | `/api/admin/network` | Host IPs, ports, audience URL(s); QR PNG at `/api/admin/network/qr.png` |
 | GET | `/api/admin/support-bundle` | Zip: `info.txt`, `config.redacted.yaml`, `log.txt` (last 1000 lines), `shows.txt`. Passwords are never included |
 

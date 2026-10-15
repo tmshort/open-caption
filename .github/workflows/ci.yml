@@ -21,3 +21,18 @@ jobs:
         with:
           go-version-file: go.mod
       - run: make dist
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: make build
+      - run: cd test/e2e && npm ci --no-audit --no-fund
+      - run: cd test/e2e && node run.js
+        env:
+          CHROME: /usr/bin/google-chrome

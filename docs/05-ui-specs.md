@@ -29,6 +29,9 @@ Goal: a first-time volunteer can finish without reading documentation.
 - **Test**: "Rehearsal mode" runs the operator view against an **isolated rehearsal engine** (doc 02) with a preview pane side-by-side. Nothing is sent to real audience devices and the live show is unaffected; position resets afterward.
 - **Go Live**: shows audience URL (large), QR code (printable page for lobby signs), host IPs, current audience count, and a "Start Show" button that activates the show and opens `/operator`.
 
+### Settings (header button)
+Shows the program version, the settings file, the data folder, the web ports, and **who may open Setup and the operator page** (with a warning when it is any computer on the network). Lets the admin change the admin and/or operator password (at least 6 characters, different from each other; blank keeps one) and reveal the current operator password to hand over. People signed in with a changed password are signed out; the admin making the change stays signed in. The Help button opens the help panel and F1 does the same.
+
 ### Network panel (always visible in the header)
 `Audience URL: http://192.168.1.10/ ▸ copy ▸ QR` (plus the `https://` URL when HTTPS is enabled, with a note that a self-signed certificate shows a browser warning) with a warning banner if no non-loopback address is detected or a fallback port is in use.
 

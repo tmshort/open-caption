@@ -128,33 +128,42 @@ fall back to the base language, e.g. `es-MX` → `es`, and a plain `pt` is serve
 the only Portuguese) against the languages the active show provides; otherwise it uses the show's main
 language. Responses carry `Vary: Accept-Language`.
 
-## Package layout (proposed)
+## Package layout
 
 ```
-cmd/open-caption/        main: flags, wiring, signal handling
+cmd/open-caption/        main: flags, wiring, signal handling, listeners (HTTP and optional HTTPS)
+cmd/loadtest/            audience load generator (needs --dev on the server)
 internal/
-  config/                config.yaml load/generate, flags/env overrides, data-dir resolution
-  script/                parser, validator, Markdown-subset renderer, cue model (pure, heavily tested)
-  show/                  show store (CRUD, assets), persistence
-  live/                  engine: LiveState, cursor, history, loop timer, apply/jump/undo
-  hub/                   SSE fanout, client registry, counters
-  httpapi/               routes, auth middleware, handlers, HTTP/HTTPS listeners
-  netinfo/               enumerate host IPs, QR code, self-signed cert helper
-web/                     embedded static assets
-  setup/  operator/  audience/  shared/
-  help/                  help topics as Markdown (embedded), rendered by the same Markdown code as scripts
-docs/
+  config/                config.yaml load/generate/validate, access allow-lists, data-dir resolution
+  script/                parser, validator, Markdown-subset renderer, cue model, language structure check (pure, heavily tested)
+  show/                  show store: shows, scripts per language, validated image assets, duplicate
+  live/                  engine: state, cursor, undo history, loop timer, apply/jump/back, export/restore
+  hub/                   SSE fanout, client registry, non-blocking broadcast
+  httpapi/               routes, auth + sessions, access/origin guards, runtime (engines + hubs per language), admin/operator/audience handlers
+  help/                  help topic loader, safe Markdown renderer, search
+  netinfo/               host addresses, self-signed certificate
+  logbuf/                in-memory recent log lines (support bundle)
+web/                     embedded browser assets (go:embed)
+  admin/ operator/ audience/ helpui/   the four pages
+  shared/                speaker colors and the bundled fonts (OpenDyslexic, Atkinson Hyperlegible)
+  help/                  help topics (Markdown); docs/ guides are added to them at build time
+  sample/                the sample show (script, Spanish translation, placeholder images)
+docs/                    these specs, the usage guide and venue network guide (docs/embed.go ships the guides in the program)
+deploy/                  systemd / launchd / Windows service files
+test/e2e/                browser end-to-end test (Node + Chrome)
 ```
 
-`script`, `live`, and `hub` must not import `httpapi`; they are testable
-without a network.
+`script`, `live`, `hub`, `show` and `help` must not import `httpapi`; they are testable without a network.
 
 ## Authentication
 
 - Two roles with **separate passwords**: `admin` (pages `/admin`) and `operator` (page `/operator`). An admin session also satisfies operator checks.
 - Passwords live in **plaintext in `config.yaml`** (initial design; the file is created with mode 0600). On first run, if no config exists, the server generates it with random passwords and prints them to the console.
 - Login is an HTML form posting to `/api/login`, producing an HttpOnly, SameSite=Strict cookie (`Secure` over HTTPS). **No HTTP Basic auth** (poor password-manager support).
-- Audience routes (the public table in doc 04: `/`, `/events`, `/assets/*`, `/healthz`, `/captive-api`) are open and cannot reach any mutating endpoint. Help (`/help`) requires a session.
+- Audience routes (the public table in doc 04: `/`, `/events`, `/assets/*`, `/healthz`, `/captive-api`) are open and cannot reach any mutating endpoint. Help content requires a session.
+- **Sessions survive a restart** (`sessions.json`, hashed tokens, discarded when a password changes), so an operator is not signed out if the program restarts mid-show. Passwords can be changed from the Setup page (written to `config.yaml`, effective at once).
+- **Access lists** (`access.admin_allow`, `access.operator_allow`): which computers may open Setup / the operator page (and sign in to them). Entries: `localhost`, `private`, an address, or a network. An empty list lets anyone try the password (the default); an unreadable list denies everything. The check is made on pages, scripts, APIs and login, so a session cookie does not work from an unlisted computer. An admin address may also use the operator pages. The client address is the TCP peer; proxy headers are not trusted.
+- **Forged requests:** state-changing `/api/*` requests are refused if the browser says they came from another site or another port of this computer (`Origin` not equal to `Host`, or `Sec-Fetch-Site` cross-site/same-site). Requests with no `Origin` (command-line tools) are allowed; the cookie is also SameSite=Strict.
 - The generated first-run passwords are printed to the **console only**; they are never sent to a browser, because the login page is reachable from the guest network. (The config file itself is the other place to find them.)
 - Intended for a trusted LAN; not hardened for the public internet (documented).
 
@@ -183,8 +192,11 @@ defaults:
   idle_message: "Captions will begin shortly"
   open_browser: true
 audience:
-  max_clients: 500
+  max_clients: 500                 # per language
   scrollback_lines: 200
+access:
+  admin_allow: []                  # [] = any computer; e.g. [localhost] or [192.168.1.0/24, private]
+  operator_allow: []
 ```
 
 ## Persistence layout
@@ -193,10 +205,11 @@ audience:
 <data-dir>/
   config.yaml             settings and passwords (above)
   shows/<id>/
-    show.yaml             metadata + theme
-    script.<lang>.md      imported script(s), verbatim (source of truth)
+    show.yaml             name, main language, theme (incl. per-language idle messages), look_saved
+    script.<lang>.md      one script per language, verbatim (source of truth)
     assets/<filename>     uploaded images
-  live.json               active show id, cursor, scrollback, mode (written on each change, debounced ≤ 250 ms)
+  sessions.json           signed-in sessions (hashed), so a restart does not sign anyone out
+  live.json               active show id and, per language: cursor, scrollback, mode, the last 10 undo steps (debounced ≤ 250 ms)
   tls/                    generated self-signed cert/key (if used)
 ```
 

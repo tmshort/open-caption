@@ -66,7 +66,7 @@ simultaneous shows, internet-facing deployment.
 - **REQ-046** A viewer can scroll up to re-read earlier lines without losing the live captions (a "back to live" control with a count of new lines); shared screens are not scrollable.
 - **REQ-041** Fullscreen mode (text or image) takes over the entire display, e.g. "Intermission", and later returns to scrolling captions.
 - **REQ-042** Works on current Safari/iOS, Chrome/Android, desktop Chrome/Firefox/Edge/Safari.
-- **REQ-043** Keeps the screen awake where the browser allows (Wake Lock; fallback video trick as a documented option).
+- **REQ-043** Keeps the screen awake where the browser allows (Wake Lock). Where it is unavailable (for example plain HTTP), a one-time tip asks the viewer to turn off Auto-Lock. *(The hidden-video fallback is not built.)*
 - **REQ-044** Projector display mode: URL parameter for larger type, no chrome, cursor hidden.
 - **REQ-045** Accessibility-first defaults: pure black background / white text, high contrast, large type, responsive to orientation and screen size. Venue-level theme (colors, font size) and optional per-speaker colors set in setup; optional per-device local font-size control that is never required. Two readability fonts are bundled and available as a show-wide choice and as a per-device option: a dyslexia-friendly one (OpenDyslexic) and a high-legibility one (Atkinson Hyperlegible).
 
@@ -74,6 +74,10 @@ simultaneous shows, internet-facing deployment.
 - **REQ-050** Setup is a guided wizard: create show → import script → upload images → look → test → go live.
 - **REQ-051** `/admin` and `/operator` each have their own password (plaintext in `config.yaml`, generated on first run), entered via a login form with a session cookie — not HTTP Basic auth. An admin session also works on `/operator`. The audience interface is open.
 - **REQ-052** Script edits during a live show require confirmation (typing the show name); the cursor is preserved by cue index, with a warning if the cue count changes.
+- **REQ-055** Setup and operator pages can be limited to listed computers (`access` in `config.yaml`); the audience page is always open. Forged cross-site requests to the API are refused.
+- **REQ-056** Passwords can be changed from the Setup page, without a restart.
+- **REQ-057** Two people editing a script do not silently overwrite each other.
+- **REQ-058** Logins, the operator's control, the show position and the last few undo steps survive a restart.
 - **REQ-053** The setup UI displays the audience URL and a QR code, plus the list of host IP addresses.
 - **REQ-054** Multiple shows can be stored; one is "active".
 

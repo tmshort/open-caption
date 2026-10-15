@@ -1,21 +1,21 @@
-# Browser smoke test
+# Browser end-to-end test
 
-Drives the real UI in Chrome: Setup rehearsal, Go Live, the Operator page
-(Space to advance), and a phone-sized Audience page. It checks that a rehearsal
-never reaches the live audience, that a leading loop starts by itself, and that
-captions appear on the audience page. Screenshots are written to the directory
-given as the first argument.
+Starts the built program on a free port with a throwaway data folder and drives **real Chrome** through
+Setup, the operator page and the audience page. It exits non-zero if any check fails.
 
-It needs Node and Chrome. It is not run by `go test`.
+What it covers: sign-in, the sample show and its Spanish translation, the edit-conflict dialog, the Look
+step, rehearsal isolation, a live show in two languages (Accept-Language, the language menu, translated
+labels), Back / Blank / Clear, songs and voices shown together, per-character colours, the dyslexia-friendly
+font, help pausing the operator keys, scroll-back with "back to live", Settings (changing a password), and a
+server restart (still signed in, position kept, undo still works).
 
 ```
-# 1. a throwaway data directory that already contains the shows' passwords
-mkdir -p /tmp/oc-e2e && printf 'admin_password: adminpw\noperator_password: operatorpw\n' > /tmp/oc-e2e/config.yaml
-make build && ./bin/open-caption --data /tmp/oc-e2e --http-addr :18095 &
-
-# 2. create the sample show once through the UI (Setup -> "Create a sample show"), then:
-npm install puppeteer-core
-OC_BASE=http://localhost:18095 node test/e2e/smoke.js /tmp/oc-e2e-shots
+make build
+cd test/e2e && npm install && node run.js
 ```
 
-Environment: `OC_BASE`, `OC_ADMIN_PW`, `CHROME` (path to the Chrome binary).
+Environment: `CHROME` (path to Chrome or Chromium; default is the macOS location), `OC_BIN` (the program,
+default `../../bin/open-caption`), `OC_SHOTS` (a folder to save screenshots in).
+
+Notes: Chrome allows only six connections per site and every open page holds a live stream, so the test
+closes pages it has finished with. The test needs no internet.
