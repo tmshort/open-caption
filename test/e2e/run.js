@@ -62,8 +62,13 @@ async function main() {
     section('Setup: sign in, sample show, show file, languages');
     const admin = await open();
     await admin.goto(B + '/admin'); await admin.waitForSelector('#pw');
-    await admin.type('#pw', 'wrong-password'); await admin.keyboard.press('Enter');
-    await admin.waitForFunction(() => document.getElementById('loginerr').textContent.trim() !== '', { timeout: 6000 }).catch(() => {});
+    // The form can show before the page's script has attached its handlers on a slow computer: try again.
+    for (let attempt = 0; attempt < 4; attempt++) {
+      await admin.evaluate(() => { document.getElementById('pw').value = ''; });
+      await admin.type('#pw', 'wrong-password'); await admin.keyboard.press('Enter');
+      const shown = await admin.waitForFunction(() => document.getElementById('loginerr').textContent.trim() !== '', { timeout: 4000 }).then(() => true, () => false);
+      if (shown) break;
+    }
     const loginErr = await admin.evaluate(() => document.getElementById('loginerr').textContent);
     check('a wrong password is refused', loginErr.includes('not accepted'), loginErr);
     await admin.evaluate(() => { document.getElementById('pw').value = ''; });
