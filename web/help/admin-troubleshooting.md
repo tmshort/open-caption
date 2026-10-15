@@ -34,7 +34,7 @@ If you cannot sign in at all, both passwords are in `config.yaml`, in the progra
 
 ## Looking at the log
 
-**Settings → Recent log…** shows what the program has logged lately. Choose *Problems only* to see warnings and errors, such as refused sign-ins or a name already used on the network. The same window sets how much detail is logged (**Log detail**); *Debug* adds every request, which helps when something odd is happening. Passwords are never written to the log.
+**Go Live → Recent log…** shows what the program has logged lately. Choose *Problems only* to see warnings and errors, such as refused sign-ins or a name already used on the network. The same window sets how much detail is logged (**Log detail**); *Debug* adds every request, which helps when something odd is happening. Passwords are never written to the log.
 
 ## Asking for help
 

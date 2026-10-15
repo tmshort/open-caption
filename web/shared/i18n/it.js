@@ -529,5 +529,8 @@ OCI18n.add("it", {
  "Keep the saved version as…": "Conserva la versione salvata come…",
  "Named versions are never forgotten. Use Keep to name what is saved now (for example “Opening night”), or name any version below. Compare shows what loading it would change.": "Le versioni con nome non vengono mai dimenticate. Usa Conserva per dare un nome a ciò che è salvato adesso (per esempio «Prima serata»), oppure dai un nome a una qualsiasi versione qui sotto. Confronta mostra cosa cambierebbe caricandola.",
  "Keep": "Conserva",
- "the name must be 1 to 80 characters on one line": "il nome deve avere da 1 a 80 caratteri su una sola riga"
+ "the name must be 1 to 80 characters on one line": "il nome deve avere da 1 a 80 caratteri su una sola riga",
+ "About this copy": "Informazioni su questa copia",
+ "These are fixed in the settings file. To change them, edit that file and start the program again.": "Questi valori sono fissati nel file delle impostazioni. Per cambiarli, modifica quel file e riavvia il programma.",
+ "Hide the operator password": "Nascondi la password operatore"
 });

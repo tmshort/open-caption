@@ -34,7 +34,7 @@ Si vous ne pouvez pas du tout vous connecter, les deux mots de passe se trouvent
 
 ## Consulter le journal
 
-**Réglages → Journal récent…** montre ce que le programme a enregistré récemment. Choisissez *Problèmes seulement* pour voir les avertissements et les erreurs, comme des connexions refusées ou un nom déjà utilisé sur le réseau. La même fenêtre règle la quantité de détails enregistrés (**Niveau de détail du journal**) ; *Débogage* ajoute chaque requête, ce qui aide quand quelque chose d'étrange se produit. Les mots de passe ne sont jamais écrits dans le journal.
+**En direct → Journal récent…** montre ce que le programme a enregistré récemment. Choisissez *Problèmes seulement* pour voir les avertissements et les erreurs, comme des connexions refusées ou un nom déjà utilisé sur le réseau. La même fenêtre règle la quantité de détails enregistrés (**Niveau de détail du journal**) ; *Débogage* ajoute chaque requête, ce qui aide quand quelque chose d'étrange se produit. Les mots de passe ne sont jamais écrits dans le journal.
 
 ## Demander de l'aide
 

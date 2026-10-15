@@ -34,7 +34,7 @@ Si no puede iniciar sesión de ninguna manera, las dos contraseñas están en `c
 
 ## Mirar el registro
 
-**Ajustes → Registro reciente…** muestra lo que el programa ha registrado últimamente. Elija *Solo problemas* para ver avisos y errores, como inicios de sesión rechazados o un nombre ya usado en la red. La misma ventana define cuánto detalle se registra (**Nivel de detalle del registro**); *Depuración* añade cada petición, lo que ayuda cuando ocurre algo raro. Las contraseñas nunca se escriben en el registro.
+**En vivo → Registro reciente…** muestra lo que el programa ha registrado últimamente. Elija *Solo problemas* para ver avisos y errores, como inicios de sesión rechazados o un nombre ya usado en la red. La misma ventana define cuánto detalle se registra (**Nivel de detalle del registro**); *Depuración* añade cada petición, lo que ayuda cuando ocurre algo raro. Las contraseñas nunca se escriben en el registro.
 
 ## Pedir ayuda
 

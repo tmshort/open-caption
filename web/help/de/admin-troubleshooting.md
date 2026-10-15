@@ -34,7 +34,7 @@ Wenn Sie sich gar nicht anmelden können, stehen beide Passwörter in `config.ya
 
 ## Das Protokoll ansehen
 
-**Einstellungen → Aktuelles Protokoll …** zeigt, was das Programm zuletzt protokolliert hat. Wählen Sie *Nur Probleme*, um Warnungen und Fehler zu sehen, etwa abgelehnte Anmeldungen oder einen im Netzwerk bereits verwendeten Namen. Dasselbe Fenster legt fest, wie viele Details protokolliert werden (**Protokoll-Detailgrad**); *Debug* fügt jede Anfrage hinzu, was hilft, wenn etwas Merkwürdiges passiert. Passwörter werden nie ins Protokoll geschrieben.
+**Live → Aktuelles Protokoll …** zeigt, was das Programm zuletzt protokolliert hat. Wählen Sie *Nur Probleme*, um Warnungen und Fehler zu sehen, etwa abgelehnte Anmeldungen oder einen im Netzwerk bereits verwendeten Namen. Dasselbe Fenster legt fest, wie viele Details protokolliert werden (**Protokoll-Detailgrad**); *Debug* fügt jede Anfrage hinzu, was hilft, wenn etwas Merkwürdiges passiert. Passwörter werden nie ins Protokoll geschrieben.
 
 ## Hilfe holen
 

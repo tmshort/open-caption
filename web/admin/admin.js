@@ -95,15 +95,25 @@
     const s = r.data;
     const adminPw = h('input', { type: 'password', autocomplete: 'new-password', 'aria-label': __('New admin password'), minlength: '6' });
     const opPw = h('input', { type: 'password', autocomplete: 'new-password', 'aria-label': __('New operator password'), minlength: '6' });
-    const shown = h('div', { class: 'hint' });
-    const reveal = h('button', { type: 'button', class: 'quiet', onclick: async () => {
+    const shown = h('div', { class: 'hint', role: 'status' });
+    const reveal = h('button', { type: 'button', class: 'quiet' }, __('Show the current operator password'));
+    reveal.addEventListener('click', async () => { // the same button shows it and hides it again
+      if (shown.textContent) { shown.textContent = ''; reveal.textContent = __('Show the current operator password'); return; }
       const x = await api('GET', '/api/admin/settings/operator-password');
       shown.textContent = x.ok ? __('Operator password: {password}', { password: x.data.password }) : __('Could not read it');
-    } }, __('Show the current operator password'));
+      if (x.ok) reveal.textContent = __('Hide the operator password');
+    });
+    const changePw = h('button', { type: 'button', onclick: async () => {
+      if (!adminPw.value && !opPw.value) { adminPw.focus(); toast(__('Enter a new password in at least one box.')); return; }
+      const res = await api('PUT', '/api/admin/settings/passwords', { admin: adminPw.value, operator: opPw.value });
+      if (!res.ok) return fail(res);
+      adminPw.value = opPw.value = ''; shown.textContent = ''; reveal.textContent = __('Show the current operator password');
+      toast(__('Passwords changed'));
+    } }, __('Change passwords'));
     const row = (k, v) => h('tr', {}, h('td', {}, __(k)), h('td', {}, v ? __(v) : '—'));
     const m = s.mdns || {};
     const mdnsOn = h('input', { type: 'checkbox', 'aria-label': __('Announce this computer by name') }); mdnsOn.checked = !!m.enabled;
-    const mdnsName = h('input', { type: 'text', maxlength: '63', size: '16', 'aria-label': __('Name'), autocapitalize: 'none', spellcheck: 'false' }); mdnsName.value = m.requested || 'open-caption';
+    const mdnsName = h('input', { type: 'text', class: 'netname', maxlength: '63', size: '16', 'aria-label': __('Name'), autocapitalize: 'none', spellcheck: 'false' }); mdnsName.value = m.requested || 'open-caption';
     const mdnsMsg = h('div', { class: 'hint', role: 'status' });
     const showMdns = (x) => {
       mdnsMsg.className = x.error ? 'check warn' : x.renamed ? 'check warn' : 'hint';
@@ -124,31 +134,32 @@
       s.logLevel = x.data.level; toast(x.data.note || __('Log detail: {level}', { level: x.data.level }), x.data.note ? 9000 : undefined);
     } }, ...[['error', 'Errors only'], ['warn', 'Problems (warnings and errors)'], ['info', 'Normal (events, sign-ins)'], ['debug', 'Debug (every request)']].map(([v, t]) => h('option', { value: v }, __(t))));
     logSelect.value = s.logLevel;
+    const sec = (title, ...kids) => h('section', { class: 'setsec' }, h('h3', {}, __(title)), ...kids);
     const body = h('div', {},
-      h('table', { class: 'cheat' },
-        row('Program', 'open-caption ' + s.version), row('Settings file', s.configPath), row('Shows and data', s.dataDir),
-        row('Setup page can be opened from', s.adminRestricted ? s.adminAllow.join(', ') : 'any computer on the network'),
-        row('Operator page can be opened from', s.operatorRestricted ? s.operatorAllow.join(', ') : 'any computer on the network'),
-        row('Web port (HTTP)', (s.httpAddr || '').replace(/^.*:/, '')), row('Web port (HTTPS)', (s.httpsAddr || '').replace(/^.*:/, ''))),
-      !s.adminRestricted && !s.httpsAddr ? h('p', { class: 'check warn' }, __('Anyone on this WiFi can try to sign in to Setup, and passwords travel unencrypted over plain http. To limit it, set access: admin_allow in the settings file (for example [localhost]); see the usage guide.')) : null,
-      h('h3', {}, __('Network name')),
-      h('p', { class: 'hint' }, __('Devices can open this computer by name instead of a number. It needs no router settings, but some guest WiFi networks block it, so keep the numeric address and QR code as the main way in.')),
-      h('div', { class: 'row' }, mdnsOn, __(' Announce as '), mdnsName, __('.local '), h('button', { type: 'button', onclick: applyMdns }, __('Apply'))), mdnsMsg,
-      h('h3', {}, __('Log detail')),
-      logSelect,
-      s.logLevelPinned ? h('p', { class: 'check warn' }, __('This copy was started with --log-level {level}, which overrides the settings file every time it starts. A change made here applies now but lasts only until the program restarts.', { level: s.logLevelPinned })) : null,
-      h('p', { class: 'hint' }, s.canChangePasswords ? __('How much the program records (in the support bundle and in the log file, if one is kept). Info records sign-ins and events; Debug adds every request, for tracking down a problem. Applies at once and is kept in the settings file.') : __('How much the program records (in the support bundle and in the log file, if one is kept). Info records sign-ins and events; Debug adds every request, for tracking down a problem. Applies at once.')),
-      h('h3', {}, __('Change passwords')),
-      s.canChangePasswords
-        ? h('div', {}, h('p', { class: 'hint' }, __('Leave a box empty to keep that password. At least 6 characters. People signed in with a changed password are signed out; you stay signed in.')),
-            h('label', { class: 'field' }, h('span', {}, __('New admin password')), adminPw),
-            h('label', { class: 'field' }, h('span', {}, __('New operator password')), opPw), reveal, shown)
-        : h('p', { class: 'hint' }, __('This copy was started without a settings file, so passwords cannot be changed here.')));
-    if (!await ask(__('Settings'), body, s.canChangePasswords ? __('Change passwords') : __('Close'), { noCancel: !s.canChangePasswords, extra: { label: __('Recent log…'), run: showLog } })) return;
-    if (!s.canChangePasswords) return;
-    const res = await api('PUT', '/api/admin/settings/passwords', { admin: adminPw.value, operator: opPw.value });
-    if (!res.ok) return fail(res);
-    toast(__('Passwords changed'));
+      sec('About this copy',
+        h('table', { class: 'cheat' },
+          row('Program', 'open-caption ' + s.version), row('Settings file', s.configPath), row('Shows and data', s.dataDir),
+          row('Setup page can be opened from', s.adminRestricted ? s.adminAllow.join(', ') : 'any computer on the network'),
+          row('Operator page can be opened from', s.operatorRestricted ? s.operatorAllow.join(', ') : 'any computer on the network'),
+          row('Web port (HTTP)', (s.httpAddr || '').replace(/^.*:/, '')), row('Web port (HTTPS)', (s.httpsAddr || '').replace(/^.*:/, ''))),
+        h('p', { class: 'hint' }, __('These are fixed in the settings file. To change them, edit that file and start the program again.')),
+        !s.adminRestricted && !s.httpsAddr ? h('p', { class: 'check warn' }, __('Anyone on this WiFi can try to sign in to Setup, and passwords travel unencrypted over plain http. To limit it, set access: admin_allow in the settings file (for example [localhost]); see the usage guide.')) : null),
+      sec('Network name',
+        h('p', { class: 'hint' }, __('Devices can open this computer by name instead of a number. It needs no router settings, but some guest WiFi networks block it, so keep the numeric address and QR code as the main way in.')),
+        h('div', { class: 'row' }, mdnsOn, __(' Announce as '), mdnsName, __('.local '), h('button', { type: 'button', onclick: applyMdns }, __('Apply'))), mdnsMsg),
+      sec('Log detail',
+        logSelect,
+        s.logLevelPinned ? h('p', { class: 'check warn' }, __('This copy was started with --log-level {level}, which overrides the settings file every time it starts. A change made here applies now but lasts only until the program restarts.', { level: s.logLevelPinned })) : null,
+        h('p', { class: 'hint' }, s.canChangePasswords ? __('How much the program records (in the support bundle and in the log file, if one is kept). Info records sign-ins and events; Debug adds every request, for tracking down a problem. Applies at once and is kept in the settings file.') : __('How much the program records (in the support bundle and in the log file, if one is kept). Info records sign-ins and events; Debug adds every request, for tracking down a problem. Applies at once.'))),
+      sec('Change passwords',
+        s.canChangePasswords
+          ? h('div', {}, h('p', { class: 'hint' }, __('Leave a box empty to keep that password. At least 6 characters. People signed in with a changed password are signed out; you stay signed in.')),
+              h('label', { class: 'field' }, h('span', {}, __('New admin password')), adminPw),
+              h('label', { class: 'field' }, h('span', {}, __('New operator password')), opPw),
+              h('div', { class: 'row' }, changePw, reveal), shown)
+          : h('p', { class: 'hint' }, __('This copy was started without a settings file, so passwords cannot be changed here.'))));
+    // Each section above has its own button (or applies as soon as you choose); this one only closes the window.
+    await ask(__('Settings'), body, __('Close'), { noCancel: true, wide: true });
   }
   // The program's recent log (the last 1000 lines it keeps in memory), so a problem can be looked at without
   // opening the log file or the support bundle.
@@ -279,7 +290,7 @@
     if (!A.shows.length) {
       p.append(h('div', { class: 'card empty' },
         h('p', { class: 'big' }, __('Welcome! Start by creating a show, or look around with the sample.')),
-        h('div', { class: 'row' }, newShowForm(), h('button', { onclick: makeSample }, __('Create a sample show')))));
+        h('div', { class: 'row' }, ...newShowForm(), h('button', { onclick: makeSample }, __('Create a sample show')))));
     } else {
       if (!current.length) p.append(h('div', { class: 'card empty' }, h('p', { class: 'big' }, __('All your shows are archived. Create a new show below, or restore one from the archive.'))));
       current.forEach((s) => p.append(h('div', { class: 'card show' },
@@ -291,7 +302,7 @@
         h('a', { href: '/api/admin/shows/' + s.id + '/export', download: s.id + '.zip' }, __('Export')),
         h('button', { class: 'quiet', disabled: s.active, title: s.active ? __('The show on air cannot be archived. Activate another show first.') : __('Put this show away; you can restore it later'), onclick: () => archiveShow(s, true) }, __('Archive')),
         h('button', { class: 'danger quiet', onclick: () => deleteShow(s) }, __('Delete…')))));
-      p.append(h('h3', {}, __('Add another show')), h('div', { class: 'card row' }, newShowForm(), h('button', { onclick: makeSample }, __('Sample show')),
+      p.append(h('h3', {}, __('Add another show')), h('div', { class: 'card row' }, ...newShowForm(), h('button', { onclick: makeSample }, __('Sample show')),
         h('label', { class: 'row' }, __('Import a show (.zip):'), h('input', { type: 'file', accept: '.zip', 'aria-label': __('Import a show (.zip):'), onchange: importShow }))));
     }
     if (archived.length) {
@@ -314,7 +325,7 @@
       await loadShows(); setCur(r.data.id); go('showfile');
     };
     inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') create(); });
-    return h('span', { class: 'row' }, inp, h('button', { class: 'primary', onclick: create }, __('Create show')));
+    return [inp, h('button', { class: 'primary', onclick: create }, __('Create show'))]; // two controls for the caller's row, so they line up with its other buttons
   }
   async function makeSample() {
     const r = await api('POST', '/api/admin/shows', { sample: true });
@@ -812,7 +823,7 @@
         h('button', { class: 'primary big', onclick: () => startShow(show), disabled: !a.cues.length }, isActive ? __('Restart the show and open the operator page') : __('Start show')),
         isActive ? h('a', { href: '/operator' }, __('Open the operator page without restarting')) : null,
         h('span', { class: 'hint' }, isActive ? __('This show is active.') : __('Starting makes this the show audiences see.'))),
-      h('p', { class: 'hint' }, __('Something not working? '), h('a', { href: '#', onclick: (e) => { e.preventDefault(); openHelp('admin-troubleshooting'); } }, __('Troubleshooting help')), ' · ', h('a', { href: '/api/admin/support-bundle', download: 'support-bundle.zip' }, __('Download a support bundle'))));
+      h('p', { class: 'hint' }, __('Something not working? '), h('a', { href: '#', onclick: (e) => { e.preventDefault(); openHelp('admin-troubleshooting'); } }, __('Troubleshooting help')), ' · ', h('a', { href: '/api/admin/support-bundle', download: 'support-bundle.zip' }, __('Download a support bundle')), ' · ', h('a', { href: '#', onclick: (e) => { e.preventDefault(); showLog(); } }, __('Recent log…'))));
   }
   async function startShow(show) {
     let r = await api('POST', '/api/admin/shows/' + show.id + '/activate', {});

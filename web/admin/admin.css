@@ -141,3 +141,9 @@ input.vname { width: 16rem; max-width: 100%; }
 pre.diff { max-height: 40vh; overflow: auto; margin: .4rem 0; padding: .4rem; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; font: .8rem/1.4 ui-monospace, Menlo, Consolas, monospace; white-space: pre-wrap; word-break: break-word; }
 pre.diff div { padding: 0 .2rem; }
 pre.diff .d-add { background: #1f6f3a33; } pre.diff .d-del { background: #b3262633; } pre.diff .d-skip { color: var(--dim); font-style: italic; }
+/* every button and text box in a row is the same height, so a row lines up */
+button, select, input[type=text], input[type=password], input[type=number], input[type=search] { min-height: 2.4rem; box-sizing: border-box; }
+.setsec { margin: 0 0 1.2rem; padding-top: .2rem; }
+.setsec + .setsec { border-top: 1px solid var(--line); padding-top: 1rem; }
+.setsec h3 { margin: 0 0 .5rem; font-size: 1.05rem; }
+dialog input.netname { width: 14rem; max-width: 60%; }

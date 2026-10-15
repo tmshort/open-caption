@@ -91,5 +91,11 @@
   "TOGETHER",
   "Could not change the name",
   "Could not read the log."
+ ],
+ "settings sections": [
+  "About this copy",
+  "Network name",
+  "Log detail",
+  "Change passwords"
  ]
 }
