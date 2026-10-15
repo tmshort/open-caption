@@ -29,7 +29,7 @@
   function mark() { document.querySelectorAll('#topics a').forEach((a) => (a.dataset.topic === current ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'))); }
 
   let current = '';
-  async function show(id) {
+  async function show(id, anchor) {
     const t = topics.find((x) => x.id === id) || topics.find((x) => x.role === role) || topics[0];
     if (!t) return;
     current = t.id;
@@ -42,12 +42,20 @@
       pre.appendChild(b);
     });
     doc.scrollTop = 0; mark();
+    if (anchor) scrollToAnchor(anchor);
     if (location.hash.slice(1) !== t.id) history.replaceState(null, '', '#' + t.id + location.search.replace(/^\?/, '?'));
   }
 
+  function scrollToAnchor(id) {
+    const el = $('doc').querySelector('[id="' + id.replace(/"/g, '') + '"]');
+    if (el) el.scrollIntoView({ block: 'start' });
+  }
   document.addEventListener('click', (e) => {
-    const a = e.target.closest('a[data-topic]'); if (!a) return;
-    e.preventDefault(); show(a.dataset.topic);
+    const a = e.target.closest('a[data-topic], a[data-anchor]'); if (!a) return;
+    e.preventDefault();
+    if (a.dataset.topic && a.dataset.topic !== current) show(a.dataset.topic, a.dataset.anchor);
+    else if (a.dataset.anchor) scrollToAnchor(a.dataset.anchor);
+    else if (a.dataset.topic) show(a.dataset.topic);
   });
   let timer;
   $('q').addEventListener('input', () => {

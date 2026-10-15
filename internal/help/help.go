@@ -9,6 +9,7 @@ import (
 	"path"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/tmshort/open-caption/internal/script"
@@ -125,9 +126,8 @@ func CodeBlocks(md string) []CodeBlock {
 
 var (
 	headRe = regexp.MustCompile(`^(#{1,4}) +(.+)$`)
-	ulRe   = regexp.MustCompile(`^[-*] +(.+)$`)
-	olRe   = regexp.MustCompile(`^\d+\. +(.+)$`)
-	linkRe = regexp.MustCompile(`\[([^\]]+)\]\(([^)\s]+)\)`)
+	listRe = regexp.MustCompile(`^( *)([-*]|\d+\.) +(.+)$`)
+	linkAt = regexp.MustCompile(`^\[((?:[^\]\\]|\\.)+)\]\(([^)\s]+)\)`)
 	sepRe  = regexp.MustCompile(`^\|? *:?-{2,}:? *(\| *:?-{2,}:? *)*\|?$`)
 	slugRe = regexp.MustCompile(`[^a-z0-9]+`)
 	noteRe = regexp.MustCompile(`^> ?(.*)$`)
@@ -168,23 +168,11 @@ func Render(md string) string {
 			b.WriteString(fmt.Sprintf("<h%d id=\"%s\">%s</h%d>\n", n, strings.Trim(slugRe.ReplaceAllString(strings.ToLower(m[2]), "-"), "-"), inline(m[2]), n))
 		case strings.TrimSpace(ln) == "":
 			flush()
-		case ulRe.MatchString(ln) || olRe.MatchString(ln):
+		case listRe.MatchString(ln):
 			flush()
-			tag, re := "ul", ulRe
-			if olRe.MatchString(ln) {
-				tag, re = "ol", olRe
-			}
-			b.WriteString("<" + tag + ">\n")
-			for ; i < len(lines) && re.MatchString(lines[i]); i++ {
-				item := re.FindStringSubmatch(lines[i])[1]
-				for i+1 < len(lines) && strings.HasPrefix(lines[i+1], "  ") && !re.MatchString(lines[i+1]) && strings.TrimSpace(lines[i+1]) != "" {
-					i++
-					item += " " + strings.TrimSpace(lines[i])
-				}
-				b.WriteString("<li>" + inline(item) + "</li>\n")
-			}
-			i--
-			b.WriteString("</" + tag + ">\n")
+			var h string
+			h, i = renderList(lines, i)
+			b.WriteString(h)
 		case strings.HasPrefix(ln, "|"):
 			flush()
 			var rows [][]string
@@ -245,53 +233,159 @@ func cells(row string) []string {
 	return append(out, strings.TrimSpace(cur.String()))
 }
 
-// inline renders code spans, links, bold and italic.
-func inline(s string) string {
-	var out strings.Builder
-	for len(s) > 0 {
-		i := strings.IndexByte(s, '`')
-		if i < 0 {
-			out.WriteString(links(s))
-			break
-		}
-		j := strings.IndexByte(s[i+1:], '`')
-		if j < 0 {
-			out.WriteString(links(s))
-			break
-		}
-		out.WriteString(links(s[:i]))
-		out.WriteString("<code>" + html.EscapeString(s[i+1:i+1+j]) + "</code>")
-		s = s[i+j+2:]
+// renderList renders a (possibly nested) list starting at lines[i] and returns the HTML and the
+// index of its last line. Nesting follows indentation; wrapped lines continue the previous item.
+func renderList(lines []string, i int) (string, int) {
+	type level struct {
+		indent int
+		tag    string
 	}
-	return out.String()
-}
-
-func links(s string) string {
-	var out strings.Builder
-	last := 0
-	for _, m := range linkRe.FindAllStringSubmatchIndex(s, -1) {
-		out.WriteString(emph(s[last:m[0]]))
-		text, href := s[m[2]:m[3]], s[m[4]:m[5]]
+	var b strings.Builder
+	var stack []level
+	closeTo := func(indent int) {
+		for len(stack) > 0 && stack[len(stack)-1].indent >= indent {
+			b.WriteString("</li>\n</" + stack[len(stack)-1].tag + ">\n")
+			stack = stack[:len(stack)-1]
+		}
+	}
+	var item strings.Builder
+	flushItem := func() {
+		if item.Len() > 0 {
+			b.WriteString(inline(item.String()))
+			item.Reset()
+		}
+	}
+	last := i
+	for ; i < len(lines); i++ {
+		m := listRe.FindStringSubmatch(lines[i])
+		if m == nil {
+			if strings.HasPrefix(lines[i], " ") && strings.TrimSpace(lines[i]) != "" && len(stack) > 0 { // wrapped text
+				item.WriteString(" " + strings.TrimSpace(lines[i]))
+				last = i
+				continue
+			}
+			break
+		}
+		flushItem()
+		indent, tag := len(m[1]), "ul"
+		if m[2] != "-" && m[2] != "*" {
+			tag = "ol"
+		}
 		switch {
-		case strings.HasPrefix(href, "topic:") && validID(href[6:]):
-			out.WriteString(`<a href="#` + href[6:] + `" data-topic="` + href[6:] + `">` + emph(text) + "</a>")
-		case strings.HasPrefix(href, "/") && !strings.HasPrefix(href, "//") && !strings.ContainsAny(href, `"'<>`):
-			out.WriteString(`<a href="` + href + `">` + emph(text) + "</a>")
+		case len(stack) == 0 || indent > stack[len(stack)-1].indent:
+			if len(stack) > 0 {
+				b.WriteString("\n")
+			}
+			b.WriteString("<" + tag + ">\n<li>")
+			stack = append(stack, level{indent, tag})
 		default:
-			out.WriteString(emph(s[m[0]:m[1]]))
+			if indent < stack[len(stack)-1].indent {
+				closeTo(indent + 1)
+			}
+			if len(stack) > 0 && stack[len(stack)-1].indent == indent {
+				b.WriteString("</li>\n<li>")
+			} else { // dedented to a level that was never opened
+				b.WriteString("<" + tag + ">\n<li>")
+				stack = append(stack, level{indent, tag})
+			}
 		}
-		last = m[1]
+		item.WriteString(m[3])
+		last = i
 	}
-	out.WriteString(emph(s[last:]))
-	return out.String()
+	flushItem()
+	closeTo(0)
+	return b.String(), last
 }
 
-func validID(id string) bool {
-	return regexp.MustCompile(`^(admin|operator)-[a-z0-9-]+$`).MatchString(id)
+var topicHref = regexp.MustCompile(`^(admin|operator)-[a-z0-9-]+$`)
+
+// Aliases maps file names used in Markdown links (for example "usage-guide.md") to topic ids,
+// so documents written for GitHub keep working when shown in the app.
+var Aliases = map[string]string{
+	"usage-guide.md":         "admin-usage-guide",
+	"venue-network-guide.md": "admin-venue-network-guide",
 }
+
+// link resolves an href to a safe anchor, or returns just the text when the target is not available.
+func link(text, href string) string {
+	label := inline(text)
+	frag := ""
+	base := href
+	if k := strings.IndexByte(href, '#'); k >= 0 {
+		base, frag = href[:k], href[k+1:]
+	}
+	fragAttr := ""
+	if frag != "" && !strings.ContainsAny(frag, `"'<>& `) {
+		fragAttr = ` data-anchor="` + frag + `"`
+	}
+	switch {
+	case strings.HasPrefix(base, "topic:") && topicHref.MatchString(base[6:]):
+		return `<a href="#` + base[6:] + `" data-topic="` + base[6:] + `"` + fragAttr + `>` + label + "</a>"
+	case Aliases[base] != "":
+		return `<a href="#` + Aliases[base] + `" data-topic="` + Aliases[base] + `"` + fragAttr + `>` + label + "</a>"
+	case base == "" && fragAttr != "":
+		return `<a href="#` + frag + `"` + fragAttr + `>` + label + "</a>"
+	case strings.HasPrefix(base, "/") && !strings.HasPrefix(base, "//") && !strings.ContainsAny(href, `"'<>`):
+		return `<a href="` + href + `">` + label + "</a>"
+	}
+	return label
+}
+
+// inline renders code spans, links, bold and italic. Code spans and links are set aside first
+// (as placeholders) so that emphasis can wrap them, as in **a `code` word**. Link syntax inside a
+// code span is left as typed.
+func inline(s string) string {
+	s = strings.ReplaceAll(s, "\x00", "")
+	var tokens []string
+	var plain strings.Builder
+	hold := func(h string) {
+		plain.WriteString("\x00" + strconv.Itoa(len(tokens)) + "\x00")
+		tokens = append(tokens, h)
+	}
+	for i := 0; i < len(s); {
+		switch s[i] {
+		case '`':
+			if j := strings.IndexByte(s[i+1:], '`'); j >= 0 {
+				hold("<code>" + html.EscapeString(s[i+1:i+1+j]) + "</code>")
+				i += j + 2
+				continue
+			}
+		case '[':
+			if m := linkAt.FindStringSubmatch(s[i:]); m != nil {
+				hold(link(m[1], m[2]))
+				i += len(m[0])
+				continue
+			}
+		case '\\':
+			if i+1 < len(s) {
+				plain.WriteString(s[i : i+2])
+				i += 2
+				continue
+			}
+		}
+		plain.WriteByte(s[i])
+		i++
+	}
+	out := emph(plain.String())
+	return placeholderRe.ReplaceAllStringFunc(out, func(m string) string {
+		n, _ := strconv.Atoi(strings.Trim(m, "\x00"))
+		return tokens[n]
+	})
+}
+
+var placeholderRe = regexp.MustCompile("\x00[0-9]+\x00")
 
 // emph applies **bold** and *italic* with the same renderer scripts use (everything is escaped).
 func emph(s string) string {
 	h, _ := script.RenderInline(s)
 	return h
+}
+
+// FromMarkdown builds a topic from a Markdown document whose first line is "# Title".
+func FromMarkdown(id, role, md string) (Topic, error) {
+	first, _, _ := strings.Cut(md, "\n")
+	if !strings.HasPrefix(first, "# ") {
+		return Topic{}, fmt.Errorf("topic %q must start with a '# Title' line", id)
+	}
+	return Topic{ID: id, Title: strings.TrimSpace(first[2:]), Role: role, Markdown: md}, nil
 }

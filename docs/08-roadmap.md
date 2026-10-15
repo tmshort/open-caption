@@ -44,6 +44,12 @@ Each milestone is shippable and ends with a demoable result. Tasks reference req
 - [x] Support bundle, logging (REQ-061)
 - [ ] Device matrix testing and acceptance checklist (doc 07)
 
+## Housekeeping after M5
+- [x] Help ships the guides (`docs/usage-guide.md`, `docs/venue-network-guide.md`) inside the program, rendered with nested lists and in-page links
+- [x] Rename and duplicate shows
+- [x] Per-character speaker colors; right-to-left caption direction
+- [x] Logins survive a restart; the operator page takes control back automatically
+
 ## Stretch / Later
 - mDNS advertisement; signed/notarized macOS build; Windows installer
 - Multi-language scripts (identical structure, `[language: xx]`, `?lang=`) (REQ-026); engine/protocol already carry `lang`

@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/tmshort/open-caption/docs"
 	"github.com/tmshort/open-caption/internal/script"
 	"github.com/tmshort/open-caption/web"
 )
@@ -71,6 +72,9 @@ func TestSearch(t *testing.T) {
 
 func TestEmbeddedTopicsLoadAndLinksResolve(t *testing.T) {
 	topics := loadAll(t)
+	for id, tp := range guideTopics(t) { // the guides from docs/ are topics too
+		topics[id] = tp
+	}
 	if len(topics) < 10 {
 		t.Fatalf("only %d topics", len(topics))
 	}
@@ -166,5 +170,101 @@ func TestLoadRejectsBadFiles(t *testing.T) {
 		if _, err := Load(fstest_(name, body), "."); err == nil {
 			t.Errorf("%s should be rejected", name)
 		}
+	}
+}
+
+func guideTopics(t *testing.T) map[string]Topic {
+	t.Helper()
+	out := map[string]Topic{}
+	for file, id := range Aliases {
+		b, err := fs.ReadFile(docs.Guides, file)
+		if err != nil {
+			t.Fatal(err)
+		}
+		tp, err := FromMarkdown(id, "admin", string(b))
+		if err != nil {
+			t.Fatal(err)
+		}
+		out[id] = tp
+	}
+	return out
+}
+
+func TestNestedLists(t *testing.T) {
+	out := Render("- one\n  - nested a\n  - nested b\n- two wrapped\n  onto the next line\n\n1. first\n   - sub\n2. second")
+	for _, want := range []string{"<li>one\n<ul>", "<li>nested a</li>", "<li>nested b</li>", "<li>two wrapped onto the next line</li>", "<ol>", "<li>sub</li>", "<li>second</li>"} {
+		if !strings.Contains(out, want) {
+			t.Errorf("missing %q in\n%s", want, out)
+		}
+	}
+	if strings.Count(out, "<ul>") != strings.Count(out, "</ul>") || strings.Count(out, "<li>") != strings.Count(out, "</li>") {
+		t.Errorf("unbalanced list tags:\n%s", out)
+	}
+}
+
+func TestEmphasisCanWrapCodeAndLinks(t *testing.T) {
+	out := Render("**Option 114 and `/captive-api` (advanced)** and *see [images](topic:admin-images)*")
+	if !strings.Contains(out, "<strong>Option 114 and <code>/captive-api</code> (advanced)</strong>") ||
+		!strings.Contains(out, `<em>see <a href="#admin-images"`) || strings.Contains(out, "**") {
+		t.Errorf("%s", out)
+	}
+	if out := Render("odd \x00 0 \x00 text `x`"); strings.Contains(out, "\x00") {
+		t.Errorf("placeholder characters leaked: %q", out)
+	}
+}
+
+func TestLinksInsideCodeAreLeftAlone(t *testing.T) {
+	out := Render("Write `![caption](file.png)` or [a link](topic:admin-images) or [`code` text](/help/x).")
+	if !strings.Contains(out, "<code>![caption](file.png)</code>") || !strings.Contains(out, `data-topic="admin-images"`) || !strings.Contains(out, `href="/help/x"><code>code</code> text`) {
+		t.Errorf("%s", out)
+	}
+	// A link we cannot honour shows its words, not the raw Markdown.
+	out = Render("See [`deploy/`](../deploy/) and [the web](https://example.com).")
+	if strings.Contains(out, "](") || strings.Contains(out, "href") || !strings.Contains(out, "<code>deploy/</code>") || !strings.Contains(out, "the web") {
+		t.Errorf("%s", out)
+	}
+}
+
+// The guides in docs/ ship inside the program, so they must display properly there.
+func TestGuidesRenderCleanlyInTheApp(t *testing.T) {
+	topics := guideTopics(t)
+	if len(topics) != 2 {
+		t.Fatalf("guides: %d", len(topics))
+	}
+	all := loadAll(t)
+	known := func(id string) bool { _, a := all[id]; _, b := topics[id]; return a || b }
+	for id, tp := range topics {
+		out := Render(tp.Markdown)
+		// no Markdown left over in the HTML (outside code)
+		noCode := regexp.MustCompile(`(?s)<code[^>]*>.*?</code>`).ReplaceAllString(out, "")
+		for _, bad := range []string{"](", "**", "<script"} {
+			if strings.Contains(noCode, bad) {
+				i := strings.Index(noCode, bad)
+				t.Errorf("%s: leftover %q near %q", id, bad, noCode[max(0, i-60):min(len(noCode), i+60)])
+			}
+		}
+		ids := regexp.MustCompile(`<h[1-4] id="([^"]*)"`).FindAllStringSubmatch(out, -1)
+		have := map[string]bool{}
+		for _, m := range ids {
+			have[m[1]] = true
+		}
+		for _, m := range regexp.MustCompile(`data-topic="([^"]+)"`).FindAllStringSubmatch(out, -1) {
+			if !known(m[1]) {
+				t.Errorf("%s links to unknown topic %s", id, m[1])
+			}
+		}
+		for _, m := range regexp.MustCompile(`data-anchor="([^"]+)"`).FindAllStringSubmatch(out, -1) {
+			if !have[m[1]] && !strings.Contains(m[0], "topic") {
+				// anchors in these guides point at headings of the same guide
+				t.Errorf("%s: link to #%s has no matching heading", id, m[1])
+			}
+		}
+		if !strings.Contains(out, "<table>") || !strings.Contains(out, "<ul>") {
+			t.Errorf("%s: expected tables and lists", id)
+		}
+	}
+	// The usage guide links to the venue guide; both resolve to topics.
+	if out := Render(topics["admin-usage-guide"].Markdown); !strings.Contains(out, `data-topic="admin-venue-network-guide"`) {
+		t.Error("usage guide does not link to the venue network guide")
 	}
 }

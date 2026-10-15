@@ -21,7 +21,7 @@ A script is just text. Each line is one caption, and one press of the spacebar s
 
 ## Planning the equipment
 
-For what to buy, where to put the WiFi access point, and a day-of checklist, read the **usage guide** (`docs/usage-guide.md` in the project) and the **venue network guide** (`docs/venue-network-guide.md`).
+For what to buy, where to put the WiFi access point, and a day-of checklist, read the [usage guide](topic:admin-usage-guide). The [venue network guide](topic:admin-venue-network-guide) is for whoever looks after the building's WiFi.
 
 ## Where to go next
 

@@ -16,7 +16,7 @@ Test it before the first show: join the guest WiFi on a phone and open the addre
 1. **QR code** — print the sign from the Go Live step and put it in the lobby and the program. This is the easiest option.
 2. **A short address** — if the program can use port 80, the address has no port number, such as `http://192.168.1.10/`.
 3. **A name** — ask the venue to add a local name such as `captions.theater` for this computer's address.
-4. **Automatic page** — a venue can send guests to the page when they join the WiFi with the access point's splash page ("captive portal"). The program also answers the standard network-detection address `/captive-api` for venues that use DHCP option 114, but that only reports that the network is not captive: it does not open the page by itself, and it needs a trusted HTTPS certificate. See the venue network guide in the project's `docs` folder.
+4. **Automatic page** — a venue can send guests to the page when they join the WiFi with the access point's splash page ("captive portal"). The program also answers the standard network-detection address `/captive-api` for venues that use DHCP option 114, but that only reports that the network is not captive: it does not open the page by itself, and it needs a trusted HTTPS certificate. See the [venue network guide](topic:admin-venue-network-guide).
 
 ## HTTP and HTTPS
 

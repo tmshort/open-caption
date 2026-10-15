@@ -16,6 +16,8 @@ Devices that fell asleep disconnect and reconnect by themselves when woken. Ask 
 
 Large pictures take time on a busy WiFi. Check the Images step for files marked "large" and replace them with smaller ones.
 
+For the full list of checks on the network side, see the [venue network guide](topic:admin-venue-network-guide).
+
 ## Script problems
 
 See "What the warnings mean" in [Writing a script](topic:admin-writing-a-script).

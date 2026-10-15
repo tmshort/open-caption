@@ -16,7 +16,7 @@ Goal: a first-time volunteer can finish without reading documentation.
    Steps are also reachable directly for experienced users. Each step shows a green check when complete.
 
 ### Steps
-- **Show**: name; list of existing shows with Duplicate / Archive / Delete (confirm).
+- **Show**: name; list of existing shows with Rename / Duplicate / Export / Delete (delete asks first). *(Archive is not built; export and delete cover it.)*
 - **Script**: (a **Help** link here opens the "Writing a script" topic)
   - Drag-and-drop file, "Choose file…", or paste into an editor.
   - Editor pane (monospace, line numbers) + Diagnostics pane. Clicking a diagnostic jumps to the line.
@@ -25,7 +25,7 @@ Goal: a first-time volunteer can finish without reading documentation.
   - Insert-directive toolbar buttons (Clear, Blank, Image…, Fullscreen text, Section, Loop, 🎵 Song, and ♪ / ♫ to insert music notes at the cursor) so authors never type brackets by hand.
   - Re-import warns if cue count differs and the show is live.
 - **Images**: PNG/JPG/GIF/WebP only (no SVG); files over 1 MB get a "large — may load slowly for many devices" warning, since images are sent unscaled. Grid of uploads with thumbnails; drag-drop multi-upload; shows "used in lines 12, 40" or "unused"; missing-but-referenced images listed at top with an upload-in-place button.
-- **Look**: theme (defaults to pure black background / white text for accessibility; background/text/accent colors, system font choices, base size), speaker display (off / label / per-character colors; default label, no color), idle message (overrides the config default). Live preview in a phone-shaped and a projector-shaped frame.
+- **Look**: theme (defaults to pure black background / white text for accessibility; background/text/accent colors, system font choices, base size), speaker display (hidden / one speaker-name color / a different color for each character, chosen automatically in order of first appearance from a color-blind-friendly palette and adjusted to stay readable on the background; default: one color, white), idle message (overrides the config default). Live preview in a phone-shaped and a projector-shaped frame.
 - **Test**: "Rehearsal mode" runs the operator view against an **isolated rehearsal engine** (doc 02) with a preview pane side-by-side. Nothing is sent to real audience devices and the live show is unaffected; position resets afterward.
 - **Go Live**: shows audience URL (large), QR code (printable page for lobby signs), host IPs, current audience count, and a "Start Show" button that activates the show and opens `/operator`.
 

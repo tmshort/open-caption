@@ -3,10 +3,15 @@ package httpapi
 import (
 	"io/fs"
 	"net/http"
+	"sort"
 
+	"github.com/tmshort/open-caption/docs"
 	"github.com/tmshort/open-caption/internal/help"
 	"github.com/tmshort/open-caption/web"
 )
+
+// guideTopics maps the guides in docs/ to help topic ids (the same mapping help.Aliases uses for links).
+var guideTopics = help.Aliases
 
 // helpRoutes serves the in-app help (REQ-037). Help is embedded in the binary, so it works offline.
 // The pages need an admin or operator session; the audience never sees them.
@@ -15,6 +20,19 @@ func (s *Server) helpRoutes(mux *http.ServeMux) {
 	if err != nil {
 		panic("help: " + err.Error()) // embedded content; covered by tests
 	}
+	// The full guides ship inside the program too, so help never points at files a volunteer may not have.
+	for file, id := range guideTopics {
+		b, err := fs.ReadFile(docs.Guides, file)
+		if err != nil {
+			panic("help: " + err.Error())
+		}
+		t, err := help.FromMarkdown(id, "admin", string(b))
+		if err != nil {
+			panic("help: " + err.Error())
+		}
+		topics = append(topics, t)
+	}
+	sort.Slice(topics, func(i, j int) bool { return topics[i].ID < topics[j].ID })
 	byID := map[string]help.Topic{}
 	for _, t := range topics {
 		byID[t.ID] = t
