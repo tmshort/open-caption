@@ -12,3 +12,7 @@ after a reboot, use one of these:
 
 Each file starts with its own installation steps. All three pass `--no-browser` (a service has no screen) and an explicit
 `--data` folder, so the passwords and shows live in a known place that you can back up.
+
+The log file (`open-caption.log`) starts a new file at 5 MB and keeps three older ones, so a service left running
+for months does not fill the disk. `go test ./deploy` checks that these files are well formed and pass only options the
+program has, so they cannot drift out of date unnoticed.
