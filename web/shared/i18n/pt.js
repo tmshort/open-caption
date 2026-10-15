@@ -516,5 +516,8 @@ OCI18n.add("pt", {
  "For whoever sets up": "Para quem prepara o espetáculo",
  "TOGETHER": "JUNTOS",
  "Could not change the name": "Não foi possível alterar o nome",
- "Could not read the log.": "Não foi possível ler o registro."
+ "Could not read the log.": "Não foi possível ler o registro.",
+ "Space": "Espaço",
+ "Backspace": "Backspace",
+ "Shift+Q": "Shift+Q"
 });

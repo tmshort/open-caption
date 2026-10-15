@@ -6,5 +6,5 @@ import "embed"
 
 // Guides holds the guides shown in the app's Help.
 //
-//go:embed usage-guide.md venue-network-guide.md
+//go:embed usage-guide.md venue-network-guide.md i18n
 var Guides embed.FS

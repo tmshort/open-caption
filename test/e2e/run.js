@@ -350,6 +350,7 @@ async function main() {
       p.on('pageerror', (e) => errs.push(e.message)); await p.bringToFront();
       await p.goto(B + url + (url.includes('?') ? '&' : '?') + 'ui=' + lang); return p;
     };
+    const HELP_TITLE = { es: 'Primeros pasos', fr: 'Premiers pas', de: 'Erste Schritte', it: 'Primi passi', pt: 'Primeiros passos' };
     const SEEN = { es: 'Espectáculos', fr: 'Spectacles', de: 'Shows', it: 'Spettacoli', pt: 'Espetáculos' };
     for (const lang of ['es', 'fr', 'de', 'it', 'pt']) {
       const a = await uiPage('/admin', lang); await a.waitForSelector('#pw');
@@ -364,6 +365,11 @@ async function main() {
       }
       await a.evaluate(() => document.getElementById('settingsbtn').click()); await sleep(700); leaks.push(...(await leaksOf(a)));
       check(lang + ': no English is left in Setup (steps, Settings dialog)', leaks.length === 0, [...new Set(leaks)].slice(0, 8));
+      const hp = await uiPage('/help?role=admin', lang);
+      await hp.waitForFunction(() => { const h = document.querySelector('#doc h1'); return h && h.textContent.trim().length > 0; }, { timeout: 8000 }).catch(() => {});
+      const helpState = await hp.evaluate(() => ({ title: (document.querySelector('#doc h1') || {}).textContent, topics: document.getElementById('topics').innerText.slice(0, 200), leaks: [] }));
+      check(lang + ': Help shows its topics and pages in the language', helpState.title === HELP_TITLE[lang] && !/Setting up|For the operator/.test(helpState.topics), helpState);
+      await hp.close();
       await a.close();
     }
     const opEs = await uiPage('/operator', 'es'); await signIn(opEs, '#message'); await sleep(800);

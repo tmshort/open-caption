@@ -23,6 +23,68 @@ type Topic struct {
 	Markdown string `json:"-"`
 }
 
+// Languages are the languages the help is written in; English is the original and the others are translations
+// (web/help/<code>/<topic>.md and docs/i18n/<code>/<guide>.md). A topic with no translation shows in English.
+var Languages = []string{"en", "es", "fr", "de", "it", "pt"}
+
+// IsLanguage reports whether code is one of Languages.
+func IsLanguage(code string) bool {
+	for _, l := range Languages {
+		if l == code {
+			return true
+		}
+	}
+	return false
+}
+
+var unaccent = strings.NewReplacer("á", "a", "à", "a", "â", "a", "ä", "a", "ã", "a", "å", "a", "ç", "c", "é", "e", "è", "e", "ê", "e", "ë", "e",
+	"í", "i", "ì", "i", "î", "i", "ï", "i", "ñ", "n", "ó", "o", "ò", "o", "ô", "o", "ö", "o", "õ", "o", "ú", "u", "ù", "u", "û", "u", "ü", "u",
+	"ý", "y", "ÿ", "y", "ß", "ss", "œ", "oe", "æ", "ae")
+
+// Slug turns a heading into the id used for links to it ("Déploiement et réseau" is "deploiement-et-reseau").
+func Slug(heading string) string {
+	return strings.Trim(slugRe.ReplaceAllString(unaccent.Replace(strings.ToLower(heading)), "-"), "-")
+}
+
+// LoadLang returns base with each topic replaced by its translation into lang, read from dir/<lang>/<id>.md,
+// where one exists. A file for a topic that is not in base is an error (it would never be shown).
+func LoadLang(fsys fs.FS, dir, lang string, base []Topic) ([]Topic, error) {
+	ents, err := fs.ReadDir(fsys, path.Join(dir, lang))
+	if err != nil {
+		return base, nil // no translations yet: English throughout
+	}
+	byID := map[string]Topic{}
+	for _, e := range ents {
+		if e.IsDir() || !strings.HasSuffix(e.Name(), ".md") {
+			continue
+		}
+		id := strings.TrimSuffix(e.Name(), ".md")
+		b, err := fs.ReadFile(fsys, path.Join(dir, lang, e.Name()))
+		if err != nil {
+			return nil, err
+		}
+		role, _, _ := strings.Cut(id, "-")
+		t, err := FromMarkdown(id, role, string(b))
+		if err != nil {
+			return nil, fmt.Errorf("%s/%s: %w", lang, e.Name(), err)
+		}
+		byID[id] = t
+	}
+	out := make([]Topic, len(base))
+	for i, b := range base {
+		if t, ok := byID[b.ID]; ok {
+			out[i] = t
+			delete(byID, b.ID)
+		} else {
+			out[i] = b
+		}
+	}
+	for id := range byID {
+		return nil, fmt.Errorf("%s/%s.md translates a topic that does not exist", lang, id)
+	}
+	return out, nil
+}
+
 // plain removes Markdown punctuation from search snippets.
 var plain = strings.NewReplacer("`", "", "**", "", "|", " ", "#", "", "\\", "", "[[", "", "]]", "", ">", "")
 
@@ -165,7 +227,7 @@ func Render(md string) string {
 			flush()
 			m := headRe.FindStringSubmatch(ln)
 			n := len(m[1])
-			b.WriteString(fmt.Sprintf("<h%d id=\"%s\">%s</h%d>\n", n, strings.Trim(slugRe.ReplaceAllString(strings.ToLower(m[2]), "-"), "-"), inline(m[2]), n))
+			b.WriteString(fmt.Sprintf("<h%d id=\"%s\">%s</h%d>\n", n, Slug(m[2]), inline(m[2]), n))
 		case strings.TrimSpace(ln) == "":
 			flush()
 		case listRe.MatchString(ln):

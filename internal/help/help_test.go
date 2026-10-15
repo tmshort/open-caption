@@ -3,6 +3,7 @@ package help
 import (
 	"io/fs"
 	"regexp"
+	"sort"
 	"strings"
 	"testing"
 
@@ -271,5 +272,159 @@ func TestGuidesRenderCleanlyInTheApp(t *testing.T) {
 	// The usage guide links to the venue guide; both resolve to topics.
 	if out := Render(topics["admin-usage-guide"].Markdown); !strings.Contains(out, `data-topic="admin-venue-network-guide"`) {
 		t.Error("usage guide does not link to the venue network guide")
+	}
+}
+
+// ---- translations ----
+
+var linkTargetRe = regexp.MustCompile(`\]\(([^)\s]+)\)`)
+var inlineCodeRe = regexp.MustCompile("`[^`]*`")
+
+type docShape struct {
+	heads   []string // "#"-count for each heading, in order
+	slugs   map[string]bool
+	tables  int
+	code    []CodeBlock
+	targets []string // link targets other than in-page anchors, sorted
+	anchors []string // in-page anchors, in order
+}
+
+func shapeOf(md string) docShape {
+	s := docShape{slugs: map[string]bool{}, code: CodeBlocks(md)}
+	inFence := false
+	for _, ln := range strings.Split(md, "\n") {
+		if strings.HasPrefix(ln, "```") {
+			inFence = !inFence
+			continue
+		}
+		if inFence {
+			continue
+		}
+		if m := headRe.FindStringSubmatch(ln); m != nil {
+			s.heads = append(s.heads, m[1])
+			s.slugs[Slug(m[2])] = true
+		}
+		if strings.HasPrefix(ln, "|") {
+			s.tables++
+		}
+		for _, m := range linkTargetRe.FindAllStringSubmatch(inlineCodeRe.ReplaceAllString(ln, ""), -1) {
+			if strings.HasPrefix(m[1], "#") {
+				s.anchors = append(s.anchors, m[1][1:])
+			} else {
+				s.targets = append(s.targets, m[1])
+			}
+		}
+	}
+	sort.Strings(s.targets)
+	return s
+}
+
+// translatedDocs returns every English document that has to be translated, by id: the help topics and the two guides.
+func englishDocs(t *testing.T) map[string]string {
+	t.Helper()
+	out := map[string]string{}
+	for id, tp := range loadAll(t) {
+		out[id] = tp.Markdown
+	}
+	for file, id := range Aliases {
+		b, err := fs.ReadFile(docs.Guides, file)
+		if err != nil {
+			t.Fatal(err)
+		}
+		out[id] = string(b)
+	}
+	return out
+}
+
+func translatedDoc(t *testing.T, lang, id string) (string, bool) {
+	t.Helper()
+	for file, gid := range Aliases {
+		if gid == id {
+			b, err := fs.ReadFile(docs.Guides, "i18n/"+lang+"/"+file)
+			return string(b), err == nil
+		}
+	}
+	b, err := fs.ReadFile(web.Help, "help/"+lang+"/"+id+".md")
+	return string(b), err == nil
+}
+
+func TestAnchorsInEveryDocumentPointAtAHeading(t *testing.T) {
+	for id, md := range englishDocs(t) {
+		s := shapeOf(md)
+		for _, a := range s.anchors {
+			if !s.slugs[a] {
+				t.Errorf("%s: the link #%s points at no heading", id, a)
+			}
+		}
+	}
+}
+
+func TestEveryTopicAndGuideIsTranslatedIntoEveryLanguageWithTheSameShape(t *testing.T) {
+	for id, en := range englishDocs(t) {
+		es := shapeOf(en)
+		for _, lang := range Languages[1:] {
+			md, ok := translatedDoc(t, lang, id)
+			if !ok {
+				t.Errorf("%s: no %s translation", id, lang)
+				continue
+			}
+			first, _, _ := strings.Cut(md, "\n")
+			if !strings.HasPrefix(first, "# ") || strings.TrimSpace(first[2:]) == "" {
+				t.Errorf("%s/%s: must start with a '# Title' line", lang, id)
+			}
+			if md == en {
+				t.Errorf("%s/%s: identical to the English", lang, id)
+			}
+			s := shapeOf(md)
+			if strings.Join(s.heads, "") != strings.Join(es.heads, "") {
+				t.Errorf("%s/%s: headings differ: %v, English %v", lang, id, s.heads, es.heads)
+			}
+			if s.tables != es.tables {
+				t.Errorf("%s/%s: %d table lines, English has %d", lang, id, s.tables, es.tables)
+			}
+			if len(s.code) != len(es.code) {
+				t.Errorf("%s/%s: %d code blocks, English has %d", lang, id, len(s.code), len(es.code))
+			} else {
+				for i := range s.code {
+					if s.code[i] != es.code[i] {
+						t.Errorf("%s/%s: code block %d was changed (show file examples must be copied exactly):\n%s\nEnglish:\n%s", lang, id, i+1, s.code[i].Code, es.code[i].Code)
+					}
+				}
+			}
+			if strings.Join(s.targets, " ") != strings.Join(es.targets, " ") {
+				t.Errorf("%s/%s: links differ: %v, English %v", lang, id, s.targets, es.targets)
+			}
+			if len(s.anchors) != len(es.anchors) {
+				t.Errorf("%s/%s: %d in-page links, English has %d", lang, id, len(s.anchors), len(es.anchors))
+			}
+			for _, a := range s.anchors {
+				if !s.slugs[a] {
+					t.Errorf("%s/%s: the link #%s points at no heading (the id is the translated heading without accents, lower case, with - between words)", lang, id, a)
+				}
+			}
+		}
+	}
+}
+
+func TestTranslatedTopicsRender(t *testing.T) {
+	for id, en := range englishDocs(t) {
+		for _, lang := range Languages[1:] {
+			md, ok := translatedDoc(t, lang, id)
+			if !ok {
+				continue
+			}
+			out := Render(md)
+			if strings.Contains(out, "<script") || strings.Count(out, "<h") == 0 || len(out) < len(Render(en))/4 {
+				t.Errorf("%s/%s renders badly (%d bytes)", lang, id, len(out))
+			}
+		}
+	}
+}
+
+func TestSlugIgnoresAccents(t *testing.T) {
+	for in, want := range map[string]string{"Déploiement et réseau": "deploiement-et-reseau", "Über uns": "uber-uns", "Guía de instalación": "guia-de-instalacion", "Straße": "strasse", "Configuração": "configuracao"} {
+		if got := Slug(in); got != want {
+			t.Errorf("%q: %q", in, got)
+		}
 	}
 }

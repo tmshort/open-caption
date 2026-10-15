@@ -1,0 +1,16 @@
+# Anzeigen
+
+| Was Sie sehen | Was es bedeutet |
+|---------------|-----------------|
+| Grüner Punkt oben rechts | Mit dem Server verbunden. Rot bedeutet, dass die Verbindung abgebrochen ist; die Seite verbindet sich von selbst neu |
+| **● LIVE** | Die Show hat begonnen (mindestens eine Zeile wurde gesendet) |
+| Personensymbol und eine Zahl | Wie viele Publikumsgeräte verbunden sind. Bei mehreren Sprachen folgt auf die Zahl eine Zählung je Sprache, etwa `(en 60 · es 23)` |
+| **Sie haben die Steuerung** | Ihre Tasten steuern die Show |
+| **Ein anderer Operator hat die Steuerung** | Sie können zusehen, aber nichts senden. **Übernehmen** nimmt sie ihm ab |
+| Gelbes Banner **Der Publikumsbildschirm ist leer** | Das Publikum sieht einen leeren Bildschirm (Ausblenden oder Stopp wurde benutzt) |
+| Grünes Banner **SCHLEIFE LÄUFT** | Eine Schleife vor der Show oder in der Pause ist auf den Bildschirmen |
+| **Ende der Show.** | Es gibt keine weiteren Zeilen zu senden |
+| **Zuletzt gesendet vor 12 s** | Zeit seit dem letzten Senden durch den Operator. Wird nach zwei Minuten gelb |
+| Ausgeblendete Schaltflächen | Sie haben nicht die Steuerung, die Bedienelemente sind also aus |
+| `BILD: Name` | Auf den Publikumsbildschirmen wird ein Bild gezeigt; Sie sehen nur seinen Namen |
+| `NOTIZ:` (violett) und Lesezeichen (blau) | Nur für Sie; das Publikum sieht sie nie |

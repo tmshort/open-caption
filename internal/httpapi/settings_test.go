@@ -562,3 +562,47 @@ func TestLocalNetworkNameCanBeChosenInSetup(t *testing.T) {
 		t.Errorf("the network was started only for valid names: %v", starts)
 	}
 }
+
+func TestHelpIsAvailableInEveryLanguage(t *testing.T) {
+	_, _, c := serverWith(t, nil)
+	titles := func(lang string) map[string]string {
+		code, r := c.do("GET", "/api/help/topics?lang="+lang, nil)
+		if code != 200 {
+			t.Fatalf("%s: %d", lang, code)
+		}
+		out := map[string]string{}
+		for _, x := range r["topics"].([]any) {
+			m := x.(map[string]any)
+			out[m["id"].(string)] = m["title"].(string)
+		}
+		return out
+	}
+	en := titles("")
+	for lang, want := range map[string]string{"es": "Primeros pasos", "fr": "Premiers pas", "de": "Erste Schritte", "it": "Primi passi", "pt": "Primeiros passos"} {
+		got := titles(lang)
+		if len(got) != len(en) || got["admin-getting-started"] != want {
+			t.Errorf("%s: %q (%d topics, English has %d)", lang, got["admin-getting-started"], len(got), len(en))
+		}
+		if got["admin-usage-guide"] == en["admin-usage-guide"] || got["admin-venue-network-guide"] == en["admin-venue-network-guide"] {
+			t.Errorf("%s: the guides are not translated", lang)
+		}
+	}
+	if got := titles("klingon"); got["admin-getting-started"] != en["admin-getting-started"] {
+		t.Errorf("an unknown language falls back to English: %q", got["admin-getting-started"])
+	}
+	// A topic renders in the language asked for, and search looks in that language.
+	resp, _ := c.hc.Get(c.base + "/help/admin-images?lang=fr")
+	b, _ := io.ReadAll(resp.Body)
+	resp.Body.Close()
+	if resp.StatusCode != 200 || !strings.Contains(string(b), "Téléversez des images") || strings.Contains(string(b), "Upload pictures") {
+		t.Errorf("French topic: %d %.200s", resp.StatusCode, b)
+	}
+	_, hits := c.do("GET", "/api/help/search?lang=de&q=Leertaste", nil)
+	if len(hits["hits"].([]any)) == 0 {
+		t.Error("German search finds nothing for Leertaste")
+	}
+	_, hits = c.do("GET", "/api/help/search?q=Leertaste", nil)
+	if len(hits["hits"].([]any)) != 0 {
+		t.Error("English search must not find German words")
+	}
+}

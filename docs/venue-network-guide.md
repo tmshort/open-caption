@@ -40,7 +40,7 @@ The program does not run its own DHCP or DNS server, on purpose: it would clash 
 
 Use plain `http://` for the audience. A self-signed HTTPS certificate makes every device show a security warning. HTTPS is available (`https.enabled: true` in `config.yaml`) for sites that can install a certificate their devices trust.
 
-One small cost of plain HTTP: browsers only allow "keep the screen awake" on secure pages. On HTTP, audience devices may dim and lock during the show unless people turn off auto-lock. The page shows a one-time tip about this.
+One small cost of plain HTTP: browsers only allow "keep the screen awake" on secure pages. On HTTP the page keeps a phone's screen on with a tiny, silent, invisible looping video instead. A phone in low-power mode may refuse it; the page then shows a one-time tip asking people to turn off auto-lock.
 
 ## Security
 

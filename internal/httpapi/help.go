@@ -3,6 +3,7 @@ package httpapi
 import (
 	"io/fs"
 	"net/http"
+	"path"
 	"sort"
 
 	"github.com/tmshort/open-caption/docs"
@@ -20,6 +21,9 @@ func (s *Server) helpRoutes(mux *http.ServeMux) {
 	if err != nil {
 		panic("help: " + err.Error()) // embedded content; covered by tests
 	}
+	// The same topics in each language (a topic without a translation stays in English).
+	guideBase := map[string]string{} // topic id -> file
+
 	// The full guides ship inside the program too, so help never points at files a volunteer may not have.
 	for file, id := range guideTopics {
 		b, err := fs.ReadFile(docs.Guides, file)
@@ -31,11 +35,39 @@ func (s *Server) helpRoutes(mux *http.ServeMux) {
 			panic("help: " + err.Error())
 		}
 		topics = append(topics, t)
+		guideBase[id] = file
 	}
 	sort.Slice(topics, func(i, j int) bool { return topics[i].ID < topics[j].ID })
-	byID := map[string]help.Topic{}
-	for _, t := range topics {
-		byID[t.ID] = t
+	byLang := map[string][]help.Topic{"en": topics}
+	byIDLang := map[string]map[string]help.Topic{}
+	for _, lang := range help.Languages[1:] {
+		tr, err := help.LoadLang(web.Help, "help", lang, topics)
+		if err != nil {
+			panic("help: " + err.Error())
+		}
+		for i, t := range tr { // the guides come from docs/i18n/<lang>/
+			if file := guideBase[t.ID]; file != "" {
+				if b, err := fs.ReadFile(docs.Guides, path.Join("i18n", lang, file)); err == nil {
+					if g, err := help.FromMarkdown(t.ID, "admin", string(b)); err == nil {
+						tr[i] = g
+					}
+				}
+			}
+		}
+		byLang[lang] = tr
+	}
+	for lang, ts := range byLang {
+		m := map[string]help.Topic{}
+		for _, t := range ts {
+			m[t.ID] = t
+		}
+		byIDLang[lang] = m
+	}
+	langOf := func(r *http.Request) string {
+		if l := r.URL.Query().Get("lang"); help.IsLanguage(l) {
+			return l
+		}
+		return "en"
 	}
 	sub, _ := fs.Sub(web.HelpUI, "helpui")
 	static := http.StripPrefix("/static/help/", http.FileServer(http.FS(sub)))
@@ -47,10 +79,10 @@ func (s *Server) helpRoutes(mux *http.ServeMux) {
 	})
 	op := func(h http.HandlerFunc) http.HandlerFunc { return s.require(RoleOperator, h) }
 	mux.HandleFunc("GET /api/help/topics", op(func(w http.ResponseWriter, r *http.Request) {
-		writeJSON(w, http.StatusOK, map[string]any{"topics": topics})
+		writeJSON(w, http.StatusOK, map[string]any{"topics": byLang[langOf(r)]})
 	}))
 	mux.HandleFunc("GET /api/help/search", op(func(w http.ResponseWriter, r *http.Request) {
-		writeJSON(w, http.StatusOK, map[string]any{"hits": help.Search(topics, r.URL.Query().Get("q"))})
+		writeJSON(w, http.StatusOK, map[string]any{"hits": help.Search(byLang[langOf(r)], r.URL.Query().Get("q"))})
 	}))
 	mux.HandleFunc("GET /help/sample-show.md", op(func(w http.ResponseWriter, r *http.Request) {
 		b, err := fs.ReadFile(web.Sample, "sample/sample-show.md")
@@ -63,7 +95,7 @@ func (s *Server) helpRoutes(mux *http.ServeMux) {
 		w.Write(b)
 	}))
 	mux.HandleFunc("GET /help/{topic}", op(func(w http.ResponseWriter, r *http.Request) {
-		t, ok := byID[r.PathValue("topic")]
+		t, ok := byIDLang[langOf(r)][r.PathValue("topic")]
 		if !ok {
 			http.NotFound(w, r)
 			return

@@ -516,5 +516,8 @@ OCI18n.add("de", {
  "For whoever sets up": "Für die Person, die einrichtet",
  "TOGETHER": "GLEICHZEITIG",
  "Could not change the name": "Der Name konnte nicht geändert werden",
- "Could not read the log.": "Das Protokoll konnte nicht gelesen werden."
+ "Could not read the log.": "Das Protokoll konnte nicht gelesen werden.",
+ "Space": "Leertaste",
+ "Backspace": "Rücktaste",
+ "Shift+Q": "Umschalt+Q"
 });

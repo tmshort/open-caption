@@ -1,0 +1,20 @@
+# Clavier
+
+Ces touches fonctionnent dès que vous ne tapez pas dans une zone de saisie et qu'aucune fenêtre n'est ouverte.
+
+| Touche | Action |
+|--------|--------|
+| `Espace`, `Flèche droite`, `Page suivante`, `Entrée` | **Suivant :** envoie la ligne suivante ; démarre une boucle qui est la suivante ; termine une boucle en cours et envoie la ligne qui la suit |
+| `Retour arrière`, `Flèche gauche`, `Page précédente` | **Retour :** annule la dernière action. Revenir dans une boucle la redémarre |
+| `Maj+Q` | **Arrêt :** arrête une boucle en cours et laisse un écran vide |
+| `B` | **Écran vide** ou réaffichage : masque tout, et ramène les mêmes sous-titres quand vous réaffichez |
+| `C` | **Effacer** : efface les sous-titres, pour que la ligne suivante commence sur un écran vide |
+| `/` | Rechercher dans le fichier du spectacle |
+| `Début` | Redémarrer le spectacle (demande confirmation) |
+| `Échap` | Annuler un saut ou fermer une fenêtre |
+
+Si un saut attend une confirmation, **Entrée** le confirme au lieu d'envoyer la ligne suivante.
+
+Les touches maintenues enfoncées ne se répètent pas, et deux pressions à une fraction de seconde d'écart comptent pour une seule : une télécommande qui rebondit ne sautera donc pas de ligne.
+
+La page ignore toutes ces touches tant que cette fenêtre d'aide est ouverte, si bien que lire l'aide ne peut jamais envoyer une ligne au public.

@@ -20,4 +20,4 @@ Anyone can scroll the captions up to re-read something they missed. New lines th
 
 ## Audience controls
 
-Audience members never need to do anything. A small, faint **Aa** control in the top-right corner of the audience page lets a person make their own text bigger or smaller, switch to dark-on-light, or choose the dyslexia-friendly or high-legibility font, but only on their own device.
+Audience members never need to do anything. A small, faint **Aa** control in the top-right corner of the audience page lets a person make their own text bigger or smaller, switch to dark-on-light, choose the dyslexia-friendly or high-legibility font, or turn **Screen stays on** off (the page keeps a phone's screen awake while the show runs, and someone short of battery may prefer not to), but only on their own device.
