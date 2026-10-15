@@ -3,6 +3,7 @@ package httpapi
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"github.com/tmshort/open-caption/internal/logbuf"
 	"github.com/tmshort/open-caption/internal/logx"
 	"io"
@@ -10,6 +11,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -477,5 +479,86 @@ func TestRecentLogViewer(t *testing.T) {
 	}
 	if code, _ := newClient(t, ts.URL).do("GET", "/api/admin/log", nil); code != 401 {
 		t.Errorf("signed out: %d", code)
+	}
+}
+
+// fakeResponder stands in for the network so tests never send multicast packets.
+type fakeResponder struct {
+	name   string
+	closed *bool
+}
+
+func (f fakeResponder) Name() string { return f.name }
+func (f fakeResponder) Host() string { return f.name + ".local" }
+func (f fakeResponder) Close()       { *f.closed = true }
+
+func TestLocalNetworkNameCanBeChosenInSetup(t *testing.T) {
+	cfgPath := filepath.Join(t.TempDir(), "config.yaml")
+	os.WriteFile(cfgPath, []byte("# kept\nadmin_password: adminpw\noperator_password: operatorpw\nhttp:\n  addr: \":80\"\n"), 0o600)
+	s, _, c := serverWith(t, func(cfg *config.Config) { cfg.Path = cfgPath })
+	var starts []string
+	var firstClosed bool
+	s.mdns.start = func(name string) (responder, error) {
+		starts = append(starts, name)
+		if name == "taken" {
+			return fakeResponder{name: "taken-2", closed: new(bool)}, nil
+		}
+		if name == "broken" {
+			return nil, errors.New("no multicast here")
+		}
+		return fakeResponder{name: name, closed: &firstClosed}, nil
+	}
+	s.SetListeners(Listeners{HTTPAddr: "[::]:80", HTTPConfigured: ":80"})
+
+	code, r := c.do("PUT", "/api/admin/settings/mdns", map[string]any{"enabled": true, "name": " Box-Office.LOCAL "})
+	st := r["mdns"].(map[string]any)
+	if code != 200 || st["active"] != true || st["host"] != "box-office.local" || r["saved"] != true {
+		t.Fatalf("%d %v", code, r)
+	}
+	if b, _ := os.ReadFile(cfgPath); !strings.Contains(string(b), "# kept") || !strings.Contains(string(b), "name: box-office") || !strings.Contains(string(b), "enabled: true") {
+		t.Errorf("config.yaml:\n%s", b)
+	}
+	// It shows in the list of audience addresses, first, and a QR code may be made for it.
+	_, n := c.do("GET", "/api/admin/network", nil)
+	first := n["urls"].([]any)[0].(map[string]any)
+	if first["url"] != "http://box-office.local/" || first["name"] != true {
+		t.Errorf("%v", first)
+	}
+	if code, _ := c.do("GET", "/api/admin/network/qr.png?url="+url.QueryEscape("http://box-office.local/"), nil); code != 200 {
+		t.Errorf("qr for the local name: %d", code)
+	}
+	if code, _ := c.do("GET", "/api/admin/network/qr.png?url="+url.QueryEscape("http://evil.local/"), nil); code != 400 {
+		t.Errorf("qr for someone else's name: %d", code)
+	}
+	_, g := c.do("GET", "/api/admin/settings", nil)
+	if g["mdns"].(map[string]any)["host"] != "box-office.local" {
+		t.Errorf("%v", g["mdns"])
+	}
+
+	// Changing the name stops the old announcement; a name already in use elsewhere is reported.
+	_, r = c.do("PUT", "/api/admin/settings/mdns", map[string]any{"enabled": true, "name": "taken"})
+	st = r["mdns"].(map[string]any)
+	if !firstClosed || st["renamed"] != true || st["host"] != "taken-2.local" {
+		t.Errorf("closed=%v %v", firstClosed, st)
+	}
+	_, r = c.do("PUT", "/api/admin/settings/mdns", map[string]any{"enabled": true, "name": "broken"})
+	if st = r["mdns"].(map[string]any); st["active"] != false || !strings.Contains(st["error"].(string), "no multicast") {
+		t.Errorf("%v", st)
+	}
+	_, r = c.do("PUT", "/api/admin/settings/mdns", map[string]any{"enabled": false, "name": "box-office"})
+	if st = r["mdns"].(map[string]any); st["enabled"] != false || st["active"] != false {
+		t.Errorf("%v", st)
+	}
+	if b, _ := os.ReadFile(cfgPath); !strings.Contains(string(b), "enabled: false") {
+		t.Errorf("the choice is kept:\n%s", b)
+	}
+	// Bad names are refused and change nothing.
+	for _, bad := range []string{"has space", "", "a.b", "-x"} {
+		if code, _ := c.do("PUT", "/api/admin/settings/mdns", map[string]any{"enabled": true, "name": bad}); code != 400 {
+			t.Errorf("%q: %d", bad, code)
+		}
+	}
+	if len(starts) != 3 {
+		t.Errorf("the network was started only for valid names: %v", starts)
 	}
 }

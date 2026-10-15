@@ -24,6 +24,7 @@ type Server struct {
 	store   *show.Store
 
 	adminAllow, operatorAllow config.AllowList // which computers may open Setup / the operator page
+	mdns                      *mdnsManager     // the local network name (open-caption.local)
 	pinnedLevel               string           // the --log-level / OPEN_CAPTION_LOG_LEVEL value, if one was given
 	logs                      interface {
 		String() string
@@ -47,7 +48,7 @@ type Server struct {
 // New creates a Server with an empty runtime.
 func New(cfg config.Config, version string) *Server {
 	s := &Server{cfg: cfg, version: version, rt: NewRuntime(cfg), auth: newAuth(cfg.AdminPassword, cfg.OperatorPassword, sessionsPath(cfg)),
-		rehearsals: map[string]*Runtime{}, started: time.Now(), quit: make(chan struct{})}
+		rehearsals: map[string]*Runtime{}, started: time.Now(), quit: make(chan struct{}), mdns: newMDNSManager(cfg.MDNS)}
 	// An unreadable list denies everything: never fall back to "anyone" by accident.
 	s.adminAllow, _ = config.ParseAllowList(cfg.Access.AdminAllow)
 	s.operatorAllow, _ = config.ParseAllowList(cfg.Access.OperatorAllow)
@@ -112,6 +113,7 @@ func (s *Server) Close() {
 	s.closeOnce.Do(func() {
 		close(s.quit)
 		s.done.Wait()
+		s.stopMDNS()
 		s.closeAll()
 	})
 }

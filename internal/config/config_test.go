@@ -285,19 +285,19 @@ http:
 func TestSetValuesAddsMissingKeysAndRefusesToBreakTheFile(t *testing.T) {
 	p := filepath.Join(t.TempDir(), "config.yaml")
 	os.WriteFile(p, []byte("admin_password: a\noperator_password: b\nlog:\n"), 0o600)
-	if err := SetValues(p, map[string]string{"log.level": "debug", "audience.note": ""}); err == nil {
+	if err := SetValues(p, map[string]any{"log.level": "debug", "audience.note": ""}); err == nil {
 		t.Error("an unknown key must be refused (the file would not start)")
 	}
 	if b, _ := os.ReadFile(p); !strings.Contains(string(b), "log:\n") || strings.Contains(string(b), "note") {
 		t.Errorf("the file must be left as it was:\n%s", b)
 	}
-	if err := SetValues(p, map[string]string{"log.level": "debug"}); err != nil {
+	if err := SetValues(p, map[string]any{"log.level": "debug"}); err != nil {
 		t.Fatal(err)
 	}
 	if c, err := Load(p); err != nil || c.Log.Level != "debug" {
 		t.Errorf("%v %+v", err, c.Log)
 	}
-	if err := SetValues(p, map[string]string{"log.level": "loud"}); err == nil {
+	if err := SetValues(p, map[string]any{"log.level": "loud"}); err == nil {
 		t.Error("an invalid value must be refused")
 	}
 	if c, _ := Load(p); c.Log.Level != "debug" {
@@ -305,7 +305,7 @@ func TestSetValuesAddsMissingKeysAndRefusesToBreakTheFile(t *testing.T) {
 	}
 	// A file that has none of the keys (and one that is empty of settings) gets them added.
 	os.WriteFile(p, []byte("admin_password: a\noperator_password: b\n"), 0o600)
-	if err := SetValues(p, map[string]string{"log.level": "warn"}); err != nil {
+	if err := SetValues(p, map[string]any{"log.level": "warn"}); err != nil {
 		t.Fatal(err)
 	}
 	if c, _ := Load(p); c.Log.Level != "warn" {
@@ -343,6 +343,38 @@ func TestGeneratedFileSaysWhichVersionWroteIt(t *testing.T) {
 		t.Fatal(err)
 	}
 	if b, _ := os.ReadFile(p); !strings.Contains(string(b), "config_version: 1") {
+		t.Errorf("%s", b)
+	}
+}
+
+func TestLocalNetworkNameSetting(t *testing.T) {
+	c, err := load(t, "")
+	if err != nil || !c.MDNS.Enabled || c.MDNS.Name != "open-caption" {
+		t.Fatalf("by default the server is open-caption.local: %v %+v", err, c.MDNS)
+	}
+	c, err = load(t, "mdns:\n  name: Box-Office.LOCAL\n")
+	if err != nil || c.MDNS.Name != "box-office" || !c.MDNS.Enabled {
+		t.Errorf("%v %+v", err, c.MDNS)
+	}
+	if c, err = load(t, "mdns:\n  enabled: false\n"); err != nil || c.MDNS.Enabled {
+		t.Errorf("%v %+v", err, c.MDNS)
+	}
+	if _, err = load(t, "mdns:\n  name: has space\n"); err == nil || !strings.Contains(err.Error(), "mdns.name") {
+		t.Errorf("%v", err)
+	}
+}
+
+func TestSetValuesWritesBooleansAsBooleans(t *testing.T) {
+	p := filepath.Join(t.TempDir(), "c.yaml")
+	os.WriteFile(p, []byte("admin_password: a\noperator_password: b\nmdns:\n  enabled: true # keep\n"), 0o600)
+	if err := SetValues(p, map[string]any{"mdns.enabled": false, "mdns.name": "foyer"}); err != nil {
+		t.Fatal(err)
+	}
+	c, err := Load(p)
+	if err != nil || c.MDNS.Enabled || c.MDNS.Name != "foyer" {
+		t.Errorf("%v %+v", err, c.MDNS)
+	}
+	if b, _ := os.ReadFile(p); !strings.Contains(string(b), "# keep") || strings.Contains(string(b), `"false"`) {
 		t.Errorf("%s", b)
 	}
 }

@@ -41,5 +41,6 @@ Run `gofmt`, `go vet ./...` and `go test -race ./...` before committing.
 - Archiving a show is the `archived: yes` setting in its show file (`Store.SetArchived`); archived shows cannot be activated.
 - The audience page keeps the screen on with the Wake Lock API, or a tiny looping video (`web/audience/nosleep.*`) where that API is missing (plain HTTP).
 - Browser floor: `web/shared/compat.js` (plain ES5, loaded first on every page) gates old browsers and fills in `<dialog>`/`replaceChildren`; `test/e2e/check-compat.js` keeps JS at ES2018 and CSS free of newer features (the audience page also avoids `inset` and flex `gap`). Page CSPs forbid `eval`/`new Function`.
+- `internal/mdns` announces `<name>.local` (own minimal responder over `golang.org/x/net`, IPv4 only, probes for name conflicts); `httpapi/mdns.go` runs it and Setup's Settings dialog changes the name. The real network is only touched from `main`, never in tests (`fakeResponder`, the in-memory `bus`).
 - Sessions persist hashed in `sessions.json`; per-language live state in `live.json`.
 - Multi-language: one operator keypress advances every language, so structure mismatches are errors and the mismatching translation is not served.

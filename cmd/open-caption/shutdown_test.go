@@ -31,7 +31,7 @@ func TestInterruptShutsDownCleanly(t *testing.T) {
 	}
 	data := filepath.Join(dir, "data")
 	os.MkdirAll(data, 0o755)
-	os.WriteFile(filepath.Join(data, "config.yaml"), []byte("admin_password: adminpw1\noperator_password: operatorpw1\n"), 0o600)
+	os.WriteFile(filepath.Join(data, "config.yaml"), []byte("admin_password: adminpw1\noperator_password: operatorpw1\nmdns:\n  enabled: false\n"), 0o600)
 	l, _ := net.Listen("tcp", "127.0.0.1:0")
 	addr := l.Addr().String()
 	l.Close()

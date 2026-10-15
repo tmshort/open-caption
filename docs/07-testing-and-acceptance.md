@@ -62,3 +62,4 @@
 19. [ ] With `admin_allow: [localhost]`, Setup cannot be opened from a phone on the guest WiFi, and the audience page still works.
 20. [ ] The oldest iPad/iPhone/Android device you expect in the audience shows captions, keeps its screen on (or shows the Auto-Lock tip), and reconnects after being locked.
 21. [ ] Setup and the operator page work on the oldest device you intend to use for them (the floor is about Safari/iOS 14.1 or Chrome 87; an older browser shows a "too old" message). The audience page is expected to work from about iOS 12; try the oldest phone you can find.
+22. [ ] On the venue's guest WiFi, `http://open-caption.local/` opens on an iPhone, an Android phone and a Windows laptop (or you know the network blocks multicast and the numeric address and QR code are what you will rely on).

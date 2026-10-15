@@ -195,6 +195,9 @@ func main() {
 		serve("https", config.Listener{Addr: cfg.HTTPS.Addr, FallbackAddr: cfg.HTTPS.FallbackAddr}, tlsConfig(cfg))
 	}
 	api.SetListeners(lis)
+	if !*dev { // the --dev controls are for this computer only
+		api.ApplyMDNS(cfg.MDNS.Enabled, cfg.MDNS.Name)
+	}
 	logx.Infof("open-caption %s running; operator page: /operator, setup page: /admin. Press Ctrl+C to stop.", version)
 	if cfg.Defaults.OpenBrowser && !*noBrowser && !*dev {
 		openBrowser(firstURL("http", lis.HTTPAddr) + "admin")

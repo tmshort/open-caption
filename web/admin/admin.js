@@ -81,6 +81,23 @@
       shown.textContent = x.ok ? 'Operator password: ' + x.data.password : 'Could not read it';
     } }, 'Show the current operator password');
     const row = (k, v) => h('tr', {}, h('td', {}, k), h('td', {}, v || '—'));
+    const m = s.mdns || {};
+    const mdnsOn = h('input', { type: 'checkbox', 'aria-label': 'Announce this computer by name' }); mdnsOn.checked = !!m.enabled;
+    const mdnsName = h('input', { type: 'text', maxlength: '63', size: '16', 'aria-label': 'Name', autocapitalize: 'none', spellcheck: 'false' }); mdnsName.value = m.requested || 'open-caption';
+    const mdnsMsg = h('div', { class: 'hint', role: 'status' });
+    const showMdns = (x) => {
+      mdnsMsg.className = x.error ? 'check warn' : x.renamed ? 'check warn' : 'hint';
+      mdnsMsg.textContent = !x.enabled ? 'Not announced.' : x.error ? 'Could not announce this name: ' + x.error
+        : x.renamed ? 'Another computer on this network already uses ' + x.requested + '.local, so this one is http://' + x.host + '/'
+        : x.active ? 'Devices on this network can open http://' + x.host + '/' : 'Starting…';
+    };
+    showMdns(m);
+    async function applyMdns() {
+      mdnsMsg.className = 'hint'; mdnsMsg.textContent = 'Checking that nobody else uses the name…';
+      const x = await api('PUT', '/api/admin/settings/mdns', { enabled: mdnsOn.checked, name: mdnsName.value });
+      if (!x.ok) { mdnsMsg.className = 'check warn'; mdnsMsg.textContent = (x.data && x.data.error) || 'Could not change the name'; return; }
+      showMdns(x.data.mdns); if (x.data.mdns.active) mdnsName.value = x.data.mdns.requested;
+    }
     const logSelect = h('select', { 'aria-label': 'Log detail', onchange: async (e) => {
       const x = await api('PUT', '/api/admin/settings/log-level', { level: e.target.value });
       if (!x.ok) { fail(x); e.target.value = s.logLevel; return; }
@@ -94,6 +111,9 @@
         row('Operator page can be opened from', s.operatorRestricted ? s.operatorAllow.join(', ') : 'any computer on the network'),
         row('Web port (HTTP)', (s.httpAddr || '').replace(/^.*:/, '')), row('Web port (HTTPS)', (s.httpsAddr || '').replace(/^.*:/, ''))),
       !s.adminRestricted && !s.httpsAddr ? h('p', { class: 'check warn' }, 'Anyone on this WiFi can try to sign in to Setup, and passwords travel unencrypted over plain http. To limit it, set access: admin_allow in the settings file (for example [localhost]); see the usage guide.') : null,
+      h('h3', {}, 'Network name'),
+      h('p', { class: 'hint' }, 'Devices can open this computer by name instead of a number. It needs no router settings, but some guest WiFi networks block it, so keep the numeric address and QR code as the main way in.'),
+      h('div', { class: 'row' }, mdnsOn, ' Announce as ', mdnsName, '.local ', h('button', { type: 'button', onclick: applyMdns }, 'Apply')), mdnsMsg,
       h('h3', {}, 'Log detail'),
       logSelect,
       s.logLevelPinned ? h('p', { class: 'check warn' }, 'This copy was started with --log-level ' + s.logLevelPinned + ', which overrides the settings file every time it starts. A change made here applies now but lasts only until the program restarts.') : null,
@@ -705,11 +725,11 @@
       langs.length > 1 ? h('div', { class: 'check' }, 'Languages: ' + langs.filter((l) => l.available).map((l) => l.name).join(', ')) : null,
       ...langs.filter((l) => !l.available).map((l) => h('div', { class: 'check bad' }, l.name + ' will NOT be shown to the audience until it matches the main show file: ' + ((l.structure[0] || {}).message || ''))));
     const urls = net.data.urls.filter((u) => u.public);
-    let chosen = (urls.find((u) => u.kind === 'http') || urls[0] || net.data.urls[0] || {}).url;
+    let chosen = (urls.find((u) => u.kind === 'http' && !u.name) || urls.find((u) => u.kind === 'http') || urls[0] || net.data.urls[0] || {}).url; // the numeric address is the safest to print
     const big = h('div', { class: 'urlbig' }), qrBox = h('div', { class: 'qr' });
     const paint = () => { big.textContent = chosen || 'No address found'; qrBox.replaceChildren(chosen ? h('img', { src: '/api/admin/network/qr.png?size=512&url=' + encodeURIComponent(chosen), alt: 'QR code for ' + chosen }) : ''); };
     paint();
-    const list = h('div', { class: 'urls' }, ...net.data.urls.map((u) => h('div', { class: 'row' }, h('label', { class: 'row' }, h('input', { type: 'radio', name: 'u', checked: u.url === chosen, onchange: () => { chosen = u.url; paint(); } }), u.url, u.public ? '' : ' (this computer only)'))));
+    const list = h('div', { class: 'urls' }, ...net.data.urls.map((u) => h('div', { class: 'row' }, h('label', { class: 'row' }, h('input', { type: 'radio', name: 'u', checked: u.url === chosen, onchange: () => { chosen = u.url; paint(); } }), u.url, u.public ? '' : ' (this computer only)', u.name ? ' (a name: easy to type, but some WiFi networks and phones cannot use it)' : ''))));
     const isActive = A.activeId === show.id;
     p.append(h('h2', {}, 'Go live'), checks,
       h('div', { class: 'card' }, h('h3', {}, 'Tell the audience this address'), big,

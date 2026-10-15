@@ -135,6 +135,7 @@ cmd/open-caption/        main: flags, wiring, signal handling, listeners (HTTP a
 cmd/loadtest/            audience load generator (needs --dev on the server)
 internal/
   config/                config.yaml load/generate/validate (strict: unknown keys and all bad values reported together), access allow-lists, data-dir resolution
+  mdns/                  multicast-DNS responder: announces <name>.local (A records, probing for conflicts, goodbyes)
   logx/                  levelled logging (DEBUG/INFO/WARN/ERROR) over the standard logger
   show file/                parser, validator, Markdown-subset renderer, cue model, language structure check (pure, heavily tested)
   show/                  show store: shows, show files per language, validated image assets, duplicate
@@ -187,6 +188,9 @@ https:
   cert_file: ""                    # supply both, or leave empty with self_signed: true
   key_file: ""
   self_signed: true
+mdns:
+  enabled: true                    # announce <name>.local on the local network
+  name: open-caption
 defaults:                          # used when a show file does not say otherwise (a show file's [settings] override these)
   language: en
   loop_item_seconds: 10

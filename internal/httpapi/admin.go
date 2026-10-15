@@ -278,6 +278,7 @@ func (s *Server) adminRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/admin/settings", adm(s.settings))
 	mux.HandleFunc("PUT /api/admin/settings/passwords", adm(s.changePasswords))
 	mux.HandleFunc("PUT /api/admin/settings/log-level", adm(s.setLogLevel))
+	mux.HandleFunc("PUT /api/admin/settings/mdns", adm(s.setMDNS))
 	mux.HandleFunc("GET /api/admin/log", adm(s.recentLog))
 	mux.HandleFunc("GET /api/admin/settings/operator-password", adm(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-store")
@@ -964,6 +965,7 @@ type urlInfo struct {
 	Kind   string `json:"kind"` // "http" | "https"
 	Host   string `json:"host"`
 	Public bool   `json:"public"` // reachable from other devices (not localhost)
+	Name   bool   `json:"name"`   // a local network name (open-caption.local) rather than a numeric address
 }
 
 func hostURL(scheme, host, bound, def string) string {
@@ -991,6 +993,9 @@ func (s *Server) network(w http.ResponseWriter, r *http.Request) {
 		urls = append(urls, urlInfo{URL: hostURL(scheme, "localhost", bound, def), Kind: scheme, Host: "localhost"})
 	}
 	add("http", l.HTTPAddr, "80")
+	if st := s.MDNSStatus(); st.Active && l.HTTPAddr != "" {
+		urls = append([]urlInfo{{URL: hostURL("http", st.Host, l.HTTPAddr, "80"), Kind: "http", Host: st.Host, Public: true, Name: true}}, urls...)
+	}
 	add("https", l.HTTPSAddr, "443")
 
 	var warnings []string
@@ -1050,6 +1055,9 @@ func (s *Server) ownHost(h string) bool {
 		return true
 	}
 	if name, _ := os.Hostname(); h == name {
+		return true
+	}
+	if st := s.MDNSStatus(); st.Active && strings.EqualFold(h, st.Host) {
 		return true
 	}
 	for _, ip := range netinfo.LocalIPs() {
@@ -1120,7 +1128,7 @@ func (s *Server) settings(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{
 		"config": s.cfg.Redacted(), "configPath": s.cfg.Path, "dataDir": s.cfg.DataDir,
 		"httpAddr": l.HTTPAddr, "httpsAddr": l.HTTPSAddr, "version": s.version,
-		"canChangePasswords": s.cfg.Path != "", "logLevel": logx.Current().String(), "logLevelPinned": s.pinnedLevel,
+		"canChangePasswords": s.cfg.Path != "", "logLevel": logx.Current().String(), "logLevelPinned": s.pinnedLevel, "mdns": s.MDNSStatus(),
 		"adminAllow": s.cfg.Access.AdminAllow, "operatorAllow": s.cfg.Access.OperatorAllow,
 		"adminRestricted": s.adminAllow.Restricted(), "operatorRestricted": s.operatorAllow.Restricted(),
 	})
@@ -1183,7 +1191,7 @@ func (s *Server) setLogLevel(w http.ResponseWriter, r *http.Request) {
 	}
 	saved := false
 	if s.cfg.Path != "" {
-		if err := config.SetValues(s.cfg.Path, map[string]string{"log.level": lv.String()}); err != nil {
+		if err := config.SetValues(s.cfg.Path, map[string]any{"log.level": lv.String()}); err != nil {
 			writeErr(w, http.StatusInternalServerError, "Could not save the setting in config.yaml: "+err.Error())
 			return
 		}

@@ -19,6 +19,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/tmshort/open-caption/internal/logx"
+	"github.com/tmshort/open-caption/internal/mdns"
 	"github.com/tmshort/open-caption/internal/showfile"
 )
 
@@ -64,6 +65,12 @@ type Audience struct {
 	ScrollbackLines int `yaml:"scrollback_lines"`
 }
 
+// MDNS makes the server findable by name on the local network (multicast DNS): http://open-caption.local/.
+type MDNS struct {
+	Enabled bool   `yaml:"enabled"`
+	Name    string `yaml:"name"` // one label; ".local" is added
+}
+
 // Log controls how much the program writes to its log.
 type Log struct {
 	Level string `yaml:"level"` // debug | info | warn | error
@@ -86,6 +93,7 @@ type Config struct {
 	Audience         Audience `yaml:"audience"`
 	Access           Access   `yaml:"access"`
 	Log              Log      `yaml:"log"`
+	MDNS             MDNS     `yaml:"mdns"`
 
 	// Path is where the config was loaded from or generated (not serialized).
 	Path string `yaml:"-"`
@@ -106,6 +114,7 @@ func Default() Config {
 			Look: Look{Background: "#000000", TextColor: "#ffffff", SpeakerNameColor: "#ffffff", Font: "system", TextSizePercent: 100, SpeakerNames: "label"}},
 		Audience: Audience{MaxClients: 500, ScrollbackLines: 200},
 		Log:      Log{Level: "info"},
+		MDNS:     MDNS{Enabled: true, Name: "open-caption"},
 	}
 }
 
@@ -242,7 +251,7 @@ const MinPasswordLength = 6
 // SetPasswords changes the passwords in the config file at path, leaving every other setting as it is
 // on disk (so command-line overrides are never written into the file). Empty arguments are left alone.
 func SetPasswords(path, admin, operator string) error {
-	kv := map[string]string{}
+	kv := map[string]any{}
 	if admin != "" {
 		kv["admin_password"] = admin
 	}
@@ -255,7 +264,7 @@ func SetPasswords(path, admin, operator string) error {
 // SetValues changes individual settings in the config file, keyed by dotted name ("log.level"). The file is
 // edited in place: comments, key order and every other setting stay exactly as the person left them, and
 // a key that is missing is added. The file must be valid before and after.
-func SetValues(path string, kv map[string]string) error {
+func SetValues(path string, kv map[string]any) error {
 	b, err := os.ReadFile(path)
 	if err != nil {
 		return errors.New("config file not found")
@@ -295,7 +304,16 @@ func SetValues(path string, kv map[string]string) error {
 				node.Content = append(node.Content, &yaml.Node{Kind: yaml.ScalarNode, Tag: "!!str", Value: part}, child)
 			}
 			if last {
-				*child = yaml.Node{Kind: yaml.ScalarNode, Tag: "!!str", Value: kv[k], HeadComment: child.HeadComment, LineComment: child.LineComment, FootComment: child.FootComment}
+				n := yaml.Node{Kind: yaml.ScalarNode, Tag: "!!str", HeadComment: child.HeadComment, LineComment: child.LineComment, FootComment: child.FootComment}
+				switch v := kv[k].(type) {
+				case bool:
+					n.Tag, n.Value = "!!bool", strconv.FormatBool(v)
+				case int:
+					n.Tag, n.Value = "!!int", strconv.Itoa(v)
+				default:
+					n.Value = fmt.Sprint(v)
+				}
+				*child = n
 			} else {
 				if child.Kind != yaml.MappingNode {
 					*child = yaml.Node{Kind: yaml.MappingNode, Tag: "!!map"} // for example "log:" with nothing under it
@@ -417,6 +435,11 @@ func (c *Config) normalize() []string {
 	}
 	if _, err := ParseAllowList(c.Access.OperatorAllow); err != nil {
 		add("access.operator_allow", "%v", err)
+	}
+	if n, err := mdns.NormalizeName(c.MDNS.Name); err != nil {
+		add("mdns.name", "%v", err)
+	} else {
+		c.MDNS.Name = n
 	}
 	if _, err := logx.Parse(c.Log.Level); err != nil {
 		add("log.level", "%v", err)

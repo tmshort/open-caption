@@ -38,7 +38,7 @@ const stopServer = () => new Promise((r) => { if (!server || server.exitCode !==
 async function main() {
   if (!fs.existsSync(BIN)) throw new Error('build the program first: make build (looked for ' + BIN + ')');
   dataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'oc-e2e-'));
-  fs.writeFileSync(path.join(dataDir, 'config.yaml'), `admin_password: ${ADMIN}\noperator_password: ${OPERATOR}\n`);
+  fs.writeFileSync(path.join(dataDir, 'config.yaml'), `admin_password: ${ADMIN}\noperator_password: ${OPERATOR}\nmdns:\n  enabled: false\n`);
   port = await freePort(); B = 'http://localhost:' + port;
   await startServer();
 
@@ -208,6 +208,7 @@ async function main() {
     const guard = await open(); await guard.goto(B + '/admin'); await guard.waitForSelector('#pw'); await guard.type('#pw', ADMIN); await guard.keyboard.press('Enter'); await guard.waitForSelector('#steps button');
     await click(guard, 'Settings'); await sleep(600);
     check('Settings tells you Setup is open to the whole network', (await guard.evaluate(() => document.getElementById('dlg').innerText)).includes('any computer on the network'));
+    check('Settings offers the network name setting', await guard.evaluate(() => /Network name/.test(document.getElementById('dlg').innerText) && !document.querySelector('#dlg input[aria-label="Announce this computer by name"]').checked));
     check('Settings offers the log detail setting', await guard.evaluate(() => !!document.querySelector('#dlg select[aria-label="Log detail"]')));
     await guard.click('#dlgextra'); await guard.waitForFunction(() => { const p = document.querySelector('pre.logview'); return p && p.textContent.includes('signed in'); }, { timeout: 8000 }).catch(() => {});
     check('the recent log can be read in Setup', await guard.evaluate(() => /INFO .*signed in/.test(document.querySelector('pre.logview').textContent)));

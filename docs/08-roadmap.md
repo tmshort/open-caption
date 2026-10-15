@@ -59,8 +59,10 @@ Each milestone is shippable and ends with a demoable result. Tasks reference req
 
 - [x] Multiple languages (REQ-026): per-language engines and hubs driven in lockstep, structure checking, language negotiation and menu, Setup language tabs, sample Spanish translation
 
+- [x] mDNS: the server announces itself as `open-caption.local` (or a name chosen in Setup)
+
 ## Stretch / Later
-- mDNS advertisement; signed/notarized macOS build; Windows installer
+- Signed/notarized macOS build; Windows installer
 - ACME/Let's Encrypt certificates (needs Internet + public name)
 - Markdown headings as section markers
 - Hashed passwords in config

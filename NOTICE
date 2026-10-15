@@ -15,4 +15,4 @@ Atkinson Hyperlegible (web/shared/fonts/atkinson-*.woff2)
   Obtained from the @fontsource/atkinson-hyperlegible npm package (version 5.3.0).
   The fonts are served unmodified and are not sold by themselves.
 
-Go dependencies (see go.mod): gopkg.in/yaml.v3 (MIT and Apache-2.0), github.com/skip2/go-qrcode (MIT).
+Go dependencies (see go.mod): gopkg.in/yaml.v3 (MIT and Apache-2.0), github.com/skip2/go-qrcode (MIT), golang.org/x/net and golang.org/x/sys (BSD-3-Clause).
