@@ -1,21 +1,42 @@
 name: ci
-on: [push, pull_request]
+
+# Cost: macOS runners bill 10x and Windows 2x. A push to main runs the Linux jobs only; the other systems
+# run on pull requests, tags, every Monday, and when started by hand (gh workflow run ci).
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+    paths-ignore: ['README.md', 'CLAUDE.md', 'LICENSE', '.github/dependabot.yml']
+  pull_request:
+    paths-ignore: ['README.md', 'CLAUDE.md', 'LICENSE', '.github/dependabot.yml']
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+# A newer run for the same branch makes the older one pointless.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: ${{ fromJSON(github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/') && '["ubuntu-latest"]' || '["ubuntu-latest","macos-latest","windows-latest"]') }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-go@v7
         with:
           go-version: stable
       - run: go vet ./...
-      - run: go test -race ./...
+      - run: go test ${{ runner.os == 'Linux' && '-race' || '' }} ./...  # the race detector is slow; Linux is enough
   cross-build:
+    if: github.event_name != 'push' || startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-go@v7
@@ -26,14 +47,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - os: ubuntu-latest
-            chrome: /usr/bin/google-chrome
-          - os: macos-latest
-            chrome: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
-          - os: windows-latest
-            chrome: C:\Program Files\Google\Chrome\Application\chrome.exe
+        os: ${{ fromJSON(github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/') && '["ubuntu-latest"]' || '["ubuntu-latest","macos-latest","windows-latest"]') }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
     defaults:
       run:
         shell: bash
@@ -45,20 +61,23 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: 22
+          cache: npm
+          cache-dependency-path: test/e2e/package-lock.json
       - run: go build -o bin/open-caption${{ runner.os == 'Windows' && '.exe' || '' }} ./cmd/open-caption
       - run: cd test/e2e && npm ci --no-audit --no-fund
       - run: cd test/e2e && node run.js
         env:
-          CHROME: ${{ matrix.chrome }}
+          CHROME: ${{ runner.os == 'Linux' && '/usr/bin/google-chrome' || runner.os == 'macOS' && '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' || 'C:\Program Files\Google\Chrome\Application\chrome.exe' }}
           OC_SHOTS: ''
       - name: Accessibility audit (axe-core, reflow, keyboard focus)
         if: runner.os == 'Linux'
         run: cd test/e2e && node a11y.js
         env:
-          CHROME: ${{ matrix.chrome }}
+          CHROME: ${{ runner.os == 'Linux' && '/usr/bin/google-chrome' || runner.os == 'macOS' && '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' || 'C:\Program Files\Google\Chrome\Application\chrome.exe' }}
   load:
     # The venue target (docs/07): 200 connected devices, every caption delivered to all of them, p95 latency under 250 ms.
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-go@v7
@@ -72,7 +91,10 @@ jobs:
           for i in $(seq 1 50); do curl -fs http://127.0.0.1:18080/healthz >/dev/null && break; sleep 0.2; done
           go run ./cmd/loadtest -url http://127.0.0.1:18080 -clients 200 -messages 60 || { cat "$RUNNER_TEMP/server.log"; exit 1; }
   vulncheck:
+    # New advisories appear over time, not with our commits: weekly, on release tags and by hand.
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-go@v7
