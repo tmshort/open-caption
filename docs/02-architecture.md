@@ -135,6 +135,7 @@ cmd/open-caption/        main: flags, wiring, signal handling, listeners (HTTP a
 cmd/loadtest/            audience load generator (needs --dev on the server)
 internal/
   config/                config.yaml load/generate/validate (strict: unknown keys and all bad values reported together), access allow-lists, data-dir resolution
+  web/shared/i18n*       browser-side translation of Setup, operator and Help (English text is the key)
   mdns/                  multicast-DNS responder: announces <name>.local (A records, probing for conflicts, goodbyes)
   logx/                  levelled logging (DEBUG/INFO/WARN/ERROR) over the standard logger
   show file/                parser, validator, Markdown-subset renderer, cue model, language structure check (pure, heavily tested)

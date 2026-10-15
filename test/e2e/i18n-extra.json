@@ -1,0 +1,21 @@
+[
+ "Cue {0} does not match the {1} show file: that show file has {2} here, and this one has {3}. Every language must have the same cues in the same order; only the words may differ.",
+ "This show file has {0} cues but the {1} show file has {2}. Missing: {3} after cue {4}.",
+ "This show file has {0} cues but the {1} show file has {2}. This line has no match there.",
+ "a caption",
+ "an [image]",
+ "a [fullscreen] message",
+ "a [loop] of {0} items",
+ "{0} voices shown together",
+ "a [section]",
+ "a [note]",
+ "Did you mean {0}?",
+ "Known settings: {0}.",
+ "End of the show",
+ "Nothing to undo",
+ "No loop is running",
+ "cue index out of range",
+ "the show moved on; your view was out of date",
+ "Out of date — refreshed",
+ "bad request"
+]

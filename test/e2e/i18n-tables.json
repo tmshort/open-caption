@@ -1,0 +1,95 @@
+{
+ "admin step names": [
+  "Shows",
+  "Show file",
+  "Images",
+  "Look",
+  "Test",
+  "Go Live"
+ ],
+ "settings table": [
+  "Program",
+  "Settings file",
+  "Shows and data",
+  "Setup page can be opened from",
+  "Operator page can be opened from",
+  "any computer on the network",
+  "Web port (HTTP)",
+  "Web port (HTTPS)"
+ ],
+ "editor toolbar": [
+  "Clear",
+  "Blank",
+  "Fullscreen text",
+  "Section",
+  "Operator note",
+  "Comment",
+  "Loop"
+ ],
+ "log detail": [
+  "Errors only",
+  "Problems (warnings and errors)",
+  "Normal (events, sign-ins)",
+  "Debug (every request)",
+  "Everything",
+  "Normal and up",
+  "Problems only (warnings and errors)"
+ ],
+ "look presets": [
+  "White on black (default)",
+  "Black on white",
+  "Yellow on black",
+  "Dark blue"
+ ],
+ "look fields": [
+  "Background",
+  "Text",
+  "Speaker name color",
+  "Font",
+  "Text size",
+  "Speaker names",
+  "Message before the show starts",
+  "Default time for each item in a loop (seconds)",
+  "Captions a viewer can scroll back through"
+ ],
+ "contrast": [
+  "excellent",
+  "acceptable, but higher is easier to read in a dark room",
+  "too low to read comfortably"
+ ],
+ "cheat sheet": [
+  "A normal line",
+  "One caption. Long lines wrap on the screen.",
+  "Speaker label (NAME in capitals)",
+  "Bold and italic",
+  "Shown as a sound or stage direction",
+  "A backslash at the end joins the next line into the same caption",
+  "Several lines in one caption",
+  "A comment: never shown to anyone",
+  "A reminder shown to the operator only",
+  "A bookmark for the operator",
+  "Clear the captions / blank the screen",
+  "Fullscreen image (also  ![caption](file.png) )",
+  "Fullscreen text",
+  "A sung line, shown between ♪ notes",
+  "A whole song: every line inside is a sung lyric",
+  "Voices shown at the same time (a duet or counterpoint), one press of Space. Also  A: ~ one ~ || B: ~ two ~  on a single line",
+  "Music notes can be typed or pasted anywhere; the ♪ and ♫ buttons insert them",
+  "The show’s title and look (font, colors, size, speaker names) and other options, as lines like  font: dyslexic. Usually at the top. The Look step writes it for you. A translation may only set  idle message",
+  "Repeating items for pre-show or intermission. Add  | 15s  to an item to change its time",
+  "Reserved for headings; the line is ignored"
+ ],
+ "help": [
+  "Search results",
+  "No matches",
+  "Setting up",
+  "Running the show",
+  "For the operator",
+  "For whoever sets up"
+ ],
+ "misc": [
+  "TOGETHER",
+  "Could not change the name",
+  "Could not read the log."
+ ]
+}

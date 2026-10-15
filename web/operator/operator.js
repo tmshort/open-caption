@@ -24,7 +24,7 @@
   let toastTimer;
   function toast(msg) {
     const t = $('toast');
-    t.textContent = msg;
+    t.textContent = __(msg);
     t.classList.add('show');
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
@@ -34,8 +34,8 @@
   async function boot() {
     const r = await api('GET', API + '/state');
     if (r.status === 401 || r.status === 403) { showLogin(); return; }
-    if (r.status === 404) { document.body.textContent = 'No rehearsal is running. Start one from the Test step in Setup.'; return; }
-    if (REHEARSAL) document.title = 'Rehearsal — Operator';
+    if (r.status === 404) { document.body.textContent = __('No rehearsal is running. Start one from the Test step in Setup.'); return; }
+    if (REHEARSAL) document.title = __('Rehearsal') + ' — ' + __('Operator');
     $('login').hidden = true;
     $('app').hidden = false;
     S.me = r.data.me;
@@ -48,7 +48,7 @@
     e.preventDefault();
     const r = await api('POST', '/api/login', { role: 'operator', password: $('pw').value });
     if (r.ok) { $('loginerr').textContent = ''; $('pw').value = ''; boot(); return; }
-    $('loginerr').textContent = r.status === 429 ? 'Too many attempts. Wait a minute.' : 'That password was not accepted.';
+    $('loginerr').textContent = r.status === 429 ? __('Too many attempts. Wait a minute.') : __('That password was not accepted.');
   });
   $('logout').addEventListener('click', async () => { if (S.es) S.es.close(); await api('POST', '/api/logout'); showLogin(); });
 
@@ -57,7 +57,7 @@
     if (r.data.payload) setPayload(r.data.payload);
     return r.ok;
   }
-  $('takeover').addEventListener('click', async () => { if (await claim(true)) toast('You are now in control'); });
+  $('takeover').addEventListener('click', async () => { if (await claim(true)) toast(__('You are now in control')); });
 
   // ---- live updates ----
   function openStream() {
@@ -92,7 +92,7 @@
   function buildSections() {
     const sel = $('sections');
     const secs = S.cues.filter((c) => c.kind === 'section');
-    sel.replaceChildren(new Option('Go to section…', ''), ...secs.map((c) => new Option(c.text, String(c.index))));
+    sel.replaceChildren(new Option(__('Go to section…'), ''), ...secs.map((c) => new Option(c.text, String(c.index))));
     sel.hidden = secs.length === 0;
   }
   $('sections').addEventListener('change', () => {
@@ -108,7 +108,7 @@
     const el = $('lastsent'), at = S.payload && S.payload.op && S.payload.op.lastAt;
     if (!at) { el.textContent = ''; return; }
     const s = Math.max(0, Math.round((Date.now() - at) / 1000));
-    el.textContent = 'Last sent ' + (s < 60 ? s + ' s' : Math.floor(s / 60) + ' min ' + (s % 60) + ' s') + ' ago';
+    el.textContent = __('Last sent {when} ago', { when: s < 60 ? s + ' s' : Math.floor(s / 60) + ' min ' + (s % 60) + ' s' });
     el.classList.toggle('stale', s >= 120);
   }
   setInterval(renderLastSent, 1000);
@@ -148,7 +148,7 @@
     switch (c.kind) {
       case 'caption': {
         if (c.parts && c.parts.length) { // several voices at once
-          body.append(chip('⏸ TOGETHER'));
+          body.append(chip('⏸ ' + __('TOGETHER')));
           c.parts.forEach((v) => {
             const d = document.createElement('div'); d.className = 'part' + (v.sung ? ' sung' : '');
             if (v.speaker) { const s = document.createElement('span'); s.className = 'spk'; s.textContent = v.speaker; d.appendChild(s); }
@@ -161,13 +161,13 @@
         const t = document.createElement('span'); t.className = 'txt'; t.textContent = c.text; t.style.whiteSpace = 'pre-line'; t.dir = 'auto'; body.appendChild(t);
         break;
       }
-      case 'clear': body.append(chip(ICON.clear + ' CLEAR SCREEN')); break;
-      case 'blank': body.append(chip(ICON.blank + ' BLANK SCREEN')); break;
-      case 'image': body.append(chip(ICON.image + ' IMAGE: ' + c.label)); break; // name only, never the picture (REQ-031)
-      case 'fullscreen': body.append(chip(ICON.fullscreen + ' FULLSCREEN'), document.createTextNode(c.label)); break;
+      case 'clear': body.append(chip(ICON.clear + ' ' + __('CLEAR SCREEN'))); break;
+      case 'blank': body.append(chip(ICON.blank + ' ' + __('BLANK SCREEN'))); break;
+      case 'image': body.append(chip(ICON.image + ' ' + __('IMAGE: {name}', { name: c.label }))); break; // name only, never the picture (REQ-031)
+      case 'fullscreen': body.append(chip(ICON.fullscreen + ' ' + __('FULLSCREEN')), document.createTextNode(c.label)); break;
       case 'loop': {
-        const secs = c.period ? c.period + ' s' : 'default time';
-        body.append(chip(ICON.loop + ' LOOP — ' + (c.items || []).length + ' items, ' + secs));
+        const secs = c.period ? c.period + ' s' : __('default time');
+        body.append(chip(ICON.loop + ' ' + __('LOOP — {n} items, {time}', { n: (c.items || []).length, time: secs })));
         const ul = document.createElement('ul'); ul.className = 'items';
         (c.items || []).forEach((it) => {
           const li = document.createElement('li');
@@ -178,7 +178,7 @@
         break;
       }
       case 'section': body.textContent = ICON.section + ' ' + c.text; break;
-      case 'note': body.textContent = ICON.note + ' NOTE: ' + c.text; break;
+      case 'note': body.textContent = ICON.note + ' ' + __('NOTE: {text}', { text: c.text }); break;
       default: body.textContent = c.text || c.kind;
     }
   }
@@ -210,43 +210,43 @@
   function renderStatus() {
     const p = S.payload; if (!p) return;
     const o = p.op;
-    $('show').textContent = (REHEARSAL ? 'REHEARSAL — ' : '') + (p.show.name || p.show.id || 'No show loaded');
-    const live = $('live'); live.textContent = o.live ? '● LIVE' : 'NOT LIVE'; live.classList.toggle('on', o.live);
+    $('show').textContent = (REHEARSAL ? __('REHEARSAL') + ' — ' : '') + (p.show.name || p.show.id || __('No show loaded'));
+    const live = $('live'); live.textContent = o.live ? '● ' + __('LIVE') : __('NOT LIVE'); live.classList.toggle('on', o.live);
     const langs = p.languages || [];
     let txt = '👥 ' + p.audience;
     if (langs.length > 1) { // how many devices are reading each language
       txt += ' (' + langs.map((l) => l.code + ' ' + ((p.audienceByLang || {})[l.code] || 0)).join(' · ') + ')';
     }
     $('viewers').textContent = txt;
-    $('viewers').title = langs.length > 1 ? 'Audience devices by language: ' + langs.map((l) => l.name + ' ' + ((p.audienceByLang || {})[l.code] || 0)).join(', ') + '. You are following ' + langs[0].name + '.' : 'Audience devices connected';
+    $('viewers').title = langs.length > 1 ? __('Audience devices by language: {list}. You are following {name}.', { list: langs.map((l) => l.name + ' ' + ((p.audienceByLang || {})[l.code] || 0)).join(', '), name: langs[0].name }) : __('Audience devices connected');
     const mine = isController();
     document.body.classList.toggle('viewonly', !mine);
-    $('ctrl').textContent = mine ? 'You are in control' : (p.controller ? 'Another operator is in control' : 'Nobody is in control');
+    $('ctrl').textContent = mine ? __('You are in control') : (p.controller ? __('Another operator is in control') : __('Nobody is in control'));
     $('takeover').hidden = mine;
-    $('takeover').textContent = p.controller ? 'Take over' : 'Take control';
+    $('takeover').textContent = p.controller ? __('Take over') : __('Take control');
     $('stop').hidden = !o.loop;
     renderLastSent();
-    $('blank').firstChild.textContent = o.mode === 'blank' ? 'Unblank' : 'Blank';
+    $('blank').firstChild.textContent = o.mode === 'blank' ? __('Unblank') : __('Blank');
     const b = $('banner');
-    if (o.loop) { const c = S.cues[o.loop.cue]; b.hidden = false; b.className = 'loop'; b.textContent = '🔁 LOOP RUNNING — item ' + (o.loop.item + 1) + ' of ' + (c ? (c.items || []).length : '?') + '. NEXT ends it; STOP blanks the screen.'; }
-    else if (o.mode === 'blank') { b.hidden = false; b.className = ''; b.textContent = '⬛ Audience screen is blank.'; }
-    else if (o.nextIndex < 0 && o.total > 0 && o.cursor >= o.total) { b.hidden = false; b.className = ''; b.textContent = 'End of the show.'; }
+    if (o.loop) { const c = S.cues[o.loop.cue]; b.hidden = false; b.className = 'loop'; b.textContent = '🔁 ' + __('LOOP RUNNING — item {n} of {total}. NEXT ends it; STOP blanks the screen.', { n: o.loop.item + 1, total: c ? (c.items || []).length : '?' }); }
+    else if (o.mode === 'blank') { b.hidden = false; b.className = ''; b.textContent = '⬛ ' + __('Audience screen is blank.'); }
+    else if (o.nextIndex < 0 && o.total > 0 && o.cursor >= o.total) { b.hidden = false; b.className = ''; b.textContent = __('End of the show.'); }
     else b.hidden = true;
   }
 
   // ---- commands ----
   async function send(name, extra) {
-    if (!isController()) { toast('Another operator is in control — use Take over'); return; }
+    if (!isController()) { toast(__('Another operator is in control — use Take over')); return; }
     if (S.inflight) return;
     S.inflight = true;
     try {
       const r = await api('POST', API + '/' + name, Object.assign({ rev: op().rev }, extra));
       if (r.data.payload) setPayload(r.data.payload);
-      if (r.status === 409) toast(r.data.error || 'Out of date — refreshed');
-      else if (r.data.notice) toast(r.data.notice);
-      else if (!r.ok) toast(r.data.error || 'Something went wrong');
+      if (r.status === 409) toast(__(r.data.error || 'Out of date — refreshed'));
+      else if (r.data.notice) toast(__(r.data.notice));
+      else if (!r.ok) toast(__(r.data.error || 'Something went wrong'));
       if (r.ok && name !== 'jump') clearSel();
-    } catch (e) { toast('Connection problem — try again'); }
+    } catch (e) { toast(__('Connection problem — try again')); }
     finally { S.inflight = false; }
   }
 
@@ -262,7 +262,7 @@
     S.sel = i;
     const c = S.cues[i];
     $('jumpbar').hidden = false;
-    $('jumptext').textContent = 'Jump so that line ' + (c.line || i + 1) + ' is next: ' + (c.text || c.label || c.kind).slice(0, 80);
+    $('jumptext').textContent = __('Jump so that line {n} is next: {text}', { n: c.line || i + 1, text: (c.text || c.label || c.kind).slice(0, 80) });
     renderMarkers(false);
   }
   function clearSel() { S.sel = null; $('jumpbar').hidden = true; renderMarkers(false); }
@@ -302,7 +302,7 @@
     helpOpen = true;
     document.body.classList.add('helpopen');
     $('help').hidden = false;
-    $('help').querySelector('iframe').src = '/help?role=operator&embed=1&topic=' + (topic || 'operator-running-the-show');
+    $('help').querySelector('iframe').src = '/help?role=operator&embed=1&ui=' + OCI18n.lang + '&topic=' + (topic || 'operator-running-the-show');
     $('help').querySelector('iframe').focus();
   }
   function closeHelp() { helpOpen = false; document.body.classList.remove('helpopen'); $('help').hidden = true; $('help').querySelector('iframe').src = 'about:blank'; document.body.focus(); }
@@ -338,6 +338,10 @@
   });
   // A focused button would also "click" on Space release; we already handled the key.
   document.addEventListener('keyup', (e) => { if (e.key === ' ' && !/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)) e.preventDefault(); });
+
+  OCI18n.apply();
+  $('helpbtn').parentNode.insertBefore(OCI18n.picker(), $('helpbtn'));
+  $('login').insertBefore(OCI18n.picker(), $('login').firstChild);
 
   boot();
 })();

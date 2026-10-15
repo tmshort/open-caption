@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="stylesheet" href="/static/shared/compat.css">
 <script src="/static/shared/compat.js"></script>
+<script src="/static/shared/i18n.js"></script>
 <link rel="icon" type="image/svg+xml" href="/static/shared/favicon.svg">
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="apple-touch-icon" href="/static/shared/apple-touch-icon.png">
@@ -34,7 +35,7 @@
     <i id="dot" title="Connection"></i>
   </header>
   <div id="banner" hidden></div>
-  <ol id="list" aria-label="Script"></ol>
+  <ol id="list" aria-label="Show file lines"></ol>
   <div id="jumpbar" hidden>
     <span id="jumptext"></span>
     <button id="jumpgo" class="primary">Jump here (Enter)</button>
@@ -62,7 +63,7 @@
   <form method="dialog">
     <h2>Send a message to the audience</h2>
     <textarea id="msgtext" rows="3" maxlength="500" placeholder="e.g. The show will resume shortly" required></textarea>
-    <p class="hint">Shown fullscreen until the next line is sent. Use <b>Back</b> to undo.</p>
+    <p class="hint" data-t>Shown fullscreen until the next line is sent. Use <b>Back</b> to undo.</p>
     <menu><button value="cancel" formnovalidate>Cancel</button><button id="msgsend" value="send" class="primary">Send</button></menu>
   </form>
 </dialog>

@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="/static/shared/compat.css">
 <script src="/static/shared/compat.js"></script>
+<script src="/static/shared/i18n.js"></script>
 <link rel="icon" type="image/svg+xml" href="/static/shared/favicon.svg">
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="apple-touch-icon" href="/static/shared/apple-touch-icon.png">
@@ -14,7 +15,7 @@
 <body>
 <form id="login" hidden>
   <h1>Open Caption — Setup</h1>
-  <p>Enter the <strong>admin</strong> password. It was printed in the console the first time the server started, and it is in <code>config.yaml</code>.</p>
+  <p data-t>Enter the <strong>admin</strong> password. It was printed in the console the first time the server started, and it is in <code>config.yaml</code>.</p>
   <label>Admin password <input id="pw" type="password" name="password" autocomplete="current-password" required></label>
   <button class="primary">Sign in</button>
   <p id="loginerr" role="alert"></p>

@@ -59,6 +59,8 @@ async function main() {
 
   const compat = require('child_process').spawnSync(process.execPath, [path.join(__dirname, 'check-compat.js')], { encoding: 'utf8' });
   check('the pages stay inside the browser floor (ES2018 syntax, no newer APIs or CSS)', compat.status === 0, compat.stdout);
+  const i18n = require('child_process').spawnSync(process.execPath, [path.join(__dirname, 'check-i18n.js')], { encoding: 'utf8' });
+  check('every sentence in Setup, the operator page and Help is translated into all five other languages', i18n.status === 0, i18n.stdout);
 
   try {
     // ------------------------------------------------------------------ Setup
@@ -102,7 +104,7 @@ async function main() {
     section('Setup: look');
     await step(admin, 'Show'); await sleep(700); await click(admin, 'Work on this show'); await sleep(700);
     await step(admin, 'Look'); await sleep(900);
-    await admin.select('select', 'dyslexic');
+    await admin.evaluate(() => { const f = [...document.querySelectorAll('select')].find((s) => [...s.options].some((o) => o.value === 'dyslexic')); f.value = 'dyslexic'; f.dispatchEvent(new Event('input', { bubbles: true })); });
     await admin.evaluate(() => { const sp = [...document.querySelectorAll('select')].find((s) => [...s.options].some((o) => o.value === 'color')); sp.value = 'color'; sp.dispatchEvent(new Event('input', { bubbles: true })); });
     await click(admin, 'Save look'); await sleep(700);
     const look = (await api(admin, 'GET', '/api/admin/shows/' + showId2)).body;
@@ -328,6 +330,53 @@ async function main() {
     await sleep(600);
     check('the audience page does not need that (it has fallbacks)', !(await stillAudience.evaluate(() => !!document.querySelector('[role=alert]'))));
     await tooOldSetup.close(); await stillAudience.close(); await b3.close();
+
+    // ------------------------------------------------------------------ interface languages
+    section('Interface languages: Setup, the operator page and Help in the six audience languages');
+    const b4 = await puppeteer.launch({ executablePath: CHROME, headless: 'new', args: ['--no-sandbox'] });
+    // Visible text that is still English although the language has a translation for it.
+    const leaksOf = (p) => p.evaluate(() => {
+      const dict = new Set(OCI18n.keys(OCI18n.lang)), out = [];
+      const visible = (el) => !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length);
+      const check = (text, where) => { const t = text.replace(/\s+/g, ' ').trim(); if (t.length > 2 && dict.has(t) && OCI18n.t(t) !== t) out.push(where + ': ' + t.slice(0, 60)); };
+      const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+      for (let n = w.nextNode(); n; n = w.nextNode()) { if (n.parentElement && visible(n.parentElement) && !/^(SCRIPT|STYLE|OPTION)$/.test(n.parentElement.tagName)) check(n.nodeValue, 'text'); }
+      document.querySelectorAll('option').forEach((o) => check(o.textContent, 'option'));
+      document.querySelectorAll('[placeholder],[title],[aria-label]').forEach((el) => ['placeholder', 'title', 'aria-label'].forEach((a) => { const v = el.getAttribute(a); if (v) check(v, a); }));
+      return [...new Set(out)];
+    });
+    const uiPage = async (url, lang) => {
+      const p = await b4.newPage(); p.setDefaultTimeout(8000); await p.setViewport({ width: 1300, height: 950 });
+      p.on('pageerror', (e) => errs.push(e.message)); await p.bringToFront();
+      await p.goto(B + url + (url.includes('?') ? '&' : '?') + 'ui=' + lang); return p;
+    };
+    const SEEN = { es: 'Espectáculos', fr: 'Spectacles', de: 'Shows', it: 'Spettacoli', pt: 'Espetáculos' };
+    for (const lang of ['es', 'fr', 'de', 'it', 'pt']) {
+      const a = await uiPage('/admin', lang); await a.waitForSelector('#pw');
+      const loginText = await a.evaluate(() => document.getElementById('login').innerText);
+      check(lang + ': the sign-in page is translated', !/Sign in|Admin password/.test(loginText) && (await leaksOf(a)).length === 0, [loginText.slice(0, 120), await leaksOf(a)]);
+      await signIn(a, '#steps button');
+      check(lang + ': the Setup steps are translated', (await a.evaluate(() => document.getElementById('steps').innerText)).includes(SEEN[lang]) && !(await a.evaluate(() => document.documentElement.lang !== '' && false)));
+      const leaks = [];
+      for (const step of ['Shows', 'Show file', 'Images', 'Look', 'Test', 'Go Live']) {
+        await a.evaluate((i) => document.querySelectorAll('#steps button')[i].click(), ['Shows', 'Show file', 'Images', 'Look', 'Test', 'Go Live'].indexOf(step));
+        await sleep(700); leaks.push(...(await leaksOf(a)));
+      }
+      await a.evaluate(() => document.getElementById('settingsbtn').click()); await sleep(700); leaks.push(...(await leaksOf(a)));
+      check(lang + ': no English is left in Setup (steps, Settings dialog)', leaks.length === 0, [...new Set(leaks)].slice(0, 8));
+      await a.close();
+    }
+    const opEs = await uiPage('/operator', 'es'); await signIn(opEs, '#message'); await sleep(800);
+    const opLeaks = await leaksOf(opEs);
+    check('the operator page is translated (Spanish)', opLeaks.length === 0 && (await opEs.evaluate(() => document.getElementById('next').innerText)).includes('SIGUIENTE'), opLeaks.slice(0, 8));
+    await opEs.close();
+    // The language menu: choosing a language reloads the page in it and is remembered.
+    const menu = await uiPage('/admin', 'en'); await signIn(menu, '#steps button');
+    await menu.select('header select.uilang', 'fr'); await menu.waitForFunction(() => document.documentElement.lang === 'fr', { timeout: 8000 }).catch(() => {});
+    check('the language menu switches the page and remembers the choice', await menu.evaluate(() => document.documentElement.lang === 'fr' && localStorage.getItem('oc.ui.lang') === 'fr'));
+    check('an unknown or missing translation falls back to English', await menu.evaluate(() => OCI18n.t('A sentence nobody translated') === 'A sentence nobody translated' && OCI18n.t('Image "a.png" not found. Upload it in the Images step.').includes('introuvable')));
+    await menu.evaluate(() => localStorage.removeItem('oc.ui.lang'));
+    await menu.close(); await b4.close();
 
     // ------------------------------------------------------------------ restart
     section('Restart: logins, control and undo survive');
