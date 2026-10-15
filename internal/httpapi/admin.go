@@ -199,6 +199,7 @@ func (s *Server) adminRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/admin/shows/import", adm(s.importShow))
 	mux.HandleFunc("GET /api/admin/shows/{id}", adm(s.getShow))
 	mux.HandleFunc("PUT /api/admin/shows/{id}", adm(s.updateShow))
+	mux.HandleFunc("POST /api/admin/shows/{id}/duplicate", adm(s.duplicateShow))
 	mux.HandleFunc("DELETE /api/admin/shows/{id}", adm(s.deleteShow))
 	mux.HandleFunc("GET /api/admin/shows/{id}/script", adm(s.getScript))
 	mux.HandleFunc("PUT /api/admin/shows/{id}/script", adm(s.putScript))
@@ -342,6 +343,19 @@ func (s *Server) updateShow(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	writeJSON(w, http.StatusOK, s.summary(m))
+}
+
+func (s *Server) duplicateShow(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		Name string `json:"name"`
+	}
+	json.NewDecoder(http.MaxBytesReader(w, r.Body, 4096)).Decode(&req)
+	m, err := s.store.Duplicate(r.PathValue("id"), req.Name)
+	if err != nil {
+		storeErr(w, err)
+		return
+	}
+	writeJSON(w, http.StatusCreated, s.summary(m))
 }
 
 func (s *Server) deleteShow(w http.ResponseWriter, r *http.Request) {

@@ -129,3 +129,40 @@ func TestAssets(t *testing.T) {
 		t.Errorf("unknown show: %v", err)
 	}
 }
+
+func TestDuplicateCopiesEverything(t *testing.T) {
+	s := newStore(t)
+	m, _ := s.Create("Original", "Hello\nWorld\n")
+	s.WriteScript(m.ID, "es", "Hola\n")
+	s.SaveAsset(m.ID, "a.png", bytes.NewReader(pngBytes(t, 8)))
+	th := Theme{BG: "#001122", FG: "#ffee00", ScalePct: 150}
+	s.Update(m.ID, nil, &th)
+
+	cp, err := s.Duplicate(m.ID, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if cp.ID == m.ID || cp.Name != "Original (copy)" || cp.Theme.BG != "#001122" || cp.Theme.ScalePct != 150 {
+		t.Errorf("%+v", cp)
+	}
+	if txt, _ := s.ReadScript(cp.ID, ""); txt != "Hello\nWorld\n" {
+		t.Errorf("script %q", txt)
+	}
+	if txt, _ := s.ReadScript(cp.ID, "es"); txt != "Hola\n" {
+		t.Errorf("translation %q", txt)
+	}
+	if names := s.AssetNames(cp.ID); len(names) != 1 || names[0] != "a.png" {
+		t.Errorf("assets %v", names)
+	}
+	// Independent afterwards.
+	s.WriteScript(cp.ID, "", "changed")
+	if txt, _ := s.ReadScript(m.ID, ""); txt != "Hello\nWorld\n" {
+		t.Error("original changed with the copy")
+	}
+	if c2, err := s.Duplicate(m.ID, "Mine"); err != nil || c2.Name != "Mine" {
+		t.Errorf("named copy: %v %+v", err, c2)
+	}
+	if _, err := s.Duplicate("nope-0000", ""); !errors.Is(err, ErrNotFound) {
+		t.Errorf("missing show: %v", err)
+	}
+}

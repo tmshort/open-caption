@@ -404,3 +404,26 @@ func TestBootActiveRestoresShowAndPosition(t *testing.T) {
 		t.Errorf("%+v show=%s", op, s2.Runtime().ShowID())
 	}
 }
+
+func TestRenameAndDuplicateShowAPI(t *testing.T) {
+	_, _, c := adminServer(t)
+	id := createShow(t, c, "Old name")
+	c.do("PUT", "/api/admin/shows/"+id+"/script", map[string]string{"text": "One\nTwo"})
+	if code, r := c.do("PUT", "/api/admin/shows/"+id, map[string]any{"name": "New name"}); code != 200 || r["name"] != "New name" {
+		t.Fatalf("rename: %d %v", code, r)
+	}
+	if code, _ := c.do("PUT", "/api/admin/shows/"+id, map[string]any{"name": "   "}); code != 400 {
+		t.Errorf("blank name: %d", code)
+	}
+	code, r := c.do("POST", "/api/admin/shows/"+id+"/duplicate", map[string]any{})
+	if code != 201 || r["name"] != "New name (copy)" || r["id"] == id {
+		t.Fatalf("duplicate: %d %v", code, r)
+	}
+	_, sc := c.do("GET", "/api/admin/shows/"+r["id"].(string)+"/script", nil)
+	if sc["text"] != "One\nTwo" {
+		t.Errorf("copy script: %v", sc["text"])
+	}
+	if code, _ := c.do("POST", "/api/admin/shows/missing-0000/duplicate", nil); code != 404 {
+		t.Errorf("duplicate missing: %d", code)
+	}
+}

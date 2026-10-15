@@ -169,6 +169,8 @@
         h('div', { class: 'name' }, s.name, ' ', s.active ? h('span', { class: 'badge active' }, 'ACTIVE') : null, ' ', s.live ? h('span', { class: 'badge live' }, 'LIVE') : null,
           h('div', { class: 'hint' }, 'Updated ' + new Date(s.updated).toLocaleString())),
         h('button', { class: A.cur === s.id ? '' : 'primary', onclick: () => { setCur(s.id); go('script'); } }, A.cur === s.id ? 'Continue with this show' : 'Work on this show'),
+        h('button', { class: 'quiet', onclick: () => renameShow(s) }, 'Rename…'),
+        h('button', { class: 'quiet', onclick: () => duplicateShow(s) }, 'Duplicate'),
         h('a', { href: '/api/admin/shows/' + s.id + '/export', download: s.id + '.zip' }, 'Export'),
         h('button', { class: 'danger quiet', onclick: () => deleteShow(s) }, 'Delete…'))));
       p.append(h('h3', {}, 'Add another show'), h('div', { class: 'card row' }, newShowForm(), h('button', { onclick: makeSample }, 'Sample show'),
@@ -198,6 +200,22 @@
     if (!r.ok) return fail(r, 'That file could not be imported');
     await loadShows(); setCur(r.data.show.id);
     toast(r.data.skippedFiles ? 'Imported (' + r.data.skippedFiles + ' file(s) skipped)' : 'Imported'); go('script');
+  }
+  async function renameShow(s) {
+    const inp = h('input', { type: 'text', maxlength: '100', 'aria-label': 'Show name' });
+    inp.value = s.name;
+    if (!await ask('Rename the show', h('label', { class: 'field' }, h('span', {}, 'New name'), inp), 'Rename')) return;
+    const r = await api('PUT', '/api/admin/shows/' + s.id, { name: inp.value });
+    if (!r.ok) return fail(r);
+    toast('Renamed'); render();
+  }
+  async function duplicateShow(s) {
+    const inp = h('input', { type: 'text', maxlength: '100', 'aria-label': 'Name of the copy' });
+    inp.value = s.name + ' (copy)';
+    if (!await ask('Duplicate the show', h('div', {}, h('p', {}, 'Makes a copy of the script, images and look. Nothing else is shared.'), h('label', { class: 'field' }, h('span', {}, 'Name of the copy'), inp)), 'Duplicate')) return;
+    const r = await api('POST', '/api/admin/shows/' + s.id + '/duplicate', { name: inp.value });
+    if (!r.ok) return fail(r);
+    await loadShows(); setCur(r.data.id); toast('Copy created'); render();
   }
   async function deleteShow(s) {
     const ok = await confirmBox('Delete “' + s.name + '”?', 'Its script and images will be permanently deleted. Export it first if you may want it back.', 'Delete', true);

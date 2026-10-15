@@ -434,6 +434,53 @@ func (s *Store) SaveAsset(id, filename string, r io.Reader) (Asset, error) {
 	return Asset{Name: name, Size: int64(len(data)), Large: len(data) > LargeAsset}, nil
 }
 
+// Duplicate copies a show (scripts in every language, images and look) under a new name.
+// If name is empty, " (copy)" is added to the original name.
+func (s *Store) Duplicate(id, name string) (Meta, error) {
+	src, err := s.Get(id)
+	if err != nil {
+		return Meta{}, err
+	}
+	if strings.TrimSpace(name) == "" {
+		name = src.Name + " (copy)"
+	}
+	dst, err := s.Create(name, "")
+	if err != nil {
+		return Meta{}, err
+	}
+	fail := func(err error) (Meta, error) { s.Delete(dst.ID); return Meta{}, err }
+	srcDir, _ := s.path(id)
+	dstDir, _ := s.path(dst.ID)
+	ents, err := os.ReadDir(srcDir)
+	if err != nil {
+		return fail(err)
+	}
+	for _, e := range ents {
+		if !e.IsDir() && strings.HasPrefix(e.Name(), "script.") && strings.HasSuffix(e.Name(), ".md") {
+			b, err := os.ReadFile(filepath.Join(srcDir, e.Name()))
+			if err != nil {
+				return fail(err)
+			}
+			if err := atomicWrite(filepath.Join(dstDir, e.Name()), b, 0o644); err != nil {
+				return fail(err)
+			}
+		}
+	}
+	for _, a := range s.assetNamesOnDisk(id) {
+		b, err := os.ReadFile(filepath.Join(srcDir, "assets", a))
+		if err != nil {
+			return fail(err)
+		}
+		if err := atomicWrite(filepath.Join(dstDir, "assets", a), b, 0o644); err != nil {
+			return fail(err)
+		}
+	}
+	th := src.Theme
+	return s.Update(dst.ID, nil, &th)
+}
+
+func (s *Store) assetNamesOnDisk(id string) []string { return s.AssetNames(id) }
+
 // DeleteAsset removes an image.
 func (s *Store) DeleteAsset(id, name string) error {
 	dir, err := s.path(id, "assets")
