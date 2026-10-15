@@ -62,7 +62,8 @@ async function main() {
     section('Setup: sign in, sample show, show file, languages');
     const admin = await open();
     await admin.goto(B + '/admin'); await admin.waitForSelector('#pw');
-    await admin.type('#pw', 'wrong-password'); await admin.keyboard.press('Enter'); await sleep(400);
+    await admin.type('#pw', 'wrong-password'); await admin.keyboard.press('Enter');
+    await admin.waitForFunction(() => document.getElementById('loginerr').textContent.trim() !== '', { timeout: 6000 }).catch(() => {});
     check('a wrong password is refused', (await admin.evaluate(() => document.getElementById('loginerr').textContent)).includes('not accepted'));
     await admin.evaluate(() => { document.getElementById('pw').value = ''; });
     await admin.type('#pw', ADMIN); await admin.keyboard.press('Enter');
