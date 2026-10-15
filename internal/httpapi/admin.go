@@ -955,6 +955,10 @@ func (s *Server) importShow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if !bytes.HasPrefix(data, []byte("PK")) { // not a .zip: a plain show file, whatever it is called
+		if strings.HasSuffix(strings.ToLower(hdr.Filename), ".zip") { // named like an export, but is not one
+			writeErr(w, http.StatusBadRequest, "That is not a show export (.zip).")
+			return
+		}
 		s.importPlainFile(w, hdr.Filename, data)
 		return
 	}
