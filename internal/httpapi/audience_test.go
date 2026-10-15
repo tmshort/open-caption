@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"github.com/tmshort/open-caption/internal/config"
-	"github.com/tmshort/open-caption/internal/script"
+	"github.com/tmshort/open-caption/internal/showfile"
 )
 
 type sseEvent struct {
@@ -75,7 +75,7 @@ func devServer(t *testing.T, src string, maxClients int) (*Server, *httptest.Ser
 	dir := t.TempDir()
 	os.WriteFile(filepath.Join(dir, "curtain.jpg"), []byte("\xff\xd8\xffjpeg"), 0o644)
 	os.WriteFile(filepath.Join(dir, "notes.txt"), []byte("secret"), 0o644)
-	s.Runtime().SetShow("demo", "Demo", dir, script.Parse(src, script.Options{}).Cues, DefaultTheme("Soon"))
+	s.Runtime().SetShow("demo", "Demo", dir, showfile.Parse(src, showfile.Options{}).Cues, DefaultTheme("Soon"))
 	ts := httptest.NewServer(s.Handler())
 	t.Cleanup(ts.Close)
 	return s, ts, dir

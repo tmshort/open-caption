@@ -52,7 +52,7 @@
 
 ## Domain model
 
-- **Show**: id, name, created/updated, one script per language (primary language required; others planned), parsed `Cue[]`, `Assets[]`, `Theme`.
+- **Show**: id, name, created/updated, one show file per language (primary language required; others planned), parsed `Cue[]`, `Assets[]`, `Theme`.
 - **Cue**: `index`, `kind`, payload, source line. Kinds:
   `caption`, `clear`, `blank`, `image`, `fullscreen`, `loop`, `section` and `note` (operator-only). See doc 03.
 - **LiveState** (the part broadcast to audience, per language):
@@ -135,8 +135,8 @@ cmd/open-caption/        main: flags, wiring, signal handling, listeners (HTTP a
 cmd/loadtest/            audience load generator (needs --dev on the server)
 internal/
   config/                config.yaml load/generate/validate, access allow-lists, data-dir resolution
-  script/                parser, validator, Markdown-subset renderer, cue model, language structure check (pure, heavily tested)
-  show/                  show store: shows, scripts per language, validated image assets, duplicate
+  show file/                parser, validator, Markdown-subset renderer, cue model, language structure check (pure, heavily tested)
+  show/                  show store: shows, show files per language, validated image assets, duplicate
   live/                  engine: state, cursor, undo history, loop timer, apply/jump/back, export/restore
   hub/                   SSE fanout, client registry, non-blocking broadcast
   httpapi/               routes, auth + sessions, access/origin guards, runtime (engines + hubs per language), admin/operator/audience handlers
@@ -147,13 +147,13 @@ web/                     embedded browser assets (go:embed)
   admin/ operator/ audience/ helpui/   the four pages
   shared/                speaker colors and the bundled fonts (OpenDyslexic, Atkinson Hyperlegible)
   help/                  help topics (Markdown); docs/ guides are added to them at build time
-  sample/                the sample show (script, Spanish translation, placeholder images)
+  sample/                the sample show (show file, Spanish translation, placeholder images)
 docs/                    these specs, the usage guide and venue network guide (docs/embed.go ships the guides in the program)
 deploy/                  systemd / launchd / Windows service files
 test/e2e/                browser end-to-end test (Node + Chrome)
 ```
 
-`script`, `live`, `hub`, `show` and `help` must not import `httpapi`; they are testable without a network.
+`show file`, `live`, `hub`, `show` and `help` must not import `httpapi`; they are testable without a network.
 
 ## Authentication
 
@@ -206,7 +206,7 @@ access:
   config.yaml             settings and passwords (above)
   shows/<id>/
     show.yaml             name, main language, theme (incl. per-language idle messages), look_saved
-    script.<lang>.md      one script per language, verbatim (source of truth)
+    show.<lang>.md      one show file per language, verbatim (source of truth)
     assets/<filename>     uploaded images
   sessions.json           signed-in sessions (hashed), so a restart does not sign anyone out
   live.json               active show id and, per language: cursor, scrollback, mode, the last 10 undo steps (debounced ≤ 250 ms)
@@ -214,11 +214,11 @@ access:
 ```
 
 Default data dir: OS user-config location (`os.UserConfigDir()/open-caption`).
-The parsed cue list is derived from the script on load, not stored.
+The parsed cue list is derived from the show file on load, not stored.
 
 ## Error handling principles
 
-- Script parse errors never crash the server; invalid lines become warnings and are skipped or rendered as plain captions (spec in doc 03).
+- Show file parse errors never crash the server; invalid lines become warnings and are skipped or rendered as plain captions (spec in doc 03).
 - Operator commands carry the client's last-seen `rev` (not `seq`, which changes on every loop tick); a stale `rev` returns 409 with the current state so two operator tabs can't double-advance, while a loop ticking in the background never causes a spurious 409.
 - Beyond `audience.max_clients`, `/events` returns 503 and the page retries with backoff.
 - Never block the engine on a slow client.

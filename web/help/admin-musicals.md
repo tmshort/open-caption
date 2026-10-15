@@ -16,13 +16,13 @@ Lyrics are shown **in italics between music notes**, for example ♪ Where is lo
 
 Use `[song]` for long numbers, and `~` for a single sung line in the middle of a scene.
 
-In Setup, the **🎵 Song**, **♪** and **♫** buttons above the script editor put these in for you. The ♪ and ♫ characters can also be copied from anywhere, because they are ordinary text.
+In Setup, the **🎵 Song**, **♪** and **♫** buttons above the show file editor put these in for you. The ♪ and ♫ characters can also be copied from anywhere, because they are ordinary text.
 
 ## Two singers at once (counterpoint and duets)
 
 When different singers sing different words **at the same time**, show them together on the audience's screens with `[together]`:
 
-```script
+```showfile
 [together]
 ANNA: ~ I love you, I love you ~
 KRIS: ~ Me too, me too ~
@@ -50,7 +50,7 @@ KRIS: ~ Me too, me too ~
 
 ## An example
 
-```script
+```showfile
 [section: Act 1, Number 4]
 [clear]
 (The orchestra begins.)
@@ -65,4 +65,4 @@ That I've been dreaming of?
 MRS. CORNEY: That's quite enough of that!
 ```
 
-See also [Writing a script](topic:admin-writing-a-script).
+See also [Writing a show file](topic:admin-writing-a-show-file).

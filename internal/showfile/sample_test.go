@@ -1,4 +1,4 @@
-package script
+package showfile
 
 import (
 	"os"
@@ -6,10 +6,10 @@ import (
 	"testing"
 )
 
-// The shipped sample script must parse with no warnings or errors, given its images.
+// The shipped sample show file must parse with no warnings or errors, given its images.
 func TestSampleScriptParsesClean(t *testing.T) {
 	dir := filepath.Join("..", "..", "web", "sample")
-	b, err := os.ReadFile(filepath.Join(dir, "sample-script.md"))
+	b, err := os.ReadFile(filepath.Join(dir, "sample-show.md"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -30,7 +30,7 @@ func TestSampleScriptParsesClean(t *testing.T) {
 	}
 	for _, k := range []CueKind{KindCaption, KindClear, KindBlank, KindImage, KindFullscreen, KindLoop, KindSection, KindNote} {
 		if counts[k] == 0 {
-			t.Errorf("sample script should demonstrate %s", k)
+			t.Errorf("sample show file should demonstrate %s", k)
 		}
 	}
 	sung := 0
@@ -51,8 +51,8 @@ func TestSampleScriptParsesClean(t *testing.T) {
 	if sung < 5 {
 		t.Errorf("sample should include a song, found %d sung lines", sung)
 	}
-	// The Spanish translation must have exactly the same shape as the English script.
-	es, err := os.ReadFile(filepath.Join(dir, "sample-script.es.md"))
+	// The Spanish translation must have exactly the same shape as the English show file.
+	es, err := os.ReadFile(filepath.Join(dir, "sample-show.es.md"))
 	if err != nil {
 		t.Fatal(err)
 	}

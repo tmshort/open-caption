@@ -20,11 +20,11 @@ For the full list of checks on the network side, see the [venue network guide](t
 
 ## A language is missing for the audience
 
-Open the Script step and look at that language's tab: a ⚠ means its script no longer has the same cues as the main one. Fix the error shown; the language returns as soon as you save. See [Languages](topic:admin-languages).
+Open the Show file step and look at that language's tab: a ⚠ means its show file no longer has the same cues as the main one. Fix the error shown; the language returns as soon as you save. See [Languages](topic:admin-languages).
 
-## Script problems
+## Show file problems
 
-See "What the warnings mean" in [Writing a script](topic:admin-writing-a-script).
+See "What the warnings mean" in [Writing a show file](topic:admin-writing-a-show-file).
 
 ## Passwords
 

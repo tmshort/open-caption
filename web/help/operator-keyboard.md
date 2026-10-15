@@ -9,7 +9,7 @@ These keys work whenever you are not typing in a box and no window is open.
 | `Shift+Q` | **Stop:** stop a running loop and leave a blank screen |
 | `B` | **Blank** or unblank: hide everything, and bring the same captions back when you unblank |
 | `C` | **Clear**: erase the captions, so the next line starts on an empty screen |
-| `/` | Search the script |
+| `/` | Search the show file |
 | `Home` | Restart the show (asks first) |
 | `Esc` | Cancel a jump or close a window |
 

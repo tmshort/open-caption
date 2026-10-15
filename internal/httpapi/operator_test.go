@@ -14,7 +14,7 @@ import (
 
 	"github.com/tmshort/open-caption/internal/config"
 	"github.com/tmshort/open-caption/internal/live"
-	"github.com/tmshort/open-caption/internal/script"
+	"github.com/tmshort/open-caption/internal/showfile"
 )
 
 func testConfig() config.Config {
@@ -27,7 +27,7 @@ func opServer(t *testing.T, src string) (*Server, *httptest.Server) {
 	t.Helper()
 	s := New(testConfig(), "test")
 	t.Cleanup(s.Close)
-	s.Runtime().SetShow("demo", "Demo Show", t.TempDir(), script.Parse(src, script.Options{}).Cues, DefaultTheme("Soon"))
+	s.Runtime().SetShow("demo", "Demo Show", t.TempDir(), showfile.Parse(src, showfile.Options{}).Cues, DefaultTheme("Soon"))
 	ts := httptest.NewServer(s.Handler())
 	t.Cleanup(ts.Close)
 	return s, ts
@@ -339,7 +339,7 @@ func TestOperatorStreamPushesChanges(t *testing.T) {
 func TestLiveStatePersistsAcrossRestart(t *testing.T) {
 	dir := t.TempDir()
 	path := filepath.Join(dir, "live.json")
-	cues := script.Parse("A\nB\nC", script.Options{}).Cues
+	cues := showfile.Parse("A\nB\nC", showfile.Options{}).Cues
 
 	s1 := New(testConfig(), "t")
 	s1.Runtime().EnablePersistence(path)

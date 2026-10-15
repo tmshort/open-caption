@@ -81,4 +81,4 @@ The app should not run its own DHCP/DNS in v1 (conflicts, privileges, scope).
 
 ## Backups
 
-Data directory is plain files; "Export show" (zip of script + assets) and "Import show" in setup for moving between machines / sharing with other volunteers.
+Data directory is plain files; "Export show" (zip of show file + assets) and "Import show" in setup for moving between machines / sharing with other volunteers.

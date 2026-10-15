@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/tmshort/open-caption/docs"
-	"github.com/tmshort/open-caption/internal/script"
+	"github.com/tmshort/open-caption/internal/showfile"
 	"github.com/tmshort/open-caption/web"
 )
 
@@ -25,13 +25,13 @@ func loadAll(t *testing.T) map[string]Topic {
 }
 
 func TestRenderEscapesEverything(t *testing.T) {
-	out := Render("# Title <script>\n\nText <b>x</b> & `code <i>` **bold**\n\n```script\n<script>alert(1)</script>\n```\n")
+	out := Render("# Title <script>\n\nText <b>x</b> & `code <i>` **bold**\n\n```showfile\n<script>alert(1)</script>\n```\n")
 	for _, bad := range []string{"<script", "<b>", "<i>"} {
 		if strings.Contains(out, bad) {
 			t.Errorf("unescaped %q in %s", bad, out)
 		}
 	}
-	for _, want := range []string{"<h1", "&lt;script&gt;", "<code>code &lt;i&gt;</code>", "<strong>bold</strong>", `class="lang-script"`} {
+	for _, want := range []string{"<h1", "&lt;script&gt;", "<code>code &lt;i&gt;</code>", "<strong>bold</strong>", `class="lang-showfile"`} {
 		if !strings.Contains(out, want) {
 			t.Errorf("missing %q in %s", want, out)
 		}
@@ -91,11 +91,11 @@ func TestEmbeddedTopicsLoadAndLinksResolve(t *testing.T) {
 	}
 }
 
-// Help must document every script convention the parser knows (REQ-037).
+// Help must document every show file convention the parser knows (REQ-037).
 func TestScriptHelpCoversEveryConvention(t *testing.T) {
 	topics := loadAll(t)
-	text := topics["admin-writing-a-script"].Markdown + topics["admin-loops"].Markdown
-	for _, name := range script.DirectiveNames {
+	text := topics["admin-writing-a-show-file"].Markdown + topics["admin-loops"].Markdown
+	for _, name := range showfile.DirectiveNames {
 		if !strings.Contains(text, "["+name) {
 			t.Errorf("help never shows the [%s] command", name)
 		}
@@ -105,7 +105,7 @@ func TestScriptHelpCoversEveryConvention(t *testing.T) {
 			t.Errorf("help never shows %q", closer)
 		}
 	}
-	for _, ch := range script.Escapable {
+	for _, ch := range showfile.Escapable {
 		if !strings.Contains(text, `\`+string(ch)) {
 			t.Errorf("help never mentions the escape \\%c", ch)
 		}
@@ -118,24 +118,24 @@ func TestScriptHelpCoversEveryConvention(t *testing.T) {
 	}
 }
 
-// Every example marked ```script must be valid: no errors and no warnings.
+// Every example marked ```showfile must be valid: no errors and no warnings.
 func TestScriptExamplesParseClean(t *testing.T) {
 	n := 0
 	for id, tp := range loadAll(t) {
 		for _, b := range CodeBlocks(tp.Markdown) {
-			if b.Info != "script" {
+			if b.Info != "showfile" {
 				continue
 			}
 			n++
-			for _, d := range script.Parse(b.Code, script.Options{}).Diagnostics {
-				if d.Severity != script.SevInfo {
+			for _, d := range showfile.Parse(b.Code, showfile.Options{}).Diagnostics {
+				if d.Severity != showfile.SevInfo {
 					t.Errorf("%s: example has a %s on line %d: %s\n%s", id, d.Severity, d.Line, d.Message, b.Code)
 				}
 			}
 		}
 	}
 	if n < 5 {
-		t.Errorf("expected several script examples, found %d", n)
+		t.Errorf("expected several show file examples, found %d", n)
 	}
 }
 

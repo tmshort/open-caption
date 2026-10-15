@@ -27,7 +27,7 @@ Query parameters on `/` and `/events`: `?display=projector`, `?size=<pct>`,
 |--------|------|-------------|
 | GET | `/help` | Help viewer page (topic list + content); `?role=admin\|operator` picks the default topic set |
 | GET | `/help/{topic}` | One topic as rendered HTML fragment (`?format=md` returns the Markdown source) |
-| GET | `/help/sample-script.md` | Downloadable starter script demonstrating every convention |
+| GET | `/help/sample-show.md` | Downloadable starter show file demonstrating every convention |
 | GET | `/api/help/topics`, `/api/help/search?q=` | Topic list (with role) and full-text search |
 
 Help is embedded in the binary (no network needed). It contains no secrets, but
@@ -60,11 +60,11 @@ everywhere an operator session is; the reverse is not true.
 | GET | `/api/admin/shows` | List shows |
 | POST | `/api/admin/shows` | Create `{name}` |
 | GET/PUT/DELETE | `/api/admin/shows/{id}` | Metadata (`name`, `lookSaved`), theme (including per-language `idleMessages`), delete |
-| POST | `/api/admin/shows/{id}/duplicate` | `{name?}` copy scripts (every language), images and look |
-| GET | `/api/admin/shows/{id}/script` | Raw text + parsed cues + diagnostics (`?lang=`) |
-| PUT | `/api/admin/shows/{id}/script` | Body: raw script text (`?lang=`) → diagnostics |
-| POST | `/api/admin/shows/{id}/script/validate` | Dry-run parse without saving |
-| GET | `/api/admin/shows/{id}/languages` | The show's languages (main first) with cue/error/warning counts, `available` (false when a translation does not match the main script) and the `structure` problems; plus the `known` language names offered in Setup |
+| POST | `/api/admin/shows/{id}/duplicate` | `{name?}` copy show files (every language), images and look |
+| GET | `/api/admin/shows/{id}/showfile` | Raw text + parsed cues + diagnostics (`?lang=`) |
+| PUT | `/api/admin/shows/{id}/showfile` | Body: raw show file text (`?lang=`) → diagnostics |
+| POST | `/api/admin/shows/{id}/showfile/validate` | Dry-run parse without saving |
+| GET | `/api/admin/shows/{id}/languages` | The show's languages (main first) with cue/error/warning counts, `available` (false when a translation does not match the main show file) and the `structure` problems; plus the `known` language names offered in Setup |
 | POST | `/api/admin/shows/{id}/languages` | `{code, name?, copyFromMain}`: start a translation (409 if it exists) |
 | DELETE | `/api/admin/shows/{id}/languages/{lang}` | Remove a translation (not the main language; not while live) |
 | POST | `/api/admin/shows/{id}/assets` | multipart image upload: png/jpg/gif/webp only (SVG rejected); 10 MB limit; stored as-is (no server-side scaling); response includes a `large: true` flag above 1 MB |
@@ -101,7 +101,7 @@ Operator state is pushed on `/api/operator/stream` as `opstate` events carrying 
 
 `claim` returns `409 {ok:false}` if another live operator holds control and `takeover` was not set. A controller whose stream is closed keeps control for 30 s so a reload doesn't lose it.
 
-Responses: `200` with the new `OperatorState` and, for harmless no-ops, a `notice` ("End of script", "Nothing to undo", "No loop is running"); `409` with current state if
+Responses: `200` with the new `OperatorState` and, for harmless no-ops, a `notice` ("End of the show", "Nothing to undo", "No loop is running"); `409` with current state if
 `rev` is stale or the caller isn't the controller; `401` if not logged in.
 
 ## Audience event stream — `GET /events`

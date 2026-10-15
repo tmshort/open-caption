@@ -1,4 +1,4 @@
-package script
+package showfile
 
 import (
 	"fmt"
@@ -40,7 +40,7 @@ func LanguageName(code string) string {
 
 const maxStructureIssues = 12
 
-// CompareStructure checks that a translation has exactly the same shape as the primary script:
+// CompareStructure checks that a translation has exactly the same shape as the primary show file:
 // the same number of cues, in the same order, of the same kinds (a caption stays a caption, a loop
 // has the same number and kinds of items, voices shown together stay the same number). The words may
 // differ. The returned diagnostics use the translation's line numbers.
@@ -92,7 +92,7 @@ func CompareStructure(primary, other []Cue, primaryName string) []Diagnostic {
 			}
 		}
 		if !same {
-			add(o.Line, "Cue %d does not match the %s script: that script has %s here, and this one has %s. "+
+			add(o.Line, "Cue %d does not match the %s show file: that show file has %s here, and this one has %s. "+
 				"Every language must have the same cues in the same order; only the words may differ.", i+1, primaryName, describe(p), describe(o))
 			if len(out) >= 1 { // after the first difference everything after it is shifted, so stop there
 				break
@@ -106,10 +106,10 @@ func CompareStructure(primary, other []Cue, primaryName string) []Diagnostic {
 		}
 		switch {
 		case len(other) < len(primary):
-			add(line, "This script has %d cues but the %s script has %d. Missing: %s after cue %d.",
+			add(line, "This show file has %d cues but the %s show file has %d. Missing: %s after cue %d.",
 				len(other), primaryName, len(primary), describe(primary[len(other)]), len(other))
 		default:
-			add(other[len(primary)].Line, "This script has %d cues but the %s script has %d. This line has no match there.",
+			add(other[len(primary)].Line, "This show file has %d cues but the %s show file has %d. This line has no match there.",
 				len(other), primaryName, len(primary))
 		}
 	}

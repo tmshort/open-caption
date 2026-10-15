@@ -52,14 +52,14 @@ func (s *Server) helpRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/help/search", op(func(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusOK, map[string]any{"hits": help.Search(topics, r.URL.Query().Get("q"))})
 	}))
-	mux.HandleFunc("GET /help/sample-script.md", op(func(w http.ResponseWriter, r *http.Request) {
-		b, err := fs.ReadFile(web.Sample, "sample/sample-script.md")
+	mux.HandleFunc("GET /help/sample-show.md", op(func(w http.ResponseWriter, r *http.Request) {
+		b, err := fs.ReadFile(web.Sample, "sample/sample-show.md")
 		if err != nil {
 			http.NotFound(w, r)
 			return
 		}
 		w.Header().Set("Content-Type", "text/markdown; charset=utf-8")
-		w.Header().Set("Content-Disposition", `attachment; filename="sample-script.md"`)
+		w.Header().Set("Content-Disposition", `attachment; filename="sample-show.md"`)
 		w.Write(b)
 	}))
 	mux.HandleFunc("GET /help/{topic}", op(func(w http.ResponseWriter, r *http.Request) {

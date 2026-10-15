@@ -1,6 +1,6 @@
-# Writing a script
+# Writing a show file
 
-A script is a plain text file (`.txt` or `.md`) written in a simple form of Markdown. If you paste in an ordinary theater script, it already works: **every line is one caption**, and one press of the spacebar sends one line. Blank lines are ignored, so use them to keep the script readable.
+A show file is a plain text file (`.txt` or `.md`) written in a simple form of Markdown. If you paste in an ordinary theater show file, it already works: **every line is one caption**, and one press of the spacebar sends one line. Blank lines are ignored, so use them to keep the show file readable.
 
 Long lines wrap on the screen automatically. You decide where to split a long speech into lines, to match the style of the performance. The program never splits or joins lines for you.
 
@@ -15,7 +15,7 @@ Long lines wrap on the screen automatically. You decide where to split a long sp
 
 Anything else is shown as typed. Links, lists, tables and headings are not supported. Raw HTML is not supported either: if you type `<b>`, it appears literally, and the page shows a note suggesting the Markdown form.
 
-```script
+```showfile
 HAMLET: To be, or not to be, **that** is the question.
 (A bell tolls in the distance.)
 OPHELIA: My *lord*?
@@ -25,11 +25,11 @@ OPHELIA: My *lord*?
 
 For a musical, show lyrics between music notes (♪). There are three ways, from quickest to most flexible:
 
-- **Type or paste the notes yourself.** ♪ and ♫ work anywhere in the script. In the editor, the **♪** and **♫** buttons insert them at the cursor.
+- **Type or paste the notes yourself.** ♪ and ♫ work anywhere in the show file. In the editor, the **♪** and **♫** buttons insert them at the cursor.
 - **Start a line with `~`.** The line is treated as a sung lyric: it is shown in italics with a ♪ added at each end, and the `~` itself is not shown. A closing `~` is optional. This also works after a speaker's name.
 - **Wrap a whole song in `[song]` and `[/song]`.** Every line inside is sung, so you do not need a `~` on each one. The title after the colon is a bookmark for the operator only. Notes, clears and blanks can still go inside.
 
-```script
+```showfile
 OLIVER: ~ Where is love? ~
 ~ Row, row, row your boat
 
@@ -44,7 +44,7 @@ EDWIN: Whistling all day long
 
 When singers sing different lines **at the same time**, put them in `[together]` … `[/together]`. Every line inside is shown at once, side by side on a wide screen and stacked on a phone, and the operator sends them with a single press of Space. Each keeps its own speaker name. For a short exchange you can write the voices on one line, separated by ` || ` (a space, two vertical bars, a space). `[duet]` and `[counterpoint]` mean the same as `[together]`.
 
-```script
+```showfile
 [together]
 ANNA: ~ I love you, I love you ~
 KRIS: ~ Me too, me too ~
@@ -61,7 +61,7 @@ A tilde in the middle of a line, such as `about ~5 minutes`, is just text. To st
 
 End a line with a backslash to join it with the next line, or put the lines between `[[` and `]]`.
 
-```script
+```showfile
 GHOST: Remember me. \
 Remember me.
 
@@ -78,7 +78,7 @@ Gently down the stream
 - `[section: Act 2, Scene 1]` adds a bookmark in the operator's list. Notes and sections never use up a press of the spacebar.
 - Lines beginning with `#` are reserved for headings in a future version and are ignored. Use a comment instead.
 
-```script
+```showfile
 <!-- Act 1 captions, version 3 -->
 [section: Act 1, Scene 1]
 [note: lights come up slowly, wait for the first line]
@@ -101,9 +101,9 @@ A line in square brackets is a command. Names are not case-sensitive.
 | `[song: title]` … `[/song]` | A song: every line inside is shown as a sung lyric. See [Songs and music](topic:admin-musicals) |
 | `[section: name]` | A bookmark for the operator |
 | `[note: text]` | A note for the operator |
-| `[language: es]` | Marks a translated script. See [Languages](topic:admin-languages) |
+| `[language: es]` | Marks a translated show file. See [Languages](topic:admin-languages) |
 
-```script
+```showfile
 [clear]
 (Lights up on the garden.)
 [image: garden.png | The garden at dusk]
@@ -121,7 +121,7 @@ An image, fullscreen text or blank stays on the audience screens until the opera
 
 Put a backslash before a character to show it literally instead of treating it as formatting: `\*`, `\_`, `\#`, `\[`, `\]`, `\:`, `\(`, `\)`, `\!`, `\~` and `\\` (a backslash itself). For example, a caption that must begin with a number sign is written `\# 1 hit`, and `HAMLET\: not a speaker` shows the colon without making a speaker label.
 
-```script
+```showfile
 \# 1 hit of the season
 TIME\: ten o'clock
 2 \* 3 = 6
@@ -129,7 +129,7 @@ TIME\: ten o'clock
 
 ## What the warnings mean
 
-The Script step lists problems with line numbers. Click one to jump to the line.
+The Show file step lists problems with line numbers. Click one to jump to the line.
 
 - **"Unknown command [x]"** — a line in square brackets that is not a command. If it was meant to be a caption such as a sound effect, write it with parentheses, like `(laughter)`.
 - **"Image … not found"** — the picture is not uploaded, or the name is spelled differently. Upload it in the Images step.
@@ -141,6 +141,6 @@ The Script step lists problems with line numbers. Click one to jump to the line.
 
 Errors never stop you from saving.
 
-## If two people edit the same script
+## If two people edit the same show file
 
-If someone else saves the script while you have it open, the program will not quietly overwrite their work. When you save, it tells you the script was changed by someone else and lets you **use their version** (replacing what is in your editor) or **save yours anyway**. Copy anything you want to keep before choosing. The part with the error is skipped, and the rest of the script still works.
+If someone else saves the show file while you have it open, the program will not quietly overwrite their work. When you save, it tells you the show file was changed by someone else and lets you **use their version** (replacing what is in your editor) or **save yours anyway**. Copy anything you want to keep before choosing. The part with the error is skipped, and the rest of the show file still works.

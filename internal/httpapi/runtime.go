@@ -16,7 +16,7 @@ import (
 	"github.com/tmshort/open-caption/internal/config"
 	"github.com/tmshort/open-caption/internal/hub"
 	"github.com/tmshort/open-caption/internal/live"
-	"github.com/tmshort/open-caption/internal/script"
+	"github.com/tmshort/open-caption/internal/showfile"
 )
 
 // Theme is the venue look sent to audience clients (docs/04, LiveState.theme).
@@ -52,10 +52,10 @@ type LangInfo struct {
 	Name string `json:"name"`
 }
 
-// LangScript is one language's parsed script.
-type LangScript struct {
+// LangFile is one language's parsed show file.
+type LangFile struct {
 	Code, Name string
-	Cues       []script.Cue
+	Cues       []showfile.Cue
 }
 
 // AudState is the audience snapshot.
@@ -225,7 +225,7 @@ func (rt *Runtime) AudienceByLang() map[string]int {
 	return out
 }
 
-func (rt *Runtime) newEngine(gen int, code string, cues []script.Cue, startSeq int64) *live.Engine {
+func (rt *Runtime) newEngine(gen int, code string, cues []showfile.Cue, startSeq int64) *live.Engine {
 	return live.New(cues, live.Config{DefaultLoopSeconds: rt.cfg.Defaults.LoopItemSeconds,
 		ScrollbackMax: rt.cfg.Audience.ScrollbackLines, StartSeq: startSeq}, func(ev live.Event) { rt.onEvent(gen, code, ev) })
 }
@@ -247,17 +247,17 @@ func (rt *Runtime) oldSeqs() map[string]int64 {
 }
 
 // SetShow swaps in a one-language show (and resets live state), then pushes a snapshot to every client.
-func (rt *Runtime) SetShow(id, name, assetsDir string, cues []script.Cue, theme Theme) {
+func (rt *Runtime) SetShow(id, name, assetsDir string, cues []showfile.Cue, theme Theme) {
 	code := rt.cfg.Defaults.Language
 	if code == "" {
 		code = "en"
 	}
-	rt.SetShowLangs(id, name, assetsDir, LangScript{Code: code, Name: script.LanguageName(code), Cues: cues}, nil, theme)
+	rt.SetShowLangs(id, name, assetsDir, LangFile{Code: code, Name: showfile.LanguageName(code), Cues: cues}, nil, theme)
 }
 
 // SetShowLangs swaps in a show with a primary language and any translations (which must already have
 // been checked to match the primary's structure), resets live state, and pushes a snapshot to every client.
-func (rt *Runtime) SetShowLangs(id, name, assetsDir string, primary LangScript, others []LangScript, theme Theme) {
+func (rt *Runtime) SetShowLangs(id, name, assetsDir string, primary LangFile, others []LangFile, theme Theme) {
 	seqs := rt.oldSeqs()
 	rt.mu.Lock()
 	rt.gen++
@@ -268,13 +268,13 @@ func (rt *Runtime) SetShowLangs(id, name, assetsDir string, primary LangScript, 
 	rt.primary = primary.Code
 	rt.langs = map[string]*langRT{}
 	rt.order = nil
-	for _, ls := range append([]LangScript{primary}, others...) {
+	for _, ls := range append([]LangFile{primary}, others...) {
 		if _, dup := rt.langs[ls.Code]; dup {
 			continue
 		}
 		rt.hubLocked(ls.Code)
 		rt.order = append(rt.order, ls.Code)
-		rt.langs[ls.Code] = &langRT{code: ls.Code, name: ls.Name, speakers: script.SpeakersOf(ls.Cues),
+		rt.langs[ls.Code] = &langRT{code: ls.Code, name: ls.Name, speakers: showfile.SpeakersOf(ls.Cues),
 			engine: rt.newEngine(gen, ls.Code, ls.Cues, seqs[ls.Code])}
 	}
 	hubs := make(map[string]*hub.Hub, len(rt.hubs))
@@ -366,7 +366,7 @@ func (rt *Runtime) Do(fn func(*live.Engine) (live.OperatorState, error)) (live.O
 		return st, err
 	}
 	for _, l := range others {
-		fn(l.engine) // their errors (such as end of script) mirror the primary's
+		fn(l.engine) // their errors (such as end of show file) mirror the primary's
 		// A translation must never drift from the primary: put it on the same cue if it did.
 		if l.engine.Operator().Cursor != st.Cursor {
 			l.engine.Jump(st.Cursor, -1)
@@ -376,7 +376,7 @@ func (rt *Runtime) Do(fn func(*live.Engine) (live.OperatorState, error)) (live.O
 	return st, err
 }
 
-func (rt *Runtime) item(it *script.Item) *AudItem {
+func (rt *Runtime) item(it *showfile.Item) *AudItem {
 	if it == nil {
 		return nil
 	}
@@ -452,7 +452,7 @@ func (rt *Runtime) onEvent(gen int, lang string, ev live.Event) {
 		case live.EvCaption:
 			payload = map[string]any{"seq": ev.Seq, "ts": ts, "item": ev.Data}
 		case live.EvFullscreen:
-			it := ev.Data.(script.Item)
+			it := ev.Data.(showfile.Item)
 			payload = map[string]any{"seq": ev.Seq, "ts": ts, "item": rt.item(&it)}
 		case live.EvBlank:
 			payload = map[string]any{"seq": ev.Seq, "ts": ts, "on": ev.Data.(map[string]bool)["on"]}
@@ -498,10 +498,10 @@ func (rt *Runtime) SetTheme(t Theme) {
 	rt.pushToAll(hubs)
 }
 
-// ReplaceLangs swaps in edited scripts for the active show. If the show is not live it is reset (so a
+// ReplaceLangs swaps in edited show files for the active show. If the show is not live it is reset (so a
 // leading loop starts correctly); if live, every language keeps the operator's place by cue number.
-// It reports whether the primary script's cue count changed.
-func (rt *Runtime) ReplaceLangs(primary LangScript, others []LangScript) (countChanged, wasLive bool) {
+// It reports whether the primary show file's cue count changed.
+func (rt *Runtime) ReplaceLangs(primary LangFile, others []LangFile) (countChanged, wasLive bool) {
 	eng := rt.Engine()
 	oldCount := len(eng.Cues())
 	wasLive = eng.Operator().Live
@@ -515,7 +515,7 @@ func (rt *Runtime) ReplaceLangs(primary LangScript, others []LangScript) (countC
 	}
 
 	cursor := eng.Operator().Cursor
-	all := append([]LangScript{primary}, others...)
+	all := append([]LangFile{primary}, others...)
 	rt.mu.Lock()
 	gen := rt.gen
 	rt.cuesVer++
@@ -534,7 +534,7 @@ func (rt *Runtime) ReplaceLangs(primary LangScript, others []LangScript) (countC
 	var added []*langRT
 	type replace struct {
 		eng  *live.Engine
-		cues []script.Cue
+		cues []showfile.Cue
 	}
 	var replaces []replace
 	rt.order = nil
@@ -544,10 +544,10 @@ func (rt *Runtime) ReplaceLangs(primary LangScript, others []LangScript) (countC
 		}
 		rt.order = append(rt.order, ls.Code)
 		if l, ok := rt.langs[ls.Code]; ok {
-			l.name, l.speakers = ls.Name, script.SpeakersOf(ls.Cues)
+			l.name, l.speakers = ls.Name, showfile.SpeakersOf(ls.Cues)
 			replaces = append(replaces, replace{l.engine, ls.Cues}) // applied after unlocking: the engine emits a snapshot, which calls onEvent
 		} else {
-			l := &langRT{code: ls.Code, name: ls.Name, speakers: script.SpeakersOf(ls.Cues)}
+			l := &langRT{code: ls.Code, name: ls.Name, speakers: showfile.SpeakersOf(ls.Cues)}
 			l.engine = rt.newEngine(gen, ls.Code, ls.Cues, 0)
 			rt.langs[ls.Code] = l
 			rt.hubLocked(ls.Code)
@@ -585,16 +585,16 @@ func (rt *Runtime) langsOrderHas(code string) (int, bool) {
 	return -1, false
 }
 
-// ReplaceCues replaces the primary language's script only (kept for single-language callers).
-func (rt *Runtime) ReplaceCues(cues []script.Cue) (countChanged, wasLive bool) {
+// ReplaceCues replaces the primary language's show file only (kept for single-language callers).
+func (rt *Runtime) ReplaceCues(cues []showfile.Cue) (countChanged, wasLive bool) {
 	rt.mu.RLock()
 	code, name := rt.primary, rt.langs[rt.primary].name
-	var others []LangScript
+	var others []LangFile
 	for _, c := range rt.order[1:] {
-		others = append(others, LangScript{Code: c, Name: rt.langs[c].name, Cues: rt.langs[c].engine.Cues()})
+		others = append(others, LangFile{Code: c, Name: rt.langs[c].name, Cues: rt.langs[c].engine.Cues()})
 	}
 	rt.mu.RUnlock()
-	return rt.ReplaceLangs(LangScript{Code: code, Name: name, Cues: cues}, others)
+	return rt.ReplaceLangs(LangFile{Code: code, Name: name, Cues: cues}, others)
 }
 
 // SavedShowID returns the show id recorded in live.json, if any.
@@ -625,7 +625,7 @@ func (rt *Runtime) preloadFor(l *langRT) []string {
 	cues, cursor := l.engine.Cues(), l.engine.Operator().Cursor
 	seen := map[string]bool{}
 	out := []string{}
-	add := func(it script.Item) {
+	add := func(it showfile.Item) {
 		if it.Kind != "image" || len(out) >= preloadMax {
 			return
 		}

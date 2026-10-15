@@ -9,7 +9,7 @@ test:
 race:
 	go test -race ./...
 fuzz:
-	go test ./internal/script -run xxx -fuzz FuzzParse -fuzztime 30s
+	go test ./internal/showfile -run xxx -fuzz FuzzParse -fuzztime 30s
 vet:
 	go vet ./...
 # Browser end-to-end test: needs Node and Chrome (set CHROME to its path if not in the default place).

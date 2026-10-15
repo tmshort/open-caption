@@ -1,4 +1,4 @@
-package script
+package showfile
 
 import (
 	"html"
@@ -15,7 +15,7 @@ func RenderInline(s string) (htmlOut, plain string) {
 	return h.String(), p.String()
 }
 
-// Escapable lists the characters a backslash can escape in script text.
+// Escapable lists the characters a backslash can escape in show file text.
 const Escapable = `\*_#[]:()!~`
 
 const escapable = Escapable

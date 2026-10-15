@@ -1,6 +1,6 @@
 # Running the show
 
-The page shows the script as a list. Lines already sent are dim, the line **on screen now** has a green dot, and the line **next** is large with a yellow arrow.
+The page shows the show file as a list. Lines already sent are dim, the line **on screen now** has a green dot, and the line **next** is large with a yellow arrow.
 
 ## The three things to remember
 
@@ -21,13 +21,13 @@ Both leave the audience screens empty, but they are not the same:
 | Use it for | A blackout, a pause, or hiding the captions for a moment | A new scene, or after a song, so old lines do not pile up |
 | Undo | `B` again, or **Backspace** | **Backspace** |
 
-A script can do the same with the `[blank]` and `[clear]` commands; they appear in your list as `BLANK SCREEN` and `CLEAR SCREEN`.
+A show file can do the same with the `[blank]` and `[clear]` commands; they appear in your list as `BLANK SCREEN` and `CLEAR SCREEN`.
 
 ## Before the show
 
 - Sign in to the operator page. You will see "You are in control". If it says another operator is in control, use **Take over** only if you are meant to be the operator.
 - Check the viewer count (the people icon). It shows how many devices are connected.
-- If the script starts with a pre-show loop, it is already running on the audience screens.
+- If the show file starts with a pre-show loop, it is already running on the audience screens.
 
 ## During the show
 
@@ -37,7 +37,7 @@ A script can do the same with the `[blank]` and `[clear]` commands; they appear 
 - **Languages:** if the show has translations, you follow the main language and everything you send goes to every language at once. The audience count in the header lists each language, for example `83 (en 60 · es 23)`.
 - **Several voices at once:** a line marked `TOGETHER` shows two or more singers on the screens at the same time. One press of Space sends all of them.
 - The header shows **Last sent … ago**, so you can see at a glance that the show and your screen are still in step. It turns yellow after two minutes without a line.
-- **Go to section…** (beside the search box) lists the script's bookmarks; picking one selects it, and you confirm the jump.
+- **Go to section…** (beside the search box) lists the show file's bookmarks; picking one selects it, and you confirm the jump.
 - To skip ahead or go back, click a line, then confirm "Jump here". You can also search with `/`.
 - A one-off announcement such as "The show will resume shortly" can be sent with **Message…**. Press **Back** to remove it.
 

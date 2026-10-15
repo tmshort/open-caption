@@ -23,9 +23,9 @@ var Operator embed.FS
 //go:embed admin
 var Admin embed.FS
 
-// Sample holds the example show (script + placeholder images).
+// Sample holds the example show (show file + placeholder images).
 //
-//go:embed sample/sample-script.md sample/sample-script.es.md sample/assets
+//go:embed sample/sample-show.md sample/sample-show.es.md sample/assets
 var Sample embed.FS
 
 // Help holds the help topics (Markdown), named admin-*.md and operator-*.md.

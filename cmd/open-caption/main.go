@@ -23,7 +23,7 @@ import (
 	"github.com/tmshort/open-caption/internal/httpapi"
 	"github.com/tmshort/open-caption/internal/logbuf"
 	"github.com/tmshort/open-caption/internal/netinfo"
-	"github.com/tmshort/open-caption/internal/script"
+	"github.com/tmshort/open-caption/internal/showfile"
 )
 
 var version = "dev"
@@ -38,8 +38,8 @@ func main() {
 		noBrowser = flag.Bool("no-browser", false, "do not open the setup page in a browser at startup")
 		showVer   = flag.Bool("version", false, "print version and exit")
 		dev       = flag.Bool("dev", false, "DEVELOPMENT ONLY: enable unauthenticated /dev/* control endpoints")
-		devShow   = flag.String("script", "", "with --dev: load this script file as the active show")
-		devAsset  = flag.String("assets", "", "with --dev: directory of images for --script")
+		devShow   = flag.String("show-file", "", "with --dev: load this show file as the active show")
+		devAsset  = flag.String("assets", "", "with --dev: directory of images for --show-file")
 	)
 	flag.Parse()
 	if *showVer {
@@ -204,15 +204,15 @@ func urls(scheme string, addr net.Addr) []string {
 	return out
 }
 
-func loadDevShow(api *httpapi.Server, cfg config.Config, scriptPath, assetsDir string) {
+func loadDevShow(api *httpapi.Server, cfg config.Config, showFilePath, assetsDir string) {
 	api.EnableDev()
 	log.Printf("WARNING: --dev enabled: /dev/* control endpoints are UNAUTHENTICATED; listening on this computer only (%s)", cfg.HTTP.Addr)
-	if scriptPath == "" {
+	if showFilePath == "" {
 		return
 	}
-	b, err := os.ReadFile(scriptPath)
+	b, err := os.ReadFile(showFilePath)
 	if err != nil {
-		log.Fatalf("cannot read the --script file: %v", err)
+		log.Fatalf("cannot read the --show-file file: %v", err)
 	}
 	var names []string
 	if assetsDir != "" {
@@ -221,14 +221,14 @@ func loadDevShow(api *httpapi.Server, cfg config.Config, scriptPath, assetsDir s
 			names = append(names, e.Name())
 		}
 	}
-	res := script.Parse(string(b), script.Options{Assets: names})
+	res := showfile.Parse(string(b), showfile.Options{Assets: names})
 	for _, d := range res.Diagnostics {
-		if d.Severity != script.SevInfo {
-			log.Printf("script line %d: %s: %s", d.Line, d.Severity, d.Message)
+		if d.Severity != showfile.SevInfo {
+			log.Printf("show file line %d: %s: %s", d.Line, d.Severity, d.Message)
 		}
 	}
-	api.Runtime().SetShow("dev", filepath.Base(scriptPath), assetsDir, res.Cues, httpapi.DefaultTheme(cfg.Defaults.IdleMessage))
-	log.Printf("loaded %d cues from %s", len(res.Cues), scriptPath)
+	api.Runtime().SetShow("dev", filepath.Base(showFilePath), assetsDir, res.Cues, httpapi.DefaultTheme(cfg.Defaults.IdleMessage))
+	log.Printf("loaded %d cues from %s", len(res.Cues), showFilePath)
 }
 
 // listen binds the configured address, falling back (with a warning) if it is unavailable.

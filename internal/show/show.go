@@ -1,4 +1,4 @@
-// Package show stores shows on disk: metadata + theme, one script per
+// Package show stores shows on disk: metadata + theme, one show file per
 // language, and uploaded images (docs/02-architecture.md, "Persistence layout").
 package show
 
@@ -186,7 +186,7 @@ func slug(name string) string {
 	return out
 }
 
-// Create makes a new show with an empty script. initial, if non-empty, is the script text.
+// Create makes a new show with an empty show file. initial, if non-empty, is the show file text.
 func (s *Store) Create(name, initial string) (Meta, error) {
 	name = strings.TrimSpace(name)
 	if name == "" || len(name) > 100 {
@@ -204,7 +204,7 @@ func (s *Store) Create(name, initial string) (Meta, error) {
 	if err := s.writeMeta(m); err != nil {
 		return Meta{}, err
 	}
-	if err := s.WriteScript(id, "", initial); err != nil {
+	if err := s.WriteShowFile(id, "", initial); err != nil {
 		return Meta{}, err
 	}
 	return m, nil
@@ -312,19 +312,19 @@ func (s *Store) Delete(id string) error {
 	return os.RemoveAll(p)
 }
 
-func (s *Store) scriptName(lang string) (string, error) {
+func (s *Store) fileName(lang string) (string, error) {
 	if lang == "" {
 		lang = s.defLanguage
 	}
 	if !langRe.MatchString(lang) {
 		return "", fmt.Errorf("invalid language %q", lang)
 	}
-	return "script." + lang + ".md", nil
+	return "show." + lang + ".md", nil
 }
 
-// ReadScript returns the script text for a language ("" = default).
-func (s *Store) ReadScript(id, lang string) (string, error) {
-	n, err := s.scriptName(lang)
+// ReadShowFile returns the show file text for a language ("" = default).
+func (s *Store) ReadShowFile(id, lang string) (string, error) {
+	n, err := s.fileName(lang)
 	if err != nil {
 		return "", err
 	}
@@ -342,12 +342,12 @@ func (s *Store) ReadScript(id, lang string) (string, error) {
 	return string(b), err
 }
 
-// WriteScript saves the script verbatim and bumps the show's updated time.
-func (s *Store) WriteScript(id, lang, text string) error {
+// WriteShowFile saves the show file verbatim and bumps the show's updated time.
+func (s *Store) WriteShowFile(id, lang, text string) error {
 	if len(text) > MaxScript {
 		return ErrTooLarge
 	}
-	n, err := s.scriptName(lang)
+	n, err := s.fileName(lang)
 	if err != nil {
 		return err
 	}
@@ -365,7 +365,7 @@ func (s *Store) WriteScript(id, lang, text string) error {
 	return nil
 }
 
-// Languages lists the languages a show has scripts for, the show's primary language first.
+// Languages lists the languages a show has show files for, the show's primary language first.
 func (s *Store) Languages(id string) ([]string, error) {
 	m, err := s.Get(id)
 	if err != nil {
@@ -379,10 +379,10 @@ func (s *Store) Languages(id string) ([]string, error) {
 	var others []string
 	for _, e := range ents {
 		n := e.Name()
-		if e.IsDir() || !strings.HasPrefix(n, "script.") || !strings.HasSuffix(n, ".md") {
+		if e.IsDir() || !strings.HasPrefix(n, "show.") || !strings.HasSuffix(n, ".md") {
 			continue
 		}
-		code := strings.TrimSuffix(strings.TrimPrefix(n, "script."), ".md")
+		code := strings.TrimSuffix(strings.TrimPrefix(n, "show."), ".md")
 		if langRe.MatchString(code) && code != m.Language {
 			others = append(others, code)
 		}
@@ -391,8 +391,8 @@ func (s *Store) Languages(id string) ([]string, error) {
 	return append([]string{m.Language}, others...), nil
 }
 
-// DeleteScript removes a translation. The primary language cannot be removed.
-func (s *Store) DeleteScript(id, lang string) error {
+// DeleteShowFile removes a translation. The primary language cannot be removed.
+func (s *Store) DeleteShowFile(id, lang string) error {
 	m, err := s.Get(id)
 	if err != nil {
 		return err
@@ -400,7 +400,7 @@ func (s *Store) DeleteScript(id, lang string) error {
 	if lang == "" || lang == m.Language {
 		return fmt.Errorf("%w: the main language cannot be removed", ErrBadName)
 	}
-	n, err := s.scriptName(lang)
+	n, err := s.fileName(lang)
 	if err != nil {
 		return err
 	}
@@ -502,7 +502,7 @@ func (s *Store) SaveAsset(id, filename string, r io.Reader) (Asset, error) {
 	return Asset{Name: name, Size: int64(len(data)), Large: len(data) > LargeAsset}, nil
 }
 
-// Duplicate copies a show (scripts in every language, images and look) under a new name.
+// Duplicate copies a show (show files in every language, images and look) under a new name.
 // If name is empty, " (copy)" is added to the original name.
 func (s *Store) Duplicate(id, name string) (Meta, error) {
 	src, err := s.Get(id)
@@ -524,7 +524,7 @@ func (s *Store) Duplicate(id, name string) (Meta, error) {
 		return fail(err)
 	}
 	for _, e := range ents {
-		if !e.IsDir() && strings.HasPrefix(e.Name(), "script.") && strings.HasSuffix(e.Name(), ".md") {
+		if !e.IsDir() && strings.HasPrefix(e.Name(), "show.") && strings.HasSuffix(e.Name(), ".md") {
 			b, err := os.ReadFile(filepath.Join(srcDir, e.Name()))
 			if err != nil {
 				return fail(err)

@@ -1,5 +1,5 @@
 // Package live holds the authoritative live-show state: the cursor into the
-// script, what the audience currently sees, undo history, and the server-side
+// show file, what the audience currently sees, undo history, and the server-side
 // loop timer. It has no network code; consumers subscribe through a sink.
 // See docs/02-architecture.md ("Applying a cue").
 package live
@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/tmshort/open-caption/internal/script"
+	"github.com/tmshort/open-caption/internal/showfile"
 )
 
 // Audience modes.
@@ -30,7 +30,7 @@ const (
 
 var (
 	ErrStale   = errors.New("stale revision")
-	ErrEnd     = errors.New("end of script")
+	ErrEnd     = errors.New("end of show file")
 	ErrNoLoop  = errors.New("no loop is running")
 	ErrNoUndo  = errors.New("nothing to undo")
 	ErrBadCue  = errors.New("cue index out of range")
@@ -46,15 +46,15 @@ type CaptionItem struct {
 	Stage   bool   `json:"stage,omitempty"`
 	Sung    bool   `json:"sung,omitempty"`
 	// Parts is set when several voices are shown at the same time; HTML/Text then hold them joined.
-	Parts []script.Part `json:"parts,omitempty"`
+	Parts []showfile.Part `json:"parts,omitempty"`
 }
 
 // State is the audience-visible state.
 type State struct {
-	Seq        int64         `json:"seq"`
-	Mode       string        `json:"mode"`
-	Scrollback []CaptionItem `json:"scrollback"`
-	Fullscreen *script.Item  `json:"fullscreen"`
+	Seq        int64          `json:"seq"`
+	Mode       string         `json:"mode"`
+	Scrollback []CaptionItem  `json:"scrollback"`
+	Fullscreen *showfile.Item `json:"fullscreen"`
 }
 
 func (s State) clone() State {
@@ -119,7 +119,7 @@ type loopRun struct {
 // held, so it must not block or call back into the engine.
 type Engine struct {
 	mu      sync.Mutex
-	cues    []script.Cue
+	cues    []showfile.Cue
 	cfg     Config
 	sink    func(Event)
 	st      State
@@ -134,7 +134,7 @@ type Engine struct {
 }
 
 // New creates an engine in its initial state (auto-starting a leading loop).
-func New(cues []script.Cue, cfg Config, sink func(Event)) *Engine {
+func New(cues []showfile.Cue, cfg Config, sink func(Event)) *Engine {
 	if cfg.DefaultLoopSeconds <= 0 {
 		cfg.DefaultLoopSeconds = 10
 	}
@@ -190,7 +190,7 @@ func (e *Engine) operatorLocked() OperatorState {
 }
 
 // Cues returns the current cue list (shared; do not modify).
-func (e *Engine) Cues() []script.Cue {
+func (e *Engine) Cues() []showfile.Cue {
 	e.mu.Lock()
 	defer e.mu.Unlock()
 	return e.cues
@@ -320,7 +320,7 @@ func (e *Engine) Clear(rev int64) (OperatorState, error) {
 		return e.operatorLocked(), err
 	}
 	e.pushLocked()
-	e.applyLocked(script.Cue{Kind: script.KindClear}, -1)
+	e.applyLocked(showfile.Cue{Kind: showfile.KindClear}, -1)
 	e.touched = true
 	e.bumpLocked()
 	return e.operatorLocked(), nil
@@ -333,9 +333,9 @@ func (e *Engine) Message(text string, rev int64) (OperatorState, error) {
 	if err := e.checkLocked(rev); err != nil {
 		return e.operatorLocked(), err
 	}
-	h, p := script.RenderInline(text)
+	h, p := showfile.RenderInline(text)
 	e.pushLocked()
-	e.applyLocked(script.Cue{Kind: script.KindFullscreen, Item: &script.Item{Kind: "text", HTML: h, Text: p}}, -1)
+	e.applyLocked(showfile.Cue{Kind: showfile.KindFullscreen, Item: &showfile.Item{Kind: "text", HTML: h, Text: p}}, -1)
 	e.touched = true
 	e.bumpLocked()
 	return e.operatorLocked(), nil
@@ -357,9 +357,9 @@ func (e *Engine) Reset(rev int64) (OperatorState, error) {
 	return e.operatorLocked(), nil
 }
 
-// ReplaceCues swaps in an edited script during a live show. The cursor is
+// ReplaceCues swaps in an edited show file during a live show. The cursor is
 // kept by index (clamped); history is dropped. Reports whether the count changed.
-func (e *Engine) ReplaceCues(cues []script.Cue) (countChanged bool) {
+func (e *Engine) ReplaceCues(cues []showfile.Cue) (countChanged bool) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
 	countChanged = len(cues) != len(e.cues)
@@ -371,7 +371,7 @@ func (e *Engine) ReplaceCues(cues []script.Cue) (countChanged bool) {
 	if e.loop != nil {
 		lc := e.loop.cue
 		e.stopLoopLocked()
-		if lc < len(cues) && cues[lc].Kind == script.KindLoop {
+		if lc < len(cues) && cues[lc].Kind == showfile.KindLoop {
 			e.beginLoopLocked(lc, false)
 		} else {
 			e.st.Fullscreen = nil
@@ -430,7 +430,7 @@ func (e *Engine) initialLocked() {
 }
 
 func (e *Engine) initialCursor() int {
-	if first := e.visibleFrom(0); first >= 0 && e.cues[first].Kind == script.KindLoop {
+	if first := e.visibleFrom(0); first >= 0 && e.cues[first].Kind == showfile.KindLoop {
 		return first + 1
 	}
 	return 0
@@ -443,7 +443,7 @@ func (e *Engine) replayLocked(index int) (State, int, int) {
 	st := State{Mode: ModeIdle, Scrollback: []CaptionItem{}}
 	cursor, loopCue := 0, -1
 	first := e.visibleFrom(0)
-	if first >= 0 && e.cues[first].Kind == script.KindLoop {
+	if first >= 0 && e.cues[first].Kind == showfile.KindLoop {
 		loopCue, cursor = first, first+1
 		st.Mode = ModeCaptions
 		st.Fullscreen = e.loopItem(first, 0)
@@ -456,7 +456,7 @@ func (e *Engine) replayLocked(index int) (State, int, int) {
 		if c.Kind.OperatorOnly() {
 			continue
 		}
-		if c.Kind == script.KindLoop {
+		if c.Kind == showfile.KindLoop {
 			loopCue = i
 			st.Mode, st.Fullscreen = ModeCaptions, e.loopItem(i, 0)
 			continue
@@ -471,9 +471,9 @@ func (e *Engine) replayLocked(index int) (State, int, int) {
 }
 
 // applyLocked applies one cue for real: ends any loop, mutates state, emits.
-func (e *Engine) applyLocked(c script.Cue, idx int) {
+func (e *Engine) applyLocked(c showfile.Cue, idx int) {
 	e.stopLoopLocked()
-	if c.Kind == script.KindLoop {
+	if c.Kind == showfile.KindLoop {
 		e.beginLoopLocked(idx, true)
 		return
 	}
@@ -481,14 +481,14 @@ func (e *Engine) applyLocked(c script.Cue, idx int) {
 }
 
 // applyTo applies a non-loop cue to st; emit may be nil (replay).
-func (e *Engine) applyTo(st *State, c script.Cue, emit func(string, any)) {
+func (e *Engine) applyTo(st *State, c showfile.Cue, emit func(string, any)) {
 	out := func(t string, d any) {
 		if emit != nil {
 			emit(t, d)
 		}
 	}
 	switch c.Kind {
-	case script.KindCaption:
+	case showfile.KindCaption:
 		e.nextID++
 		it := CaptionItem{ID: e.nextID, Speaker: c.Speaker, HTML: c.HTML, Text: c.Text, Stage: c.Stage, Sung: c.Sung, Parts: c.Parts}
 		st.Mode, st.Fullscreen = ModeCaptions, nil
@@ -497,13 +497,13 @@ func (e *Engine) applyTo(st *State, c script.Cue, emit func(string, any)) {
 			st.Scrollback = append([]CaptionItem(nil), st.Scrollback[over:]...)
 		}
 		out(EvCaption, it)
-	case script.KindClear:
+	case showfile.KindClear:
 		st.Mode, st.Fullscreen, st.Scrollback = ModeCaptions, nil, []CaptionItem{}
 		out(EvClear, nil)
-	case script.KindBlank:
+	case showfile.KindBlank:
 		st.Mode, st.Fullscreen = ModeBlank, nil
 		out(EvBlank, map[string]bool{"on": true})
-	case script.KindImage, script.KindFullscreen:
+	case showfile.KindImage, showfile.KindFullscreen:
 		if c.Item == nil {
 			return
 		}
@@ -515,7 +515,7 @@ func (e *Engine) applyTo(st *State, c script.Cue, emit func(string, any)) {
 
 // --- loop ---
 
-func (e *Engine) loopItem(cueIdx, item int) *script.Item {
+func (e *Engine) loopItem(cueIdx, item int) *showfile.Item {
 	it := e.cues[cueIdx].Items[item]
 	return &it
 }
@@ -581,16 +581,16 @@ func (e *Engine) stopLoopLocked() {
 
 // Persisted is the engine state saved across restarts. History is not saved.
 type Persisted struct {
-	Cursor     int           `json:"cursor"`
-	Rev        int64         `json:"rev"`
-	NextID     int           `json:"nextId"`
-	Seq        int64         `json:"seq"`
-	Mode       string        `json:"mode"`
-	Scrollback []CaptionItem `json:"scrollback"`
-	Fullscreen *script.Item  `json:"fullscreen,omitempty"`
-	LoopCue    int           `json:"loopCue"` // -1: none
-	Touched    bool          `json:"touched"`
-	LastAt     int64         `json:"lastAt,omitempty"`
+	Cursor     int            `json:"cursor"`
+	Rev        int64          `json:"rev"`
+	NextID     int            `json:"nextId"`
+	Seq        int64          `json:"seq"`
+	Mode       string         `json:"mode"`
+	Scrollback []CaptionItem  `json:"scrollback"`
+	Fullscreen *showfile.Item `json:"fullscreen,omitempty"`
+	LoopCue    int            `json:"loopCue"` // -1: none
+	Touched    bool           `json:"touched"`
+	LastAt     int64          `json:"lastAt,omitempty"`
 	// History holds the most recent undo steps so Back still works after a restart.
 	History []HistoryEntry `json:"history,omitempty"`
 }
@@ -642,7 +642,7 @@ func (e *Engine) Restore(p Persisted) {
 	if e.st.Mode == "" {
 		e.st.Mode = ModeIdle
 	}
-	if p.LoopCue >= 0 && p.LoopCue < len(e.cues) && e.cues[p.LoopCue].Kind == script.KindLoop {
+	if p.LoopCue >= 0 && p.LoopCue < len(e.cues) && e.cues[p.LoopCue].Kind == showfile.KindLoop {
 		e.beginLoopLocked(p.LoopCue, false)
 	}
 	e.emitSnapshot()

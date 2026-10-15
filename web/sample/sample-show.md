@@ -1,17 +1,17 @@
 <!--
-  Sample open-caption script: "The Garden Party" (a short made-up scene).
+  Sample open-caption show file: "The Garden Party" (a short made-up scene).
   Everything between the arrows like this is a comment and is never shown to anyone.
 
   THE BASICS
     - Each line is one caption. One press of the spacebar sends one line.
-    - Blank lines are ignored, so use them to keep the script readable.
+    - Blank lines are ignored, so use them to keep the show file readable.
     - Long lines wrap on the screen. You decide where to split the lines.
     - Lines in [square brackets] are commands.
     - [note: ...] shows a reminder to the operator only. The audience never sees it.
 -->
 
 <!-- PRE-SHOW: a loop of pictures and text. Because it is the first thing in the
-     script, it starts by itself as soon as the show is loaded. The operator presses
+     show file, it starts by itself as soon as the show is loaded. The operator presses
      the spacebar to end it and send the first line. Each item shows for 10 seconds
      unless it says otherwise (like the sponsors picture, which stays 15). -->
 [loop: 10s]

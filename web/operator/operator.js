@@ -1,4 +1,4 @@
-// Operator page: follows the script, sends NEXT/BACK/STOP, shows what the audience sees.
+// Operator page: follows the show file, sends NEXT/BACK/STOP, shows what the audience sees.
 (() => {
   'use strict';
   const $ = (id) => document.getElementById(id);
@@ -229,7 +229,7 @@
     const b = $('banner');
     if (o.loop) { const c = S.cues[o.loop.cue]; b.hidden = false; b.className = 'loop'; b.textContent = '🔁 LOOP RUNNING — item ' + (o.loop.item + 1) + ' of ' + (c ? (c.items || []).length : '?') + '. NEXT ends it; STOP blanks the screen.'; }
     else if (o.mode === 'blank') { b.hidden = false; b.className = ''; b.textContent = '⬛ Audience screen is blank.'; }
-    else if (o.nextIndex < 0 && o.total > 0 && o.cursor >= o.total) { b.hidden = false; b.className = ''; b.textContent = 'End of script.'; }
+    else if (o.nextIndex < 0 && o.total > 0 && o.cursor >= o.total) { b.hidden = false; b.className = ''; b.textContent = 'End of the show.'; }
     else b.hidden = true;
   }
 

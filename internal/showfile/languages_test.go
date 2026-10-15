@@ -1,4 +1,4 @@
-package script
+package showfile
 
 import (
 	"strings"
@@ -37,9 +37,9 @@ func TestSameStructureDifferentWordsIsFine(t *testing.T) {
 func TestStructureMismatchesAreReportedWithTheTranslationsLine(t *testing.T) {
 	en := cues("One\nTwo\n[clear]\nThree")
 	cases := []struct{ name, src, want string }{
-		{"different kind", "Uno\nDos\nTres\nCuatro", "Cue 3 does not match the English script: that script has [clear] here, and this one has a caption"},
-		{"too short", "Uno\nDos\n[clear]", "has 3 cues but the English script has 4. Missing: a caption after cue 3"},
-		{"too long", "Uno\nDos\n[clear]\nTres\nCuatro", "has 5 cues but the English script has 4. This line has no match there"},
+		{"different kind", "Uno\nDos\nTres\nCuatro", "Cue 3 does not match the English show file: that show file has [clear] here, and this one has a caption"},
+		{"too short", "Uno\nDos\n[clear]", "has 3 cues but the English show file has 4. Missing: a caption after cue 3"},
+		{"too long", "Uno\nDos\n[clear]\nTres\nCuatro", "has 5 cues but the English show file has 4. This line has no match there"},
 		{"loop items", "Uno\nDos\n[loop]\nx\n[/loop]\nTres", "Cue 3"},
 	}
 	for _, c := range cases {

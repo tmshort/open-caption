@@ -90,9 +90,9 @@ func TestShowLifecycleScriptAndAssets(t *testing.T) {
 	id := createShow(t, c, "Garden Party")
 
 	script := "[image: curtian.png]\n[image: used.png]\nHello **world**\n<b>x</b>\n"
-	code, r := c.do("PUT", "/api/admin/shows/"+id+"/script", map[string]string{"text": script})
+	code, r := c.do("PUT", "/api/admin/shows/"+id+"/showfile", map[string]string{"text": script})
 	if code != 200 {
-		t.Fatalf("put script: %d %v", code, r)
+		t.Fatalf("put show file: %d %v", code, r)
 	}
 	a := r["analysis"].(map[string]any)
 	if len(a["cues"].([]any)) != 4 || len(a["missing"].([]any)) != 2 {
@@ -103,7 +103,7 @@ func TestShowLifecycleScriptAndAssets(t *testing.T) {
 		len(r["saved"].([]any)) != 2 || len(r["failed"].([]any)) != 2 {
 		t.Errorf("upload: %d %v", code, r)
 	}
-	_, r = c.do("GET", "/api/admin/shows/"+id+"/script", nil)
+	_, r = c.do("GET", "/api/admin/shows/"+id+"/showfile", nil)
 	a = r["analysis"].(map[string]any)
 	diags := toJSON(a["diagnostics"])
 	if !strings.Contains(diags, `Did you mean \"curtain.png\"`) {
@@ -119,8 +119,8 @@ func TestShowLifecycleScriptAndAssets(t *testing.T) {
 		t.Error("traversal delete succeeded")
 	}
 	// validate does not save
-	c.do("POST", "/api/admin/shows/"+id+"/script/validate", map[string]string{"text": "totally different"})
-	_, r = c.do("GET", "/api/admin/shows/"+id+"/script", nil)
+	c.do("POST", "/api/admin/shows/"+id+"/showfile/validate", map[string]string{"text": "totally different"})
+	_, r = c.do("GET", "/api/admin/shows/"+id+"/showfile", nil)
 	if r["text"] != script {
 		t.Error("validate must not save")
 	}
@@ -161,8 +161,8 @@ func TestThemeUpdateValidatesAndReachesAudience(t *testing.T) {
 func TestActivateAndLiveGuards(t *testing.T) {
 	s, ts, c := adminServer(t)
 	a, b := createShow(t, c, "First"), createShow(t, c, "Second")
-	c.do("PUT", "/api/admin/shows/"+a+"/script", map[string]string{"text": "One\nTwo\nThree"})
-	c.do("PUT", "/api/admin/shows/"+b+"/script", map[string]string{"text": "Other"})
+	c.do("PUT", "/api/admin/shows/"+a+"/showfile", map[string]string{"text": "One\nTwo\nThree"})
+	c.do("PUT", "/api/admin/shows/"+b+"/showfile", map[string]string{"text": "Other"})
 
 	aud := connect(t, ts.URL)
 	aud.next(t)
@@ -178,15 +178,15 @@ func TestActivateAndLiveGuards(t *testing.T) {
 	op.do("POST", "/api/operator/next", nil)
 	aud.nextEvent(t) // the caption
 
-	// Live: switching shows needs force; editing the active script needs the show name.
+	// Live: switching shows needs force; editing the active show file needs the show name.
 	if code, r := c.do("POST", "/api/admin/shows/"+b+"/activate", nil); code != 409 || r["live"] != true {
 		t.Errorf("activate while live: %d %v", code, r)
 	}
-	code, r := c.do("PUT", "/api/admin/shows/"+a+"/script", map[string]string{"text": "One\nTWO\nThree\nFour"})
+	code, r := c.do("PUT", "/api/admin/shows/"+a+"/showfile", map[string]string{"text": "One\nTWO\nThree\nFour"})
 	if code != 409 || r["needConfirm"] != true || r["showName"] != "First" {
 		t.Errorf("live edit without confirm: %d %v", code, r)
 	}
-	code, r = c.do("PUT", "/api/admin/shows/"+a+"/script", map[string]string{"text": "One\nTWO\nThree\nFour", "confirm": "First"})
+	code, r = c.do("PUT", "/api/admin/shows/"+a+"/showfile", map[string]string{"text": "One\nTWO\nThree\nFour", "confirm": "First"})
 	if code != 200 || r["countChanged"] != true || r["wasLive"] != true {
 		t.Errorf("confirmed live edit: %d %v", code, r)
 	}
@@ -211,7 +211,7 @@ func TestSampleShowAndExportImportRoundTrip(t *testing.T) {
 		t.Fatalf("sample: %d %v", code, r)
 	}
 	id := r["id"].(string)
-	_, r = c.do("GET", "/api/admin/shows/"+id+"/script", nil)
+	_, r = c.do("GET", "/api/admin/shows/"+id+"/showfile", nil)
 	a := r["analysis"].(map[string]any)
 	for _, d := range a["diagnostics"].([]any) {
 		if d.(map[string]any)["severity"] != "info" {
@@ -261,7 +261,7 @@ func TestSampleShowAndExportImportRoundTrip(t *testing.T) {
 	if nid == id || !strings.Contains(imp["show"].(map[string]any)["name"].(string), "(imported)") {
 		t.Errorf("import should create a new show: %v", imp)
 	}
-	_, r = c.do("GET", "/api/admin/shows/"+nid+"/script", nil)
+	_, r = c.do("GET", "/api/admin/shows/"+nid+"/showfile", nil)
 	if len(r["analysis"].(map[string]any)["assets"].([]any)) != 3 {
 		t.Errorf("imported assets: %v", r["analysis"])
 	}
@@ -326,7 +326,7 @@ func TestSettingsRedactsPasswords(t *testing.T) {
 func TestRehearsalIsIsolatedFromTheLiveShow(t *testing.T) {
 	s, ts, c := adminServer(t)
 	id := createShow(t, c, "Reh")
-	c.do("PUT", "/api/admin/shows/"+id+"/script", map[string]string{"text": "One\nTwo\n[image: a.png]"})
+	c.do("PUT", "/api/admin/shows/"+id+"/showfile", map[string]string{"text": "One\nTwo\n[image: a.png]"})
 	c.upload(id, map[string][]byte{"a.png": pngData(t)})
 	c.do("POST", "/api/admin/shows/"+id+"/activate", nil)
 
@@ -388,7 +388,7 @@ func TestBootActiveRestoresShowAndPosition(t *testing.T) {
 	c := newClient(t, ts1.URL)
 	c.login("admin", "adminpw")
 	id := createShow(t, c, "Persist")
-	c.do("PUT", "/api/admin/shows/"+id+"/script", map[string]string{"text": "A\nB\nC"})
+	c.do("PUT", "/api/admin/shows/"+id+"/showfile", map[string]string{"text": "A\nB\nC"})
 	c.do("POST", "/api/admin/shows/"+id+"/activate", nil)
 	c.do("POST", "/api/operator/claim", map[string]bool{"takeover": true})
 	c.do("POST", "/api/operator/next", nil)
@@ -410,7 +410,7 @@ func TestBootActiveRestoresShowAndPosition(t *testing.T) {
 func TestRenameAndDuplicateShowAPI(t *testing.T) {
 	_, _, c := adminServer(t)
 	id := createShow(t, c, "Old name")
-	c.do("PUT", "/api/admin/shows/"+id+"/script", map[string]string{"text": "One\nTwo"})
+	c.do("PUT", "/api/admin/shows/"+id+"/showfile", map[string]string{"text": "One\nTwo"})
 	if code, r := c.do("PUT", "/api/admin/shows/"+id, map[string]any{"name": "New name"}); code != 200 || r["name"] != "New name" {
 		t.Fatalf("rename: %d %v", code, r)
 	}
@@ -421,9 +421,9 @@ func TestRenameAndDuplicateShowAPI(t *testing.T) {
 	if code != 201 || r["name"] != "New name (copy)" || r["id"] == id {
 		t.Fatalf("duplicate: %d %v", code, r)
 	}
-	_, sc := c.do("GET", "/api/admin/shows/"+r["id"].(string)+"/script", nil)
+	_, sc := c.do("GET", "/api/admin/shows/"+r["id"].(string)+"/showfile", nil)
 	if sc["text"] != "One\nTwo" {
-		t.Errorf("copy script: %v", sc["text"])
+		t.Errorf("copy show file: %v", sc["text"])
 	}
 	if code, _ := c.do("POST", "/api/admin/shows/missing-0000/duplicate", nil); code != 404 {
 		t.Errorf("duplicate missing: %d", code)
@@ -433,35 +433,35 @@ func TestRenameAndDuplicateShowAPI(t *testing.T) {
 func TestTwoPeopleEditingTheSameScript(t *testing.T) {
 	_, _, c := adminServer(t)
 	id := createShow(t, c, "Shared")
-	_, r := c.do("GET", "/api/admin/shows/"+id+"/script", nil)
+	_, r := c.do("GET", "/api/admin/shows/"+id+"/showfile", nil)
 	v0 := r["version"].(string)
 	if v0 == "" {
 		t.Fatal("no version")
 	}
 	// Person A saves first.
-	code, r := c.do("PUT", "/api/admin/shows/"+id+"/script", map[string]string{"text": "A's line", "baseVersion": v0})
+	code, r := c.do("PUT", "/api/admin/shows/"+id+"/showfile", map[string]string{"text": "A's line", "baseVersion": v0})
 	if code != 200 || r["version"] == v0 {
 		t.Fatalf("first save: %d %v", code, r)
 	}
 	vA := r["version"].(string)
 	// Person B is still on the old version: refused, and shown what is there now.
-	code, r = c.do("PUT", "/api/admin/shows/"+id+"/script", map[string]string{"text": "B's line", "baseVersion": v0})
+	code, r = c.do("PUT", "/api/admin/shows/"+id+"/showfile", map[string]string{"text": "B's line", "baseVersion": v0})
 	if code != 409 || r["conflict"] != true || r["text"] != "A's line" || r["version"] != vA {
 		t.Fatalf("stale save: %d %v", code, r)
 	}
-	if _, r = c.do("GET", "/api/admin/shows/"+id+"/script", nil); r["text"] != "A's line" {
+	if _, r = c.do("GET", "/api/admin/shows/"+id+"/showfile", nil); r["text"] != "A's line" {
 		t.Error("the stale save must not overwrite")
 	}
 	// B chooses to overwrite: sends the current version as the base.
-	if code, _ = c.do("PUT", "/api/admin/shows/"+id+"/script", map[string]string{"text": "B's line", "baseVersion": vA}); code != 200 {
+	if code, _ = c.do("PUT", "/api/admin/shows/"+id+"/showfile", map[string]string{"text": "B's line", "baseVersion": vA}); code != 200 {
 		t.Errorf("overwrite with current base: %d", code)
 	}
 	// Saving the same text someone else already saved is not a conflict.
-	if code, _ = c.do("PUT", "/api/admin/shows/"+id+"/script", map[string]string{"text": "B's line", "baseVersion": v0}); code != 200 {
+	if code, _ = c.do("PUT", "/api/admin/shows/"+id+"/showfile", map[string]string{"text": "B's line", "baseVersion": v0}); code != 200 {
 		t.Errorf("identical text: %d", code)
 	}
 	// Older clients that send no base still work.
-	if code, _ = c.do("PUT", "/api/admin/shows/"+id+"/script", map[string]string{"text": "no base"}); code != 200 {
+	if code, _ = c.do("PUT", "/api/admin/shows/"+id+"/showfile", map[string]string{"text": "no base"}); code != 200 {
 		t.Errorf("no base: %d", code)
 	}
 }

@@ -1,7 +1,7 @@
-# 03 — Script Format
+# 03 — Show file Format
 
-A script is a **Markdown** text file (`.md` or `.txt`; both are parsed the same
-way). Design goals: an author can paste in a normal theater script and it works
+A show file is a **Markdown** text file (`.md` or `.txt`; both are parsed the same
+way). Design goals: an author can paste in a normal theater show file and it works
 with zero markup; extra features are opt-in and read naturally to a human.
 
 **No embedded HTML.** Formatting uses Markdown only. Any `<tag>` in the text is
@@ -61,7 +61,7 @@ is the item's display time (only meaningful inside a loop).
 | `[song]` … `[/song]` / `[song: title]` | Every caption inside is a sung lyric (see *Songs and lyrics*) |
 | `[section: name]` | Operator-only marker/bookmark; no audience effect |
 | `[note: text]` | Operator-only note shown inline in the operator view (e.g. "wait for door slam") |
-| `[language: es]` or `[language: es \| Español]` | First line of a translated script, with an optional display name for the picker; see *Languages* |
+| `[language: es]` or `[language: es \| Español]` | First line of a translated show file, with an optional display name for the picker; see *Languages* |
 
 Names are forgiving: `[Clear]`, `[CLEAR SCREEN]`, `[clear screen]` all work.
 An unknown directive produces a warning and the line is skipped (never shown
@@ -106,9 +106,9 @@ Please silence your phones
 Behavior (see doc 02 for the state model):
 - **Starting.** When the operator presses NEXT on a loop cue, the loop starts
   automatically and the cursor moves to the cue after the loop.
-- **Pre-show.** If a loop is the first cue in the script (comments, sections and
+- **Pre-show.** If a loop is the first cue in the show file (comments, sections and
   notes don't count), it starts automatically as soon as the show is activated.
-  Before that (and if the script doesn't start with a loop), the audience sees
+  Before that (and if the show file doesn't start with a loop), the audience sees
   the idle message.
 - **Ending.** NEXT ends the loop and sends the cue after it (same key as for any
   caption). Back (undo) after that returns to the loop.
@@ -150,7 +150,7 @@ hidden, shown as a label, or shown in per-character colors (default: label, no c
 
 ### Languages
 
-A show has one script per language, stored as `script.<code>.md` (the file name's code is the language
+A show has one show file per language, stored as `show.<code>.md` (the file name's code is the language
 code). The **main** language (the show's `language`, by default `defaults.language`, usually `en`) is
 what the operator follows; the others are **translations**. A translation starts with a language line:
 
@@ -161,7 +161,7 @@ what the operator follows; the others are **translations**. A translation starts
 The code should match the file name, and the optional name after `|` (written in its own language) is
 what the audience sees in the language menu. Without a name, a built-in name for the code is used.
 
-**Identical structure.** `script.CompareStructure(main, translation)` requires the same number of cues,
+**Identical structure.** `showfile.CompareStructure(main, translation)` requires the same number of cues,
 in the same order, of the same kinds; captions with the same number of simultaneous voices; loops with
 the same number and kinds of items. Words, speaker names, section and note text, image names, and loop
 timings may differ. This is checked cue by cue, and the first difference is reported as an error with the
@@ -170,7 +170,7 @@ One operator NEXT sends the same cue number in every language, so a mismatch wou
 or run off the end. A translation that does not match is **not offered to the audience** (the other
 languages are unaffected) until it is fixed.
 
-The Setup editor can start a translation as a copy of the main script, which has the right structure
+The Setup editor can start a translation as a copy of the main show file, which has the right structure
 already. Images may differ per language by using different filenames at the same position. The audience's
 language is chosen as described in doc 02 (`?lang=`, then `Accept-Language`, then the main language).
 
@@ -215,7 +215,7 @@ type ParseResult struct {
 }
 ```
 
-`script.Parse(src string, assets AssetLookup) ParseResult` is a pure function.
+`showfile.Parse(src string, assets AssetLookup) ParseResult` is a pure function.
 
 ## Diagnostics (validation)
 
@@ -264,5 +264,5 @@ I got lost in the kitchen.
 
 ## Round-tripping
 
-The original text is stored verbatim as the show's script file; the setup UI
+The original text is stored verbatim as the show's show file; the setup UI
 edits that text. There is no lossy intermediate format.

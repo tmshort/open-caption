@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/tmshort/open-caption/internal/live"
-	"github.com/tmshort/open-caption/internal/script"
+	"github.com/tmshort/open-caption/internal/showfile"
 )
 
 func TestNegotiateLanguage(t *testing.T) {
@@ -45,14 +45,14 @@ func twoLanguageRuntime(t *testing.T, enSrc, esSrc string) (*Server, *httptest.S
 	cfg := testConfig()
 	s := New(cfg, "test")
 	t.Cleanup(s.Close)
-	en, es := script.Parse(enSrc, script.Options{}), script.Parse(esSrc, script.Options{})
-	if issues := script.CompareStructure(en.Cues, es.Cues, "English"); len(issues) > 0 {
-		t.Fatalf("test scripts must match: %+v", issues)
+	en, es := showfile.Parse(enSrc, showfile.Options{}), showfile.Parse(esSrc, showfile.Options{})
+	if issues := showfile.CompareStructure(en.Cues, es.Cues, "English"); len(issues) > 0 {
+		t.Fatalf("test show files must match: %+v", issues)
 	}
 	th := DefaultTheme("Soon")
 	th.IdleMessages = map[string]string{"es": "Pronto"}
 	s.Runtime().SetShowLangs("demo", "Demo", t.TempDir(),
-		LangScript{"en", "English", en.Cues}, []LangScript{{"es", "Español", es.Cues}}, th)
+		LangFile{"en", "English", en.Cues}, []LangFile{{"es", "Español", es.Cues}}, th)
 	s.EnableDev()
 	ts := httptest.NewServer(s.Handler())
 	t.Cleanup(ts.Close)
@@ -204,7 +204,7 @@ func TestSwitchingShowsSendsAnUnavailableLanguageAReload(t *testing.T) {
 	es.next(t)
 	en := connectLang(t, ts.URL, "?lang=en", nil)
 	en.next(t)
-	s.Runtime().SetShow("one-lang", "One", "", script.Parse("X\nY", script.Options{}).Cues, DefaultTheme("Soon"))
+	s.Runtime().SetShow("one-lang", "One", "", showfile.Parse("X\nY", showfile.Options{}).Cues, DefaultTheme("Soon"))
 	if ev := es.nextEvent(t); ev.Type != "reload" {
 		t.Errorf("a device on a language the new show lacks must be told to reload, got %s", ev.Type)
 	}
@@ -216,11 +216,11 @@ func TestSwitchingShowsSendsAnUnavailableLanguageAReload(t *testing.T) {
 func TestLiveStateOfEveryLanguageSurvivesARestart(t *testing.T) {
 	cfg := testConfig()
 	dir := t.TempDir() + "/live.json"
-	en, es := script.Parse("A\nB\nC", script.Options{}), script.Parse("a\nb\nc", script.Options{})
+	en, es := showfile.Parse("A\nB\nC", showfile.Options{}), showfile.Parse("a\nb\nc", showfile.Options{})
 	mk := func() *Server {
 		s := New(cfg, "t")
 		s.Runtime().EnablePersistence(dir)
-		s.Runtime().SetShowLangs("demo", "Demo", "", LangScript{"en", "English", en.Cues}, []LangScript{{"es", "Español", es.Cues}}, DefaultTheme(""))
+		s.Runtime().SetShowLangs("demo", "Demo", "", LangFile{"en", "English", en.Cues}, []LangFile{{"es", "Español", es.Cues}}, DefaultTheme(""))
 		return s
 	}
 	s1 := mk()
@@ -256,7 +256,7 @@ func TestLiveStateOfEveryLanguageSurvivesARestart(t *testing.T) {
 func TestAdminTranslationWorkflow(t *testing.T) {
 	s, ts, c := adminServer(t)
 	id := createShow(t, c, "Bilingual")
-	c.do("PUT", "/api/admin/shows/"+id+"/script", map[string]string{"text": "[language: en | English]\nHello\n[clear]\n[song]\nla la\n[/song]"})
+	c.do("PUT", "/api/admin/shows/"+id+"/showfile", map[string]string{"text": "[language: en | English]\nHello\n[clear]\n[song]\nla la\n[/song]"})
 
 	if code, r := c.do("POST", "/api/admin/shows/"+id+"/languages", map[string]any{"code": "ES", "copyFromMain": true}); code != 201 || r["code"] != "es" || r["name"] != "Español" {
 		t.Fatalf("add: %d %v", code, r)
@@ -272,7 +272,7 @@ func TestAdminTranslationWorkflow(t *testing.T) {
 			t.Errorf("code %q: %d", bad, code)
 		}
 	}
-	_, r := c.do("GET", "/api/admin/shows/"+id+"/script?lang=es", nil)
+	_, r := c.do("GET", "/api/admin/shows/"+id+"/showfile?lang=es", nil)
 	text := r["text"].(string)
 	if !strings.HasPrefix(text, "[language: es | Español]\n") || strings.Contains(text, "[language: en") || !strings.Contains(text, "Hello") {
 		t.Errorf("copy for translating:\n%s", text)
@@ -290,16 +290,16 @@ func TestAdminTranslationWorkflow(t *testing.T) {
 
 	// Translate: same shape, different words.
 	es := "[language: es | Español]\nHola\n[clear]\n[song]\nla la\n[/song]"
-	if code, _ := c.do("PUT", "/api/admin/shows/"+id+"/script?lang=es", map[string]string{"text": es}); code != 200 {
+	if code, _ := c.do("PUT", "/api/admin/shows/"+id+"/showfile?lang=es", map[string]string{"text": es}); code != 200 {
 		t.Fatal("save translation")
 	}
 	// Break the structure: the save is accepted (work is never refused) but the problem is reported and the language held back.
-	code, r := c.do("PUT", "/api/admin/shows/"+id+"/script?lang=es", map[string]string{"text": "[language: es | Español]\nHola\nExtra line\n[clear]\n[song]\nla la\n[/song]"})
+	code, r := c.do("PUT", "/api/admin/shows/"+id+"/showfile?lang=es", map[string]string{"text": "[language: es | Español]\nHola\nExtra line\n[clear]\n[song]\nla la\n[/song]"})
 	if code != 200 {
 		t.Fatalf("broken translation save: %d", code)
 	}
 	diags := toJSON(r["analysis"].(map[string]any)["diagnostics"])
-	if !strings.Contains(diags, "does not match the English script") {
+	if !strings.Contains(diags, "does not match the English show file") {
 		t.Errorf("structure problem not shown: %s", diags)
 	}
 	_, ls = c.do("GET", "/api/admin/shows/"+id+"/languages", nil)
@@ -316,7 +316,7 @@ func TestAdminTranslationWorkflow(t *testing.T) {
 	}
 
 	// Fix it, and saving while the show is on air adds the language without restarting the show.
-	c.do("PUT", "/api/admin/shows/"+id+"/script?lang=es", map[string]string{"text": es})
+	c.do("PUT", "/api/admin/shows/"+id+"/showfile?lang=es", map[string]string{"text": es})
 	if got := s.rt.Languages(); len(got) != 2 || got[1].Code != "es" || got[1].Name != "Español" {
 		t.Errorf("languages on air after the fix: %v", got)
 	}
@@ -325,8 +325,8 @@ func TestAdminTranslationWorkflow(t *testing.T) {
 	b := make([]byte, 1<<16)
 	n, _ := resp.Body.Read(b)
 	resp.Body.Close()
-	if !strings.Contains(string(b[:n]), "script.es.md") {
-		t.Error("export should include the Spanish script")
+	if !strings.Contains(string(b[:n]), "show.es.md") {
+		t.Error("export should include the Spanish show file")
 	}
 	if code, _ := c.do("DELETE", "/api/admin/shows/"+id+"/languages/en", nil); code != 400 {
 		t.Errorf("deleting the main language: %d", code)

@@ -36,7 +36,7 @@ behavior needs to change, change the spec first (in the same PR).
 | [docs/venue-network-guide.md](docs/venue-network-guide.md) | For whoever manages the venue's WiFi |
 | [docs/01-vision-and-requirements.md](docs/01-vision-and-requirements.md) | Goals, users, scope, numbered requirements (REQ-xxx) |
 | [docs/02-architecture.md](docs/02-architecture.md) | Components, state model, transport, persistence, package layout |
-| [docs/03-script-format.md](docs/03-script-format.md) | The script file syntax and its parsed model |
+| [docs/03-show-file-format.md](docs/03-show-file-format.md) | The show file syntax and its parsed model |
 | [docs/04-protocol-and-api.md](docs/04-protocol-and-api.md) | HTTP endpoints, event stream, message schemas |
 | [docs/05-ui-specs.md](docs/05-ui-specs.md) | Setup, Operator, and Audience interface specs |
 | [docs/06-deployment-and-network.md](docs/06-deployment-and-network.md) | Running on macOS/Windows/Linux, WiFi, DNS/DHCP, QR code |

@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/tmshort/open-caption/internal/live"
-	"github.com/tmshort/open-caption/internal/script"
+	"github.com/tmshort/open-caption/internal/showfile"
 	"github.com/tmshort/open-caption/web"
 )
 
@@ -34,7 +34,7 @@ type PartView struct {
 	Sung    bool   `json:"sung,omitempty"`
 }
 
-// CueView is one row of the operator's script list.
+// CueView is one row of the operator's show file list.
 type CueView struct {
 	Index   int        `json:"index"`
 	Kind    string     `json:"kind"`
@@ -49,7 +49,7 @@ type CueView struct {
 	Items   []ItemView `json:"items,omitempty"`
 }
 
-func itemView(it script.Item) ItemView {
+func itemView(it showfile.Item) ItemView {
 	v := ItemView{Kind: it.Kind, Seconds: it.Seconds}
 	switch it.Kind {
 	case "image":
@@ -65,7 +65,7 @@ func itemView(it script.Item) ItemView {
 	return v
 }
 
-func cueViews(cues []script.Cue) []CueView {
+func cueViews(cues []showfile.Cue) []CueView {
 	out := make([]CueView, len(cues))
 	for i, c := range cues {
 		v := CueView{Index: i, Kind: string(c.Kind), Line: c.Line, Speaker: c.Speaker, Text: c.Text, Stage: c.Stage, Sung: c.Sung, Period: c.Period}
@@ -204,7 +204,7 @@ func runCommand(w http.ResponseWriter, r *http.Request, rt *Runtime, fn func(*li
 	case errors.Is(err, live.ErrStale):
 		code, resp["error"] = http.StatusConflict, "the show moved on; your view was out of date"
 	case errors.Is(err, live.ErrEnd):
-		resp["notice"] = "End of script"
+		resp["notice"] = "End of the show"
 	case errors.Is(err, live.ErrNoUndo):
 		resp["notice"] = "Nothing to undo"
 	case errors.Is(err, live.ErrNoLoop):

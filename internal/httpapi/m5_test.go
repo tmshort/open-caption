@@ -19,7 +19,7 @@ import (
 func TestHelpNeedsASessionAndServesTopics(t *testing.T) {
 	_, ts, admin := adminServer(t)
 	anon := newClient(t, ts.URL)
-	for _, p := range []string{"/api/help/topics", "/help/admin-images", "/help/sample-script.md", "/api/help/search?q=image"} {
+	for _, p := range []string{"/api/help/topics", "/help/admin-images", "/help/sample-show.md", "/api/help/search?q=image"} {
 		resp, _ := anon.hc.Get(ts.URL + p)
 		resp.Body.Close()
 		if resp.StatusCode != 401 {
@@ -55,11 +55,11 @@ func TestHelpNeedsASessionAndServesTopics(t *testing.T) {
 	if resp, _ = op.hc.Get(ts.URL + "/help/no-such-topic"); resp.StatusCode != 404 {
 		t.Errorf("unknown topic: %d", resp.StatusCode)
 	}
-	resp, _ = op.hc.Get(ts.URL + "/help/sample-script.md")
+	resp, _ = op.hc.Get(ts.URL + "/help/sample-show.md")
 	body, _ = io.ReadAll(resp.Body)
 	resp.Body.Close()
 	if resp.StatusCode != 200 || !strings.Contains(string(body), "[loop") {
-		t.Errorf("sample script download: %d", resp.StatusCode)
+		t.Errorf("sample show file download: %d", resp.StatusCode)
 	}
 	_, r := op.do("GET", "/api/help/search?q=spacebar", nil)
 	if len(r["hits"].([]any)) == 0 {

@@ -12,7 +12,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/tmshort/open-caption/internal/script"
+	"github.com/tmshort/open-caption/internal/showfile"
 )
 
 // Topic is one help page.
@@ -96,7 +96,7 @@ func Search(topics []Topic, q string) []Hit {
 
 // CodeBlock is a fenced block found in a topic.
 type CodeBlock struct {
-	Info string // text after the opening fence, e.g. "script"
+	Info string // text after the opening fence, e.g. "showfile"
 	Code string
 }
 
@@ -375,9 +375,9 @@ func inline(s string) string {
 
 var placeholderRe = regexp.MustCompile("\x00[0-9]+\x00")
 
-// emph applies **bold** and *italic* with the same renderer scripts use (everything is escaped).
+// emph applies **bold** and *italic* with the same renderer show files use (everything is escaped).
 func emph(s string) string {
-	h, _ := script.RenderInline(s)
+	h, _ := showfile.RenderInline(s)
 	return h
 }
 

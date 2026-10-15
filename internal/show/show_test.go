@@ -38,8 +38,8 @@ func TestCreateGetListUpdateDelete(t *testing.T) {
 	if m.Theme.BG != "#000000" || m.Theme.FG != "#ffffff" || m.Theme.IdleMessage != "Soon" {
 		t.Errorf("default theme should be black/white: %+v", m.Theme)
 	}
-	if txt, _ := s.ReadScript(m.ID, ""); txt != "Hello\n" {
-		t.Errorf("script %q", txt)
+	if txt, _ := s.ReadShowFile(m.ID, ""); txt != "Hello\n" {
+		t.Errorf("show file %q", txt)
 	}
 	list, _ := s.List()
 	if len(list) != 1 || list[0].ID != m.ID {
@@ -73,7 +73,7 @@ func TestIDsCannotEscape(t *testing.T) {
 		}
 	}
 	m, _ := s.Create("x", "")
-	if _, err := s.ReadScript(m.ID, "../../etc"); err == nil {
+	if _, err := s.ReadShowFile(m.ID, "../../etc"); err == nil {
 		t.Error("language must be validated")
 	}
 }
@@ -138,7 +138,7 @@ func TestAssets(t *testing.T) {
 func TestDuplicateCopiesEverything(t *testing.T) {
 	s := newStore(t)
 	m, _ := s.Create("Original", "Hello\nWorld\n")
-	s.WriteScript(m.ID, "es", "Hola\n")
+	s.WriteShowFile(m.ID, "es", "Hola\n")
 	s.SaveAsset(m.ID, "a.png", bytes.NewReader(pngBytes(t, 8)))
 	th := Theme{BG: "#001122", FG: "#ffee00", ScalePct: 150}
 	s.Update(m.ID, nil, &th)
@@ -150,18 +150,18 @@ func TestDuplicateCopiesEverything(t *testing.T) {
 	if cp.ID == m.ID || cp.Name != "Original (copy)" || cp.Theme.BG != "#001122" || cp.Theme.ScalePct != 150 {
 		t.Errorf("%+v", cp)
 	}
-	if txt, _ := s.ReadScript(cp.ID, ""); txt != "Hello\nWorld\n" {
-		t.Errorf("script %q", txt)
+	if txt, _ := s.ReadShowFile(cp.ID, ""); txt != "Hello\nWorld\n" {
+		t.Errorf("show file %q", txt)
 	}
-	if txt, _ := s.ReadScript(cp.ID, "es"); txt != "Hola\n" {
+	if txt, _ := s.ReadShowFile(cp.ID, "es"); txt != "Hola\n" {
 		t.Errorf("translation %q", txt)
 	}
 	if names := s.AssetNames(cp.ID); len(names) != 1 || names[0] != "a.png" {
 		t.Errorf("assets %v", names)
 	}
 	// Independent afterwards.
-	s.WriteScript(cp.ID, "", "changed")
-	if txt, _ := s.ReadScript(m.ID, ""); txt != "Hello\nWorld\n" {
+	s.WriteShowFile(cp.ID, "", "changed")
+	if txt, _ := s.ReadShowFile(m.ID, ""); txt != "Hello\nWorld\n" {
 		t.Error("original changed with the copy")
 	}
 	if c2, err := s.Duplicate(m.ID, "Mine"); err != nil || c2.Name != "Mine" {
@@ -178,21 +178,21 @@ func TestLanguagesAndTranslations(t *testing.T) {
 	if l, _ := s.Languages(m.ID); len(l) != 1 || l[0] != "en" {
 		t.Fatalf("%v", l)
 	}
-	s.WriteScript(m.ID, "fr", "Bonjour")
-	s.WriteScript(m.ID, "es", "Hola")
+	s.WriteShowFile(m.ID, "fr", "Bonjour")
+	s.WriteShowFile(m.ID, "es", "Hola")
 	if l, _ := s.Languages(m.ID); len(l) != 3 || l[0] != "en" || l[1] != "es" || l[2] != "fr" {
 		t.Errorf("primary first, then alphabetical: %v", l)
 	}
-	if err := s.DeleteScript(m.ID, "en"); err == nil {
+	if err := s.DeleteShowFile(m.ID, "en"); err == nil {
 		t.Error("the main language must not be removable")
 	}
-	if err := s.DeleteScript(m.ID, "fr"); err != nil {
+	if err := s.DeleteShowFile(m.ID, "fr"); err != nil {
 		t.Error(err)
 	}
-	if err := s.DeleteScript(m.ID, "fr"); !errors.Is(err, ErrNotFound) {
+	if err := s.DeleteShowFile(m.ID, "fr"); !errors.Is(err, ErrNotFound) {
 		t.Errorf("already gone: %v", err)
 	}
-	if err := s.DeleteScript(m.ID, "../x"); err == nil {
+	if err := s.DeleteShowFile(m.ID, "../x"); err == nil {
 		t.Error("invalid language accepted")
 	}
 	if l, _ := s.Languages(m.ID); len(l) != 2 {
@@ -212,7 +212,7 @@ func TestLanguagesAndTranslations(t *testing.T) {
 func TestDuplicateKeepsEveryLanguage(t *testing.T) {
 	s := newStore(t)
 	m, _ := s.Create("Multi", "Hello")
-	s.WriteScript(m.ID, "es", "Hola")
+	s.WriteShowFile(m.ID, "es", "Hola")
 	cp, _ := s.Duplicate(m.ID, "")
 	if l, _ := s.Languages(cp.ID); len(l) != 2 {
 		t.Errorf("%v", l)

@@ -4,9 +4,9 @@
 
 | Layer | What | How |
 |-------|------|-----|
-| Unit | `script` parser and validator (table-driven; the shipped sample must parse clean and its Spanish translation must match its structure), Markdown renderer/escaping, language structure check, config load/generate and access lists, `live` engine (apply/undo/jump determinism, persistence), show store, help renderer | `go test ./...` |
-| Property/fuzz | `script.Parse` never panics and never emits unescaped HTML (`FuzzParse`); engine: `jump(n)` state equals sequential apply state, for random scripts | `go test`, `make fuzz` |
-| Consistency | Help covers every script directive, escape and warning; every example in help parses clean; every operator key documented exists in `operator.js`; the guides in `docs/` render with working links and anchors; every bundled font is served | part of `go test ./...` |
+| Unit | `show file` parser and validator (table-driven; the shipped sample must parse clean and its Spanish translation must match its structure), Markdown renderer/escaping, language structure check, config load/generate and access lists, `live` engine (apply/undo/jump determinism, persistence), show store, help renderer | `go test ./...` |
+| Property/fuzz | `showfile.Parse` never panics and never emits unescaped HTML (`FuzzParse`); engine: `jump(n)` state equals sequential apply state, for random show files | `go test`, `make fuzz` |
+| Consistency | Help covers every show file directive, escape and warning; every example in help parses clean; every operator key documented exists in `operator.js`; the guides in `docs/` render with working links and anchors; every bundled font is served | part of `go test ./...` |
 | Integration | httptest servers: login/roles/rate limit/cookie flags, access lists, forged-request refusal, operator flow and takeover, audience SSE (snapshot-then-events, late joiner, loops, 503), languages in lockstep, rehearsal isolation, persistence across restart, settings/passwords, edit conflicts, export/import | `go test ./...` |
 | Load | N SSE clients + the operator advancing; latency percentiles, dropped clients | `cmd/loadtest` (`./bin/open-caption --dev …`) |
 | Browser end-to-end | Real Chrome against the built program: Setup (sample show, edit conflict, Look), rehearsal isolation, live show with two languages, Back/Blank/Clear, songs and voices together, speaker colors, fonts, help pauses keys, scroll-back, language menu, Settings/password change, restart survival | `make e2e` (needs Node + Chrome; runs in CI as a separate job) |
@@ -16,19 +16,19 @@
 
 - Loops: per-item duration, loop default, config default; loop first in file auto-starts; STOP→blank→NEXT; Back after ending a loop; reconnect mid-loop shows the current item; images in the next loop are preloaded.
 - Auth: separate passwords; admin session works on `/operator`, operator session rejected on `/admin`; no Basic-auth challenge; cookie `Secure` only over HTTPS; HTTP and HTTPS serve the same routes with no redirect.
-- Script: no markup → N captions; comments/blank lines ignored; CRLF; BOM; very long line; unicode/emoji/RTL passthrough; unclosed `[loop]`, raw `<b>` shown literally with an info diagnostic, `<!-- -->` comments (single- and multi-line, unclosed) never reach any client, `[note: …]` reaches only the operator view, `#` lines ignored with an info diagnostic; unknown directive; missing image with fuzzy suggestion; `\#` escape; `[[ ]]` multi-line; speaker detection positives/negatives.
-- Help: every parser directive/escape/diagnostic is documented in `web/help/` (test); every fenced example parses without errors; sample script parses clean; opening help on `/operator` pauses show-control keys; help works with no network.
-- Escaping: `<script>`, `onerror=`, `javascript:` links, `<img src=http…>` in script text are rendered as literal text; Markdown links are not clickable; image refs only resolve to uploaded assets.
-- Engine: advance past end (no-op + signal "end of script"); back at start; jump forward/backward equals sequential; `clear` mid-history then undo restores scrollback; fullscreen followed by caption dismisses fullscreen; restart restores cursor and scrollback.
+- Show file: no markup → N captions; comments/blank lines ignored; CRLF; BOM; very long line; unicode/emoji/RTL passthrough; unclosed `[loop]`, raw `<b>` shown literally with an info diagnostic, `<!-- -->` comments (single- and multi-line, unclosed) never reach any client, `[note: …]` reaches only the operator view, `#` lines ignored with an info diagnostic; unknown directive; missing image with fuzzy suggestion; `\#` escape; `[[ ]]` multi-line; speaker detection positives/negatives.
+- Help: every parser directive/escape/diagnostic is documented in `web/help/` (test); every fenced example parses without errors; sample show file parses clean; opening help on `/operator` pauses show-control keys; help works with no network.
+- Escaping: `<script>`, `onerror=`, `javascript:` links, `<img src=http…>` in show file text are rendered as literal text; Markdown links are not clickable; image refs only resolve to uploaded assets.
+- Engine: advance past end (no-op + signal "end of show file"); back at start; jump forward/backward equals sequential; `clear` mid-history then undo restores scrollback; fullscreen followed by caption dismisses fullscreen; restart restores cursor and scrollback.
 - Concurrency: two operator sessions advancing with the same `rev` → exactly one NEXT applied, other gets 409; a NEXT sent while a loop ticks (seq changed, rev unchanged) succeeds.
 - Rehearsal: commands on `/api/admin/rehearsal/*` never reach audience clients or change `live.json`, even while a real show is live.
 - Security: first-run passwords never appear in any HTTP response; beyond `audience.max_clients`, `/events` returns 503.
 - SSE: slow client doesn't delay others; overflow closes the slow client; heartbeat arrives; late joiner receives scrollback.
 
-- Languages: a translation that does not match the main script is reported with its own line number and is not offered; one keypress sends the same cue to every language and a language that drifts is moved back; negotiation by `?lang=`, `Accept-Language` quality values, regional fallback; devices on a language a new show lacks are told to reload; per-language state survives a restart.
+- Languages: a translation that does not match the main show file is reported with its own line number and is not offered; one keypress sends the same cue to every language and a language that drifts is moved back; negotiation by `?lang=`, `Accept-Language` quality values, regional fallback; devices on a language a new show lacks are told to reload; per-language state survives a restart.
 - Songs and voices: `~` shorthand, `[song]`, `[together]` and ` || ` (including mixed spoken/sung, unclosed blocks, escapes).
 - Security: access lists (listed, unlisted, bad entry denies all, cookie from an unlisted computer, admin address may run the show); forged `Origin`/`Sec-Fetch-Site` refused; sessions survive a restart but not a password change; the settings and support bundle never contain passwords.
-- Persistence: undo steps and last-action time survive a restart; two people saving one script is detected.
+- Persistence: undo steps and last-action time survive a restart; two people saving one show file is detected.
 
 ## Performance targets (verified by load test)
 
@@ -40,8 +40,8 @@
 ## Acceptance checklist (pre-release, in venue conditions if possible)
 
 1. [ ] Fresh install on macOS, Windows, Linux: first run generates `config.yaml` and reaches the `/admin` login with no errors.
-2. [ ] A volunteer unfamiliar with the project imports a script and images using only the UI hints within 15 minutes.
-3. [ ] Malformed script shows clear line-numbered diagnostics and still previews.
+2. [ ] A volunteer unfamiliar with the project imports a show file and images using only the UI hints within 15 minutes.
+3. [ ] Malformed show file shows clear line-numbered diagnostics and still previews.
 4. [ ] Operator advances through a full show with Space only; no missed or duplicated lines.
 5. [ ] Image cue appears fullscreen on audience devices; operator sees only the indicator.
 6. [ ] `[clear]`, `[blank]`, intermission fullscreen text behave as in doc 02 table.

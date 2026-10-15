@@ -1,4 +1,4 @@
-package script
+package showfile
 
 import (
 	"fmt"
@@ -44,7 +44,7 @@ type togetherBlock struct {
 	parts []Part
 }
 
-// Parse parses a script. It never fails: problems become Diagnostics and the
+// Parse parses a show file. It never fails: problems become Diagnostics and the
 // affected construct is skipped.
 func Parse(src string, opts Options) Result {
 	src = strings.TrimPrefix(src, "\uFEFF")

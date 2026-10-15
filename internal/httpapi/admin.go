@@ -28,8 +28,8 @@ import (
 
 	"github.com/tmshort/open-caption/internal/config"
 	"github.com/tmshort/open-caption/internal/netinfo"
-	"github.com/tmshort/open-caption/internal/script"
 	"github.com/tmshort/open-caption/internal/show"
+	"github.com/tmshort/open-caption/internal/showfile"
 	"github.com/tmshort/open-caption/web"
 )
 
@@ -56,35 +56,35 @@ func themeToRuntime(t show.Theme) Theme {
 	return Theme{BG: t.BG, FG: t.FG, Accent: t.Accent, Font: t.Font, ScalePct: t.ScalePct, Speakers: t.Speakers, IdleMessage: t.IdleMessage, IdleMessages: t.IdleMessages}
 }
 
-// ---- analysis of a script (what the editor shows) ----
+// ---- analysis of a show file (what the editor shows) ----
 
-// Missing names an image the script uses but that was not uploaded.
+// Missing names an image the show file uses but that was not uploaded.
 type Missing struct {
 	Name  string `json:"name"`
 	Lines []int  `json:"lines"`
 }
 
-// Analysis is the result of parsing a script against a show's images.
+// Analysis is the result of parsing a show file against a show's images.
 type Analysis struct {
-	Speakers    []string            `json:"speakers"`
-	Language    string              `json:"language"`
-	Cues        []CueView           `json:"cues"`
-	Diagnostics []script.Diagnostic `json:"diagnostics"`
-	Used        map[string][]int    `json:"used"`
-	Missing     []Missing           `json:"missing"`
-	Assets      []show.Asset        `json:"assets"`
+	Speakers    []string              `json:"speakers"`
+	Language    string                `json:"language"`
+	Cues        []CueView             `json:"cues"`
+	Diagnostics []showfile.Diagnostic `json:"diagnostics"`
+	Used        map[string][]int      `json:"used"`
+	Missing     []Missing             `json:"missing"`
+	Assets      []show.Asset          `json:"assets"`
 }
 
-func analyze(text string, assets []show.Asset) (Analysis, []script.Cue) {
+func analyze(text string, assets []show.Asset) (Analysis, []showfile.Cue) {
 	names := make([]string, 0, len(assets))
 	have := map[string]bool{}
 	for _, a := range assets {
 		names = append(names, a.Name)
 		have[a.Name] = true
 	}
-	res := script.Parse(text, script.Options{Assets: names})
+	res := showfile.Parse(text, showfile.Options{Assets: names})
 	used := map[string][]int{}
-	note := func(it script.Item, line int) {
+	note := func(it showfile.Item, line int) {
 		if it.Kind == "image" {
 			used[it.Image] = append(used[it.Image], line)
 		}
@@ -112,11 +112,11 @@ func analyze(text string, assets []show.Asset) (Analysis, []script.Cue) {
 
 type loaded struct {
 	meta    show.Meta
-	primary LangScript
-	others  []LangScript // translations whose structure matches the primary
+	primary LangFile
+	others  []LangFile // translations whose structure matches the primary
 	assets  string
 	// skipped are translations left out because their structure does not match the primary's.
-	skipped map[string][]script.Diagnostic
+	skipped map[string][]showfile.Diagnostic
 }
 
 func (s *Server) loadShow(id string) (loaded, error) {
@@ -129,38 +129,38 @@ func (s *Server) loadShow(id string) (loaded, error) {
 		return loaded{}, err
 	}
 	assets := mustAssets(s.store, id)
-	l := loaded{meta: m, assets: s.store.AssetsDir(id), skipped: map[string][]script.Diagnostic{}}
-	var primaryRes script.Result
+	l := loaded{meta: m, assets: s.store.AssetsDir(id), skipped: map[string][]showfile.Diagnostic{}}
+	var primaryRes showfile.Result
 	for i, code := range codes {
-		text, err := s.store.ReadScript(id, code)
+		text, err := s.store.ReadShowFile(id, code)
 		if err != nil {
 			return loaded{}, err
 		}
 		res := parseWith(text, assets)
 		name := res.LanguageName
 		if name == "" {
-			name = script.LanguageName(code)
+			name = showfile.LanguageName(code)
 		}
 		if i == 0 {
 			primaryRes = res
-			l.primary = LangScript{Code: code, Name: name, Cues: res.Cues}
+			l.primary = LangFile{Code: code, Name: name, Cues: res.Cues}
 			continue
 		}
-		if issues := script.CompareStructure(primaryRes.Cues, res.Cues, l.primary.Name); len(issues) > 0 {
+		if issues := showfile.CompareStructure(primaryRes.Cues, res.Cues, l.primary.Name); len(issues) > 0 {
 			l.skipped[code] = issues // not offered to the audience until it is fixed
 			continue
 		}
-		l.others = append(l.others, LangScript{Code: code, Name: name, Cues: res.Cues})
+		l.others = append(l.others, LangFile{Code: code, Name: name, Cues: res.Cues})
 	}
 	return l, nil
 }
 
-func parseWith(text string, assets []show.Asset) script.Result {
+func parseWith(text string, assets []show.Asset) showfile.Result {
 	names := make([]string, 0, len(assets))
 	for _, a := range assets {
 		names = append(names, a.Name)
 	}
-	return script.Parse(text, script.Options{Assets: names})
+	return showfile.Parse(text, showfile.Options{Assets: names})
 }
 
 func mustAssets(st *show.Store, id string) []show.Asset {
@@ -239,9 +239,9 @@ func (s *Server) adminRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("PUT /api/admin/shows/{id}", adm(s.updateShow))
 	mux.HandleFunc("POST /api/admin/shows/{id}/duplicate", adm(s.duplicateShow))
 	mux.HandleFunc("DELETE /api/admin/shows/{id}", adm(s.deleteShow))
-	mux.HandleFunc("GET /api/admin/shows/{id}/script", adm(s.getScript))
-	mux.HandleFunc("PUT /api/admin/shows/{id}/script", adm(s.putScript))
-	mux.HandleFunc("POST /api/admin/shows/{id}/script/validate", adm(s.validateScript))
+	mux.HandleFunc("GET /api/admin/shows/{id}/showfile", adm(s.getShowFile))
+	mux.HandleFunc("PUT /api/admin/shows/{id}/showfile", adm(s.putShowFile))
+	mux.HandleFunc("POST /api/admin/shows/{id}/showfile/validate", adm(s.validateShowFile))
 	mux.HandleFunc("GET /api/admin/shows/{id}/languages", adm(s.listLanguages))
 	mux.HandleFunc("POST /api/admin/shows/{id}/languages", adm(s.addLanguage))
 	mux.HandleFunc("DELETE /api/admin/shows/{id}/languages/{lang}", adm(s.deleteLanguage))
@@ -334,7 +334,7 @@ func (s *Server) createSample(name string) (show.Meta, error) {
 	if strings.TrimSpace(name) == "" {
 		name = "Sample show: The Garden Party"
 	}
-	text, err := fs.ReadFile(web.Sample, "sample/sample-script.md")
+	text, err := fs.ReadFile(web.Sample, "sample/sample-show.md")
 	if err != nil {
 		return show.Meta{}, err
 	}
@@ -343,8 +343,8 @@ func (s *Server) createSample(name string) (show.Meta, error) {
 		return m, err
 	}
 	// The sample ships with a Spanish translation to show how languages work.
-	if es, err := fs.ReadFile(web.Sample, "sample/sample-script.es.md"); err == nil {
-		if err := s.store.WriteScript(m.ID, "es", string(es)); err != nil {
+	if es, err := fs.ReadFile(web.Sample, "sample/sample-show.es.md"); err == nil {
+		if err := s.store.WriteShowFile(m.ID, "es", string(es)); err != nil {
 			return m, err
 		}
 	}
@@ -427,45 +427,45 @@ func (s *Server) deleteShow(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{"ok": true})
 }
 
-// scriptResponse analyses one language's script text. For a translation it also reports whether the
-// structure matches the main language's script (as errors, listed first).
-func (s *Server) scriptResponse(id, lang, text string) (Analysis, []script.Cue) {
+// showFileResponse analyses one language's show file text. For a translation it also reports whether the
+// structure matches the main language's show file (as errors, listed first).
+func (s *Server) showFileResponse(id, lang, text string) (Analysis, []showfile.Cue) {
 	assets := mustAssets(s.store, id)
 	a, cues := analyze(text, assets)
 	m, err := s.store.Get(id)
 	if err != nil || lang == "" || lang == m.Language {
 		return a, cues
 	}
-	ptext, _ := s.store.ReadScript(id, m.Language)
+	ptext, _ := s.store.ReadShowFile(id, m.Language)
 	pres := parseWith(ptext, assets)
 	pname := pres.LanguageName
 	if pname == "" {
-		pname = script.LanguageName(m.Language)
+		pname = showfile.LanguageName(m.Language)
 	}
-	if issues := script.CompareStructure(pres.Cues, cues, pname); len(issues) > 0 {
+	if issues := showfile.CompareStructure(pres.Cues, cues, pname); len(issues) > 0 {
 		a.Diagnostics = append(issues, a.Diagnostics...)
 	}
 	return a, cues
 }
 
-// scriptVersion identifies a script's text, so two people editing the same script are noticed.
-func scriptVersion(text string) string {
+// fileVersion identifies a show file's text, so two people editing the same show file are noticed.
+func fileVersion(text string) string {
 	h := sha256.Sum256([]byte(text))
 	return hex.EncodeToString(h[:8])
 }
 
-func (s *Server) getScript(w http.ResponseWriter, r *http.Request) {
+func (s *Server) getShowFile(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
-	text, err := s.store.ReadScript(id, r.URL.Query().Get("lang"))
+	text, err := s.store.ReadShowFile(id, r.URL.Query().Get("lang"))
 	if err != nil {
 		storeErr(w, err)
 		return
 	}
-	a, _ := s.scriptResponse(id, r.URL.Query().Get("lang"), text)
-	writeJSON(w, http.StatusOK, map[string]any{"text": text, "version": scriptVersion(text), "analysis": a})
+	a, _ := s.showFileResponse(id, r.URL.Query().Get("lang"), text)
+	writeJSON(w, http.StatusOK, map[string]any{"text": text, "version": fileVersion(text), "analysis": a})
 }
 
-func (s *Server) validateScript(w http.ResponseWriter, r *http.Request) {
+func (s *Server) validateShowFile(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		Text string `json:"text"`
 	}
@@ -477,15 +477,15 @@ func (s *Server) validateScript(w http.ResponseWriter, r *http.Request) {
 		storeErr(w, err)
 		return
 	}
-	a, _ := s.scriptResponse(id, r.URL.Query().Get("lang"), req.Text)
+	a, _ := s.showFileResponse(id, r.URL.Query().Get("lang"), req.Text)
 	writeJSON(w, http.StatusOK, map[string]any{"analysis": a})
 }
 
-func (s *Server) putScript(w http.ResponseWriter, r *http.Request) {
+func (s *Server) putShowFile(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		Text    string `json:"text"`
 		Confirm string `json:"confirm"`
-		// BaseVersion is the version the editor was based on. If the saved script has changed since
+		// BaseVersion is the version the editor was based on. If the saved show file has changed since
 		// (another person saved), the save is refused so nobody's work is silently lost.
 		BaseVersion string `json:"baseVersion"`
 	}
@@ -499,10 +499,10 @@ func (s *Server) putScript(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if req.BaseVersion != "" {
-		cur, _ := s.store.ReadScript(id, r.URL.Query().Get("lang"))
-		if scriptVersion(cur) != req.BaseVersion && cur != req.Text {
-			writeJSON(w, http.StatusConflict, map[string]any{"conflict": true, "text": cur, "version": scriptVersion(cur),
-				"error": "This script was changed by someone else after you opened it."})
+		cur, _ := s.store.ReadShowFile(id, r.URL.Query().Get("lang"))
+		if fileVersion(cur) != req.BaseVersion && cur != req.Text {
+			writeJSON(w, http.StatusConflict, map[string]any{"conflict": true, "text": cur, "version": fileVersion(cur),
+				"error": "This show file was changed by someone else after you opened it."})
 			return
 		}
 	}
@@ -512,12 +512,12 @@ func (s *Server) putScript(w http.ResponseWriter, r *http.Request) {
 			"needConfirm": true, "showName": m.Name})
 		return
 	}
-	if err := s.store.WriteScript(id, r.URL.Query().Get("lang"), req.Text); err != nil {
+	if err := s.store.WriteShowFile(id, r.URL.Query().Get("lang"), req.Text); err != nil {
 		storeErr(w, err)
 		return
 	}
-	a, _ := s.scriptResponse(id, r.URL.Query().Get("lang"), req.Text)
-	resp := map[string]any{"analysis": a, "saved": true, "version": scriptVersion(req.Text)}
+	a, _ := s.showFileResponse(id, r.URL.Query().Get("lang"), req.Text)
+	resp := map[string]any{"analysis": a, "saved": true, "version": fileVersion(req.Text)}
 	if active {
 		// Every language of the show on air is rebuilt together, so they stay in step.
 		if l, err := s.loadShow(id); err == nil {
@@ -544,14 +544,14 @@ func sortedKeys[V any](m map[string]V) []string {
 // ---- languages ----
 
 type langSummary struct {
-	Code      string              `json:"code"`
-	Name      string              `json:"name"`
-	Primary   bool                `json:"primary"`
-	Cues      int                 `json:"cues"`
-	Errors    int                 `json:"errors"`
-	Warnings  int                 `json:"warnings"`
-	Structure []script.Diagnostic `json:"structure"` // why this translation is not offered to the audience (empty = fine)
-	Available bool                `json:"available"`
+	Code      string                `json:"code"`
+	Name      string                `json:"name"`
+	Primary   bool                  `json:"primary"`
+	Cues      int                   `json:"cues"`
+	Errors    int                   `json:"errors"`
+	Warnings  int                   `json:"warnings"`
+	Structure []showfile.Diagnostic `json:"structure"` // why this translation is not offered to the audience (empty = fine)
+	Available bool                  `json:"available"`
 }
 
 func (s *Server) listLanguages(w http.ResponseWriter, r *http.Request) {
@@ -563,40 +563,40 @@ func (s *Server) listLanguages(w http.ResponseWriter, r *http.Request) {
 	}
 	assets := mustAssets(s.store, id)
 	var out []langSummary
-	var primary script.Result
+	var primary showfile.Result
 	primaryName := ""
 	for i, code := range codes {
-		text, _ := s.store.ReadScript(id, code)
+		text, _ := s.store.ReadShowFile(id, code)
 		res := parseWith(text, assets)
-		sum := langSummary{Code: code, Name: res.LanguageName, Primary: i == 0, Cues: len(res.Cues), Structure: []script.Diagnostic{}}
+		sum := langSummary{Code: code, Name: res.LanguageName, Primary: i == 0, Cues: len(res.Cues), Structure: []showfile.Diagnostic{}}
 		if sum.Name == "" {
-			sum.Name = script.LanguageName(code)
+			sum.Name = showfile.LanguageName(code)
 		}
 		for _, d := range res.Diagnostics {
 			switch d.Severity {
-			case script.SevError:
+			case showfile.SevError:
 				sum.Errors++
-			case script.SevWarning:
+			case showfile.SevWarning:
 				sum.Warnings++
 			}
 		}
 		if i == 0 {
 			primary, primaryName = res, sum.Name
-		} else if issues := script.CompareStructure(primary.Cues, res.Cues, primaryName); len(issues) > 0 {
+		} else if issues := showfile.CompareStructure(primary.Cues, res.Cues, primaryName); len(issues) > 0 {
 			sum.Structure = issues
 		}
 		sum.Available = len(sum.Structure) == 0
 		out = append(out, sum)
 	}
-	known := make([]LangInfo, 0, len(script.KnownLanguages))
-	for _, l := range script.KnownLanguages {
+	known := make([]LangInfo, 0, len(showfile.KnownLanguages))
+	for _, l := range showfile.KnownLanguages {
 		known = append(known, LangInfo{Code: l.Code, Name: l.Name})
 	}
 	writeJSON(w, http.StatusOK, map[string]any{"languages": out, "known": known})
 }
 
-// addLanguage starts a translation: an empty script, or (to translate line by line) a copy of the main
-// script, which already has the right structure.
+// addLanguage starts a translation: an empty show file, or (to translate line by line) a copy of the main
+// show file, which already has the right structure.
 func (s *Server) addLanguage(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		Code         string `json:"code"`
@@ -613,7 +613,7 @@ func (s *Server) addLanguage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	code := strings.ToLower(strings.TrimSpace(req.Code))
-	if !script.LangCodeRe.MatchString(code) {
+	if !showfile.LangCodeRe.MatchString(code) {
 		writeErr(w, http.StatusBadRequest, "Use a short language code such as es, fr or pt-br.")
 		return
 	}
@@ -623,7 +623,7 @@ func (s *Server) addLanguage(w http.ResponseWriter, r *http.Request) {
 	}
 	name := strings.TrimSpace(req.Name)
 	if name == "" {
-		name = script.LanguageName(code)
+		name = showfile.LanguageName(code)
 	}
 	if strings.ContainsAny(name, "|\n[]") || len(name) > 40 {
 		writeErr(w, http.StatusBadRequest, "The language name cannot contain | [ ] or line breaks, and must be under 40 characters.")
@@ -632,10 +632,10 @@ func (s *Server) addLanguage(w http.ResponseWriter, r *http.Request) {
 	header := "[language: " + code + " | " + name + "]\n"
 	body := header
 	if req.CopyFromMain {
-		main, _ := s.store.ReadScript(id, m.Language)
-		body += "<!-- Translate the words. Keep every line, command and blank screen in the same order as the main script: one press of Space shows the same line in every language. -->\n" + stripLanguageLine(main)
+		main, _ := s.store.ReadShowFile(id, m.Language)
+		body += "<!-- Translate the words. Keep every line, command and blank screen in the same order as the main show file: one press of Space shows the same line in every language. -->\n" + stripLanguageLine(main)
 	}
-	if err := s.store.WriteScript(id, code, body); err != nil {
+	if err := s.store.WriteShowFile(id, code, body); err != nil {
 		storeErr(w, err)
 		return
 	}
@@ -668,7 +668,7 @@ func (s *Server) deleteLanguage(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, http.StatusConflict, "This show is live. Restart it before removing a language.")
 		return
 	}
-	if err := s.store.DeleteScript(id, code); err != nil {
+	if err := s.store.DeleteShowFile(id, code); err != nil {
 		storeErr(w, err)
 		return
 	}
@@ -805,8 +805,8 @@ func (s *Server) exportShow(w http.ResponseWriter, r *http.Request) {
 	put("show.yaml", meta)
 	codes, _ := s.store.Languages(id)
 	for _, code := range codes {
-		if text, err := s.store.ReadScript(id, code); err == nil {
-			put("script."+code+".md", []byte(text))
+		if text, err := s.store.ReadShowFile(id, code); err == nil {
+			put("show."+code+".md", []byte(text))
 		}
 	}
 	for _, a := range mustAssets(s.store, id) {
@@ -857,14 +857,14 @@ func (s *Server) importShow(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case name == "show.yaml":
 			metaYAML, _ = read(f, 64<<10)
-		case strings.HasPrefix(name, "script.") && strings.HasSuffix(name, ".md") && !strings.Contains(name, "/"):
+		case strings.HasPrefix(name, "show.") && strings.HasSuffix(name, ".md") && !strings.Contains(name, "/"):
 			if b, err := read(f, show.MaxScript); err == nil {
-				scripts[strings.TrimSuffix(strings.TrimPrefix(name, "script."), ".md")] = string(b)
+				scripts[strings.TrimSuffix(strings.TrimPrefix(name, "show."), ".md")] = string(b)
 			}
 		}
 	}
 	if metaYAML == nil || len(scripts) == 0 {
-		writeErr(w, http.StatusBadRequest, "That zip is missing show.yaml or a script.")
+		writeErr(w, http.StatusBadRequest, "That zip is missing show.yaml or a show file.")
 		return
 	}
 	var meta show.Meta
@@ -879,8 +879,8 @@ func (s *Server) importShow(w http.ResponseWriter, r *http.Request) {
 	}
 	for lang, text := range scripts {
 		if lang == m.Language {
-			s.store.WriteScript(m.ID, "", text)
-		} else if err := s.store.WriteScript(m.ID, lang, text); err != nil {
+			s.store.WriteShowFile(m.ID, "", text)
+		} else if err := s.store.WriteShowFile(m.ID, lang, text); err != nil {
 			continue
 		}
 	}
@@ -1160,7 +1160,7 @@ func (s *Server) supportBundle(w http.ResponseWriter, r *http.Request) {
 	var shows strings.Builder
 	if list, err := s.store.List(); err == nil {
 		for _, m := range list {
-			text, _ := s.store.ReadScript(m.ID, "")
+			text, _ := s.store.ReadShowFile(m.ID, "")
 			a, _ := analyze(text, mustAssets(s.store, m.ID))
 			var errs, warns int
 			for _, d := range a.Diagnostics {

@@ -12,16 +12,16 @@ Goal: a first-time volunteer can finish without reading documentation.
 
 ### First run
 1. Login form. On the very first run the generated admin/operator passwords are printed to the **console only** (never to a web page, since the login page is reachable from the guest network); the login page says where to find them (console output or `config.yaml`) and how to change them.
-2. Wizard stepper across the top: **① Show → ② Script → ③ Images → ④ Look → ⑤ Test → ⑥ Go Live**.
+2. Wizard stepper across the top: **① Show → ② Show file → ③ Images → ④ Look → ⑤ Test → ⑥ Go Live**.
    Steps are also reachable directly for experienced users. Each step shows a green check when complete.
 
 ### Steps
 - **Show**: name; list of existing shows with Rename / Duplicate / Export / Delete (delete asks first). *(Archive is not built; export and delete cover it.)*
-- **Script**: (a **Help** link here opens the "Writing a script" topic). **Language tabs** sit above the editor: the main language, each translation, and ＋ Add a language. A ⚠ marks a translation held back for not matching the main script; translations show the main script for reference, and structure errors appear in the problem list.
+- **Show file**: (a **Help** link here opens the "Writing a show file" topic). **Language tabs** sit above the editor: the main language, each translation, and ＋ Add a language. A ⚠ marks a translation held back for not matching the main show file; translations show the main show file for reference, and structure errors appear in the problem list.
   - Drag-and-drop file, "Choose file…", or paste into an editor.
   - Editor pane (monospace, line numbers) + Diagnostics pane. Clicking a diagnostic jumps to the line.
   - Live preview of the parsed cue list (kinds shown as icons: 💬 caption, 🖼 image, ⛶ fullscreen, 🔁 loop, ⬛ blank, 🧹 clear, 📑 section, 📝 note).
-  - A "Script help" slide-out showing the syntax cheatsheet with copy-able examples (content of doc 03: Markdown subset, directives, loops).
+  - A "Show file help" slide-out showing the syntax cheatsheet with copy-able examples (content of doc 03: Markdown subset, directives, loops).
   - Insert-directive toolbar buttons (Clear, Blank, Image…, Fullscreen text, Section, Loop, 🎵 Song, and ♪ / ♫ to insert music notes at the cursor) so authors never type brackets by hand.
   - Re-import warns if cue count differs and the show is live.
 - **Images**: PNG/JPG/GIF/WebP only (no SVG); files over 1 MB get a "large — may load slowly for many devices" warning, since images are sent unscaled. Grid of uploads with thumbnails; drag-drop multi-upload; shows "used in lines 12, 40" or "unused"; missing-but-referenced images listed at top with an upload-in-place button.
@@ -36,12 +36,12 @@ Shows the program version, the settings file, the data folder, the web ports, an
 `Audience URL: http://192.168.1.10/ ▸ copy ▸ QR` (plus the `https://` URL when HTTPS is enabled, with a note that a self-signed certificate shows a browser warning) with a warning banner if no non-loopback address is detected or a fallback port is in use.
 
 ### Guard rails
-- While live, Setup tabs show a banner "Show is live" and script-modifying actions require typing the show name to confirm (REQ-052).
+- While live, Setup tabs show a banner "Show is live" and actions that change the show file require typing the show name to confirm (REQ-052).
 - Every destructive action uses an in-app confirm dialog, never silently.
 
 ## 2. Operator interface — `/operator`
 
-Layout (desktop): three columns of the script as a vertical list.
+Layout (desktop): three columns of the show file as a vertical list.
 
 ```
 ┌ header: Show name • ● LIVE • 83 viewers • Controller: you • [Takeover] ──────┐
@@ -81,11 +81,11 @@ Behavior:
   Space must call `preventDefault` to avoid page scroll. Key repeat is ignored; a command is debounced (~120 ms) to prevent double-fire, while the UI optimistically shows pending state and reconciles with the server response.
 - **Safety**: clicking a cue in the list opens a "Jump here?" confirmation (single click select, Enter/second-click confirm) so accidental taps don't change the screen. Jumps never replay intermediate lines onto the audience view as a flood — they set the resulting state.
 - **Loops**: while a loop runs, the header shows `🔁 LOOP RUNNING — item 2/4` with a STOP button; after STOP it shows `⬛ BLANK (loop stopped)`. The cue after the loop is already highlighted as NEXT. Back restarts a loop: after NEXT ended it, or after STOP, Back puts it back running from its first item (there is no separate restart button). A loop that is the first cue auto-starts when the show is activated, so the operator opens on `🔁 LOOP RUNNING` with the first caption as NEXT.
-- **Mini-map and timing**: a **Go to section…** menu lists the script's sections as jump targets (with the usual confirmation), and the header shows **Last sent n s ago** (turns amber after 2 minutes).
+- **Mini-map and timing**: a **Go to section…** menu lists the show file's sections as jump targets (with the usual confirmation), and the header shows **Last sent n s ago** (turns amber after 2 minutes).
 - **Status indicators**: connection state (green/yellow/red); audience count; warning if another session claims control; "Last sent n seconds ago".
 - **Touch layout** (phone/tablet): large bottom Next/Back buttons; swipe not used (accidental). Wake lock requested.
 - **Dark theme default** (theater is dark; low glare). The operator page uses its own login (operator password). Optional "stage-dark" red-tinted mode.
-- **Ad-hoc message**: dialog to send one-off caption or fullscreen text (e.g., "Show paused — please remain seated") without editing the script.
+- **Ad-hoc message**: dialog to send one-off caption or fullscreen text (e.g., "Show paused — please remain seated") without editing the show file.
 
 ## 3. Audience interface — `/`
 
@@ -113,22 +113,22 @@ Help is part of the product, not an afterthought (REQ-037). It is written for
 volunteers: plain language, short, with examples.
 
 **Access**
-- Every `/admin` and `/operator` screen has a **Help** button in the header and responds to `?` / `F1`. It opens a viewer with a topic list, search, and the current topic's content; it is context-sensitive (opened from the Script step → "Writing a script").
+- Every `/admin` and `/operator` screen has a **Help** button in the header and responds to `?` / `F1`. It opens a viewer with a topic list, search, and the current topic's content; it is context-sensitive (opened from the Show file step → "Writing a show file").
 - Both pages link to the same viewer (`/help`), with the topic list ordered for the user's role.
 - Works offline; content is embedded in the binary.
-- **Operator safety:** while the help viewer is open on `/operator`, show-control keys (Space, Shift+Q, etc.) are disabled, so reading help can't advance the show. A banner reminds the operator "Keys paused — close help (Esc) to resume". Help opens as a panel beside the script where space allows so the operator can keep an eye on the show.
+- **Operator safety:** while the help viewer is open on `/operator`, show-control keys (Space, Shift+Q, etc.) are disabled, so reading help can't advance the show. A banner reminds the operator "Keys paused — close help (Esc) to resume". Help opens as a panel beside the show file where space allows so the operator can keep an eye on the show.
 
-**Format and source.** Topics are Markdown files in `web/help/`, rendered with the same renderer as scripts. Examples are fenced code blocks with **Copy** (and, in the script editor, **Insert at cursor**) buttons.
+**Format and source.** Topics are Markdown files in `web/help/`, rendered with the same renderer as show files. Examples are fenced code blocks with **Copy** (and, in the show file editor, **Insert at cursor**) buttons.
 
 **Topics for admins**
 1. *Getting started* — the six wizard steps; how to find the audience URL/QR; where passwords are (`config.yaml`).
-2. *Writing a script* — the Markdown conventions (below).
+2. *Writing a show file* — the Markdown conventions (below).
 3. *Images* — formats, sizes, the 1 MB warning, naming, what "missing image" means.
 4. *Loops: pre-show and intermission* — syntax, durations, how the operator starts/stops them.
 5. *Look and feel* — themes, contrast, speaker colors, projector mode.
-6. *Languages* — translated scripts, identical structure, how audiences pick.
+6. *Languages* — translated show files, identical structure, how audiences pick.
 7. *Network and joining* — URL, QR, HTTPS caveats, venue prerequisites.
-8. *Troubleshooting* — port in use, nobody can connect, images slow, script warnings explained.
+8. *Troubleshooting* — port in use, nobody can connect, images slow, show file warnings explained.
 
 **Topics for operators**
 1. *Running the show* — one-page summary: NEXT, Back, STOP, what the highlighted line means.
@@ -137,7 +137,7 @@ volunteers: plain language, short, with examples.
 4. *Indicators* — connection dot, audience count, controller/takeover, image/loop chips.
 5. *If something goes wrong* — wrong line sent (Back), lost connection, someone else took control, audience can't see captions, send an ad-hoc message, blank/clear.
 
-**"Writing a script" must cover every script convention in doc 03**, each with a short example and the result:
+**"Writing a show file" must cover every show file convention in doc 03**, each with a short example and the result:
 - one line = one caption (and wrapping; you decide where to break lines)
 - `**bold**`, `*italic*`, `(stage directions)`, `NAME: speaker` labels, `\` line continuation and `[[ … ]]` multi-line captions
 - comments `<!-- … -->` (never shown) versus `[note: …]` (operator only); `#` is reserved for future headings
@@ -146,7 +146,7 @@ volunteers: plain language, short, with examples.
 - `[language: xx | Name]`
 - escaping (`\*`, `\#`, `\[`, `\:`) and that raw HTML isn't supported
 - a "what the warnings mean" list mirroring the diagnostics
-- a link to download the sample script
+- a link to download the sample show file
 
 **As built.** Help opens as a side panel (an embedded viewer at `/help`) from a **Help** button, `?`, or `F1`; on Setup the topic follows the current step. On `/operator`, while the panel is open every show-control key is ignored except `Esc`/`?`/`F1`, which close it. The audience page has an optional, low-key **Aa** control (top right) for per-device text size and dark-on-light, stored only on that device.
 

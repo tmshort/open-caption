@@ -2,7 +2,7 @@
 // started with --dev and measures operator-to-client caption latency
 // (docs/07-testing-and-acceptance.md, performance targets).
 //
-//	open-caption --dev --script big.md --http-addr :18080 &
+//	open-caption --dev --show-file big.md --http-addr :18080 &
 //	loadtest -url http://localhost:18080 -clients 200 -messages 60
 package main
 
@@ -24,7 +24,7 @@ func main() {
 	var (
 		base     = flag.String("url", "http://localhost:8080", "server base URL")
 		clients  = flag.Int("clients", 200, "concurrent audience connections")
-		messages = flag.Int("messages", 60, "captions to send (script must have at least this many)")
+		messages = flag.Int("messages", 60, "captions to send (show file must have at least this many)")
 		interval = flag.Duration("interval", 250*time.Millisecond, "time between NEXT commands")
 	)
 	flag.Parse()

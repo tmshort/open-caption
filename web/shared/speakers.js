@@ -28,7 +28,7 @@
   function hash(s) { var h = 0; for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return Math.abs(h); }
 
   // forName: the same name always gets the same color, in the same order for every device
-  // (the server sends the speakers in order of first appearance in the script).
+  // (the server sends the speakers in order of first appearance in the show file).
   function forName(name, speakers, bg) {
     var i = (speakers || []).indexOf(name);
     return color(i >= 0 ? i : hash(name), bg);

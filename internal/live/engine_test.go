@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/tmshort/open-caption/internal/script"
+	"github.com/tmshort/open-caption/internal/showfile"
 )
 
 type rec struct {
@@ -28,7 +28,7 @@ func (r *rec) types() []string {
 	return t
 }
 
-func parse(src string) []script.Cue { return script.Parse(src, script.Options{}).Cues }
+func parse(src string) []showfile.Cue { return showfile.Parse(src, showfile.Options{}).Cues }
 
 func newEngine(t *testing.T, src string) (*Engine, *rec) {
 	t.Helper()
@@ -157,7 +157,7 @@ func TestLeadingLoopAutoStartsAndTicks(t *testing.T) {
 	}
 	waitFor(t, func() bool { return len(r.types()) >= 3 })
 	r.mu.Lock()
-	item := r.ev[0].Data.(script.Item)
+	item := r.ev[0].Data.(showfile.Item)
 	r.mu.Unlock()
 	if item.Text != "Two" {
 		t.Errorf("first tick shows %q, want Two", item.Text)
@@ -416,7 +416,7 @@ func TestBackStillWorksAfterARestart(t *testing.T) {
 	if n := len(c.Export().History); n != persistedHistory {
 		t.Errorf("history entries saved: %d, want %d", n, persistedHistory)
 	}
-	// A script that shrank must not restore steps that point past its end.
+	// A show file that shrank must not restore steps that point past its end.
 	d := New(parse("A"), Config{}, nil)
 	defer d.Close()
 	d.Restore(c.Export())

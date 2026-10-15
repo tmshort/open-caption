@@ -1,6 +1,6 @@
-// Package script parses open-caption scripts (a Markdown subset, see
-// docs/03-script-format.md) into cues. It is pure: no I/O, no network.
-package script
+// Package show file parses open-caption show files (a Markdown subset, see
+// docs/03-show-file-format.md) into cues. It is pure: no I/O, no network.
+package showfile
 
 // CueKind identifies what a cue does when the operator sends it.
 type CueKind string
@@ -105,7 +105,7 @@ func SpeakersOf(cues []Cue) []string {
 	return out
 }
 
-// DirectiveNames lists every command a script may use as [name] or [name: ...].
+// DirectiveNames lists every command a show file may use as [name] or [name: ...].
 // Help text and tests are checked against this list, so adding a directive
 // without documenting it fails the build's tests.
 var DirectiveNames = []string{"clear", "blank", "image", "fullscreen", "loop", "section", "note", "song", "together", "language"}

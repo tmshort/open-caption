@@ -11,13 +11,13 @@ with the stage. Nothing to install, nothing to click.
 
 | User | Description | Key needs |
 |------|-------------|-----------|
-| **Admin / Setup user** | Several volunteers over time who prepare a show | Easy, forgiving, guided; clear errors when a script is malformed |
-| **Operator** | Follows the show (script/prompt book) and releases captions | One-key advance, confidence about position, can't get lost, can recover from mistakes fast |
+| **Admin / Setup user** | Several volunteers over time who prepare a show | Easy, forgiving, guided; clear errors when a show file is malformed |
+| **Operator** | Follows the show (show file/prompt book) and releases captions | One-key advance, confidence about position, can't get lost, can recover from mistakes fast |
 | **Audience member** | BYOD phone/tablet/desktop, or a shared projector | Zero interaction, readable, resilient to WiFi drops and sleeping screens |
 
 ## Scope
 
-In scope: one server process on one host; script import; live operation;
+In scope: one server process on one host; show file import; live operation;
 audience display; image, fullscreen and loop (pre-show/intermission) support.
 
 Out of scope (v1): cloud hosting, user accounts, automatic speech
@@ -41,15 +41,15 @@ simultaneous shows, internet-facing deployment.
 - **REQ-012** Server restart resumes at the previously active show, cue position and on-screen state; a loop that was running restarts from its first item.
 - **REQ-013** A client joining mid-show immediately sees current state plus recent scrollback.
 
-### Script
-- **REQ-020** Import a Markdown/text script (`.md` or `.txt`, both parsed as Markdown, UTF-8) via upload or paste; re-import without losing assets.
-- **REQ-021** Each non-blank script line is a caption (long lines wrap; the author controls splitting); non-technical authors can add human-readable directives (clear screen, images, fullscreen text, loops) (doc 03).
+### Show file
+- **REQ-020** Import a Markdown/text show file (`.md` or `.txt`, both parsed as Markdown, UTF-8) via upload or paste; re-import without losing assets.
+- **REQ-021** Each non-blank show file line is a caption (long lines wrap; the author controls splitting); non-technical authors can add human-readable directives (clear screen, images, fullscreen text, loops) (doc 03).
 - **REQ-022** Formatting is a Markdown subset (bold/italic, images). Raw HTML is **not** supported; it is displayed as literal text with a diagnostic. Exception: `<!-- -->` comments. `[note: …]` is an operator-only note; `#` is reserved for future headings.
-- **REQ-023** Import validates the script and reports errors/warnings with line numbers *without* blocking the preview.
+- **REQ-023** Import validates the show file and reports errors/warnings with line numbers *without* blocking the preview.
 - **REQ-024** Images (PNG/JPG/GIF/WebP; no SVG) are uploaded/managed in the setup UI and referenced by filename. Missing references are flagged. The server does not rescale; browsers scale to fit. Audience pages prefetch upcoming images.
 - **REQ-025** **Loops**: a block of mixed fullscreen items (images/text), each shown for its own duration (default from config), repeating. Used for pre-show and intermission. A loop that is the first cue auto-starts on activation; any other loop starts when the operator presses NEXT on it.
 - **REQ-027** Musicals: lyrics can be marked with a `~` shorthand or a `[song]` block, are shown in italics between ♪ notes, and music notes can be inserted from the editor (doc 03, *Songs and lyrics*). Two or more voices sung or spoken at the same time (duets, counterpoint) are shown together from one operator keypress, using `[together]` or ` || ` (doc 03, *Voices at the same time*).
-- **REQ-026** Multiple languages: one script per language, identical in structure (checked cue by cue), each identified by a `[language: code | Name]` line. One operator keypress sends the same cue to every language. The audience's language is detected from `Accept-Language` (default: the main language), with a picker and a `?lang=` URL form. A translation that does not match the main script is reported and not shown to the audience.
+- **REQ-026** Multiple languages: one show file per language, identical in structure (checked cue by cue), each identified by a `[language: code | Name]` line. One operator keypress sends the same cue to every language. The audience's language is detected from `Accept-Language` (default: the main language), with a picker and a `?lang=` URL form. A translation that does not match the main show file is reported and not shown to the audience.
 
 ### Operator
 - **REQ-030** Spacebar (NEXT) advances to the next cue — the same command for captions, for starting a loop, and for ending a loop. **STOP** (Shift+Q) stops a running loop and leaves a blank screen. Other keys: back, blank, clear, jump (doc 05).
@@ -59,7 +59,7 @@ simultaneous shows, internet-facing deployment.
 - **REQ-034** Only one operator controls at a time; others are view-only, with explicit takeover.
 - **REQ-035** Operator can work from a laptop keyboard, and also from a tablet/phone (large Next button; optional Bluetooth clicker maps to keys).
 - **REQ-036** Setup (`/admin`) and Operator (`/operator`) are separate pages with separate passwords; the operator page exposes no setup actions.
-- **REQ-037** Built-in help for operators and admins, available from every `/admin` and `/operator` screen, works offline, and includes the script/Markdown conventions with copy-able examples (doc 05, section 4).
+- **REQ-037** Built-in help for operators and admins, available from every `/admin` and `/operator` screen, works offline, and includes the show file/Markdown conventions with copy-able examples (doc 05, section 4).
 
 ### Audience
 - **REQ-040** One URL, no interaction needed. Page auto-scrolls as captions arrive, newest at bottom, older text dimmed.
@@ -71,12 +71,12 @@ simultaneous shows, internet-facing deployment.
 - **REQ-045** Accessibility-first defaults: pure black background / white text, high contrast, large type, responsive to orientation and screen size. Venue-level theme (colors, font size) and optional per-speaker colors set in setup; optional per-device local font-size control that is never required. Two readability fonts are bundled and available as a show-wide choice and as a per-device option: a dyslexia-friendly one (OpenDyslexic) and a high-legibility one (Atkinson Hyperlegible).
 
 ### Configuration and access
-- **REQ-050** Setup is a guided wizard: create show → import script → upload images → look → test → go live.
+- **REQ-050** Setup is a guided wizard: create show → import show file → upload images → look → test → go live.
 - **REQ-051** `/admin` and `/operator` each have their own password (plaintext in `config.yaml`, generated on first run), entered via a login form with a session cookie — not HTTP Basic auth. An admin session also works on `/operator`. The audience interface is open.
-- **REQ-052** Script edits during a live show require confirmation (typing the show name); the cursor is preserved by cue index, with a warning if the cue count changes.
+- **REQ-052** Show file edits during a live show require confirmation (typing the show name); the cursor is preserved by cue index, with a warning if the cue count changes.
 - **REQ-055** Setup and operator pages can be limited to listed computers (`access` in `config.yaml`); the audience page is always open. Forged cross-site requests to the API are refused.
 - **REQ-056** Passwords can be changed from the Setup page, without a restart.
-- **REQ-057** Two people editing a script do not silently overwrite each other.
+- **REQ-057** Two people editing a show file do not silently overwrite each other.
 - **REQ-058** Logins, the operator's control, the show position and the last few undo steps survive a restart.
 - **REQ-053** The setup UI displays the audience URL and a QR code, plus the list of host IP addresses.
 - **REQ-054** Multiple shows can be stored; one is "active".

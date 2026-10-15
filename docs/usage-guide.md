@@ -10,8 +10,8 @@ Contents: [The pieces](#the-pieces) · [Deployment recommendations](#deployment-
 
 | Piece | What it is |
 |-------|------------|
-| **The server** | The `open-caption` program, running on one computer (macOS, Windows or Linux). It holds the script and sends lines to everyone. |
-| **Setup page** (`/admin`) | Where volunteers prepare a show: script, images, look, rehearsal. Admin password. |
+| **The server** | The `open-caption` program, running on one computer (macOS, Windows or Linux). It holds the show file and sends lines to everyone. |
+| **Setup page** (`/admin`) | Where volunteers prepare a show: show file, images, look, rehearsal. Admin password. |
 | **Operator page** (`/operator`) | Where the operator follows the show and sends lines. Operator password. |
 | **Audience page** (`/`) | What audiences open on their devices. No password. A browser on a projector or large monitor can show the same page for the whole room. |
 
@@ -140,15 +140,15 @@ Useful options: `--data <folder>`, `--http-addr :8080`, `--https-addr :443`, `--
 Open the setup page and follow the six steps along the top. The **Help** button explains each one.
 
 1. **Show.** Create a show (or the sample show, to try things out).
-2. **Script.** Paste the script or drop in a `.txt` or `.md` file. Each line becomes one caption. Fix anything listed under *Problems and notes*; click one to jump to its line. Save.
-3. **Images.** Upload the pictures the script uses (PNG, JPG, GIF or WebP, ideally under 1 MB each).
+2. **Show file.** Paste the show file or drop in a `.txt` or `.md` file. Each line becomes one caption. Fix anything listed under *Problems and notes*; click one to jump to its line. Save.
+3. **Images.** Upload the pictures the show file uses (PNG, JPG, GIF or WebP, ideally under 1 MB each).
 4. **Look.** Choose colors, font and text size. The defaults (white on black, large) are best for most people. Two readability fonts are built in: a dyslexia-friendly one (OpenDyslexic) and a high-legibility one (Atkinson Hyperlegible, designed for low vision). Individual audience members can also pick either for their own device from the small **Aa** control.
 5. **Test.** Run a private rehearsal: you press Space as the operator would, and see the audience screen next to it. Nothing reaches the audience.
 6. **Go Live.** Check the readiness list, print the QR sign, and press **Start show**.
 
-### Writing the script
+### Writing the show file
 
-A script is plain text. The short version:
+A show file is plain text. The short version:
 
 ```text
 <!-- Comments like this are never shown. -->
@@ -177,28 +177,28 @@ EDWIN: Whistling all day long
 - **Speaker names** in capitals followed by a colon are shown above the line.
 - **Stage directions** in `(parentheses)` are shown in italics.
 - **Lyrics** between `♪` notes, in italics: start a line with `~`, or wrap the song in `[song]`…`[/song]`. For two singers at the same time (a duet or counterpoint), put their lines between `[together]` and `[/together]`, or join them with ` || ` on one line; both show at once on one press of Space. The editor's **♪**, **♫** and **🎵 Song** buttons insert these. See the *Musicals* help topic.
-- **Loops** (pre-show and intermission) repeat pictures and text until the operator moves on. A loop at the very start of the script starts by itself.
+- **Loops** (pre-show and intermission) repeat pictures and text until the operator moves on. A loop at the very start of the show file starts by itself.
 - **Notes** `[note: …]` and bookmarks `[section: …]` are for the operator only.
-- The **Writing a script** help topic lists everything, with examples, and the editor's *Script cheat sheet* summarizes it.
+- The **Writing a show file** help topic lists everything, with examples, and the editor's *Show file cheat sheet* summarizes it.
 
 ### Two people editing
 
-If someone else saves a script while you have it open, the program warns you when you save instead of overwriting their work, and lets you take their version or keep yours.
+If someone else saves a show file while you have it open, the program warns you when you save instead of overwriting their work, and lets you take their version or keep yours.
 
 ### More than one language
 
-A show can offer captions in several languages. In Setup → Script, click **＋ Add a language**, keep "Start from a copy of the main script" ticked, and translate the words. Each language is its own script with the same lines, commands and blank screens in the same order, so one press of Space shows the same moment in every language. The operator follows the main language only. Audience devices get the language their phone is set to (or the main one) and can switch from the small 🌐 menu, or be given a link ending in `?lang=es`. A translation that stops matching the main script is reported and held back until it is fixed. The sample show includes a Spanish translation to look at. See the *Languages* help topic.
+A show can offer captions in several languages. In Setup → Show file, click **＋ Add a language**, keep "Start from a copy of the main show file" ticked, and translate the words. Each language is its own show file with the same lines, commands and blank screens in the same order, so one press of Space shows the same moment in every language. The operator follows the main language only. Audience devices get the language their phone is set to (or the main one) and can switch from the small 🌐 menu, or be given a link ending in `?lang=es`. A translation that stops matching the main show file is reported and held back until it is fixed. The sample show includes a Spanish translation to look at. See the *Languages* help topic.
 
 ### Changing things during rehearsals and shows
 
-You can edit and re-save a script while a show is live (for example to fix a typo). The program asks you to type the show's name to be sure, keeps the operator's place by line number, and warns if the number of lines changed.
+You can edit and re-save a show file while a show is live (for example to fix a typo). The program asks you to type the show's name to be sure, keeps the operator's place by line number, and warns if the number of lines changed.
 
 ## Running the show
 
 ### Before the audience arrives
 
 1. Start the server and open the **Operator page**; sign in. It should say **You are in control**.
-2. In Setup → Go Live press **Start show** (once; this resets the show to the beginning). A pre-show loop, if the script has one, begins on every screen.
+2. In Setup → Go Live press **Start show** (once; this resets the show to the beginning). A pre-show loop, if the show file has one, begins on every screen.
 3. Open the audience address on your own phone and, if you have one, on the projector. Check the viewer count on the operator page goes up.
 4. Put the QR sign where people can see it.
 
@@ -209,7 +209,7 @@ You can edit and re-save a script while a show is live (for example to fix a typ
 - **B** blanks the audience screens (hides everything; the same captions return when you press **B** again). **C** clears them (erases the captions, so the next line starts on an empty screen). **Backspace** undoes either.
 - **Shift+Q** stops an intermission or pre-show loop (blank screen). **Space** continues.
 - **Message…** puts a one-off notice on every screen ("The show will resume shortly"). **Back** removes it.
-- Click a line, then confirm, to jump anywhere. **/** searches the script.
+- Click a line, then confirm, to jump anywhere. **/** searches the show file.
 - The line with the yellow arrow is *next*. The green dot marks what is on screen now.
 
 ### When the show ends
@@ -219,7 +219,7 @@ Press `Ctrl+C` in the program's window (or stop the service). The position is sa
 ## Day-of checklist
 
 **A few days before**
-- [ ] Rehearse with the real script and a few real phones on the real network in the real room.
+- [ ] Rehearse with the real show file and a few real phones on the real network in the real room.
 - [ ] Export the show (Setup → Show → **Export**) and keep the `.zip` somewhere safe, such as a USB stick.
 - [ ] Confirm the captioning computer's address is reserved and the QR sign shows it.
 
@@ -255,10 +255,10 @@ Press `Ctrl+C` in the program's window (or stop the service). The position is sa
 
 ## Maintenance
 
-- **Backups:** *Export* in Setup → Show saves a show (script, images, look) as a `.zip`. *Import* restores it, on this or another computer. You can also copy the whole data folder.
+- **Backups:** *Export* in Setup → Show saves a show (show file, images, look) as a `.zip`. *Import* restores it, on this or another computer. You can also copy the whole data folder.
 - **Moving to another computer:** install the program, import the exported shows, set the new computer's address and, if you want to keep the old passwords, copy `config.yaml`.
 - **Updating the program:** stop it (`Ctrl+C`), replace the program file with the newer one, and start it again with the same `--data` folder. Do not update right before a show.
-- **Reusing a show:** Setup → Show has **Rename…** and **Duplicate**. Duplicating makes a copy of the script, images and look to adapt for the next run, and leaves the original alone.
+- **Reusing a show:** Setup → Show has **Rename…** and **Duplicate**. Duplicating makes a copy of the show file, images and look to adapt for the next run, and leaves the original alone.
 - **Cleaning up:** delete shows you no longer need from Setup → Show. Exported `.zip` files are your archive.
 - **Logs:** recent log lines are in the support bundle; add `--log-file` to keep a file.
 
@@ -273,7 +273,7 @@ Print this and keep it by the operator.
 | **Shift+Q** | Stop a loop (blank screen) |
 | **B** | Blank: hide everything, captions come back on unblank |
 | **C** | Clear: erase the captions for a fresh start |
-| **/** | Search the script |
+| **/** | Search the show file |
 | **?** | Help (keys are paused while it is open) |
 
 - Yellow arrow = next line. Green dot = on screen now.

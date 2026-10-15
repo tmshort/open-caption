@@ -59,7 +59,7 @@ async function main() {
 
   try {
     // ------------------------------------------------------------------ Setup
-    section('Setup: sign in, sample show, script, languages');
+    section('Setup: sign in, sample show, show file, languages');
     const admin = await open();
     await admin.goto(B + '/admin'); await admin.waitForSelector('#pw');
     await admin.type('#pw', 'wrong-password'); await admin.keyboard.press('Enter'); await sleep(400);
@@ -68,17 +68,17 @@ async function main() {
     await admin.type('#pw', ADMIN); await admin.keyboard.press('Enter');
     await admin.waitForSelector('#steps button');
     await click(admin, 'sample'); await admin.waitForSelector('.editor textarea'); await sleep(900);
-    check('the sample script has no problems', (await admin.evaluate(() => document.querySelector('.diags').innerText)).includes('No problems') || (await admin.evaluate(() => document.getElementById('panel').innerText)).includes('No problems found'));
+    check('the sample show file has no problems', (await admin.evaluate(() => document.querySelector('.diags').innerText)).includes('No problems') || (await admin.evaluate(() => document.getElementById('panel').innerText)).includes('No problems found'));
     const tabs = await admin.evaluate(() => [...document.querySelectorAll('.langtabs button')].map((x) => x.textContent.trim()));
     check('English (main) and Español tabs are offered', tabs.some((t) => t.startsWith('English')) && tabs.some((t) => t.startsWith('Español')), tabs);
     const showId = (await api(admin, 'GET', '/api/admin/shows')).body.shows[0].id;
-    await shot(admin, '01-setup-script');
+    await shot(admin, '01-setup-showfile');
 
     // edit conflict
-    await api(admin, 'PUT', `/api/admin/shows/${showId}/script`, { text: 'THEIR CHANGE\nline two' });
+    await api(admin, 'PUT', `/api/admin/shows/${showId}/showfile`, { text: 'THEIR CHANGE\nline two' });
     await admin.evaluate(() => { const ta = document.querySelector('.editor textarea'); ta.focus(); ta.setRangeText('MY CHANGE\n', 0, 0, 'end'); ta.dispatchEvent(new Event('input', { bubbles: true })); });
     await sleep(200); await click(admin, 'Save'); await sleep(600);
-    check('saving over someone else\'s change asks first', (await admin.evaluate(() => document.getElementById('dlg').open && document.getElementById('dlgtitle').textContent)) === 'This script was changed by someone else');
+    check('saving over someone else\'s change asks first', (await admin.evaluate(() => document.getElementById('dlg').open && document.getElementById('dlgtitle').textContent)) === 'This show file was changed by someone else');
     await admin.evaluate(() => document.getElementById('dlgextra').click()); await sleep(400);
     check('"use their version" loads theirs', (await admin.evaluate(() => document.querySelector('.editor textarea').value.split('\n')[0])) === 'THEIR CHANGE');
     // a fresh, untouched sample show for the rest of the run
@@ -174,7 +174,7 @@ async function main() {
     // scroll back (a plain 40-line show so there is plenty to scroll)
     const long = Array.from({ length: 40 }, (_, i) => `Line ${i + 1}: the quick brown fox jumps over the lazy dog`).join('\n');
     const sid = (await api(op, 'POST', '/api/admin/shows', { name: 'Scroll test' })).body.id;
-    await api(op, 'PUT', `/api/admin/shows/${sid}/script`, { text: long });
+    await api(op, 'PUT', `/api/admin/shows/${sid}/showfile`, { text: long });
     await api(op, 'POST', `/api/admin/shows/${sid}/activate`, { force: true }); // the first show is live
     await sleep(600);
     const nextN = (n) => op.evaluate(async (n) => { for (let i = 0; i < n; i++) await fetch('/api/operator/next', { method: 'POST', body: '{}' }); }, n);

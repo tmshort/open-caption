@@ -1,9 +1,9 @@
-// Setup page: a six-step wizard (Show, Script, Images, Look, Test, Go Live).
+// Setup page: a six-step wizard (Show, Show file, Images, Look, Test, Go Live).
 (() => {
   'use strict';
   const $ = (id) => document.getElementById(id);
   const A = { shows: [], activeId: '', cur: null, step: 'show', text: '', saved: '', analysis: null, mainAnalysis: null, lang: '', loadedLang: null, langs: [], net: null, live: false, audience: 0, rehearsing: false };
-  const STEPS = [['show', 'Show'], ['script', 'Script'], ['images', 'Images'], ['look', 'Look'], ['test', 'Test'], ['golive', 'Go Live']];
+  const STEPS = [['show', 'Shows'], ['showfile', 'Show file'], ['images', 'Images'], ['look', 'Look'], ['test', 'Test'], ['golive', 'Go Live']];
   const ICON = { caption: '💬', clear: '🧹', blank: '⬛', image: '🖼', fullscreen: '⛶', loop: '🔁', section: '📑', note: '📝' };
 
   // ---- helpers ----
@@ -55,7 +55,7 @@
   const curShow = () => A.shows.find((s) => s.id === A.cur) || null;
 
   // ---- help drawer (topic follows the current step) ----
-  const HELP_TOPIC = { show: 'admin-getting-started', script: 'admin-writing-a-script', images: 'admin-images', look: 'admin-look-and-feel', test: 'admin-getting-started', golive: 'admin-network' };
+  const HELP_TOPIC = { show: 'admin-getting-started', showfile: 'admin-writing-a-show-file', images: 'admin-images', look: 'admin-look-and-feel', test: 'admin-getting-started', golive: 'admin-network' };
   function openHelp(topic) {
     $('help').hidden = false;
     $('help').querySelector('iframe').src = '/help?role=admin&embed=1&topic=' + (topic || HELP_TOPIC[A.step] || 'admin-getting-started');
@@ -158,7 +158,7 @@
       case 'test': return A.rehearsing;
       case 'golive': return !!A.cur && A.activeId === A.cur;
       case 'show': return !!A.cur;
-      case 'script': return !!(A.mainAnalysis && A.mainAnalysis.cues.length && !A.mainAnalysis.diagnostics.some((d) => d.severity === 'error'));
+      case 'showfile': return !!(A.mainAnalysis && A.mainAnalysis.cues.length && !A.mainAnalysis.diagnostics.some((d) => d.severity === 'error'));
       case 'images': return !!(A.mainAnalysis && !(A.mainAnalysis.missing || []).length && (A.mainAnalysis.assets || []).length);
       default: return false;
     }
@@ -172,11 +172,11 @@
     });
   }
 
-  // Ticks for Script and Images depend on the script analysis, so load it in the background when not yet known.
+  // Ticks for Show file and Images depend on the show file analysis, so load it in the background when not yet known.
   async function warmAnalysis() {
     const id = A.cur;
     if (!id || A.mainAnalysis) return;
-    const r = await api('GET', '/api/admin/shows/' + id + '/script');
+    const r = await api('GET', '/api/admin/shows/' + id + '/showfile');
     if (r.ok && A.cur === id && !A.mainAnalysis) { A.mainAnalysis = r.data.analysis; refreshNav(); }
   }
 
@@ -188,7 +188,7 @@
     warmAnalysis();
     const panel = $('panel'); panel.replaceChildren();
     document.title = 'Setup — ' + (STEPS.find((x) => x[0] === A.step) || ['', ''])[1];
-    try { await ({ show: stepShow, script: stepScript, images: stepImages, look: stepLook, test: stepTest, golive: stepGoLive })[A.step](panel); } catch (e) { if (e.message !== 'login') console.error(e); }
+    try { await ({ show: stepShow, showfile: stepShowFile, images: stepImages, look: stepLook, test: stepTest, golive: stepGoLive })[A.step](panel); } catch (e) { if (e.message !== 'login') console.error(e); }
   }
 
   // ---- step 1: show ----
@@ -203,7 +203,7 @@
       A.shows.forEach((s) => p.append(h('div', { class: 'card show' },
         h('div', { class: 'name' }, s.name, ' ', s.active ? h('span', { class: 'badge active' }, 'ACTIVE') : null, ' ', s.live ? h('span', { class: 'badge live' }, 'LIVE') : null,
           h('div', { class: 'hint' }, 'Updated ' + new Date(s.updated).toLocaleString())),
-        h('button', { class: A.cur === s.id ? '' : 'primary', onclick: () => { setCur(s.id); go('script'); } }, A.cur === s.id ? 'Continue with this show' : 'Work on this show'),
+        h('button', { class: A.cur === s.id ? '' : 'primary', onclick: () => { setCur(s.id); go('showfile'); } }, A.cur === s.id ? 'Continue with this show' : 'Work on this show'),
         h('button', { class: 'quiet', onclick: () => renameShow(s) }, 'Rename…'),
         h('button', { class: 'quiet', onclick: () => duplicateShow(s) }, 'Duplicate'),
         h('a', { href: '/api/admin/shows/' + s.id + '/export', download: s.id + '.zip' }, 'Export'),
@@ -218,7 +218,7 @@
       if (!inp.value.trim()) { inp.focus(); return; }
       const r = await api('POST', '/api/admin/shows', { name: inp.value });
       if (!r.ok) return fail(r);
-      await loadShows(); setCur(r.data.id); go('script');
+      await loadShows(); setCur(r.data.id); go('showfile');
     };
     inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') create(); });
     return h('span', { class: 'row' }, inp, h('button', { class: 'primary', onclick: create }, 'Create show'));
@@ -226,7 +226,7 @@
   async function makeSample() {
     const r = await api('POST', '/api/admin/shows', { sample: true });
     if (!r.ok) return fail(r);
-    await loadShows(); setCur(r.data.id); toast('Sample show created'); go('script');
+    await loadShows(); setCur(r.data.id); toast('Sample show created'); go('showfile');
   }
   async function importShow(e) {
     const f = e.target.files[0]; if (!f) return;
@@ -234,7 +234,7 @@
     const r = await api('POST', '/api/admin/shows/import', undefined, fd);
     if (!r.ok) return fail(r, 'That file could not be imported');
     await loadShows(); setCur(r.data.show.id);
-    toast(r.data.skippedFiles ? 'Imported (' + r.data.skippedFiles + ' file(s) skipped)' : 'Imported'); go('script');
+    toast(r.data.skippedFiles ? 'Imported (' + r.data.skippedFiles + ' file(s) skipped)' : 'Imported'); go('showfile');
   }
   async function renameShow(s) {
     const inp = h('input', { type: 'text', maxlength: '100', 'aria-label': 'Show name' });
@@ -247,13 +247,13 @@
   async function duplicateShow(s) {
     const inp = h('input', { type: 'text', maxlength: '100', 'aria-label': 'Name of the copy' });
     inp.value = s.name + ' (copy)';
-    if (!await ask('Duplicate the show', h('div', {}, h('p', {}, 'Makes a copy of the script, images and look. Nothing else is shared.'), h('label', { class: 'field' }, h('span', {}, 'Name of the copy'), inp)), 'Duplicate')) return;
+    if (!await ask('Duplicate the show', h('div', {}, h('p', {}, 'Makes a copy of the show file, images and look. Nothing else is shared.'), h('label', { class: 'field' }, h('span', {}, 'Name of the copy'), inp)), 'Duplicate')) return;
     const r = await api('POST', '/api/admin/shows/' + s.id + '/duplicate', { name: inp.value });
     if (!r.ok) return fail(r);
     await loadShows(); setCur(r.data.id); toast('Copy created'); render();
   }
   async function deleteShow(s) {
-    const ok = await confirmBox('Delete “' + s.name + '”?', 'Its script and images will be permanently deleted. Export it first if you may want it back.', 'Delete', true);
+    const ok = await confirmBox('Delete “' + s.name + '”?', 'Its show file and images will be permanently deleted. Export it first if you may want it back.', 'Delete', true);
     if (!ok) return;
     const r = await api('DELETE', '/api/admin/shows/' + s.id);
     if (!r.ok) return fail(r);
@@ -262,7 +262,7 @@
     render();
   }
 
-  // ---- step 2: script ----
+  // ---- step 2: show file ----
   const SNIPPETS = {
     clear: '[clear]\n', blank: '[blank]\n', fullscreen: '[fullscreen: INTERMISSION]\n', section: '[section: Act 1, Scene 1]\n',
     note: '[note: reminder for the operator]\n', comment: '<!-- a comment nobody sees -->\n',
@@ -270,7 +270,7 @@
     together: '[together]\nANNA: ~ first voice ~\nKRIS: ~ second voice sung at the same time ~\n[/together]\n',
     song: '[song: Title of the song]\nFirst line of the lyrics\nSecond line of the lyrics\n[/song]\n',
   };
-  async function stepScript(p) {
+  async function stepShowFile(p) {
     const show = curShow(); if (!show) return go('show');
     // Languages: the tabs above the editor. A.lang is '' for the main language.
     const lr = await api('GET', '/api/admin/shows/' + show.id + '/languages');
@@ -282,12 +282,12 @@
     const q = A.lang ? '?lang=' + encodeURIComponent(A.lang) : '';
     const dirty = A.text !== A.saved;
     if (!A.analysis || A.loadedLang !== A.lang || !dirty) { // keep unsaved edits when coming back to this step
-      const r = await api('GET', '/api/admin/shows/' + show.id + '/script' + q);
+      const r = await api('GET', '/api/admin/shows/' + show.id + '/showfile' + q);
       if (!r.ok) return fail(r);
       A.text = A.saved = r.data.text; A.analysis = r.data.analysis; A.version = r.data.version; A.loadedLang = A.lang;
       if (!A.lang) A.mainAnalysis = A.analysis;
     }
-    const ta = h('textarea', { spellcheck: 'false', 'aria-label': 'Script', wrap: 'off', placeholder: 'Paste your script here, or drop a .txt / .md file onto this box.\n\nEach line becomes one caption.' });
+    const ta = h('textarea', { spellcheck: 'false', 'aria-label': 'Show file', wrap: 'off', placeholder: 'Paste your show file here, or drop a .txt / .md file onto this box.\n\nEach line becomes one caption.' });
     ta.value = A.text;
     const gutter = h('pre', { class: 'gutter', 'aria-hidden': 'true' });
     const status = h('span', { class: 'hint' });
@@ -324,24 +324,24 @@
       A.text = ta.value; lines(); setStatus();
       clearTimeout(timer);
       timer = setTimeout(async () => {
-        const r = await api('POST', '/api/admin/shows/' + show.id + '/script/validate' + q, { text: ta.value });
-        if (r.ok && A.step === 'script') { A.analysis = r.data.analysis; showAnalysis(); }
+        const r = await api('POST', '/api/admin/shows/' + show.id + '/showfile/validate' + q, { text: ta.value });
+        if (r.ok && A.step === 'showfile') { A.analysis = r.data.analysis; showAnalysis(); }
       }, 400);
     }
     async function save(confirmName) {
       const body = { text: ta.value, baseVersion: A.version }; if (typeof confirmName === 'string') body.confirm = confirmName;
-      const r = await api('PUT', '/api/admin/shows/' + show.id + '/script' + q, body);
+      const r = await api('PUT', '/api/admin/shows/' + show.id + '/showfile' + q, body);
       if (r.status === 409 && r.data.needConfirm) {
         const inp = h('input', { type: 'text', 'aria-label': 'Show name', placeholder: r.data.showName });
-        const ok = await ask('This show is live', h('div', {}, h('p', {}, 'Changing the script now affects what the operator sees. The current position is kept by line number. To continue, type the show’s name:'), h('p', {}, h('b', {}, r.data.showName)), inp), 'Save change');
+        const ok = await ask('This show is live', h('div', {}, h('p', {}, 'Changing the show file now affects what the operator sees. The current position is kept by line number. To continue, type the show’s name:'), h('p', {}, h('b', {}, r.data.showName)), inp), 'Save change');
         if (ok) return save(inp.value);
         return;
       }
       if (r.status === 409 && r.data.conflict) {
-        // Someone else saved this script after it was opened here. Never overwrite silently.
+        // Someone else saved this show file after it was opened here. Never overwrite silently.
         const theirs = r.data;
-        const choice = await ask('This script was changed by someone else',
-          h('div', {}, h('p', {}, 'Another person (or another window) saved this script after you opened it. If you save yours, their changes are lost.'),
+        const choice = await ask('This show file was changed by someone else',
+          h('div', {}, h('p', {}, 'Another person (or another window) saved this show file after you opened it. If you save yours, their changes are lost.'),
             h('p', { class: 'hint' }, '“Use their version” replaces what is in the editor with theirs. Copy anything you want to keep first.')),
           'Save mine anyway', { danger: true, extra: { label: 'Use their version', run: () => {
             ta.value = theirs.text; A.version = theirs.version; A.saved = theirs.text; changed(); toast('Loaded their version');
@@ -395,12 +395,12 @@
     // --- language tabs and translation helpers ---
     const tabs = h('div', { class: 'langtabs', role: 'tablist', 'aria-label': 'Languages' });
     async function switchTo(code) {
-      if (ta.value !== A.saved && !await confirmBox('Discard your unsaved changes?', 'The script in the editor has changes that are not saved.', 'Discard changes', true)) return;
+      if (ta.value !== A.saved && !await confirmBox('Discard your unsaved changes?', 'The show file in the editor has changes that are not saved.', 'Discard changes', true)) return;
       A.lang = code === main.code ? '' : code; A.analysis = null; A.text = A.saved = ''; render();
     }
     function renderTabs() {
       tabs.replaceChildren(...A.langs.map((l) => h('button', { role: 'tab', class: (l.code === cur.code ? 'on ' : '') + (l.available ? '' : 'bad'), 'aria-selected': String(l.code === cur.code), onclick: () => switchTo(l.code),
-        title: l.available ? '' : 'Not shown to the audience until its structure matches the main script' },
+        title: l.available ? '' : 'Not shown to the audience until its structure matches the main show file' },
         l.name, l.primary ? h('small', {}, ' main') : null, l.available ? null : ' ⚠')),
         h('button', { class: 'quiet', onclick: addLanguage }, '＋ Add a language'));
     }
@@ -412,9 +412,9 @@
       const other = h('div', {}, h('label', { class: 'field' }, h('span', {}, 'Code'), code), h('label', { class: 'field' }, h('span', {}, 'Name the audience sees'), name)); other.hidden = true;
       sel.addEventListener('change', () => { other.hidden = sel.value !== ''; });
       const copy = h('input', { type: 'checkbox', checked: true, id: 'copymain' });
-      const body = h('div', {}, h('p', {}, 'Each language is its own script with exactly the same lines, commands and blank screens in the same order. Only the words change, so one press of Space shows the same moment in every language.'),
+      const body = h('div', {}, h('p', {}, 'Each language is its own show file with exactly the same lines, commands and blank screens in the same order. Only the words change, so one press of Space shows the same moment in every language.'),
         h('label', { class: 'field' }, h('span', {}, 'Language'), sel), other,
-        h('label', { class: 'row' }, copy, 'Start from a copy of the ' + main.name + ' script, so I only have to change the words (recommended)'));
+        h('label', { class: 'row' }, copy, 'Start from a copy of the ' + main.name + ' show file, so I only have to change the words (recommended)'));
       if (!await ask('Add a language', body, 'Add language')) return;
       const c = (sel.value || code.value).trim().toLowerCase();
       const r = await api('POST', '/api/admin/shows/' + show.id + '/languages', { code: c, name: sel.value ? '' : name.value, copyFromMain: copy.checked });
@@ -422,7 +422,7 @@
       A.lang = r.data.code; A.analysis = null; A.text = A.saved = ''; toast(r.data.name + ' added'); render();
     }
     async function removeLanguage() {
-      if (!await confirmBox('Remove ' + cur.name + '?', 'The ' + cur.name + ' script will be deleted. The other languages are not affected.', 'Remove', true)) return;
+      if (!await confirmBox('Remove ' + cur.name + '?', 'The ' + cur.name + ' show file will be deleted. The other languages are not affected.', 'Remove', true)) return;
       const r = await api('DELETE', '/api/admin/shows/' + show.id + '/languages/' + encodeURIComponent(cur.code));
       if (!r.ok) return fail(r);
       A.lang = ''; A.analysis = null; A.text = A.saved = ''; toast(cur.name + ' removed'); render();
@@ -431,16 +431,16 @@
     let translating = null;
     if (A.lang) {
       const mainText = h('pre', { class: 'maintext' }, 'Loading…');
-      api('GET', '/api/admin/shows/' + show.id + '/script').then((m) => { mainText.textContent = m.ok ? m.data.text : ''; });
+      api('GET', '/api/admin/shows/' + show.id + '/showfile').then((m) => { mainText.textContent = m.ok ? m.data.text : ''; });
       translating = h('div', { class: 'card' },
-        h('p', {}, h('b', {}, 'Translating into ' + cur.name + '. '), 'Keep every line, command and blank screen in the same order as the ' + main.name + ' script; change only the words. A problem is shown below if the shapes stop matching.'),
-        h('div', { class: 'row' }, h('details', {}, h('summary', {}, 'Show the ' + main.name + ' script for reference'), mainText), h('span', { class: 'grow' }), h('button', { class: 'danger quiet', onclick: removeLanguage }, 'Remove ' + cur.name + '…')));
+        h('p', {}, h('b', {}, 'Translating into ' + cur.name + '. '), 'Keep every line, command and blank screen in the same order as the ' + main.name + ' show file; change only the words. A problem is shown below if the shapes stop matching.'),
+        h('div', { class: 'row' }, h('details', {}, h('summary', {}, 'Show the ' + main.name + ' show file for reference'), mainText), h('span', { class: 'grow' }), h('button', { class: 'danger quiet', onclick: removeLanguage }, 'Remove ' + cur.name + '…')));
     }
     p.append(
-      h('h2', {}, 'Script' + (A.lang ? ' — ' + cur.name : '')),
+      h('h2', {}, 'Show file' + (A.lang ? ' — ' + cur.name : '')),
       tabs, translating,
       h('p', { class: 'hint' }, 'Each line is one caption; one press of the spacebar sends one line. You can paste, type, or drop a .txt or .md file. Click a problem to jump to its line.'),
-      h('div', { class: 'row' }, h('label', { class: 'row' }, 'Open a file:', fileInput), h('button', { onclick: () => openHelp('admin-writing-a-script') }, 'Script help'), h('span', { class: 'grow' }), status, saveBtn),
+      h('div', { class: 'row' }, h('label', { class: 'row' }, 'Open a file:', fileInput), h('button', { onclick: () => openHelp('admin-writing-a-show-file') }, 'Show file help'), h('span', { class: 'grow' }), status, saveBtn),
       tools,
       h('div', { class: 'editor-grid' }, editor, h('div', {}, h('div', { class: 'card' }, diagTitle, diagList), h('div', { class: 'card' }, h('h3', {}, 'What the operator will step through'), cueList))),
       cheatSheet());
@@ -457,17 +457,17 @@
       ['~ lyric ~', 'A sung line, shown between ♪ notes'], ['[song: Title] … [/song]', 'A whole song: every line inside is a sung lyric'], ['[together] … [/together]', 'Voices shown at the same time (a duet or counterpoint), one press of Space. Also  A: ~ one ~ || B: ~ two ~  on a single line'], ['♪  ♫', 'Music notes can be typed or pasted anywhere; the ♪ and ♫ buttons insert them'],
       ['[loop: 10s] … [/loop]', 'Repeating items for pre-show or intermission. Add  | 15s  to an item to change its time'], ['# …', 'Reserved for headings; the line is ignored'],
     ];
-    return h('details', { class: 'card' }, h('summary', {}, 'Script cheat sheet'), h('table', { class: 'cheat' }, ...rows.map(([a, b]) => h('tr', {}, h('td', {}, a), h('td', {}, b)))));
+    return h('details', { class: 'card' }, h('summary', {}, 'Show file cheat sheet'), h('table', { class: 'cheat' }, ...rows.map(([a, b]) => h('tr', {}, h('td', {}, a), h('td', {}, b)))));
   }
 
   // ---- step 3: images ----
   async function stepImages(p) {
     const show = curShow(); if (!show) return go('show');
-    // Every language's script can use images, so look at all of them together.
+    // Every language's show file can use images, so look at all of them together.
     const lr = await api('GET', '/api/admin/shows/' + show.id + '/languages');
     if (!lr.ok) return fail(lr);
     const langs = lr.data.languages;
-    const rs = await Promise.all(langs.map((l) => api('GET', '/api/admin/shows/' + show.id + '/script' + (l.primary ? '' : '?lang=' + encodeURIComponent(l.code)))));
+    const rs = await Promise.all(langs.map((l) => api('GET', '/api/admin/shows/' + show.id + '/showfile' + (l.primary ? '' : '?lang=' + encodeURIComponent(l.code)))));
     if (rs.some((x) => !x.ok)) return fail(rs.find((x) => !x.ok));
     A.mainAnalysis = rs[0].data.analysis;
     const used = {}, miss = {};
@@ -490,7 +490,7 @@
       render();
     }
     if (a.missing.length) {
-      p.append(h('div', { class: 'card missing' }, h('h3', {}, '⚠ Images the script uses but you have not uploaded'),
+      p.append(h('div', { class: 'card missing' }, h('h3', {}, '⚠ Images the show file uses but you have not uploaded'),
         ...a.missing.map((m) => h('div', { class: 'row' }, h('b', {}, m.name), h('span', { class: 'hint' }, 'used on line ' + m.lines.join(', ')),
           h('label', { class: 'row' }, h('input', { type: 'file', accept: 'image/png,image/jpeg,image/gif,image/webp', onchange: (e) => e.target.files[0] && upload([e.target.files[0]], m.name) }))))));
     }
@@ -507,7 +507,7 @@
         h('div', { class: 'meta' }, h('b', {}, as.name), fmtSize(as.size), as.large ? h('div', { class: 'status-warn' }, '⚠ large: may load slowly on many devices') : null,
           h('div', { class: lines ? '' : 'hint' }, lines ? 'Used on line ' + lines.join(', ') : 'Not used'),
           h('button', { class: 'danger quiet', onclick: async () => {
-            if (!await confirmBox('Delete “' + as.name + '”?', lines ? 'The script uses this image on line ' + lines.join(', ') + '.' : 'It is not used in the script.', 'Delete', true)) return;
+            if (!await confirmBox('Delete “' + as.name + '”?', lines ? 'The show file uses this image on line ' + lines.join(', ') + '.' : 'It is not used in the show file.', 'Delete', true)) return;
             const d = await api('DELETE', '/api/admin/shows/' + show.id + '/assets/' + encodeURIComponent(as.name)); if (!d.ok) return fail(d); render();
           } }, 'Delete')));
     })));
@@ -594,17 +594,17 @@
   // ---- step 6: go live ----
   async function stepGoLive(p) {
     const show = curShow(); if (!show) return go('show');
-    const [net, sc, lg] = await Promise.all([api('GET', '/api/admin/network'), api('GET', '/api/admin/shows/' + show.id + '/script'), api('GET', '/api/admin/shows/' + show.id + '/languages')]);
+    const [net, sc, lg] = await Promise.all([api('GET', '/api/admin/network'), api('GET', '/api/admin/shows/' + show.id + '/showfile'), api('GET', '/api/admin/shows/' + show.id + '/languages')]);
     if (!net.ok || !sc.ok || !lg.ok) return fail(!net.ok ? net : !sc.ok ? sc : lg);
     const langs = lg.data.languages;
     A.analysis = sc.data.analysis; A.net = net.data;
     const a = A.analysis, errs = a.diagnostics.filter((d) => d.severity === 'error').length, warns = a.diagnostics.filter((d) => d.severity === 'warning').length;
     const checks = h('div', { class: 'card' }, h('h3', {}, 'Ready?'),
-      h('div', { class: 'check' + (a.cues.length ? '' : ' bad') }, a.cues.length ? a.cues.length + ' lines in the script' : 'The script is empty'),
-      h('div', { class: 'check' + (errs ? ' bad' : warns ? ' warn' : '') }, errs ? errs + ' script error(s) to fix' : warns ? warns + ' script warning(s) to review' : 'No script problems'),
+      h('div', { class: 'check' + (a.cues.length ? '' : ' bad') }, a.cues.length ? a.cues.length + ' lines in the show file' : 'The show file is empty'),
+      h('div', { class: 'check' + (errs ? ' bad' : warns ? ' warn' : '') }, errs ? errs + ' show file error(s) to fix' : warns ? warns + ' show file warning(s) to review' : 'No show file problems'),
       h('div', { class: 'check' + (a.missing.length ? ' warn' : '') }, a.missing.length ? 'Missing images: ' + a.missing.map((m) => m.name).join(', ') : 'All images are uploaded'),
       langs.length > 1 ? h('div', { class: 'check' }, 'Languages: ' + langs.filter((l) => l.available).map((l) => l.name).join(', ')) : null,
-      ...langs.filter((l) => !l.available).map((l) => h('div', { class: 'check bad' }, l.name + ' will NOT be shown to the audience until it matches the main script: ' + ((l.structure[0] || {}).message || ''))));
+      ...langs.filter((l) => !l.available).map((l) => h('div', { class: 'check bad' }, l.name + ' will NOT be shown to the audience until it matches the main show file: ' + ((l.structure[0] || {}).message || ''))));
     const urls = net.data.urls.filter((u) => u.public);
     let chosen = (urls.find((u) => u.kind === 'http') || urls[0] || net.data.urls[0] || {}).url;
     const big = h('div', { class: 'urlbig' }), qrBox = h('div', { class: 'qr' });
