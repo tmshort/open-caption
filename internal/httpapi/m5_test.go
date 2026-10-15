@@ -409,3 +409,19 @@ func TestSettingsReportTheAccessRules(t *testing.T) {
 		t.Errorf("%v", r)
 	}
 }
+
+func TestEveryPageLinksTheFavicon(t *testing.T) {
+	_, ts, _ := adminServer(t)
+	resp, _ := http.Get(ts.URL + "/static/shared/favicon.svg")
+	if resp.StatusCode != 200 || !strings.HasPrefix(resp.Header.Get("Content-Type"), "image/svg+xml") {
+		t.Fatalf("favicon: %d %s", resp.StatusCode, resp.Header.Get("Content-Type"))
+	}
+	for _, p := range []string{"/", "/admin", "/operator"} {
+		r, _ := http.Get(ts.URL + p)
+		b, _ := io.ReadAll(r.Body)
+		r.Body.Close()
+		if !strings.Contains(string(b), `href="/static/shared/favicon.svg"`) {
+			t.Errorf("%s does not link the favicon", p)
+		}
+	}
+}
