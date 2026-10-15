@@ -168,11 +168,31 @@
     b.textContent = '↓ ' + tr('backToLive') + (unread ? ' (' + unread + ')' : '');
     document.body.classList.toggle('reading', !pinned);
   }
-  function toBottom() { const box = $('captions'); box.scrollTop = box.scrollHeight; }
-  function goLive() { pinned = true; unread = 0; toBottom(); paintLive(); }
+  // New lines glide into place (about a third of a second) instead of jumping. The target is re-read on every
+  // frame so a line that arrives mid-glide extends it, and the scroll handler ignores the glide (it would
+  // otherwise think the reader had scrolled up). Touching or wheeling the page stops it at once.
+  let glide = 0;
+  const reduceMotion = () => !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  function stopGlide() { if (glide) { cancelAnimationFrame(glide); glide = 0; } }
+  function toBottom(smooth) {
+    const box = $('captions');
+    stopGlide();
+    const from = box.scrollTop;
+    if (!smooth || reduceMotion() || box.scrollHeight - box.clientHeight - from < 2) { box.scrollTop = box.scrollHeight; return; }
+    const t0 = performance.now(), ms = 320;
+    const step = (now) => {
+      const p = Math.min(1, (now - t0) / ms), e = 1 - Math.pow(1 - p, 3); // ease out
+      const end = box.scrollHeight - box.clientHeight;
+      box.scrollTop = from + (end - from) * e;
+      if (p < 1) glide = requestAnimationFrame(step); else { glide = 0; box.scrollTop = box.scrollHeight; }
+    };
+    glide = requestAnimationFrame(step);
+  }
+  ['wheel', 'touchstart', 'keydown'].forEach((ev) => $('captions').addEventListener(ev, stopGlide, { passive: true }));
+  function goLive() { pinned = true; unread = 0; toBottom(true); paintLive(); }
   $('live').addEventListener('click', goLive);
   $('captions').addEventListener('scroll', () => {
-    if (projector) return;
+    if (projector || glide) return;
     const wasPinned = pinned;
     pinned = nearBottom($('captions'));
     if (pinned) unread = 0;
@@ -262,7 +282,7 @@
       }
       fade();
       renderFullscreen();
-      if (pinned) toBottom(); else { unread++; paintLive(); }
+      if (pinned) toBottom(true); else { unread++; paintLive(); }
     },
     clear() {
       state.mode = 'captions';

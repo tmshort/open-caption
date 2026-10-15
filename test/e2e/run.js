@@ -231,8 +231,15 @@ async function main() {
     await nextN(2); await sleep(500);
     const later = await pos();
     check('new lines do not move a reader, and are counted', later.top === up.top && later.btn.includes('(2)'), later);
-    await en.evaluate(() => document.getElementById('live').click()); await sleep(300);
+    await en.evaluate(() => document.getElementById('live').click()); await sleep(T(900));
     check('"back to live" returns to the newest line', await en.evaluate(() => { const c = document.getElementById('captions'); return c.scrollHeight - c.scrollTop - c.clientHeight < 60; }));
+    // A new line glides into place instead of jumping.
+    await en.evaluate(() => { const c = document.getElementById('captions'); window.__seen = []; const f = () => { window.__seen.push(c.scrollTop); window.__raf = requestAnimationFrame(f); }; f(); });
+    await nextN(1); await sleep(T(900));
+    const seen = await en.evaluate(() => { cancelAnimationFrame(window.__raf); return window.__seen; });
+    const lo = seen[0], hi = seen[seen.length - 1];
+    check('a new line scrolls into view smoothly rather than jumping', hi > lo && seen.some((v) => v > lo + 1 && v < hi - 1), seen.slice(0, 40).join(','));
+    check('and the reader is still following the live captions', await en.evaluate(() => document.getElementById('live').hidden));
     await shot(en, '04-audience-english');
 
     // ------------------------------------------------------------------ settings & security
