@@ -49,6 +49,7 @@ type AudState struct {
 	Scrollback []live.CaptionItem `json:"scrollback"`
 	Fullscreen *AudItem           `json:"fullscreen"`
 	Preload    []string           `json:"preload"`
+	Speakers   []string           `json:"speakers"` // order of first appearance; the position picks a character's color
 	Theme      Theme              `json:"theme"`
 }
 
@@ -72,6 +73,7 @@ type Runtime struct {
 	theme       Theme
 	engine      *live.Engine
 	lastPreload []string
+	speakers    []string
 
 	ctrlMu   sync.Mutex
 	ctrl     string // session token of the controlling operator
@@ -157,6 +159,7 @@ func (rt *Runtime) SetShow(id, name, assetsDir string, cues []script.Cue, theme 
 		startSeq = old.Snapshot().Seq + 1
 	}
 	rt.showID, rt.showName, rt.assetsDir, rt.theme = id, name, assetsDir, theme
+	rt.speakers = script.SpeakersOf(cues)
 	rt.engine = live.New(cues, live.Config{DefaultLoopSeconds: rt.cfg.Defaults.LoopItemSeconds,
 		ScrollbackMax: rt.cfg.Audience.ScrollbackLines, StartSeq: startSeq}, func(ev live.Event) { rt.onEvent(gen, ev) })
 	rt.lastPreload = nil
@@ -229,7 +232,7 @@ func (rt *Runtime) audState(st live.State, theme Theme, preload []string) AudSta
 		st.Scrollback = []live.CaptionItem{}
 	}
 	return AudState{Seq: st.Seq, TS: time.Now().UnixMilli(), Lang: rt.cfg.Defaults.Language, Mode: st.Mode,
-		Scrollback: st.Scrollback, Fullscreen: rt.item(st.Fullscreen), Preload: preload, Theme: theme}
+		Scrollback: st.Scrollback, Fullscreen: rt.item(st.Fullscreen), Preload: preload, Speakers: rt.speakers, Theme: theme}
 }
 
 // onEvent runs under the engine lock: convert and broadcast without blocking.
@@ -253,7 +256,7 @@ func (rt *Runtime) onEvent(gen int, ev live.Event) {
 				st.Scrollback = []live.CaptionItem{}
 			}
 			payload = AudState{Seq: st.Seq, TS: ts, Lang: rt.cfg.Defaults.Language, Mode: st.Mode, Scrollback: st.Scrollback,
-				Fullscreen: rt.item(st.Fullscreen), Preload: rt.lastPreload, Theme: rt.theme}
+				Fullscreen: rt.item(st.Fullscreen), Preload: rt.lastPreload, Speakers: rt.speakers, Theme: rt.theme}
 		default:
 			payload = map[string]any{"seq": ev.Seq, "ts": ts}
 		}
@@ -298,6 +301,9 @@ func (rt *Runtime) SetTheme(t Theme) {
 // It reports whether the cue count changed.
 func (rt *Runtime) ReplaceCues(cues []script.Cue) (countChanged, wasLive bool) {
 	eng := rt.Engine()
+	rt.mu.Lock()
+	rt.speakers = script.SpeakersOf(cues)
+	rt.mu.Unlock()
 	wasLive = eng.Operator().Live
 	if wasLive {
 		countChanged = eng.ReplaceCues(cues)

@@ -6,7 +6,7 @@
   const projector = params.get('display') === 'projector';
   if (projector) document.body.classList.add('projector');
 
-  const state = { mode: 'idle', scrollback: [], fullscreen: null, theme: {} };
+  const state = { mode: 'idle', scrollback: [], fullscreen: null, theme: {}, speakers: [] };
   const preloaded = new Set();
   let es = null, lastEvent = 0, backoff = 500, offlineTimer = null, retryTimer = null;
 
@@ -27,7 +27,7 @@
     if (lightScheme) { r.setProperty('--bg', '#ffffff'); r.setProperty('--fg', '#000000'); r.setProperty('--accent', '#000000'); }
     else {
       r.setProperty('--bg', t.bg || '#000000'); r.setProperty('--fg', t.fg || '#ffffff');
-      r.setProperty('--accent', t.speakers === 'color' ? (t.accent || t.fg || '#ffffff') : (t.fg || '#ffffff'));
+      r.setProperty('--accent', t.accent || t.fg || '#ffffff');
     }
     $('scheme').setAttribute('aria-pressed', String(lightScheme));
     $('scheme').textContent = lightScheme ? 'Light on dark' : 'Dark on light';
@@ -46,13 +46,24 @@
     $('idle').textContent = t.idleMessage || '';
   }
 
+  // With the "different color for each character" style, a speaker's name (and the bar beside
+  // a simultaneous voice) takes that character's color.
+  function tint(el, name) {
+    if (state.theme.speakers !== 'color' || !window.OCSpeakers || lightScheme) return;
+    el.style.color = OCSpeakers.forName(name, state.speakers, state.theme.bg || '#000000');
+  }
+
   function voiceEl(v) {
     const d = document.createElement('div');
+    d.dir = 'auto'; // right-to-left languages line up on the right; the speaker label has its own direction
     d.className = 'part' + (v.sung ? ' sung' : '') + (v.stage ? ' stage' : '');
     if (v.speaker && state.theme.speakers !== 'hidden') {
       const s = document.createElement('span');
       s.className = 'spk';
+      s.dir = 'auto';
       s.textContent = v.speaker;
+      tint(s, v.speaker);
+      if (s.style.color) d.style.borderColor = s.style.color;
       d.appendChild(s);
     }
     const body = document.createElement('span');
@@ -71,12 +82,15 @@
       return g;
     }
     const p = document.createElement('p');
+    p.dir = 'auto';
     p.className = 'cap' + (c.stage ? ' stage' : '') + (c.sung ? ' sung' : '');
     p.dataset.id = c.id;
     if (c.speaker && state.theme.speakers !== 'hidden') {
       const s = document.createElement('span');
       s.className = 'spk';
+      s.dir = 'auto';
       s.textContent = c.speaker;
+      tint(s, c.speaker);
       p.appendChild(s);
     }
     const body = document.createElement('span');
@@ -103,6 +117,7 @@
     fs.hidden = false;
     if (it.kind === 'text') {
       const d = document.createElement('div');
+      d.dir = 'auto';
       d.innerHTML = it.html;
       fs.appendChild(d);
     } else if (it.kind === 'image') {
@@ -143,7 +158,7 @@
   // ---- event handling ----
   const on = {
     snapshot(d) {
-      Object.assign(state, { mode: d.mode, scrollback: d.scrollback || [], fullscreen: d.fullscreen });
+      Object.assign(state, { mode: d.mode, scrollback: d.scrollback || [], fullscreen: d.fullscreen, speakers: d.speakers || [] });
       applyTheme(d.theme || {});
       renderAll();
       preload(d.preload);

@@ -440,3 +440,13 @@ func TestCounterpointAlias(t *testing.T) {
 		t.Errorf("%+v %+v", r.Cues, r.Diagnostics)
 	}
 }
+
+func TestSpeakersInOrderOfFirstAppearance(t *testing.T) {
+	r := Parse("B: one\nA: two\nB: again\n[together]\nC: x\nA: y\n[/together]\nD: ~ la ~ || E: ~ la ~", Options{})
+	if got := strings.Join(r.Speakers, ","); got != "B,A,C,D,E" {
+		t.Errorf("speakers %q", got)
+	}
+	if r := Parse("no speakers here", Options{}); r.Speakers == nil || len(r.Speakers) != 0 {
+		t.Errorf("want an empty, non-null list: %#v", r.Speakers)
+	}
+}

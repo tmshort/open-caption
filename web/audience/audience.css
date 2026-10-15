@@ -31,7 +31,7 @@ body.projector { cursor: none; }
 .cap.stage { font-style: italic; }
 /* Voices sung or spoken at the same time: side by side when there is room, stacked on a phone. */
 .cap.group { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 11em), 1fr)); gap: .35em 1.4em; }
-.cap.group .part { border-left: .14em solid var(--accent); padding-left: .55em; overflow-wrap: anywhere; }
+.cap.group .part { border-inline-start: .14em solid var(--accent); padding-inline-start: .55em; overflow-wrap: anywhere; }
 .cap.group .part.sung { font-style: italic; }
 .cap.group .spk { display: block; font-size: .55em; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); opacity: .9; }
 /* Sung lyrics: between musical notes (added by the server), in italics and a little looser. */

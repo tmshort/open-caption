@@ -70,6 +70,9 @@ const (
 
 // Result is the outcome of Parse.
 type Result struct {
+	// Speakers lists every speaker name in order of first appearance. Devices use the
+	// position in this list to give each character a stable color.
+	Speakers     []string     `json:"speakers"`
 	Language     string       `json:"language"`
 	LanguageName string       `json:"languageName,omitempty"`
 	Cues         []Cue        `json:"cues"`
@@ -81,6 +84,25 @@ type Options struct {
 	// Assets lists the uploaded image filenames. When non-nil, image references
 	// are checked against it. When nil, references are not checked.
 	Assets []string
+}
+
+// SpeakersOf returns the speaker names used by cues, in order of first appearance.
+func SpeakersOf(cues []Cue) []string {
+	seen := map[string]bool{}
+	out := []string{}
+	add := func(n string) {
+		if n != "" && !seen[n] {
+			seen[n] = true
+			out = append(out, n)
+		}
+	}
+	for _, c := range cues {
+		add(c.Speaker)
+		for _, p := range c.Parts {
+			add(p.Speaker)
+		}
+	}
+	return out
 }
 
 // DirectiveNames lists every command a script may use as [name] or [name: ...].

@@ -63,6 +63,7 @@ type Missing struct {
 
 // Analysis is the result of parsing a script against a show's images.
 type Analysis struct {
+	Speakers    []string            `json:"speakers"`
 	Language    string              `json:"language"`
 	Cues        []CueView           `json:"cues"`
 	Diagnostics []script.Diagnostic `json:"diagnostics"`
@@ -100,7 +101,7 @@ func analyze(text string, assets []show.Asset) (Analysis, []script.Cue) {
 		}
 	}
 	sort.Slice(missing, func(i, j int) bool { return missing[i].Name < missing[j].Name })
-	return Analysis{Language: res.Language, Cues: cueViews(res.Cues), Diagnostics: res.Diagnostics, Used: used,
+	return Analysis{Speakers: res.Speakers, Language: res.Language, Cues: cueViews(res.Cues), Diagnostics: res.Diagnostics, Used: used,
 		Missing: missing, Assets: assets}, res.Cues
 }
 

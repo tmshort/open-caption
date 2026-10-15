@@ -131,7 +131,7 @@
           break;
         }
         if (c.speaker) { const s = document.createElement('span'); s.className = 'spk'; s.textContent = c.speaker; body.appendChild(s); }
-        const t = document.createElement('span'); t.className = 'txt'; t.textContent = c.text; t.style.whiteSpace = 'pre-line'; body.appendChild(t);
+        const t = document.createElement('span'); t.className = 'txt'; t.textContent = c.text; t.style.whiteSpace = 'pre-line'; t.dir = 'auto'; body.appendChild(t);
         break;
       }
       case 'clear': body.append(chip(ICON.clear + ' CLEAR SCREEN')); break;

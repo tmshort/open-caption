@@ -123,3 +123,18 @@ func TestSupportBundleHasNoPasswords(t *testing.T) {
 		t.Errorf("operator: %d", code)
 	}
 }
+
+func TestSnapshotCarriesSpeakerOrderForColors(t *testing.T) {
+	_, ts, _ := devServer(t, "MARGARET: hi\nEDWIN: hello\nMARGARET: again", 0)
+	c := connect(t, ts.URL)
+	snap := c.next(t)
+	sp, _ := snap.Data["speakers"].([]any)
+	if len(sp) != 2 || sp[0] != "MARGARET" || sp[1] != "EDWIN" {
+		t.Errorf("speakers: %v", snap.Data["speakers"])
+	}
+	resp, _ := http.Get(ts.URL + "/static/shared/speakers.js")
+	resp.Body.Close()
+	if resp.StatusCode != 200 {
+		t.Errorf("shared speakers.js: %d", resp.StatusCode)
+	}
+}

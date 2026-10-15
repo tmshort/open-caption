@@ -403,10 +403,10 @@
     const t = Object.assign({}, r.data.theme);
     const ctl = {};
     const mk = (name, label, input) => { ctl[name] = input; return h('label', { class: 'field' }, h('span', {}, label), input); };
-    mk('bg', 'Background', h('input', { type: 'color' })); mk('fg', 'Text', h('input', { type: 'color' })); mk('accent', 'Speaker names', h('input', { type: 'color' }));
+    mk('bg', 'Background', h('input', { type: 'color' })); mk('fg', 'Text', h('input', { type: 'color' })); mk('accent', 'Speaker name color', h('input', { type: 'color' }));
     mk('font', 'Font', h('select', {}, h('option', { value: 'system' }, 'Clean (system)'), h('option', { value: 'serif' }, 'Serif'), h('option', { value: 'mono' }, 'Monospace')));
     mk('scalePct', 'Text size', h('input', { type: 'range', min: '60', max: '200', step: '10' }));
-    mk('speakers', 'Speaker names', h('select', {}, h('option', { value: 'label' }, 'Show above the line'), h('option', { value: 'hidden' }, 'Hide'), h('option', { value: 'color' }, 'Show in the accent color')));
+    mk('speakers', 'Speaker names', h('select', {}, h('option', { value: 'label' }, 'Show above the line (in the speaker name color)'), h('option', { value: 'color' }, 'Show above the line, a different color for each character'), h('option', { value: 'hidden' }, 'Hide')));
     mk('idleMessage', 'Message before the show starts', h('input', { type: 'text', maxlength: '200' }));
     const ratio = h('div', { class: 'hint' });
     const sizeLabel = h('span', { class: 'hint' });
@@ -421,10 +421,11 @@
       ratio.className = c >= 7 ? 'status-ok' : c >= 4.5 ? 'status-warn' : 'status-bad';
       sizeLabel.textContent = t.scalePct + '%';
       for (const f of [phone, proj]) {
-        f.style.setProperty('--pbg', t.bg); f.style.setProperty('--pfg', t.fg); f.style.setProperty('--paccent', t.speakers === 'color' ? t.accent : t.fg);
+        f.style.setProperty('--pbg', t.bg); f.style.setProperty('--pfg', t.fg); f.style.setProperty('--paccent', t.accent);
         f.style.setProperty('--pfont', FONTS[t.font] || FONTS.system); f.style.setProperty('--pscale', String(t.scalePct / 100));
         f.replaceChildren(...sample());
         if (t.speakers === 'hidden') f.querySelectorAll('.spk').forEach((e) => e.remove());
+        if (t.speakers === 'color' && window.OCSpeakers) f.querySelectorAll('.spk').forEach((e) => { e.style.color = OCSpeakers.forName(e.textContent, ['Margaret', 'Edwin'], t.bg); });
       }
     }
     write(); paint();

@@ -36,6 +36,13 @@ func (s *Server) audienceRoutes(mux *http.ServeMux) {
 		w.Header().Set("X-Content-Type-Options", "nosniff")
 		static.ServeHTTP(w, r)
 	})
+	shared, _ := fs.Sub(web.Shared, "shared")
+	sharedFS := http.StripPrefix("/static/shared/", http.FileServer(http.FS(shared)))
+	mux.HandleFunc("GET /static/shared/", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "no-cache")
+		w.Header().Set("X-Content-Type-Options", "nosniff")
+		sharedFS.ServeHTTP(w, r)
+	})
 	mux.HandleFunc("GET /events", func(w http.ResponseWriter, r *http.Request) { s.serveEvents(w, r, s.rt) })
 	mux.HandleFunc("GET /assets/{show}/{file}", s.handleAsset)
 }

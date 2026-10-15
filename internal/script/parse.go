@@ -67,6 +67,7 @@ func Parse(src string, opts Options) Result {
 		res.Cues[i].Index = i
 	}
 	p.summary()
+	res.Speakers = SpeakersOf(res.Cues)
 	return res
 }
 
