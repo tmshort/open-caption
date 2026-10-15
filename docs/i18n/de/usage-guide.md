@@ -150,6 +150,8 @@ Hat `config.yaml` einen Fehler (eine falsch geschriebene Einstellung, eine Zahl 
 
 ### Die Show-Datei schreiben
 
+Wer die Show-Datei vorbereitet, muss den Rest dieser Anleitung nicht lesen: [Eine Show-Datei vorbereiten](../web/help/admin-preparing-a-show-file.md) behandelt die Arbeit vom Stück bis zur fertigen Datei, auch das Bearbeiten im eigenen Programm, und [Erste Schritte](../web/help/admin-getting-started.md) führt durch die sechs Schritte der Einrichtung.
+
 Eine Show-Datei ist einfacher Text. Die Kurzfassung:
 
 ```text

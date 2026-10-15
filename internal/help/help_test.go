@@ -273,6 +273,12 @@ func TestGuidesRenderCleanlyInTheApp(t *testing.T) {
 	if out := Render(topics["admin-usage-guide"].Markdown); !strings.Contains(out, `data-topic="admin-venue-network-guide"`) {
 		t.Error("usage guide does not link to the venue network guide")
 	}
+	// ...and to the preparer's topics, by the path GitHub shows.
+	for _, id := range []string{"admin-preparing-a-show-file", "admin-getting-started"} {
+		if out := Render(topics["admin-usage-guide"].Markdown); !strings.Contains(out, `data-topic="`+id+`"`) {
+			t.Errorf("usage guide does not link to %s", id)
+		}
+	}
 }
 
 // ---- translations ----

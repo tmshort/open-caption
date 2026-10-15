@@ -150,6 +150,8 @@ Abra a página de configuração e siga as seis etapas no alto. O botão **Ajuda
 
 ### Escrever o arquivo do espetáculo
 
+Quem prepara o arquivo do espetáculo não precisa ler o resto deste guia: [Preparar um arquivo do espetáculo](../web/help/admin-preparing-a-show-file.md) cobre o trabalho do texto ao arquivo pronto, incluindo editá-lo no seu próprio programa, e [Primeiros passos](../web/help/admin-getting-started.md) percorre as seis etapas da Configuração.
+
 Um arquivo do espetáculo é texto simples. A versão curta:
 
 ```text

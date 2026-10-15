@@ -150,6 +150,8 @@ Abra la página de configuración y siga los seis pasos de la parte superior. El
 
 ### Escribir el archivo del espectáculo
 
+Quien prepara el archivo del espectáculo no necesita leer el resto de esta guía: [Preparar un archivo del espectáculo](../web/help/admin-preparing-a-show-file.md) cubre el trabajo desde el guion hasta el archivo terminado, incluido editarlo en su propio programa, y [Primeros pasos](../web/help/admin-getting-started.md) recorre los seis pasos de Configuración.
+
 Un archivo del espectáculo es texto sencillo. La versión corta:
 
 ```text

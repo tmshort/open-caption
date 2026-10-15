@@ -150,6 +150,8 @@ Open the setup page and follow the six steps along the top. The **Help** button 
 
 ### Writing the show file
 
+Whoever prepares the show file does not need to read the rest of this guide: [Preparing a show file](../web/help/admin-preparing-a-show-file.md) covers the job from script to finished file, including editing it in your own program, and [Getting started](../web/help/admin-getting-started.md) walks through the six steps of Setup.
+
 A show file is plain text. The short version:
 
 ```text

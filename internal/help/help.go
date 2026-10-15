@@ -368,6 +368,12 @@ var Aliases = map[string]string{
 	"venue-network-guide.md": "admin-venue-network-guide",
 }
 
+// pathLinks are help topics as GitHub shows them (web/help/<id>.md), so a guide can link to them from either place.
+var pathLinks = map[string]string{
+	"../web/help/admin-preparing-a-show-file.md": "admin-preparing-a-show-file",
+	"../web/help/admin-getting-started.md":       "admin-getting-started",
+}
+
 // link resolves an href to a safe anchor, or returns just the text when the target is not available.
 func link(text, href string) string {
 	label := inline(text)
@@ -383,6 +389,8 @@ func link(text, href string) string {
 	switch {
 	case strings.HasPrefix(base, "topic:") && topicHref.MatchString(base[6:]):
 		return `<a href="#` + base[6:] + `" data-topic="` + base[6:] + `"` + fragAttr + `>` + label + "</a>"
+	case pathLinks[base] != "":
+		return `<a href="#` + pathLinks[base] + `" data-topic="` + pathLinks[base] + `"` + fragAttr + `>` + label + "</a>"
 	case Aliases[base] != "":
 		return `<a href="#` + Aliases[base] + `" data-topic="` + Aliases[base] + `"` + fragAttr + `>` + label + "</a>"
 	case base == "" && fragAttr != "":

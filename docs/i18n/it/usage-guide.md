@@ -150,6 +150,8 @@ Apri la pagina di configurazione e segui i sei passi in alto. Il pulsante **Aiut
 
 ### Scrivere il file dello spettacolo
 
+Chi prepara il file dello spettacolo non ha bisogno di leggere il resto di questa guida: [Preparare un file dello spettacolo](../web/help/admin-preparing-a-show-file.md) copre il lavoro dal copione al file finito, compresa la modifica nel tuo programma, e [Primi passi](../web/help/admin-getting-started.md) percorre i sei passaggi della Configurazione.
+
 Un file dello spettacolo è testo semplice. La versione breve:
 
 ```text
