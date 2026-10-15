@@ -244,3 +244,71 @@ func TestEmptyFileNamesTheMissingPasswords(t *testing.T) {
 		t.Errorf("%v", err)
 	}
 }
+
+func TestChangingPasswordsKeepsCommentsAndOtherSettings(t *testing.T) {
+	p := filepath.Join(t.TempDir(), "config.yaml")
+	orig := `# My theater's server. Do not share this file.
+admin_password: oldadmin   # the boss
+operator_password: oldoperator
+
+# Only the front-of-house laptop may run Setup.
+access:
+  admin_allow: [192.168.1.50]   # box office
+http:
+    addr: ":9000"
+`
+	os.WriteFile(p, []byte(orig), 0o640)
+	if err := SetPasswords(p, "123456", ""); err != nil {
+		t.Fatal(err)
+	}
+	b, _ := os.ReadFile(p)
+	got := string(b)
+	for _, want := range []string{"# My theater's server. Do not share this file.", "# the boss", "# Only the front-of-house laptop may run Setup.", "# box office", "operator_password: oldoperator", "192.168.1.50", `"123456"`} {
+		if !strings.Contains(got, want) {
+			t.Errorf("lost %q:\n%s", want, got)
+		}
+	}
+	if strings.Contains(got, "defaults:") || strings.Contains(got, "scrollback") {
+		t.Errorf("defaults must not be written into a file that did not have them:\n%s", got)
+	}
+	c, err := Load(p)
+	if err != nil || c.AdminPassword != "123456" || c.OperatorPassword != "oldoperator" || c.HTTP.Addr != ":9000" {
+		t.Fatalf("%v %+v", err, c)
+	}
+	if runtime.GOOS != "windows" {
+		if fi, _ := os.Stat(p); fi.Mode().Perm() != 0o640 {
+			t.Errorf("the file's mode is kept: %v", fi.Mode().Perm())
+		}
+	}
+}
+
+func TestSetValuesAddsMissingKeysAndRefusesToBreakTheFile(t *testing.T) {
+	p := filepath.Join(t.TempDir(), "config.yaml")
+	os.WriteFile(p, []byte("admin_password: a\noperator_password: b\nlog:\n"), 0o600)
+	if err := SetValues(p, map[string]string{"log.level": "debug", "audience.note": ""}); err == nil {
+		t.Error("an unknown key must be refused (the file would not start)")
+	}
+	if b, _ := os.ReadFile(p); !strings.Contains(string(b), "log:\n") || strings.Contains(string(b), "note") {
+		t.Errorf("the file must be left as it was:\n%s", b)
+	}
+	if err := SetValues(p, map[string]string{"log.level": "debug"}); err != nil {
+		t.Fatal(err)
+	}
+	if c, err := Load(p); err != nil || c.Log.Level != "debug" {
+		t.Errorf("%v %+v", err, c.Log)
+	}
+	if err := SetValues(p, map[string]string{"log.level": "loud"}); err == nil {
+		t.Error("an invalid value must be refused")
+	}
+	if c, _ := Load(p); c.Log.Level != "debug" {
+		t.Error("the file must keep its last good value")
+	}
+	// A file that has none of the keys (and one that is empty of settings) gets them added.
+	os.WriteFile(p, []byte("admin_password: a\noperator_password: b\n"), 0o600)
+	if err := SetValues(p, map[string]string{"log.level": "warn"}); err != nil {
+		t.Fatal(err)
+	}
+	if c, _ := Load(p); c.Log.Level != "warn" {
+		t.Errorf("%+v", c.Log)
+	}
+}

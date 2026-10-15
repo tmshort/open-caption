@@ -216,20 +216,101 @@ const MinPasswordLength = 6
 // SetPasswords changes the passwords in the config file at path, leaving every other setting as it is
 // on disk (so command-line overrides are never written into the file). Empty arguments are left alone.
 func SetPasswords(path, admin, operator string) error {
-	if _, err := os.Stat(path); err != nil {
-		return errors.New("config file not found")
-	}
-	c, err := Load(path)
-	if err != nil {
-		return err
-	}
+	kv := map[string]string{}
 	if admin != "" {
-		c.AdminPassword = admin
+		kv["admin_password"] = admin
 	}
 	if operator != "" {
-		c.OperatorPassword = operator
+		kv["operator_password"] = operator
 	}
-	return c.Save()
+	return SetValues(path, kv)
+}
+
+// SetValues changes individual settings in the config file, keyed by dotted name ("log.level"). The file is
+// edited in place: comments, key order and every other setting stay exactly as the person left them, and
+// a key that is missing is added. The file must be valid before and after.
+func SetValues(path string, kv map[string]string) error {
+	b, err := os.ReadFile(path)
+	if err != nil {
+		return errors.New("config file not found")
+	}
+	if _, err := Load(path); err != nil {
+		return err
+	}
+	var doc yaml.Node
+	if err := yaml.Unmarshal(b, &doc); err != nil {
+		return err
+	}
+	if doc.Kind == 0 { // an empty file
+		doc = yaml.Node{Kind: yaml.DocumentNode, Content: []*yaml.Node{{Kind: yaml.MappingNode, Tag: "!!map"}}}
+	}
+	root := doc.Content[0]
+	if root.Kind != yaml.MappingNode {
+		return errors.New("config file is not a list of settings")
+	}
+	keys := make([]string, 0, len(kv))
+	for k := range kv {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	for _, k := range keys {
+		node := root
+		parts := strings.Split(k, ".")
+		for i, part := range parts {
+			child := mapValue(node, part)
+			last := i == len(parts)-1
+			if child == nil {
+				kind := yaml.MappingNode
+				tag := "!!map"
+				if last {
+					kind, tag = yaml.ScalarNode, "!!str"
+				}
+				child = &yaml.Node{Kind: kind, Tag: tag}
+				node.Content = append(node.Content, &yaml.Node{Kind: yaml.ScalarNode, Tag: "!!str", Value: part}, child)
+			}
+			if last {
+				*child = yaml.Node{Kind: yaml.ScalarNode, Tag: "!!str", Value: kv[k], HeadComment: child.HeadComment, LineComment: child.LineComment, FootComment: child.FootComment}
+			} else {
+				if child.Kind != yaml.MappingNode {
+					*child = yaml.Node{Kind: yaml.MappingNode, Tag: "!!map"} // for example "log:" with nothing under it
+				}
+				node = child
+			}
+		}
+	}
+	var out bytes.Buffer
+	enc := yaml.NewEncoder(&out)
+	enc.SetIndent(2)
+	if err := enc.Encode(&doc); err != nil {
+		return err
+	}
+	enc.Close()
+	mode := os.FileMode(0o600)
+	if fi, err := os.Stat(path); err == nil {
+		mode = fi.Mode().Perm()
+	}
+	tmp := path + ".tmp"
+	if err := os.WriteFile(tmp, out.Bytes(), mode); err != nil {
+		return err
+	}
+	if err := os.Rename(tmp, path); err != nil {
+		return err
+	}
+	if _, err := Load(path); err != nil { // never leave a file that will not start
+		os.WriteFile(path, b, mode)
+		return fmt.Errorf("the change would make %s invalid and was not saved: %w", path, err)
+	}
+	return nil
+}
+
+// mapValue returns the value node for key in a mapping node, or nil.
+func mapValue(m *yaml.Node, key string) *yaml.Node {
+	for i := 0; i+1 < len(m.Content); i += 2 {
+		if m.Content[i].Value == key {
+			return m.Content[i+1]
+		}
+	}
+	return nil
 }
 
 // Validate checks the settings and returns every problem found (nil if the configuration is usable).
