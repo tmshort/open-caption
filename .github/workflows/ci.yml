@@ -3,6 +3,7 @@ on: [push, pull_request]
 jobs:
   test:
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
@@ -22,7 +23,20 @@ jobs:
           go-version: stable
       - run: make dist
   e2e:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            chrome: /usr/bin/google-chrome
+          - os: macos-latest
+            chrome: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
+          - os: windows-latest
+            chrome: C:\Program Files\Google\Chrome\Application\chrome.exe
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -31,8 +45,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: make build
+      - run: go build -o bin/open-caption${{ runner.os == 'Windows' && '.exe' || '' }} ./cmd/open-caption
       - run: cd test/e2e && npm ci --no-audit --no-fund
       - run: cd test/e2e && node run.js
         env:
-          CHROME: /usr/bin/google-chrome
+          CHROME: ${{ matrix.chrome }}
+          OC_SHOTS: ''

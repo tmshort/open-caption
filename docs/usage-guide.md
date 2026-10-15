@@ -133,7 +133,9 @@ In order of reliability:
 4. The setup page opens in your browser. If it does not, open `http://localhost/admin` (or `http://localhost:8080/admin` if the console says it used port 8080).
 5. **Choose where data lives (optional).** By default, shows and settings are in your user configuration folder (macOS `~/Library/Application Support/open-caption`, Linux `~/.config/open-caption`, Windows `%AppData%\open-caption`). To keep everything in a folder you choose, start with `--data <folder>`. Always use the same folder.
 
-Useful options: `--data <folder>`, `--http-addr :8080`, `--https-addr :443`, `--no-browser`, `--log-file <file>`, `--version`.
+Useful options: `--data <folder>`, `--http-addr :8080`, `--https-addr :443`, `--no-browser`, `--log-file <file>`, `--log-level debug|info|warn|error`, `--version`.
+
+If `config.yaml` has a mistake (a misspelled setting, a number out of range, a bad address), the program lists every problem with its line or setting name and stops; fix the file and start again.
 
 ## Setting up a show
 
@@ -262,7 +264,7 @@ Press `Ctrl+C` in the program's window (or stop the service). The position is sa
 | Some devices connect and others do not | The access point may be at its device limit. Add a second access point, or move the first into the room. |
 | Captions are late or stall on a few phones | Weak signal or a busy channel. Those phones reconnect on their own. Improve access-point placement; use 5 GHz. |
 | Someone missed a line | They can scroll the captions up to re-read it; new lines wait behind a **Back to live** button until they tap it. |
-| Screens go dark on phones | Phones lock their screens. The page asks the browser to stay awake where it can, but plain-HTTP pages are often refused. Tell people to switch off Auto-Lock for the evening, or use a projector. |
+| Screens go dark on phones | Phones lock their screens. The page asks the browser to stay awake where it can, but plain-HTTP pages are often refused. The page keeps the screen on with the browser's wake lock where it can and, where it cannot (plain HTTP), with a tiny invisible looping video. Some phones in low-power mode refuse both: the page then shows a tip to switch off Auto-Lock for the evening. |
 | The wrong line was sent | **Backspace** undoes it. |
 | The operator page says another operator is in control | Use **Take over**, if you are the operator. |
 | The computer froze or was restarted mid-show | Start the program again. The operator page reconnects, stays signed in and takes control back by itself, the show is where you left it, and audience devices reconnect on their own. A loop restarts from its first item. **Backspace** can still undo the last few things sent before the restart. |
@@ -276,7 +278,8 @@ Press `Ctrl+C` in the program's window (or stop the service). The position is sa
 - **Updating the program:** stop it (`Ctrl+C`), replace the program file with the newer one, and start it again with the same `--data` folder. Do not update right before a show.
 - **Reusing a show:** Setup → Show has **Rename…** and **Duplicate**. Duplicating makes a copy of the show file, images and look to adapt for the next run, and leaves the original alone.
 - **Cleaning up:** delete shows you no longer need from Setup → Show. Exported `.zip` files are your archive.
-- **Logs:** recent log lines are in the support bundle; add `--log-file` to keep a file.
+- **Logs:** recent log lines are in the support bundle; add `--log-file` to keep a file. Each line starts with its level (`INFO`, `WARN`, `ERROR`, or `DEBUG`). The default `info` records sign-ins, who took control of the operator page, shows activated and similar events; `warn` keeps only problems; `debug` also records every request, which helps when something odd is happening. Set it with `log: {level: debug}` in `config.yaml` or `--log-level debug`.
+- **Archiving:** in Setup → Show, **Archive** puts a finished show away (it is kept, listed under "Archived shows", and cannot go on air) and **Restore** brings it back. **Delete** removes a show for good.
 
 ## Operator quick card
 

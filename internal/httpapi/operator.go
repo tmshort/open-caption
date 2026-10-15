@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/tmshort/open-caption/internal/logx"
 	"io"
 	"io/fs"
 	"net/http"
@@ -119,6 +120,11 @@ func (s *Server) operatorAPI(mux *http.ServeMux, prefix, role string, resolve re
 		var req struct{ Takeover bool }
 		json.NewDecoder(http.MaxBytesReader(w, r.Body, maxCmdBody)).Decode(&req)
 		ok := rt.Claim(principal(r).Token, req.Takeover)
+		if ok {
+			logx.Infof("operator control taken (takeover: %v) by session %s", req.Takeover, SID(principal(r).Token))
+		} else {
+			logx.Debugf("operator control refused: another operator is in control")
+		}
 		code := http.StatusOK
 		if !ok {
 			code = http.StatusConflict
@@ -197,6 +203,7 @@ func runCommand(w http.ResponseWriter, r *http.Request, rt *Runtime, fn func(*li
 		return
 	}
 	_, err := rt.Do(func(e *live.Engine) (live.OperatorState, error) { return fn(e, body) })
+	logx.Debugf("operator command %s: %v", r.URL.Path, err)
 	resp := map[string]any{"payload": rt.OperatorPayload()}
 	code := http.StatusOK
 	switch {

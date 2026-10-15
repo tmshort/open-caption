@@ -2,7 +2,9 @@ package httpapi
 
 import (
 	"encoding/json"
+	"github.com/tmshort/open-caption/internal/logx"
 	"io/fs"
+	"mime"
 	"net/http"
 	"path/filepath"
 	"strconv"
@@ -18,6 +20,13 @@ const (
 	// audienceCSP: same-origin only; no external requests (doc 06).
 	audienceCSP = "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; frame-ancestors 'self'"
 )
+
+func init() {
+	// Not in Go's built-in table, and the system's table differs between computers (and Windows).
+	for ext, typ := range map[string]string{".mp4": "video/mp4", ".webm": "video/webm", ".ico": "image/x-icon", ".woff2": "font/woff2", ".otf": "font/otf"} {
+		mime.AddExtensionType(ext, typ)
+	}
+}
 
 func (s *Server) audienceRoutes(mux *http.ServeMux) {
 	sub, _ := fs.Sub(web.Audience, "audience")
@@ -47,6 +56,18 @@ func (s *Server) audienceRoutes(mux *http.ServeMux) {
 		w.Header().Set("X-Content-Type-Options", "nosniff")
 		sharedFS.ServeHTTP(w, r)
 	})
+	// Browsers ask for /favicon.ico on their own (and some ignore the SVG), so serve it at the root.
+	mux.HandleFunc("GET /favicon.ico", func(w http.ResponseWriter, r *http.Request) {
+		b, err := fs.ReadFile(shared, "favicon.ico")
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("Content-Type", "image/x-icon")
+		w.Header().Set("Cache-Control", "public, max-age=86400")
+		w.Header().Set("X-Content-Type-Options", "nosniff")
+		w.Write(b)
+	})
 	mux.HandleFunc("GET /events", func(w http.ResponseWriter, r *http.Request) { s.serveEvents(w, r, s.rt) })
 	mux.HandleFunc("GET /assets/{show}/{file}", s.handleAsset)
 }
@@ -60,6 +81,7 @@ func (s *Server) serveEvents(w http.ResponseWriter, r *http.Request, rt *Runtime
 	hb := rt.HubFor(lang)
 	cl := hb.Subscribe()
 	if cl == nil {
+		logx.Warnf("refusing a viewer: the limit of %d connected devices is reached (audience.max_clients)", s.cfg.Audience.MaxClients)
 		w.Header().Set("Retry-After", "2")
 		http.Error(w, "too many viewers", http.StatusServiceUnavailable)
 		return

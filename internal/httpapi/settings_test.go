@@ -1,11 +1,15 @@
 package httpapi
 
 import (
+	"bytes"
 	"encoding/json"
+	"github.com/tmshort/open-caption/internal/logx"
 	"io"
+	"log"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 	"time"
@@ -255,4 +259,85 @@ func postRaw(t *testing.T, c *client, url, ctype string, body io.Reader) (int, m
 	var out map[string]any
 	json.NewDecoder(resp.Body).Decode(&out)
 	return resp.StatusCode, out
+}
+
+func TestLogLevelsAndLogging(t *testing.T) {
+	var buf bytes.Buffer
+	log.SetOutput(&buf)
+	log.SetFlags(0)
+	t.Cleanup(func() { log.SetOutput(os.Stderr); log.SetFlags(log.LstdFlags); logx.SetLevel(logx.Info) })
+	logx.SetLevel(logx.Debug)
+	s, ts, c := serverWith(t, nil)
+	_ = s
+	id := createShow(t, c, "Logged")
+	c.do("POST", "/api/admin/shows/"+id+"/activate", nil)
+	aud := connect(t, ts.URL) // event streams still flush while the debug logger wraps the response
+	aud.next(t)
+	bad := newClient(t, ts.URL)
+	bad.login("admin", "wrong-password")
+	op := newClient(t, ts.URL)
+	op.login("operator", "operatorpw")
+	op.do("POST", "/api/operator/claim", map[string]bool{"takeover": true})
+	op.do("POST", "/api/operator/next", nil)
+	out := buf.String()
+	for _, want := range []string{"INFO admin signed in", "WARN failed sign-in as admin", "INFO show \"Logged\" activated", "INFO operator control taken", "DEBUG operator command /api/operator/next", "DEBUG POST /api/admin/shows"} {
+		if !strings.Contains(out, want) {
+			t.Errorf("log lacks %q:\n%s", want, out)
+		}
+	}
+	if strings.Contains(out, "adminpw") || strings.Contains(out, "wrong-password") {
+		t.Error("a password reached the log")
+	}
+	// At warn level only problems are written.
+	buf.Reset()
+	logx.SetLevel(logx.Warn)
+	op.do("POST", "/api/operator/next", nil)
+	bad.login("admin", "wrong-again")
+	if got := buf.String(); strings.Contains(got, "INFO") || strings.Contains(got, "DEBUG") || !strings.Contains(got, "WARN failed sign-in") {
+		t.Errorf("warn level: %q", got)
+	}
+}
+
+func TestArchivingAShow(t *testing.T) {
+	_, _, c := serverWith(t, nil)
+	keep, old := createShow(t, c, "Keep"), createShow(t, c, "Old")
+	c.do("POST", "/api/admin/shows/"+keep+"/activate", nil)
+	if code, r := c.do("POST", "/api/admin/shows/"+keep+"/archive", nil); code != 409 {
+		t.Errorf("archiving the show on air: %d %v", code, r)
+	}
+	code, r := c.do("POST", "/api/admin/shows/"+old+"/archive", nil)
+	if code != 200 || r["archived"] != true {
+		t.Fatalf("archive: %d %v", code, r)
+	}
+	_, l := c.do("GET", "/api/admin/shows", nil)
+	archived := 0
+	for _, x := range l["shows"].([]any) {
+		if x.(map[string]any)["archived"] == true {
+			archived++
+		}
+	}
+	if archived != 1 {
+		t.Errorf("the list says which shows are archived: %v", l)
+	}
+	if code, r := c.do("POST", "/api/admin/shows/"+old+"/activate", nil); code != 409 || !strings.Contains(r["error"].(string), "archived") {
+		t.Errorf("activating an archived show: %d %v", code, r)
+	}
+	if _, f := c.do("GET", "/api/admin/shows/"+old+"/showfile", nil); !strings.Contains(f["text"].(string), "archived: yes") {
+		t.Errorf("%v", f["text"])
+	}
+	code, r = c.do("POST", "/api/admin/shows/"+old+"/unarchive", nil)
+	if code != 200 || r["archived"] == true {
+		t.Fatalf("restore: %d %v", code, r)
+	}
+	if code, _ := c.do("POST", "/api/admin/shows/"+old+"/activate", map[string]bool{"force": true}); code != 200 {
+		t.Errorf("a restored show can go on air: %d", code)
+	}
+	// An archived show can be deleted.
+	c.do("POST", "/api/admin/shows/"+keep+"/archive", nil)
+	if code, _ := c.do("DELETE", "/api/admin/shows/"+keep, nil); code != 200 {
+		t.Errorf("delete archived: %d", code)
+	}
+	if code, _ := c.do("POST", "/api/admin/shows/missing-0000/archive", nil); code != 404 {
+		t.Errorf("unknown show: %d", code)
+	}
 }

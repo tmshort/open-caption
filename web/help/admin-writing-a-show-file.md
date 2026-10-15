@@ -52,6 +52,7 @@ scrollback lines: 200
 | `idle message` | The words shown before the first line is sent |
 | `loop seconds` | How long each item of a `[loop]` stays when it does not say |
 | `scrollback lines` | How many captions a viewer can scroll back through (20 to 2000) |
+| `archived` | `yes` if the show is archived; Setup's **Archive** and **Restore** buttons add and remove it |
 
 **You do not have to write any of it.** The **Look** step in Setup fills in the block for you (and **Rename** sets the title), and anything you leave out simply uses a default. The defaults come in two layers: the program has built-in values, which the settings file `config.yaml` can change for every show (its `defaults` section), and then each show file overrides whatever it sets. The most specific one wins: **show file, then config.yaml, then built-in**.
 

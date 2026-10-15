@@ -4,6 +4,7 @@ package main
 import (
 	"context"
 	"crypto/tls"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -22,6 +23,7 @@ import (
 	"github.com/tmshort/open-caption/internal/config"
 	"github.com/tmshort/open-caption/internal/httpapi"
 	"github.com/tmshort/open-caption/internal/logbuf"
+	"github.com/tmshort/open-caption/internal/logx"
 	"github.com/tmshort/open-caption/internal/netinfo"
 	"github.com/tmshort/open-caption/internal/showfile"
 )
@@ -34,6 +36,7 @@ func main() {
 		cfgPath   = flag.String("config", env("OPEN_CAPTION_CONFIG", ""), "config file (default: <data dir>/config.yaml)")
 		httpAddr  = flag.String("http-addr", env("OPEN_CAPTION_HTTP_ADDR", ""), "HTTP listen address, e.g. :80")
 		httpsAddr = flag.String("https-addr", env("OPEN_CAPTION_HTTPS_ADDR", ""), "HTTPS listen address, e.g. :443 (enables HTTPS)")
+		logLevel  = flag.String("log-level", env("OPEN_CAPTION_LOG_LEVEL", ""), "log detail: debug, info, warn or error (default: log.level in config.yaml, else info)")
 		logFile   = flag.String("log-file", env("OPEN_CAPTION_LOG", ""), "also append log lines to this file")
 		noBrowser = flag.Bool("no-browser", false, "do not open the setup page in a browser at startup")
 		showVer   = flag.Bool("version", false, "print version and exit")
@@ -53,7 +56,7 @@ func main() {
 	if *logFile != "" {
 		f, err := os.OpenFile(*logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o644)
 		if err != nil {
-			log.Fatalf("cannot open --log-file: %v", err)
+			logx.Fatalf("cannot open --log-file: %v", err)
 		}
 		defer f.Close()
 		writers = append(writers, f)
@@ -64,7 +67,7 @@ func main() {
 	if dir == "" {
 		d, err := config.DefaultDataDir()
 		if err != nil {
-			log.Fatalf("cannot determine data directory: %v (use --data)", err)
+			logx.Fatalf("cannot determine data directory: %v (use --data)", err)
 		}
 		dir = d
 	}
@@ -74,8 +77,23 @@ func main() {
 	}
 	cfg, err := config.Load(path)
 	if err != nil {
-		log.Fatalf("config: %v", err)
+		var pe *config.ProblemsError
+		if errors.As(err, &pe) { // already says which file and what to fix: no timestamp noise
+			fmt.Fprintln(os.Stderr, "config: "+err.Error()+"\nFix the file and start again.")
+			os.Exit(1)
+		}
+		logx.Fatalf("config: %v", err)
 	}
+	level := cfg.Log.Level
+	if *logLevel != "" {
+		level = *logLevel
+	}
+	lv, err := logx.Parse(level)
+	if err != nil {
+		logx.Fatalf("--log-level: %v", err)
+	}
+	logx.SetLevel(lv)
+	cfg.Log.Level = lv.String()
 	if cfg.DataDir == "" {
 		cfg.DataDir = dir
 	}
@@ -91,7 +109,10 @@ func main() {
 	if *httpsAddr != "" && !*dev {
 		cfg.HTTPS.Enabled, cfg.HTTPS.Addr = true, *httpsAddr
 	}
-	log.Printf("config file: %s (data directory: %s)", cfg.Path, cfg.DataDir)
+	logx.Infof("config file: %s (data directory: %s; log level: %s)", cfg.Path, cfg.DataDir, lv)
+	for _, w := range cfg.Warnings() {
+		logx.Warnf("config: %s", w)
+	}
 	if cfg.Generated {
 		fmt.Printf("\nFirst run: created %s\n  admin password:    %s\n  operator password: %s\n(Keep these; they are stored in plain text in that file.)\n\n",
 			cfg.Path, cfg.AdminPassword, cfg.OperatorPassword)
@@ -105,10 +126,10 @@ func main() {
 	if *dev {
 		loadDevShow(api, cfg, *devShow, *devAsset)
 	} else if api.BootActive() {
-		log.Printf("loaded the active show")
+		logx.Infof("loaded the active show")
 	}
 	if rt.Restore() {
-		log.Printf("resumed the previous show position")
+		logx.Infof("resumed the previous show position")
 	}
 	handler := api.Handler()
 
@@ -118,7 +139,7 @@ func main() {
 	signal.Notify(sigs, syscall.SIGHUP)
 	go func() {
 		if s, ok := <-sigs; ok {
-			log.Printf("received %v; shutting down", s)
+			logx.Infof("received %v; shutting down", s)
 			stop()
 		}
 	}()
@@ -127,7 +148,7 @@ func main() {
 	serve := func(scheme string, l config.Listener, srvTLS *tls.Config) {
 		ln, err := listen(l)
 		if err != nil {
-			log.Fatalf("listen %s: %v", scheme, err)
+			logx.Fatalf("listen %s: %v", scheme, err)
 		}
 		if scheme == "http" {
 			lis.HTTPAddr, lis.HTTPConfigured = ln.Addr().String(), l.Addr
@@ -136,7 +157,7 @@ func main() {
 		}
 		srv := &http.Server{Handler: handler, ReadHeaderTimeout: 10 * time.Second, TLSConfig: srvTLS}
 		for _, u := range urls(scheme, ln.Addr()) {
-			log.Printf("audience/operator URL: %s", u)
+			logx.Infof("audience/operator URL: %s", u)
 		}
 		wg.Add(1)
 		go func() {
@@ -154,7 +175,7 @@ func main() {
 				err = srv.Serve(ln)
 			}
 			if err != nil && err != http.ErrServerClosed {
-				log.Fatal(err)
+				logx.Fatalf("%v", err)
 			}
 		}()
 	}
@@ -164,14 +185,14 @@ func main() {
 		serve("https", config.Listener{Addr: cfg.HTTPS.Addr, FallbackAddr: cfg.HTTPS.FallbackAddr}, tlsConfig(cfg))
 	}
 	api.SetListeners(lis)
-	log.Printf("open-caption %s running; operator page: /operator, setup page: /admin. Press Ctrl+C to stop.", version)
+	logx.Infof("open-caption %s running; operator page: /operator, setup page: /admin. Press Ctrl+C to stop.", version)
 	if cfg.Defaults.OpenBrowser && !*noBrowser && !*dev {
 		openBrowser(firstURL("http", lis.HTTPAddr) + "admin")
 	}
 	<-ctx.Done()
-	log.Printf("shutting down (saving show position)...")
+	logx.Infof("shutting down (saving show position)...")
 	wg.Wait()
-	log.Printf("stopped")
+	logx.Infof("stopped")
 }
 
 func tlsConfig(cfg config.Config) *tls.Config {
@@ -182,10 +203,10 @@ func tlsConfig(cfg config.Config) *tls.Config {
 	} else {
 		host, _ := os.Hostname()
 		cert, err = netinfo.EnsureSelfSigned(filepath.Join(cfg.DataDir, "tls"), host, netinfo.LocalIPs())
-		log.Printf("HTTPS is using a self-signed certificate: browsers will show a warning until it is accepted")
+		logx.Warnf("HTTPS is using a self-signed certificate: browsers will show a warning until it is accepted")
 	}
 	if err != nil {
-		log.Fatalf("https: %v", err)
+		logx.Fatalf("https: %v", err)
 	}
 	return &tls.Config{Certificates: []tls.Certificate{cert}, MinVersion: tls.VersionTLS12}
 }
@@ -206,13 +227,13 @@ func urls(scheme string, addr net.Addr) []string {
 
 func loadDevShow(api *httpapi.Server, cfg config.Config, showFilePath, assetsDir string) {
 	api.EnableDev()
-	log.Printf("WARNING: --dev enabled: /dev/* control endpoints are UNAUTHENTICATED; listening on this computer only (%s)", cfg.HTTP.Addr)
+	logx.Warnf("--dev enabled: /dev/* control endpoints are UNAUTHENTICATED; listening on this computer only (%s)", cfg.HTTP.Addr)
 	if showFilePath == "" {
 		return
 	}
 	b, err := os.ReadFile(showFilePath)
 	if err != nil {
-		log.Fatalf("cannot read the --show-file file: %v", err)
+		logx.Fatalf("cannot read the --show-file file: %v", err)
 	}
 	var names []string
 	if assetsDir != "" {
@@ -223,12 +244,17 @@ func loadDevShow(api *httpapi.Server, cfg config.Config, showFilePath, assetsDir
 	}
 	res := showfile.Parse(string(b), showfile.Options{Assets: names})
 	for _, d := range res.Diagnostics {
-		if d.Severity != showfile.SevInfo {
-			log.Printf("show file line %d: %s: %s", d.Line, d.Severity, d.Message)
+		switch d.Severity {
+		case showfile.SevError:
+			logx.Errorf("show file line %d: %s", d.Line, d.Message)
+		case showfile.SevWarning:
+			logx.Warnf("show file line %d: %s", d.Line, d.Message)
+		default:
+			logx.Debugf("show file line %d: %s", d.Line, d.Message)
 		}
 	}
 	api.Runtime().SetShow("dev", filepath.Base(showFilePath), assetsDir, res.Cues, httpapi.DefaultTheme(cfg.Defaults.IdleMessage))
-	log.Printf("loaded %d cues from %s", len(res.Cues), showFilePath)
+	logx.Infof("loaded %d cues from %s", len(res.Cues), showFilePath)
 }
 
 // listen binds the configured address, falling back (with a warning) if it is unavailable.
@@ -240,7 +266,7 @@ func listen(l config.Listener) (net.Listener, error) {
 	if l.FallbackAddr == "" || l.FallbackAddr == l.Addr {
 		return nil, fmt.Errorf("%w\n  (is another program, or another copy of open-caption, already using that port? try --http-addr :8081)", err)
 	}
-	log.Printf("WARNING: cannot listen on %s (%v); falling back to %s", l.Addr, err, l.FallbackAddr)
+	logx.Warnf("cannot listen on %s (%v); falling back to %s", l.Addr, err, l.FallbackAddr)
 	return net.Listen("tcp", l.FallbackAddr)
 }
 
@@ -281,7 +307,7 @@ func openBrowser(url string) {
 		cmd = exec.Command("xdg-open", url)
 	}
 	if err := cmd.Start(); err != nil {
-		log.Printf("could not open a browser (%v); open %s yourself", err, url)
+		logx.Warnf("could not open a browser (%v); open %s yourself", err, url)
 		return
 	}
 	go cmd.Wait()

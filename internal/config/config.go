@@ -3,14 +3,22 @@
 package config
 
 import (
+	"bytes"
 	"crypto/rand"
 	"errors"
 	"fmt"
+	"io"
+	"net"
 	"os"
 	"path/filepath"
+	"regexp"
+	"sort"
+	"strconv"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 
+	"github.com/tmshort/open-caption/internal/logx"
 	"github.com/tmshort/open-caption/internal/showfile"
 )
 
@@ -56,6 +64,11 @@ type Audience struct {
 	ScrollbackLines int `yaml:"scrollback_lines"`
 }
 
+// Log controls how much the program writes to its log.
+type Log struct {
+	Level string `yaml:"level"` // debug | info | warn | error
+}
+
 // Config is the contents of config.yaml.
 type Config struct {
 	AdminPassword    string   `yaml:"admin_password"`
@@ -66,6 +79,7 @@ type Config struct {
 	Defaults         Defaults `yaml:"defaults"`
 	Audience         Audience `yaml:"audience"`
 	Access           Access   `yaml:"access"`
+	Log              Log      `yaml:"log"`
 
 	// Path is where the config was loaded from or generated (not serialized).
 	Path string `yaml:"-"`
@@ -82,6 +96,7 @@ func Default() Config {
 			IdleMessage: "Captions will begin shortly", OpenBrowser: true,
 			Look: Look{Background: "#000000", TextColor: "#ffffff", SpeakerNameColor: "#ffffff", Font: "system", TextSizePercent: 100, SpeakerNames: "label"}},
 		Audience: Audience{MaxClients: 500, ScrollbackLines: 200},
+		Log:      Log{Level: "info"},
 	}
 }
 
@@ -111,13 +126,68 @@ func Load(path string) (Config, error) {
 	case err != nil:
 		return cfg, err
 	}
-	if err := yaml.Unmarshal(b, &cfg); err != nil {
-		return cfg, fmt.Errorf("%s: %w", path, err)
+	dec := yaml.NewDecoder(bytes.NewReader(b))
+	dec.KnownFields(true) // a misspelled key is an error, not silently ignored
+	if err := dec.Decode(&cfg); err != nil && !errors.Is(err, io.EOF) {
+		return cfg, &ProblemsError{Path: path, Problems: yamlProblems(err)}
 	}
-	if err := cfg.normalizeLook(); err != nil {
-		return cfg, err
+	if probs := cfg.normalize(); len(probs) > 0 {
+		return cfg, &ProblemsError{Path: path, Problems: probs}
 	}
-	return cfg, cfg.Validate()
+	return cfg, nil
+}
+
+// ProblemsError lists everything wrong with a config file, so it can all be fixed in one go.
+type ProblemsError struct {
+	Path     string
+	Problems []string
+}
+
+func (e *ProblemsError) Error() string {
+	var b strings.Builder
+	fmt.Fprintf(&b, "%s has %d problem", e.Path, len(e.Problems))
+	if len(e.Problems) != 1 {
+		b.WriteString("s")
+	}
+	b.WriteString(":")
+	for _, p := range e.Problems {
+		b.WriteString("\n  - " + p)
+	}
+	return b.String()
+}
+
+// yamlProblems turns a YAML decoding error (syntax error, unknown key, wrong type) into one line each.
+func yamlProblems(err error) []string {
+	var te *yaml.TypeError
+	if errors.As(err, &te) {
+		out := make([]string, 0, len(te.Errors))
+		sections := map[string]string{"Listener": "http", "HTTPS": "https", "Defaults": "defaults", "Look": "defaults.look", "Audience": "audience", "Access": "access", "Log": "log"}
+		for _, e := range te.Errors {
+			e = strings.TrimPrefix(strings.TrimSpace(e), "yaml: ")
+			if i := strings.Index(e, " not found in type config."); i >= 0 { // line N: field X not found in type config.T
+				typ := strings.TrimPrefix(e[i:], " not found in type config.")
+				e = strings.Replace(e[:i], "field ", "unknown setting ", 1)
+				if sec := sections[typ]; sec != "" {
+					e += " in " + sec
+				}
+			} else if i := strings.Index(e, "cannot unmarshal !!"); i >= 0 { // line N: cannot unmarshal !!str `lots` into int
+				rest := e[i+len("cannot unmarshal !!"):]
+				if j := strings.Index(rest, " "); j >= 0 {
+					what, into := rest[j+1:], ""
+					if k := strings.LastIndex(what, " into "); k >= 0 {
+						what, into = what[:k], what[k+len(" into "):]
+					}
+					e = e[:i] + what + " is not " + map[string]string{"int": "a whole number", "float64": "a number", "bool": "yes or no", "string": "text"}[into]
+					if into == "" || map[string]string{"int": "x", "float64": "x", "bool": "x", "string": "x"}[into] == "" {
+						e = e[:i] + what + " is the wrong kind of value here"
+					}
+				}
+			}
+			out = append(out, e)
+		}
+		return out
+	}
+	return []string{strings.TrimPrefix(err.Error(), "yaml: ")}
 }
 
 // Save writes the config atomically with mode 0600.
@@ -162,65 +232,138 @@ func SetPasswords(path, admin, operator string) error {
 	return c.Save()
 }
 
-// Validate checks required settings.
+// Validate checks the settings and returns every problem found (nil if the configuration is usable).
 func (c Config) Validate() error {
-	switch {
-	case c.AdminPassword == "":
-		return errors.New("config: admin_password must not be empty")
-	case c.OperatorPassword == "":
-		return errors.New("config: operator_password must not be empty")
-	case c.accessError() != nil:
-		return c.accessError()
-	case c.HTTPS.Enabled && (c.HTTPS.CertFile == "") != (c.HTTPS.KeyFile == ""):
-		return errors.New("config: https.cert_file and https.key_file must be set together")
-	case c.HTTPS.Enabled && c.HTTPS.CertFile == "" && !c.HTTPS.SelfSigned:
-		return errors.New("config: https enabled but no cert_file/key_file and self_signed is false")
+	if probs := c.normalize(); len(probs) > 0 {
+		return &ProblemsError{Path: c.Path, Problems: probs}
 	}
 	return nil
 }
 
-// normalizeLook checks the default look and writes each value in its canonical form (for example
-// "#FFF" becomes "#ffffff").
-func (c *Config) normalizeLook() error {
-	l := &c.Defaults.Look
-	var err error
-	bad := func(key string, e error) error { return fmt.Errorf("config: defaults.look.%s: %w", key, e) }
-	if l.Background, err = showfile.NormalizeColor(l.Background); err != nil {
-		return bad("background", err)
+// Warnings are things that work but are probably not what was meant (for the start-up log).
+func (c Config) Warnings() []string {
+	var w []string
+	if c.AdminPassword != "" && c.AdminPassword == c.OperatorPassword {
+		w = append(w, "admin_password and operator_password are the same: anyone with the operator password can open Setup")
 	}
-	if l.TextColor, err = showfile.NormalizeColor(l.TextColor); err != nil {
-		return bad("text_color", err)
+	for k, v := range map[string]string{"admin_password": c.AdminPassword, "operator_password": c.OperatorPassword} {
+		if v != "" && len(v) < MinPasswordLength {
+			w = append(w, fmt.Sprintf("%s is shorter than %d characters", k, MinPasswordLength))
+		}
 	}
-	if l.SpeakerNameColor, err = showfile.NormalizeColor(l.SpeakerNameColor); err != nil {
-		return bad("speaker_name_color", err)
+	if len(c.Access.AdminAllow) == 0 {
+		w = append(w, "access.admin_allow is empty: any computer on the network may try the Setup password")
 	}
-	if l.Font, err = showfile.NormalizeFont(l.Font); err != nil {
-		return bad("font", err)
-	}
-	if l.SpeakerNames, err = showfile.NormalizeSpeakerNames(l.SpeakerNames); err != nil {
-		return bad("speaker_names", err)
-	}
-	if l.TextSizePercent < 50 || l.TextSizePercent > 300 {
-		return bad("text_size_percent", fmt.Errorf("%d is not a text size: use 50 to 300", l.TextSizePercent))
-	}
-	if c.Defaults.LoopItemSeconds <= 0 || c.Defaults.LoopItemSeconds > 3600 {
-		return fmt.Errorf("config: defaults.loop_item_seconds: %v is not a time: use a number of seconds from 1 to 3600", c.Defaults.LoopItemSeconds)
-	}
-	if len(c.Defaults.IdleMessage) > showfile.MaxIdleMessage {
-		return fmt.Errorf("config: defaults.idle_message is longer than %d characters", showfile.MaxIdleMessage)
-	}
-	if n := c.Audience.ScrollbackLines; n < 20 || n > 2000 {
-		return fmt.Errorf("config: audience.scrollback_lines: %d is not a line count: use 20 to 2000", n)
-	}
-	return nil
+	sort.Strings(w)
+	return w
 }
 
-func (c Config) accessError() error {
+// normalize checks every setting, writes the look in its canonical form (for example "#FFF" becomes
+// "#ffffff"), and returns all the problems found, each naming the setting.
+func (c *Config) normalize() []string {
+	var probs []string
+	add := func(key string, format string, args ...any) {
+		probs = append(probs, key+": "+fmt.Sprintf(format, args...))
+	}
+	if c.AdminPassword == "" {
+		add("admin_password", "must not be empty")
+	}
+	if c.OperatorPassword == "" {
+		add("operator_password", "must not be empty")
+	}
+	if c.DataDir != "" {
+		if fi, err := os.Stat(c.DataDir); err == nil && !fi.IsDir() {
+			add("data_dir", "%s is a file, not a folder", c.DataDir)
+		}
+	}
+	addr := func(key, v string, required bool) {
+		if v == "" {
+			if required {
+				add(key, "must not be empty (for example \":80\")")
+			}
+			return
+		}
+		if err := checkAddr(v); err != nil {
+			add(key, "%q is not a listen address: %v (for example \":80\" or \"127.0.0.1:8080\")", v, err)
+		}
+	}
+	addr("http.addr", c.HTTP.Addr, true)
+	addr("http.fallback_addr", c.HTTP.FallbackAddr, false)
+	if c.HTTPS.Enabled {
+		addr("https.addr", c.HTTPS.Addr, true)
+		addr("https.fallback_addr", c.HTTPS.FallbackAddr, false)
+		switch {
+		case (c.HTTPS.CertFile == "") != (c.HTTPS.KeyFile == ""):
+			add("https", "cert_file and key_file must be set together")
+		case c.HTTPS.CertFile == "" && !c.HTTPS.SelfSigned:
+			add("https", "enabled, but there is no cert_file/key_file and self_signed is false")
+		case c.HTTPS.CertFile != "":
+			for k, f := range map[string]string{"https.cert_file": c.HTTPS.CertFile, "https.key_file": c.HTTPS.KeyFile} {
+				if _, err := os.Stat(f); err != nil {
+					add(k, "cannot read %s", f)
+				}
+			}
+		}
+	}
 	if _, err := ParseAllowList(c.Access.AdminAllow); err != nil {
-		return fmt.Errorf("config: access.admin_allow: %w", err)
+		add("access.admin_allow", "%v", err)
 	}
 	if _, err := ParseAllowList(c.Access.OperatorAllow); err != nil {
-		return fmt.Errorf("config: access.operator_allow: %w", err)
+		add("access.operator_allow", "%v", err)
+	}
+	if _, err := logx.Parse(c.Log.Level); err != nil {
+		add("log.level", "%v", err)
+	}
+	if c.Audience.MaxClients < 1 || c.Audience.MaxClients > 100000 {
+		add("audience.max_clients", "%d is not a client count: use 1 to 100000", c.Audience.MaxClients)
+	}
+	if n := c.Audience.ScrollbackLines; n < 20 || n > 2000 {
+		add("audience.scrollback_lines", "%d is not a line count: use 20 to 2000", n)
+	}
+	d := &c.Defaults
+	if !langCode.MatchString(d.Language) {
+		add("defaults.language", "%q is not a language code (for example en, es or pt-br)", d.Language)
+	}
+	if d.LoopItemSeconds <= 0 || d.LoopItemSeconds > 3600 {
+		add("defaults.loop_item_seconds", "%v is not a time: use a number of seconds from 1 to 3600", d.LoopItemSeconds)
+	}
+	if len(d.IdleMessage) > showfile.MaxIdleMessage {
+		add("defaults.idle_message", "is longer than %d characters", showfile.MaxIdleMessage)
+	}
+	l := &d.Look
+	var err error
+	if l.Background, err = showfile.NormalizeColor(l.Background); err != nil {
+		add("defaults.look.background", "%v", err)
+	}
+	if l.TextColor, err = showfile.NormalizeColor(l.TextColor); err != nil {
+		add("defaults.look.text_color", "%v", err)
+	}
+	if l.SpeakerNameColor, err = showfile.NormalizeColor(l.SpeakerNameColor); err != nil {
+		add("defaults.look.speaker_name_color", "%v", err)
+	}
+	if l.Font, err = showfile.NormalizeFont(l.Font); err != nil {
+		add("defaults.look.font", "%v", err)
+	}
+	if l.SpeakerNames, err = showfile.NormalizeSpeakerNames(l.SpeakerNames); err != nil {
+		add("defaults.look.speaker_names", "%v", err)
+	}
+	if l.TextSizePercent < 50 || l.TextSizePercent > 300 {
+		add("defaults.look.text_size_percent", "%d is not a text size: use 50 to 300", l.TextSizePercent)
+	}
+	return probs
+}
+
+var langCode = regexp.MustCompile(`^[a-z]{2,3}(-[a-z0-9]{2,8})?$`)
+
+// checkAddr accepts ":80", "127.0.0.1:8080", "[::1]:80" and "host:80".
+func checkAddr(a string) error {
+	_, port, err := net.SplitHostPort(a)
+	if err != nil {
+		return err
+	}
+	n, err := strconv.Atoi(port)
+	if err != nil || n < 1 || n > 65535 {
+		return fmt.Errorf("the port must be a number from 1 to 65535")
 	}
 	return nil
 }

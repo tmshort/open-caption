@@ -13,6 +13,10 @@ Setting up a show takes six steps. The row of buttons across the top of the page
 
 A show is a folder containing its **show file** (a plain text file, `show.md`), optional translations of it, and its images. The show file holds everything about the show except the pictures: its title, its look, and the lines. Settings the show file does not mention come from `config.yaml`, then from the program's built-in values.
 
+## Finished with a show?
+
+On the Show step, **Archive** puts a show away: it is kept in full but listed under *Archived shows* and cannot go on air. **Restore** brings it back. **Delete** removes it for good (Export it first if you might want it back). The show that is on air can be neither archived nor deleted.
+
 ## Before you start
 
 - This computer must be on the same WiFi network as the audience's phones and tablets. See [Network and joining](topic:admin-network).

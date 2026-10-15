@@ -31,7 +31,7 @@ simultaneous shows, internet-facing deployment.
 - **REQ-002** All web assets embedded in the binary (`go:embed`). Nothing fetched from the internet at runtime (the venue network may have no uplink).
 - **REQ-003** The whole system (setup, operator, audience) runs on a single host.
 - **REQ-004** Persistent data lives in one data directory (configurable); no external database.
-- **REQ-005** Settings (ports/addresses, TLS, passwords, defaults) live in a human-editable `config.yaml` (generated on first run); flags/env vars override it.
+- **REQ-005** Settings (ports/addresses, TLS, passwords, defaults) live in a human-editable `config.yaml` (generated on first run); flags/env vars override it. The file is validated when the program starts: a misspelled or unknown setting, a value of the wrong kind or out of range, a bad address, an unreadable certificate and similar are all reported together, each with its line or setting name, and the program does not start until they are fixed. Things that work but look unintended (short or equal passwords, an empty access list) are logged as warnings.
 - **REQ-006** The server listens on plain HTTP and, optionally, HTTPS (user-supplied cert or generated self-signed) at the same time. Automatic certificates (ACME/Let's Encrypt) are a possible later addition; they need Internet access and a public name and are out of scope for v1.
 - **REQ-008** All configuration of a show — its title, look, pre-show message(s), loop time, scrollback size and main language, as well as its lines — is stored in the show file(s) (a `[settings]` block); only the show's images are stored separately. Defaults are layered: built-in values, overridden by `config.yaml`, overridden by the show file. Environment settings (ports, HTTPS, passwords, access lists, data folder) are in `config.yaml` only.
 - **REQ-007** Licensed under Apache-2.0; dependencies must be license-compatible.
@@ -67,7 +67,7 @@ simultaneous shows, internet-facing deployment.
 - **REQ-046** A viewer can scroll up to re-read earlier lines without losing the live captions (a "back to live" control with a count of new lines); shared screens are not scrollable.
 - **REQ-041** Fullscreen mode (text or image) takes over the entire display, e.g. "Intermission", and later returns to scrolling captions.
 - **REQ-042** Works on current Safari/iOS, Chrome/Android, desktop Chrome/Firefox/Edge/Safari.
-- **REQ-043** Keeps the screen awake where the browser allows (Wake Lock). Where it is unavailable (for example plain HTTP), a one-time tip asks the viewer to turn off Auto-Lock. *(The hidden-video fallback is not built.)*
+- **REQ-043** Keeps the screen awake where the browser allows (Wake Lock). Where it is unavailable (every browser over plain HTTP except on `localhost`, and older iPhones), a tiny silent, invisible looping video keeps the screen on instead; if the browser will not start it, a one-time tip asks the viewer to turn off Auto-Lock.
 - **REQ-044** Projector display mode: URL parameter for larger type, no chrome, cursor hidden.
 - **REQ-045** Accessibility-first defaults: pure black background / white text, high contrast, large type, responsive to orientation and screen size. Venue-level theme (colors, font size) and optional per-speaker colors set in setup; optional per-device local font-size control that is never required. Two readability fonts are bundled and available as a show-wide choice and as a per-device option: a dyslexia-friendly one (OpenDyslexic) and a high-legibility one (Atkinson Hyperlegible).
 
@@ -80,10 +80,10 @@ simultaneous shows, internet-facing deployment.
 - **REQ-057** Two people editing a show file do not silently overwrite each other.
 - **REQ-058** Logins, the operator's control, the show position and the last few undo steps survive a restart.
 - **REQ-053** The setup UI displays the audience URL and a QR code, plus the list of host IP addresses.
-- **REQ-054** Multiple shows can be stored; one is "active".
+- **REQ-054** Multiple shows can be stored; one is "active". A show can be **archived** (kept in full, listed apart, unable to go on air, restorable) or deleted; the show on air can be neither.
 
 ## Non-functional requirements
 - **REQ-060** No audience data collection; no cookies required; no analytics.
-- **REQ-061** Server logs to the console (and optionally a file via `--log-file`); the last 1000 lines are kept in memory. A downloadable support bundle (settings without passwords, recent log, system facts, show summaries) is available from the Go Live step. *(Log levels are not implemented; messages are plain lines.)*
+- **REQ-061** Server logs to the console (and optionally a file via `--log-file`); the last 1000 lines are kept in memory. A downloadable support bundle (settings without passwords, recent log, system facts, show summaries) is available from the Go Live step. Log lines carry a level (`DEBUG`, `INFO`, `WARN`, `ERROR`) and lines below the chosen level (`log.level` in `config.yaml`, or `--log-level`; default `info`) are dropped. `warn` and `error` are for problems; `info` for events such as sign-ins, takeovers and activations (never passwords); `debug` adds every request and operator command.
 - **REQ-062** Cold start < 2 s; binary < 30 MB.
 - **REQ-063** Accessibility: semantic markup, `aria-live="polite"` region on audience page, respects `prefers-reduced-motion`, color-contrast ≥ WCAG AA.

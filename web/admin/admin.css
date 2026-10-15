@@ -126,3 +126,4 @@ body.print-qr header, body.print-qr nav, body.print-qr dialog, body.print-qr #to
 .sign h1 { font-size: 2.4rem; margin-bottom: 1rem; } .sign img { width: 22rem; height: 22rem; image-rendering: pixelated; }
 .sign .u { font-size: 1.6rem; font-weight: 700; margin-top: 1rem; word-break: break-all; }
 @media print { body { background: #fff; color: #000; } .noprint { display: none !important; } }
+details.archive{margin-top:1.5rem}details.archive summary{cursor:pointer;font-weight:600;margin-bottom:.5rem}

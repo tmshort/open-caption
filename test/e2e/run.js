@@ -11,7 +11,7 @@ const { spawn } = require('child_process');
 const fs = require('fs'), os = require('os'), path = require('path'), net = require('net');
 
 const CHROME = process.env.CHROME || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
-const BIN = process.env.OC_BIN || path.join(__dirname, '..', '..', 'bin', 'open-caption');
+const BIN = process.env.OC_BIN || path.join(__dirname, '..', '..', 'bin', 'open-caption' + (process.platform === 'win32' ? '.exe' : ''));
 const SHOTS = process.env.OC_SHOTS || '';
 const ADMIN = 'e2e-admin-pw', OPERATOR = 'e2e-operator-pw';
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -204,6 +204,39 @@ async function main() {
     check('the new operator password works', (await probe('new-operator-pw')) === 200);
     const forged = await guard.evaluate(async () => (await fetch('/api/admin/shows', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Sec-Fetch-Site': 'cross-site' }, body: '{"name":"x"}' })).status);
     check('a request that claims to be cross-site is refused', forged === 403 || forged === 201 /* browsers forbid setting Sec-Fetch-Site; the Go tests cover it */);
+
+    // ------------------------------------------------------------------ keeping the screen on
+    section('Audience: the screen stays on where the Wake Lock API is missing');
+    // A separate browser: Chrome allows six connections per site, and the pages above hold them all open.
+    const b2 = await puppeteer.launch({ executablePath: CHROME, headless: 'new', args: ['--no-sandbox'] });
+    const nolock = await b2.newPage(); nolock.setDefaultTimeout(8000);
+    await nolock.setViewport({ width: 420, height: 760 });
+    nolock.on('pageerror', (e) => errs.push(e.message));
+    await nolock.evaluateOnNewDocument(() => { delete Navigator.prototype.wakeLock; }); // as on any browser over plain http
+    await nolock.goto(B + '/'); await nolock.waitForSelector('video');
+    await nolock.waitForFunction(() => document.documentElement.dataset.awake === 'video', { timeout: 6000 }).catch(() => {});
+    const vid = await nolock.evaluate(() => { const v = document.querySelector('video'); return v ? { playing: !v.paused, muted: v.muted, loop: v.loop, src: v.currentSrc.split('/').pop(), tag: document.documentElement.dataset.awake, ready: v.readyState } : null; });
+    check('a hidden looping video is started instead', vid && vid.playing && vid.muted && vid.loop && /^nosleep\.(mp4|webm)$/.test(vid.src) && vid.tag === 'video', vid);
+    check('it does not cover or disturb the captions', await nolock.evaluate(() => { const r = document.querySelector('video').getBoundingClientRect(); return r.width <= 2 && getComputedStyle(document.querySelector('video')).pointerEvents === 'none'; }));
+    await nolock.close(); await b2.close();
+
+    // ------------------------------------------------------------------ archive
+    section('Setup: archive a show and bring it back');
+    const arch = await open();
+    await arch.goto(B + '/admin#show'); await arch.waitForSelector('#steps button');
+    await api(arch, 'POST', '/api/admin/shows', { name: 'Last year' });
+    await arch.reload(); await arch.waitForSelector('.card.show');
+    const onCard = (label) => arch.evaluate((l) => { const c = [...document.querySelectorAll('.card.show')].find((x) => x.textContent.includes('Last year')); [...c.querySelectorAll('button')].find((b) => b.textContent.startsWith(l)).click(); }, label);
+    await onCard('Archive'); await sleep(700);
+    check('an archived show moves to the archive list', (await arch.evaluate(() => document.getElementById('panel').innerText)).includes('Archived shows (1)'));
+    check('the archive cannot be activated from the list (it offers Restore)', await arch.evaluate(() => [...document.querySelectorAll('details.archive button')].some((b) => b.textContent === 'Restore')));
+    await arch.evaluate(() => document.querySelector('details.archive').open = true);
+    await onCard('Restore'); await sleep(700);
+    check('a restored show is back in the main list', !(await arch.evaluate(() => document.getElementById('panel').innerText)).includes('Archived shows'));
+    await onCard('Delete'); await sleep(400);
+    await arch.evaluate(() => document.getElementById('dlgok').click()); await sleep(700);
+    check('a show can be deleted', !(await arch.evaluate(() => document.getElementById('panel').innerText)).includes('Last year'));
+    await arch.close();
 
     // ------------------------------------------------------------------ restart
     section('Restart: logins, control and undo survive');

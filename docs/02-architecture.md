@@ -134,7 +134,8 @@ language. Responses carry `Vary: Accept-Language`.
 cmd/open-caption/        main: flags, wiring, signal handling, listeners (HTTP and optional HTTPS)
 cmd/loadtest/            audience load generator (needs --dev on the server)
 internal/
-  config/                config.yaml load/generate/validate, access allow-lists, data-dir resolution
+  config/                config.yaml load/generate/validate (strict: unknown keys and all bad values reported together), access allow-lists, data-dir resolution
+  logx/                  levelled logging (DEBUG/INFO/WARN/ERROR) over the standard logger
   show file/                parser, validator, Markdown-subset renderer, cue model, language structure check (pure, heavily tested)
   show/                  show store: shows, show files per language, validated image assets, duplicate
   live/                  engine: state, cursor, undo history, loop timer, apply/jump/back, export/restore

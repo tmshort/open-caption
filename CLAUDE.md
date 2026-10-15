@@ -13,6 +13,9 @@ A single-binary open-captioning server for community theater (Go 1.22+, no CGO).
 - Single test: `go test ./internal/httpapi -run TestName -count=1`
 - `make fuzz` fuzzes the show-file parser (`FuzzParse`)
 - `make e2e` — browser end-to-end suite (`test/e2e/run.js`, puppeteer-core; needs Node and Chrome, set `CHROME` if not at the default path). Chrome allows 6 connections per host, so e2e pages must be closed when finished (SSE streams stay open).
+- Log with `internal/logx` (`logx.Infof/Warnf/Errorf/Debugf`), not `log.Printf`; level comes from `log.level` / `--log-level`.
+- `config.Load` is strict (unknown YAML keys are errors) and reports all problems at once via `*config.ProblemsError`; add new settings to `normalize()`.
+- `tools/make-icons.js` regenerates `favicon.ico` / `apple-touch-icon.png` from `web/shared/favicon.svg`.
 - `make dist` cross-compiles release binaries (CGO disabled).
 
 Run `gofmt`, `go vet ./...` and `go test -race ./...` before committing.
@@ -35,5 +38,7 @@ Run `gofmt`, `go vet ./...` and `go test -race ./...` before committing.
 ## Things to remember
 
 - Show-file edits while live require confirmation (typing the show name); the cursor is kept by cue index. Saving the look is refused when the editor has unsaved changes (it rewrites the saved file).
+- Archiving a show is the `archived: yes` setting in its show file (`Store.SetArchived`); archived shows cannot be activated.
+- The audience page keeps the screen on with the Wake Lock API, or a tiny looping video (`web/audience/nosleep.*`) where that API is missing (plain HTTP).
 - Sessions persist hashed in `sessions.json`; per-language live state in `live.json`.
 - Multi-language: one operator keypress advances every language, so structure mismatches are errors and the mismatching translation is not served.

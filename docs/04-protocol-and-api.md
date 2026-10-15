@@ -63,6 +63,8 @@ everywhere an operator session is; the reverse is not true.
 | POST | `/api/admin/shows/{id}/duplicate` | `{name?}` copy show files (every language), images and look |
 | GET | `/api/admin/shows/{id}/showfile` | Raw text + parsed cues + diagnostics (`?lang=`) |
 | PUT | `/api/admin/shows/{id}/showfile` | Body: raw show file text (`?lang=`) → diagnostics |
+| POST | `/api/admin/shows/{id}/archive` | Archive the show (`archived: yes` in its show file); 409 if it is the show on air. Returns the show summary (`archived: true`) |
+| POST | `/api/admin/shows/{id}/unarchive` | Restore an archived show |
 | GET | `/api/admin/shows/{id}/export` | Download the show as a `.zip` (format: doc 06, *Show archive*) |
 | POST | `/api/admin/shows/import` | multipart field `file`: a show `.zip`; creates a new show titled `<title> (imported)` and returns `201 {show, skippedFiles}`; 400 if it is not a zip or has no `show.md` |
 | POST | `/api/admin/shows/{id}/showfile/validate` | Dry-run parse without saving |
@@ -71,7 +73,7 @@ everywhere an operator session is; the reverse is not true.
 | DELETE | `/api/admin/shows/{id}/languages/{lang}` | Remove a translation (not the main language; not while live) |
 | POST | `/api/admin/shows/{id}/assets` | multipart image upload: png/jpg/gif/webp only (SVG rejected); 10 MB limit; stored as-is (no server-side scaling); response includes a `large: true` flag above 1 MB |
 | GET/DELETE | `/api/admin/shows/{id}/assets/{file}` | |
-| POST | `/api/admin/shows/{id}/activate` | Make active (blocked if live unless `force`) |
+| POST | `/api/admin/shows/{id}/activate` | Make active (blocked if live unless `force`; 409 if the show is archived) |
 | POST | `/api/admin/rehearsal/start` | Create an isolated rehearsal engine for this session (doc 02) |
 | POST | `/api/admin/rehearsal/{next,back,stop,jump,blank,clear,reset}` | Same bodies/semantics as `/api/operator/*`, applied to the rehearsal engine only |
 | GET | `/api/admin/rehearsal/events` | SSE of the rehearsal's audience-view events (drives the preview pane) |

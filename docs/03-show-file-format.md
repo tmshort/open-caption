@@ -62,6 +62,7 @@ affect the operator's list or the structure comparison between languages.
 | `idle message` (idle) | up to 200 characters; shown before the first line is sent | `defaults.idle_message` |
 | `loop seconds` (loop time) | seconds, more than 0 and at most 3600 | `defaults.loop_item_seconds` |
 | `scrollback lines` (scrollback) | 20–2000 | `audience.scrollback_lines` |
+| `archived` (archive) | `yes` or `no`; written only when yes | no |
 
 **Layering.** A value comes from the most specific place that sets it: **the show file's `[settings]`, then
 `config.yaml`'s `defaults`, then the program's built-in values** (config.yaml starts from the built-in values, so a
@@ -81,7 +82,7 @@ settings (the error says so).
 and the `[language: …]` line), replacing existing blocks, keeping unknown lines, and leaving the rest of the file exactly
 as it was. Comments *inside* the block are not kept; put them above it. A saved look writes every look setting, so a
 show file records exactly how it looks wherever it is copied. A show whose file sets none of the look settings counts as
-"look not saved" in Setup.
+"look not saved" in Setup. `archived: yes` marks an archived show (Setup's Archive and Restore buttons add and remove the line).
 
 ## Directives
 

@@ -52,7 +52,8 @@
   }
   const confirmBox = (title, text, ok, danger) => ask(title, h('p', {}, text), ok, { danger });
   const fmtSize = (n) => (n >= 1 << 20 ? (n / (1 << 20)).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB');
-  const curShow = () => A.shows.find((s) => s.id === A.cur) || null;
+  const curShow = () => A.shows.find((s) => s.id === A.cur && !s.archived) || null;
+  const unarchived = () => A.shows.filter((s) => !s.archived);
 
   // ---- help drawer (topic follows the current step) ----
   const HELP_TOPIC = { show: 'admin-getting-started', showfile: 'admin-writing-a-show-file', images: 'admin-images', look: 'admin-look-and-feel', test: 'admin-getting-started', golive: 'admin-network' };
@@ -116,7 +117,7 @@
     $('login').hidden = true; $('app').hidden = false;
     await loadShows();
     try { A.cur = localStorage.getItem('oc.cur'); } catch (e) { /* storage unavailable */ }
-    if (!curShow()) A.cur = A.activeId && curShowById(A.activeId) ? A.activeId : (A.shows[0] ? A.shows[0].id : null);
+    if (!curShow()) A.cur = A.activeId && curShowById(A.activeId) ? A.activeId : (unarchived()[0] ? unarchived()[0].id : null);
     A.step = A.cur ? (location.hash.slice(1) || 'show') : 'show';
     if (!STEPS.some((s) => s[0] === A.step)) A.step = 'show';
     openOpStream();
@@ -195,21 +196,34 @@
   async function stepShow(p) {
     await loadShows();
     p.append(h('h2', {}, 'Choose a show'));
+    const current = unarchived(), archived = A.shows.filter((s) => s.archived);
     if (!A.shows.length) {
       p.append(h('div', { class: 'card empty' },
         h('p', { class: 'big' }, 'Welcome! Start by creating a show, or look around with the sample.'),
         h('div', { class: 'row' }, newShowForm(), h('button', { onclick: makeSample }, 'Create a sample show'))));
     } else {
-      A.shows.forEach((s) => p.append(h('div', { class: 'card show' },
+      if (!current.length) p.append(h('div', { class: 'card empty' }, h('p', { class: 'big' }, 'All your shows are archived. Create a new show below, or restore one from the archive.')));
+      current.forEach((s) => p.append(h('div', { class: 'card show' },
         h('div', { class: 'name' }, s.name, ' ', s.active ? h('span', { class: 'badge active' }, 'ACTIVE') : null, ' ', s.live ? h('span', { class: 'badge live' }, 'LIVE') : null,
           h('div', { class: 'hint' }, 'Updated ' + new Date(s.updated).toLocaleString())),
         h('button', { class: A.cur === s.id ? '' : 'primary', onclick: () => { setCur(s.id); go('showfile'); } }, A.cur === s.id ? 'Continue with this show' : 'Work on this show'),
         h('button', { class: 'quiet', onclick: () => renameShow(s) }, 'Rename…'),
         h('button', { class: 'quiet', onclick: () => duplicateShow(s) }, 'Duplicate'),
         h('a', { href: '/api/admin/shows/' + s.id + '/export', download: s.id + '.zip' }, 'Export'),
+        h('button', { class: 'quiet', disabled: s.active, title: s.active ? 'The show on air cannot be archived. Activate another show first.' : 'Put this show away; you can restore it later', onclick: () => archiveShow(s, true) }, 'Archive'),
         h('button', { class: 'danger quiet', onclick: () => deleteShow(s) }, 'Delete…'))));
       p.append(h('h3', {}, 'Add another show'), h('div', { class: 'card row' }, newShowForm(), h('button', { onclick: makeSample }, 'Sample show'),
         h('label', { class: 'row' }, 'Import a show (.zip):', h('input', { type: 'file', accept: '.zip', onchange: importShow }))));
+    }
+    if (archived.length) {
+      p.append(h('details', { class: 'archive', open: A.showArchive ? '' : null, ontoggle: (e) => { A.showArchive = e.target.open; } },
+        h('summary', {}, 'Archived shows (' + archived.length + ')'),
+        h('p', { class: 'hint' }, 'Archived shows are kept in full but stay out of the way and cannot go on air. Restore one to use it again, or delete it for good.'),
+        ...archived.map((s) => h('div', { class: 'card show' },
+          h('div', { class: 'name' }, s.name, h('div', { class: 'hint' }, 'Updated ' + new Date(s.updated).toLocaleString())),
+          h('button', { class: 'primary', onclick: () => archiveShow(s, false) }, 'Restore'),
+          h('a', { href: '/api/admin/shows/' + s.id + '/export', download: s.id + '.zip' }, 'Export'),
+          h('button', { class: 'danger quiet', onclick: () => deleteShow(s) }, 'Delete…')))));
     }
   }
   function newShowForm() {
@@ -252,13 +266,23 @@
     if (!r.ok) return fail(r);
     await loadShows(); setCur(r.data.id); toast('Copy created'); render();
   }
+  async function archiveShow(s, on) {
+    const r = await api('POST', '/api/admin/shows/' + s.id + (on ? '/archive' : '/unarchive'));
+    if (!r.ok) return fail(r);
+    if (on && A.cur === s.id) setCur(null);
+    await loadShows();
+    if (!A.cur && unarchived()[0]) setCur(unarchived()[0].id);
+    if (on) A.showArchive = true;
+    toast(on ? '“' + s.name + '” archived' : '“' + s.name + '” restored');
+    render();
+  }
   async function deleteShow(s) {
-    const ok = await confirmBox('Delete “' + s.name + '”?', 'Its show file and images will be permanently deleted. Export it first if you may want it back.', 'Delete', true);
+    const ok = await confirmBox('Delete “' + s.name + '”?', s.archived ? 'This archived show, its show file and its images will be permanently deleted. Export it first if you may want it back.' : 'Its show file and images will be permanently deleted. Export it first if you may want it back. (Archive keeps a show without deleting it.)', 'Delete', true);
     if (!ok) return;
     const r = await api('DELETE', '/api/admin/shows/' + s.id);
     if (!r.ok) return fail(r);
     if (A.cur === s.id) setCur(null);
-    await loadShows(); if (!A.cur && A.shows[0]) setCur(A.shows[0].id);
+    await loadShows(); if (!A.cur && unarchived()[0]) setCur(unarchived()[0].id);
     render();
   }
 

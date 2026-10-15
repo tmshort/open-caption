@@ -16,7 +16,7 @@ Goal: a first-time volunteer can finish without reading documentation.
    Steps are also reachable directly for experienced users. Each step shows a green check when complete.
 
 ### Steps
-- **Show**: name; list of existing shows with Rename / Duplicate / Export / Delete (delete asks first). *(Archive is not built; export and delete cover it.)*
+- **Show**: name; list of existing shows with Rename / Duplicate / Export / **Archive** / Delete (delete asks first). The show on air cannot be archived. Archived shows are listed apart under "Archived shows (n)" with Restore / Export / Delete; they are not offered for the other steps and cannot be activated. The archived state is the `archived: yes` line in the show file's `[settings]`, so it travels with an export (an import is always restored).
 - **Show file**: (a **Help** link here opens the "Writing a show file" topic). **Language tabs** sit above the editor: the main language, each translation, and ＋ Add a language. A ⚠ marks a translation held back for not matching the main show file; translations show the main show file for reference, and structure errors appear in the problem list.
   - Drag-and-drop file, "Choose file…", or paste into an editor.
   - Editor pane (monospace, line numbers) + Diagnostics pane. Clicking a diagnostic jumps to the line.
@@ -98,7 +98,7 @@ Principle: **no interaction needed.** Controls, if any, are hidden/minimal.
 - **Blank**: pure theme background.
 - **Idle**: before the show starts, shows the configured message and a subtle "connected" indicator.
 - **Connection**: a small unobtrusive status dot; if offline > 5 s shows "Reconnecting…" overlay while retaining the last text visible underneath, and auto-recovers on reconnect (re-snapshot). Reconnect backoff 0.5 s → 5 s with jitter.
-- **Keep awake**: request Screen Wake Lock on load and on first user visibility change; on iOS Safari where unavailable, silent hidden `<video>` loop fallback (documented, off by default). Page shows a one-time tiny hint "Tip: turn off Auto-Lock to keep captions on" only when wake lock fails.
+- **Keep awake**: request Screen Wake Lock on load and on first user visibility change; where it is unavailable (plain HTTP, older iPhones) or refused, a silent 2-pixel video (`nosleep.mp4` / `nosleep.webm`, about 1 KB each, looping, muted, `playsinline`) keeps the screen on; browsers that need a tap to start it start it at the first touch. The page shows the one-time hint "Tip: turn off Auto-Lock to keep captions on" only if the video could not be started. `<html data-awake>` says which method is active (`wakelock`, `video` or `none`).
 - **Language** (when the show has more than one language): the page starts in the language matched from the browser's `Accept-Language` header, or the default (`en`). A small picker in a corner lists the available languages; choosing one navigates to `/?lang=xx`, so the URL form (e.g. on a lobby QR code) works identically. With a single language there is no picker. The page never blocks on a choice.
 - **Language menu** (🌐, top left, only when the show has several languages): lists the languages by their own names and navigates to `/?lang=xx`. The page's own labels are translated for es, fr, de, it and pt; other languages use English labels.
 - **Optional local controls** (collapsed, appear on tap/click in a corner): text size − / +, light/dark toggle. Stored in `localStorage`; never required.

@@ -416,12 +416,48 @@ func TestEveryPageLinksTheFavicon(t *testing.T) {
 	if resp.StatusCode != 200 || !strings.HasPrefix(resp.Header.Get("Content-Type"), "image/svg+xml") {
 		t.Fatalf("favicon: %d %s", resp.StatusCode, resp.Header.Get("Content-Type"))
 	}
+	for path, typ := range map[string]string{"/favicon.ico": "image/x-icon", "/static/shared/apple-touch-icon.png": "image/png"} {
+		r, err := http.Get(ts.URL + path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		b, _ := io.ReadAll(r.Body)
+		r.Body.Close()
+		if r.StatusCode != 200 || r.Header.Get("Content-Type") != typ || len(b) < 200 {
+			t.Errorf("%s: %d %q %d bytes", path, r.StatusCode, r.Header.Get("Content-Type"), len(b))
+		}
+	}
 	for _, p := range []string{"/", "/admin", "/operator"} {
 		r, _ := http.Get(ts.URL + p)
 		b, _ := io.ReadAll(r.Body)
 		r.Body.Close()
-		if !strings.Contains(string(b), `href="/static/shared/favicon.svg"`) {
-			t.Errorf("%s does not link the favicon", p)
+		for _, want := range []string{`href="/static/shared/favicon.svg"`, `href="/favicon.ico"`, `rel="apple-touch-icon"`} {
+			if !strings.Contains(string(b), want) {
+				t.Errorf("%s lacks %s", p, want)
+			}
+		}
+	}
+}
+
+func TestKeepAwakeVideoIsServedWithRangeSupport(t *testing.T) {
+	_, ts, _ := adminServer(t)
+	for file, typ := range map[string]string{"nosleep.mp4": "video/mp4", "nosleep.webm": "video/webm"} {
+		resp, err := http.Get(ts.URL + "/static/audience/" + file)
+		if err != nil {
+			t.Fatal(err)
+		}
+		b, _ := io.ReadAll(resp.Body)
+		resp.Body.Close()
+		if resp.StatusCode != 200 || resp.Header.Get("Content-Type") != typ || len(b) < 500 || len(b) > 4096 {
+			t.Errorf("%s: %d %q %d bytes", file, resp.StatusCode, resp.Header.Get("Content-Type"), len(b))
+		}
+		req, _ := http.NewRequest("GET", ts.URL+"/static/audience/"+file, nil)
+		req.Header.Set("Range", "bytes=0-99") // Safari asks for video in ranges
+		r2, _ := http.DefaultClient.Do(req)
+		part, _ := io.ReadAll(r2.Body)
+		r2.Body.Close()
+		if r2.StatusCode != http.StatusPartialContent || len(part) != 100 {
+			t.Errorf("%s range: %d %d bytes", file, r2.StatusCode, len(part))
 		}
 	}
 }

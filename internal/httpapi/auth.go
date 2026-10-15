@@ -8,6 +8,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
+	"github.com/tmshort/open-caption/internal/logx"
 	"net"
 	"net/http"
 	"net/netip"
@@ -296,6 +297,14 @@ func (s *Server) gate(role string, h http.HandlerFunc) http.HandlerFunc {
 // Origin header (command-line tools, the program's own tests) are allowed.
 func (s *Server) originGuard(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if logx.Enabled(logx.Debug) {
+			rec := &statusRecorder{ResponseWriter: w, status: http.StatusOK}
+			start := time.Now()
+			defer func() {
+				logx.Debugf("%s %s -> %d (%s) from %s", r.Method, r.URL.Path, rec.status, time.Since(start).Round(time.Millisecond), clientIP(r))
+			}()
+			w = rec
+		}
 		if strings.HasPrefix(r.URL.Path, "/api/") && r.Method != http.MethodGet && r.Method != http.MethodHead && r.Method != http.MethodOptions {
 			site := r.Header.Get("Sec-Fetch-Site")
 			bad := site == "cross-site" || site == "same-site"
@@ -306,6 +315,7 @@ func (s *Server) originGuard(next http.Handler) http.Handler {
 				bad = true
 			}
 			if bad {
+				logx.Warnf("refused a %s %s from %s: it did not come from the program's own pages (Origin %q)", r.Method, r.URL.Path, clientIP(r), r.Header.Get("Origin"))
 				writeErr(w, http.StatusForbidden, "this request did not come from the program's own pages")
 				return
 			}
@@ -359,21 +369,25 @@ func (s *Server) authRoutes(mux *http.ServeMux) {
 			return
 		}
 		if (req.Role == RoleAdmin || req.Role == RoleOperator) && !s.allowedFor(req.Role, r) {
+			logx.Warnf("sign-in as %s refused from %s: not on the access list", req.Role, clientIP(r))
 			writeErr(w, http.StatusForbidden, "signing in is not available from this computer")
 			return
 		}
 		if !s.auth.allow(clientIP(r)) {
+			logx.Warnf("too many sign-in attempts from %s", clientIP(r))
 			w.Header().Set("Retry-After", "60")
 			writeErr(w, http.StatusTooManyRequests, "too many attempts; wait a minute")
 			return
 		}
 		token, role, ok := s.auth.login(req.Role, req.Password)
 		if !ok {
+			logx.Warnf("failed sign-in as %s from %s: wrong password", req.Role, clientIP(r))
 			writeErr(w, http.StatusUnauthorized, "wrong password")
 			return
 		}
 		http.SetCookie(w, &http.Cookie{Name: cookieName, Value: token, Path: "/", HttpOnly: true,
 			SameSite: http.SameSiteStrictMode, Secure: r.TLS != nil, MaxAge: int(sessionTTL.Seconds())})
+		logx.Infof("%s signed in from %s", role, clientIP(r))
 		writeJSON(w, http.StatusOK, map[string]any{"role": role})
 	})
 	mux.HandleFunc("POST /api/logout", func(w http.ResponseWriter, r *http.Request) {
@@ -390,3 +404,18 @@ func (s *Server) authRoutes(mux *http.ServeMux) {
 		writeJSON(w, http.StatusOK, map[string]any{"role": p.Role, "sid": SID(p.Token)})
 	}))
 }
+
+// statusRecorder notes the status code for the debug log. It passes flushing through, which the
+// event streams need.
+type statusRecorder struct {
+	http.ResponseWriter
+	status int
+}
+
+func (r *statusRecorder) WriteHeader(code int) { r.status = code; r.ResponseWriter.WriteHeader(code) }
+func (r *statusRecorder) Flush() {
+	if f, ok := r.ResponseWriter.(http.Flusher); ok {
+		f.Flush()
+	}
+}
+func (r *statusRecorder) Unwrap() http.ResponseWriter { return r.ResponseWriter }

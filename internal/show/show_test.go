@@ -318,3 +318,36 @@ func TestImportFiles(t *testing.T) {
 		t.Error("an archive with no show file must be refused")
 	}
 }
+
+func TestArchiveAndRestoreAreStoredInTheShowFile(t *testing.T) {
+	s := newStore(t)
+	m, _ := s.Create("Old play", "Hello")
+	a, err := s.SetArchived(m.ID, true)
+	if err != nil || !a.Archived {
+		t.Fatalf("%v %+v", err, a)
+	}
+	if txt := read(t, s, m.ID, ""); !strings.Contains(txt, "archived: yes") || !strings.Contains(txt, "title: Old play") || !strings.HasSuffix(txt, "Hello\n") && !strings.HasSuffix(txt, "Hello") {
+		t.Errorf("show file:\n%s", txt)
+	}
+	cp, _ := s.Duplicate(m.ID, "")
+	if cp.Archived {
+		t.Error("a copy of an archived show is not archived")
+	}
+	r, err := s.SetArchived(m.ID, false)
+	if err != nil || r.Archived || strings.Contains(read(t, s, m.ID, ""), "archived") {
+		t.Errorf("restore: %v %+v", err, r)
+	}
+	if _, err := s.SetArchived("nope-0000", true); !errors.Is(err, ErrNotFound) {
+		t.Errorf("%v", err)
+	}
+	// An archived show stays archived through a look change but an import of one is restored.
+	s.SetArchived(m.ID, true)
+	th := Theme{ScalePct: 120}
+	if u, _ := s.Update(m.ID, nil, &th); !u.Archived {
+		t.Error("changing the look must not restore the show")
+	}
+	imp, err := s.ImportFiles(map[string]string{"show.md": read(t, s, m.ID, "")}, " (imported)")
+	if err != nil || imp.Archived {
+		t.Errorf("import: %v %+v", err, imp)
+	}
+}

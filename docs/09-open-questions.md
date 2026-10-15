@@ -26,14 +26,14 @@ that reflect it. Add new questions at the bottom.
 | Q17 | Should Setup/operator be restricted by default? | No: default is open (a volunteer-friendly first run), with `access.admin_allow` / `access.operator_allow` and warnings in Settings and the guides. A default of `admin_allow: [localhost]` was considered and rejected because Setup is normally used from other computers | 01 (REQ-055), 02, 06 |
 | Q18 | How do languages stay in step? | One engine and hub per language, driven together by the operator's commands; a drifting language is re-synced; structure is checked cue by cue and a mismatched translation is held back | 02, 03 |
 | Q19 | Keep logins across a restart? | Yes: hashed sessions on disk, dropped when a password changes | 02 (REQ-058) |
-| Q20 | Archive shows? | Not built; Export and Delete cover it | 05 |
-| Q21 | Hidden-video fallback to keep iPhones awake? | Not built; a one-time Auto-Lock tip is shown instead | 01 (REQ-043) |
-| Q22 | Log levels? | Not built; plain lines to the console, an optional file, and the support bundle | 01 (REQ-061) |
+| Q20 | Archive shows? | Built: `archived: yes` in the show file; Archive/Restore/Delete in Setup | 05 |
+| Q21 | Hidden-video fallback to keep iPhones awake? | Built (silent looping video where the Wake Lock API is missing); untested on real iPhones. The Auto-Lock tip remains for when the video cannot start | 01 (REQ-043) |
+| Q22 | Log levels? | Built: `log.level` / `--log-level` (debug, info, warn, error) | 01 (REQ-061) |
 | Q23 | Where is a show's configuration stored? | In its show file (`[settings]` block), layered over `config.yaml` defaults over built-in values; environment settings stay in `config.yaml`. "Script" is now called the **show file** everywhere; there is no separate show metadata file | 01 (REQ-008), 02, 03 |
 
 ## Open
 
-- **Real devices:** the program has only been tested in desktop Chrome on one Mac. A rehearsal on the oldest phones, tablets and computers you expect, on the real WiFi, is the main remaining risk (see the acceptance checklist).
+- **Real devices:** the program has only been tested in desktop Chrome on one Mac (its browser end-to-end test also runs on Linux, macOS and Windows in CI, in Chrome). The keep-awake video in particular is untested on real iPhones and Android phones. A rehearsal on the oldest phones, tablets and computers you expect, on the real WiFi, is the main remaining risk (see the acceptance checklist).
 - **Browser floor:** the audience page works on current browsers; Setup and the operator page need `<dialog>` (Safari 15.4+). The exact minimum versions are unverified.
 - **Passwords are plain text** in `config.yaml` by decision (Q4); hashing them is a later option.
 - **Release packaging:** no signed or notarized builds, installers or auto-update.

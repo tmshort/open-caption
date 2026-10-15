@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"net/netip"
 	"os"
 	"path/filepath"
@@ -142,5 +143,104 @@ func TestLookDefaultsAreValidatedAndNormalised(t *testing.T) {
 	c, _ = Load(p)
 	if c.Defaults.Look.Background != "#000000" || c.Defaults.Look.TextSizePercent != 100 || c.Defaults.Look.Font != "system" {
 		t.Errorf("%+v", c.Defaults.Look)
+	}
+}
+
+func load(t *testing.T, yamlText string) (Config, error) {
+	t.Helper()
+	p := filepath.Join(t.TempDir(), "c.yaml")
+	if err := os.WriteFile(p, []byte("admin_password: adminpw\noperator_password: operatorpw\n"+yamlText), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	return Load(p)
+}
+
+func TestMisspelledAndUnknownSettingsAreReported(t *testing.T) {
+	_, err := load(t, "htp:\n  addr: \":9000\"\naudience:\n  max_client: 5\n")
+	var pe *ProblemsError
+	if !errors.As(err, &pe) || len(pe.Problems) != 2 {
+		t.Fatalf("%v", err)
+	}
+	msg := err.Error()
+	for _, want := range []string{"2 problems", "unknown setting htp", "unknown setting max_client", "line "} {
+		if !strings.Contains(msg, want) {
+			t.Errorf("message lacks %q:\n%s", want, msg)
+		}
+	}
+}
+
+func TestWrongTypesAndSyntaxAreReported(t *testing.T) {
+	_, err := load(t, "audience:\n  max_clients: lots\n")
+	if err == nil || !strings.Contains(err.Error(), "line 4") {
+		t.Errorf("%v", err)
+	}
+	_, err = load(t, "http: [oops\n")
+	if err == nil || !strings.Contains(err.Error(), "problem") {
+		t.Errorf("%v", err)
+	}
+}
+
+func TestEverythingWrongIsListedAtOnce(t *testing.T) {
+	_, err := load(t, `http:
+  addr: "localhost"
+  fallback_addr: ":99999"
+https:
+  enabled: true
+  cert_file: /nonexistent/cert.pem
+  key_file: /nonexistent/key.pem
+audience:
+  max_clients: 0
+  scrollback_lines: 5
+defaults:
+  language: English
+  loop_item_seconds: 0
+  look:
+    background: banana
+    font: comic
+log:
+  level: loud
+access:
+  admin_allow: [not-an-address]
+`)
+	var pe *ProblemsError
+	if !errors.As(err, &pe) {
+		t.Fatalf("%v", err)
+	}
+	for _, key := range []string{"http.addr", "http.fallback_addr", "https.cert_file", "https.key_file", "audience.max_clients", "audience.scrollback_lines",
+		"defaults.language", "defaults.loop_item_seconds", "defaults.look.background", "defaults.look.font", "log.level", "access.admin_allow"} {
+		found := false
+		for _, p := range pe.Problems {
+			found = found || strings.HasPrefix(p, key+":")
+		}
+		if !found {
+			t.Errorf("no problem reported for %s:\n%v", key, err)
+		}
+	}
+}
+
+func TestValidFilesAndWarnings(t *testing.T) {
+	c, err := load(t, "http:\n  addr: \"127.0.0.1:8080\"\n  fallback_addr: \"\"\nlog:\n  level: DEBUG\n")
+	if err != nil || c.Log.Level != "DEBUG" {
+		t.Fatalf("%v %+v", err, c.Log)
+	}
+	if w := strings.Join(c.Warnings(), "|"); !strings.Contains(w, "access.admin_allow is empty") || strings.Contains(w, "same") {
+		t.Errorf("%s", w)
+	}
+	c, _ = load(t, "access:\n  admin_allow: [localhost]\n")
+	c.OperatorPassword, c.AdminPassword = "abc", "abc"
+	if w := strings.Join(c.Warnings(), "|"); !strings.Contains(w, "are the same") || !strings.Contains(w, "shorter than 6") {
+		t.Errorf("%s", w)
+	}
+	if c, err := load(t, ""); err != nil || c.Log.Level != "info" {
+		t.Errorf("default level: %v %q", err, c.Log.Level)
+	}
+}
+
+func TestEmptyFileNamesTheMissingPasswords(t *testing.T) {
+	p := filepath.Join(t.TempDir(), "c.yaml")
+	os.WriteFile(p, nil, 0o600)
+	_, err := Load(p)
+	if err == nil || !strings.Contains(err.Error(), "admin_password: must not be empty") || !strings.Contains(err.Error(), "operator_password") {
+		t.Errorf("%v", err)
 	}
 }

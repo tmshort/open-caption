@@ -208,12 +208,33 @@ func TestEveryGeneratedBlockRoundTrips(t *testing.T) {
 
 func TestSettingNamesAreStable(t *testing.T) {
 	names := strings.Join(SettingNames(), ",")
-	if names != "title,background,text color,speaker name color,font,text size,speaker names,idle message,loop seconds,scrollback lines" {
+	if names != "title,background,text color,speaker name color,font,text size,speaker names,idle message,loop seconds,scrollback lines,archived" {
 		t.Errorf("%s", names)
 	}
 	for _, n := range SettingNames() {
 		if SettingHelp(n) == "" {
 			t.Errorf("%s has no description", n)
 		}
+	}
+}
+
+func TestArchivedSetting(t *testing.T) {
+	for in, want := range map[string]bool{"yes": true, "TRUE": true, "on": true, "no": false, "": false} {
+		r := Parse("[settings]\narchived: "+in+"\n[/settings]\nHi", Options{})
+		if got := r.Settings.Archived != nil && *r.Settings.Archived; got != want {
+			t.Errorf("%q: %v", in, got)
+		}
+	}
+	r := Parse("[settings]\narchived: maybe\n[/settings]\nHi", Options{})
+	if len(r.Diagnostics) == 0 || !strings.Contains(r.Diagnostics[0].Message, "not yes or no") {
+		t.Errorf("%+v", r.Diagnostics)
+	}
+	yes := true
+	out := UpdateSettings("Hello", false, func(s *Settings) { s.Archived = &yes })
+	if out != "[settings]\narchived: yes\n[/settings]\n\nHello" {
+		t.Errorf("%q", out)
+	}
+	if back := UpdateSettings(out, false, func(s *Settings) { s.Archived = nil }); back != "Hello" {
+		t.Errorf("restoring leaves no trace: %q", back)
 	}
 }

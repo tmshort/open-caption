@@ -21,6 +21,7 @@ type Settings struct {
 	IdleMessage     *string  `json:"idleMessage,omitempty"`
 	LoopSeconds     *float64 `json:"loopSeconds,omitempty"`
 	ScrollbackLines *int     `json:"scrollbackLines,omitempty"`
+	Archived        *bool    `json:"archived,omitempty"` // set only when true
 
 	// Extra holds lines of a [settings] block this version does not understand, kept so that
 	// rewriting the block never throws away what someone typed.
@@ -60,6 +61,7 @@ var settingTable = []setting{
 	{name: "idle message", aliases: []string{"idle", "pre-show message", "preshow message", "message before the show starts"}, translated: true, help: "Text shown before the first line is sent."},
 	{name: "loop seconds", aliases: []string{"loop time", "default loop seconds", "loop item seconds"}, help: "How long each item of a [loop] stays when it does not say."},
 	{name: "scrollback lines", aliases: []string{"scrollback", "lines kept"}, help: "How many captions a viewer can scroll back through (20 to 2000)."},
+	{name: "archived", aliases: []string{"archive"}, help: "yes if the show is archived: kept, but out of the way in Setup and not able to go on air until it is restored."},
 }
 
 // SettingNames lists the names written to show files, in the order they are written. Help is tested
@@ -248,6 +250,16 @@ func (s *Settings) set(name, value string) error {
 			return err
 		}
 		s.ScrollbackLines = &n
+	case "archived":
+		switch strings.ToLower(value) {
+		case "yes", "true", "on", "1":
+			t := true
+			s.Archived = &t
+		case "no", "false", "off", "0", "":
+			s.Archived = nil
+		default:
+			return fmt.Errorf("%q is not yes or no", value)
+		}
 	}
 	return nil
 }
@@ -429,6 +441,9 @@ func (s Settings) render() []string {
 	if s.ScrollbackLines != nil {
 		add("scrollback lines", strconv.Itoa(*s.ScrollbackLines))
 	}
+	if s.Archived != nil && *s.Archived {
+		add("archived", "yes")
+	}
 	out = append(out, s.Extra...)
 	return append(out, "[/settings]")
 }
@@ -460,7 +475,7 @@ func ReplaceSettings(text string, s Settings) string {
 		}
 		lines = append(lines[:a:a], lines[b+1:]...)
 	}
-	empty := s.Title == nil && !s.LookSet() && s.IdleMessage == nil && s.LoopSeconds == nil && s.ScrollbackLines == nil && len(s.Extra) == 0
+	empty := s.Title == nil && !s.LookSet() && s.IdleMessage == nil && s.LoopSeconds == nil && s.ScrollbackLines == nil && (s.Archived == nil || !*s.Archived) && len(s.Extra) == 0
 	if empty {
 		return strings.Join(lines, "\n")
 	}

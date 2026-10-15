@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/tmshort/open-caption/internal/logx"
 	"io"
 	"io/fs"
 	"net"
@@ -251,6 +252,8 @@ func (s *Server) adminRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/admin/shows/{id}/assets/{file}", adm(s.getAsset))
 	mux.HandleFunc("DELETE /api/admin/shows/{id}/assets/{file}", adm(s.deleteAsset))
 	mux.HandleFunc("GET /api/admin/shows/{id}/export", adm(s.exportShow))
+	mux.HandleFunc("POST /api/admin/shows/{id}/archive", adm(s.archiveShow))
+	mux.HandleFunc("POST /api/admin/shows/{id}/unarchive", adm(s.unarchiveShow))
 	mux.HandleFunc("POST /api/admin/shows/{id}/activate", adm(s.activateShow))
 	mux.HandleFunc("GET /api/admin/network", adm(s.network))
 	mux.HandleFunc("GET /api/admin/network/qr.png", adm(s.qr))
@@ -388,6 +391,32 @@ func (s *Server) updateShow(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, s.summary(m))
 }
 
+// archiveShow puts a show away: kept in full, but listed apart in Setup and unable to go on air.
+func (s *Server) archiveShow(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	if s.rt.ShowID() == id {
+		writeErr(w, http.StatusConflict, "This show is the one on air. Activate another show (or close this one) before archiving it.")
+		return
+	}
+	m, err := s.store.SetArchived(id, true)
+	if err != nil {
+		storeErr(w, err)
+		return
+	}
+	logx.Infof("show %q archived", m.Name)
+	writeJSON(w, http.StatusOK, s.summary(m))
+}
+
+func (s *Server) unarchiveShow(w http.ResponseWriter, r *http.Request) {
+	m, err := s.store.SetArchived(r.PathValue("id"), false)
+	if err != nil {
+		storeErr(w, err)
+		return
+	}
+	logx.Infof("show %q restored from the archive", m.Name)
+	writeJSON(w, http.StatusOK, s.summary(m))
+}
+
 func (s *Server) duplicateShow(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		Name string `json:"name"`
@@ -415,6 +444,7 @@ func (s *Server) deleteShow(w http.ResponseWriter, r *http.Request) {
 		storeErr(w, err)
 		return
 	}
+	logx.Infof("show %s deleted", id)
 	writeJSON(w, http.StatusOK, map[string]any{"ok": true})
 }
 
@@ -776,6 +806,10 @@ func (s *Server) activateShow(w http.ResponseWriter, r *http.Request) {
 		storeErr(w, err)
 		return
 	}
+	if l.meta.Archived {
+		writeErr(w, http.StatusConflict, "This show is archived. Restore it from the archive first.")
+		return
+	}
 	if s.rt.Engine().Operator().Live && !req.Force {
 		writeJSON(w, http.StatusConflict, map[string]any{"error": "A show is live right now. Activating a show restarts it from the beginning.",
 			"live": true, "activeId": s.rt.ShowID()})
@@ -783,6 +817,7 @@ func (s *Server) activateShow(w http.ResponseWriter, r *http.Request) {
 	}
 	s.rt.SetShowLangs(id, l.meta.Name, l.assets, l.primary, l.others, themeToRuntime(l.meta.Theme))
 	s.rt.Flush()
+	logx.Infof("show %q activated (%d language(s))", l.meta.Name, 1+len(l.others))
 	skipped := []string{}
 	for code := range l.skipped {
 		skipped = append(skipped, code)
@@ -1108,6 +1143,7 @@ func (s *Server) changePasswords(w http.ResponseWriter, r *http.Request) {
 	}
 	s.cfg.AdminPassword, s.cfg.OperatorPassword = effAdmin, effOp
 	s.auth.setPasswords(newAdmin, newOp, principal(r).Token)
+	logx.Infof("passwords changed in Setup (admin: %v, operator: %v); other sessions were signed out", newAdmin != "", newOp != "")
 	writeJSON(w, http.StatusOK, map[string]any{"ok": true, "changed": map[string]bool{"admin": newAdmin != "", "operator": newOp != ""}})
 }
 
@@ -1134,6 +1170,7 @@ func (s *Server) supportBundle(w http.ResponseWriter, r *http.Request) {
 	var info strings.Builder
 	fmt.Fprintf(&info, "open-caption %s\n", s.version)
 	fmt.Fprintf(&info, "generated: %s\n", time.Now().Format(time.RFC3339))
+	fmt.Fprintf(&info, "log level: %s\n", logx.Current())
 	fmt.Fprintf(&info, "uptime: %s\n", time.Since(s.started).Round(time.Second))
 	fmt.Fprintf(&info, "go: %s %s/%s\n", runtime.Version(), runtime.GOOS, runtime.GOARCH)
 	fmt.Fprintf(&info, "host: %s\naddresses: %s\n", host, strings.Join(ipStrings(netinfo.LocalIPs()), ", "))

@@ -327,14 +327,51 @@
     $('tip').hidden = false;
     setTimeout(() => { $('tip').hidden = true; }, 12000);
   }
-  async function keepAwake() {
-    if (!('wakeLock' in navigator)) { tip(); return; }
-    try {
-      if ('wakeLock' in navigator && document.visibilityState === 'visible' && !lock) {
-        lock = await navigator.wakeLock.request('screen');
-        lock.addEventListener('release', () => { lock = null; });
+  // Where the Screen Wake Lock API is missing (every browser on plain http:// except localhost, and older
+  // iPhones) a tiny silent, invisible video looping on the page keeps the screen on instead. Browsers
+  // only allow it to start without a tap in some cases, so the first touch starts it if needed.
+  let video = null, videoWaiting = false;
+  function setAwake(how) { document.documentElement.dataset.awake = how; }
+  function startVideo() {
+    if (!video) {
+      video = document.createElement('video');
+      video.muted = true; video.defaultMuted = true; video.loop = true; video.playsInline = true;
+      video.setAttribute('muted', ''); video.setAttribute('playsinline', ''); video.setAttribute('aria-hidden', 'true'); video.tabIndex = -1;
+      video.setAttribute('title', 'Keeps the screen on');
+      video.style.cssText = 'position:fixed;right:0;bottom:0;width:2px;height:2px;opacity:0.01;pointer-events:none;border:0';
+      for (const [file, type] of [['nosleep.mp4', 'video/mp4'], ['nosleep.webm', 'video/webm']]) {
+        if (video.canPlayType(type)) { const src = document.createElement('source'); src.src = '/static/audience/' + file; src.type = type; video.append(src); }
       }
-    } catch (e) { tip(); }
+      // Some browsers drop a very short looping clip; start it again if that happens.
+      video.addEventListener('ended', () => { video.currentTime = 0; video.play().catch(() => {}); });
+      video.addEventListener('playing', () => setAwake('video'));
+      document.body.append(video);
+    }
+    const p = video.play();
+    if (p && p.then) p.then(() => setAwake('video'));
+    if (p && p.catch) p.catch(() => {
+      // Not allowed yet: try again at the first tap, and show the Auto-Lock tip meanwhile.
+      setAwake('none'); tip();
+      if (videoWaiting) return;
+      videoWaiting = true;
+      const again = () => { videoWaiting = false; ['touchend', 'click', 'keydown'].forEach((ev) => document.removeEventListener(ev, again, true)); video.play().catch(() => {}); };
+      ['touchend', 'click', 'keydown'].forEach((ev) => document.addEventListener(ev, again, true));
+    });
+  }
+  async function keepAwake() {
+    if ('wakeLock' in navigator) {
+      try {
+        if (document.visibilityState === 'visible' && !lock) {
+          lock = await navigator.wakeLock.request('screen');
+          lock.addEventListener('release', () => { lock = null; });
+          setAwake('wakelock');
+          if (video) video.pause();
+        }
+        return;
+      } catch (e) { /* refused (for example low battery): use the video instead */ }
+    }
+    if (video && !video.paused) return;
+    startVideo();
   }
 
   applyTheme({});

@@ -183,6 +183,8 @@ type Meta struct {
 	Theme        Theme     `json:"theme"`
 	// LookSaved is true once the show file sets any look setting (so Setup can tick the Look step).
 	LookSaved bool `json:"lookSaved"`
+	// Archived shows are kept but out of the way: Setup lists them separately and they cannot go on air.
+	Archived bool `json:"archived"`
 }
 
 // Asset describes an uploaded image.
@@ -311,7 +313,7 @@ func (s *Store) Get(id string) (Meta, error) {
 		return Meta{}, err
 	}
 	res := showfile.Parse(string(b), showfile.Options{})
-	m := Meta{ID: id, Language: res.Language, LanguageName: res.LanguageName, LookSaved: res.Settings.LookSet()}
+	m := Meta{ID: id, Language: res.Language, LanguageName: res.LanguageName, LookSaved: res.Settings.LookSet(), Archived: res.Settings.Archived != nil && *res.Settings.Archived}
 	if m.Language == "" {
 		m.Language = s.def.Language
 	}
@@ -434,6 +436,25 @@ func (s *Store) Update(id string, name *string, look *Theme) (Meta, error) {
 				return m, err
 			}
 		}
+	}
+	return s.Get(id)
+}
+
+// SetArchived archives or restores a show by changing its show file's [settings].
+func (s *Store) SetArchived(id string, archived bool) (Meta, error) {
+	text, err := s.ReadShowFile(id, "")
+	if err != nil {
+		return Meta{}, err
+	}
+	text = showfile.UpdateSettings(text, false, func(st *showfile.Settings) {
+		if archived {
+			st.Archived = &archived
+		} else {
+			st.Archived = nil
+		}
+	})
+	if err := s.WriteShowFile(id, "", text); err != nil {
+		return Meta{}, err
 	}
 	return s.Get(id)
 }
@@ -672,7 +693,7 @@ func (s *Store) Duplicate(id, name string) (Meta, error) {
 			return fail(err)
 		}
 		if e.Name() == mainFile {
-			b = []byte(showfile.UpdateSettings(string(b), false, func(st *showfile.Settings) { st.Title = &title }))
+			b = []byte(showfile.UpdateSettings(string(b), false, func(st *showfile.Settings) { st.Title, st.Archived = &title, nil }))
 		}
 		if err := atomicWrite(filepath.Join(dstDir, e.Name()), b, 0o644); err != nil {
 			return fail(err)
@@ -733,5 +754,5 @@ func (s *Store) ImportFiles(files map[string]string, suffix string) (Meta, error
 			}
 		}
 	}
-	return s.Get(m.ID)
+	return s.SetArchived(m.ID, false) // an imported show is one you want to see
 }
