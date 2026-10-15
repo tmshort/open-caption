@@ -1,7 +1,6 @@
-//go:build darwin || freebsd || netbsd || openbsd || dragonfly || linux
+//go:build darwin || freebsd || netbsd || dragonfly
 
 package mdns
 
-import "syscall"
-
-const soReusePort = syscall.SO_REUSEPORT
+// SO_REUSEPORT, spelled out because Go's syscall package does not define it on every system and version.
+const soReusePort = 0x200
