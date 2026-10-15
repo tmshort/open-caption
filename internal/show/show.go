@@ -39,7 +39,7 @@ var (
 	langRe        = regexp.MustCompile(`^[a-z]{2,3}(-[a-z0-9]{2,8})?$`)
 	colorRe       = regexp.MustCompile(`^#[0-9a-fA-F]{6}$`)
 	allowedExt    = map[string]string{".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".gif": "image/gif", ".webp": "image/webp"}
-	allowedFonts  = map[string]bool{"system": true, "serif": true, "mono": true}
+	allowedFonts  = map[string]bool{"system": true, "serif": true, "mono": true, "dyslexic": true}
 	allowedSpeak  = map[string]bool{"label": true, "color": true, "hidden": true}
 	unsafeNameRun = regexp.MustCompile(`[^\p{L}\p{N} ._()\-]+`)
 )

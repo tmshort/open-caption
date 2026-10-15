@@ -1,3 +1,5 @@
+@font-face { font-family: "OpenDyslexic"; font-style: normal; font-weight: 400; font-display: swap; src: url(/static/shared/fonts/opendyslexic-400-normal.woff2) format("woff2"); }
+@font-face { font-family: "OpenDyslexic"; font-style: normal; font-weight: 700; font-display: swap; src: url(/static/shared/fonts/opendyslexic-700-normal.woff2) format("woff2"); }
 :root { --bg:#f6f7f9; --panel:#fff; --fg:#14171c; --dim:#5b6472; --line:#d9dde3; --accent:#1f5fd1; --accent-fg:#fff; --ok:#14804a; --warn:#a15c00; --bad:#b3261e; --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
 @media (prefers-color-scheme: dark) { :root { --bg:#111317; --panel:#1b1e24; --fg:#e8ebf0; --dim:#9aa3b0; --line:#323843; --accent:#6c9cff; --accent-fg:#0b1020; --ok:#4cc38a; --warn:#f0b24a; --bad:#ff7b72; } }
 * { box-sizing: border-box; }
@@ -75,6 +77,7 @@ table.cheat { border-collapse: collapse; width: 100%; font-size: .9rem; } table.
 .look-grid { display: grid; grid-template-columns: minmax(16rem, 22rem) 1fr; gap: 1.2rem; }
 @media (max-width: 800px) { .look-grid { grid-template-columns: 1fr; } }
 .field { display: block; margin: 0 0 .9rem; } .field > span { display: block; font-weight: 600; margin-bottom: .2rem; }
+.field select, .field input[type=text] { max-width: 100%; }
 .field input[type=color] { width: 4rem; height: 2.2rem; padding: 0; }
 .presets { display: flex; gap: .4rem; flex-wrap: wrap; margin-bottom: 1rem; }
 .previews { display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-start; }

@@ -39,7 +39,11 @@ func (s *Server) audienceRoutes(mux *http.ServeMux) {
 	shared, _ := fs.Sub(web.Shared, "shared")
 	sharedFS := http.StripPrefix("/static/shared/", http.FileServer(http.FS(shared)))
 	mux.HandleFunc("GET /static/shared/", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Cache-Control", "no-cache")
+		if strings.HasPrefix(r.URL.Path, "/static/shared/fonts/") {
+			w.Header().Set("Cache-Control", "public, max-age=86400") // large and never changes between releases
+		} else {
+			w.Header().Set("Cache-Control", "no-cache")
+		}
 		w.Header().Set("X-Content-Type-Options", "nosniff")
 		sharedFS.ServeHTTP(w, r)
 	})

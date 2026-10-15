@@ -4,7 +4,7 @@ The **Look** step sets how captions appear on every audience device. The default
 
 - **Colors:** a contrast reading shows how readable the combination is. Aim for 7:1 or better; the page warns when it is too low.
 - **Text size:** scales all text. Devices fit the text to their screen, so this is a relative change, not a size in points.
-- **Font:** clean (the device's usual font), serif or monospace.
+- **Font:** clean (the device's usual font), serif, monospace, or **dyslexia-friendly (OpenDyslexic)**, a font with heavier letter bottoms and distinctive letter shapes that some readers with dyslexia find easier. It is built into the program, so it needs no internet, and a device downloads it (about 115 KB) only when it is used. Lines get a little extra height with it. Audience members can also switch it on for their own device from the small **Aa** control, whatever font you chose here.
 - **Speaker names:** show above the line in one color (the *speaker name color*), show them in a **different color for each character**, or hide them. Character colors are chosen automatically, in the order the characters first speak, from a palette that works for color-blind viewers, and are adjusted to stay readable on your background.
 - **Message before the show starts:** shown until the first line is sent, if the script does not begin with a loop.
 
@@ -16,4 +16,4 @@ If a browser is showing captions on a projector or large monitor, open the audie
 
 ## Audience controls
 
-Audience members never need to do anything. A small, hidden control in the top-right corner of the audience page lets a person make their own text bigger or smaller or switch to dark-on-light, but only on their own device.
+Audience members never need to do anything. A small, faint **Aa** control in the top-right corner of the audience page lets a person make their own text bigger or smaller, switch to dark-on-light, or turn on the dyslexia-friendly font, but only on their own device.

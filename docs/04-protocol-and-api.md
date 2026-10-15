@@ -149,7 +149,7 @@ the server's retained buffer, the server sends a `snapshot`. Clients treat a
   "scrollback": [ /* CaptionItem[] */ ],
   "fullscreen": null,            // or Item
   "preload": ["/assets/odd-couple/curtain.jpg"],
-  "theme": { "bg": "#000000", "fg": "#ffffff", "accent": "#ffffff", "font": "system",
+  "theme": { "bg": "#000000", "fg": "#ffffff", "accent": "#ffffff", "font": "system",  /* system | serif | mono | dyslexic */
              "scalePct": 100, "speakers": "label", "idleMessage": "Captions will begin shortly" }
 }
 

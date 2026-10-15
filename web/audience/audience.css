@@ -1,3 +1,9 @@
+/* OpenDyslexic (SIL Open Font License; see web/shared/fonts/OFL.txt). A device only downloads it if it is used. */
+@font-face { font-family: "OpenDyslexic"; font-style: normal; font-weight: 400; font-display: swap; src: url(/static/shared/fonts/opendyslexic-400-normal.woff2) format("woff2"); }
+@font-face { font-family: "OpenDyslexic"; font-style: italic; font-weight: 400; font-display: swap; src: url(/static/shared/fonts/opendyslexic-400-italic.woff2) format("woff2"); }
+@font-face { font-family: "OpenDyslexic"; font-style: normal; font-weight: 700; font-display: swap; src: url(/static/shared/fonts/opendyslexic-700-normal.woff2) format("woff2"); }
+@font-face { font-family: "OpenDyslexic"; font-style: italic; font-weight: 700; font-display: swap; src: url(/static/shared/fonts/opendyslexic-700-italic.woff2) format("woff2"); }
+
 :root {
   --bg: #000;
   --fg: #fff;
@@ -16,6 +22,9 @@ body {
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 body.projector { cursor: none; }
+/* The dyslexia-friendly font is already wide-spaced: just give the lines a little more room. */
+body.dys #captions { line-height: 1.5; }
+body.dys #fs { line-height: 1.35; }
 
 /* Scrolling captions: newest at the bottom, older lines clipped off the top. */
 #captions {
@@ -78,6 +87,8 @@ body.projector #dot:not(.off) { display: none; }
 #gear:hover, #gear:focus-visible, #gear[aria-expanded="true"] { opacity: .85; background: #8883; }
 #ctl { position: fixed; top: 3.4rem; right: 8px; z-index: 9; display: flex; gap: .4rem; padding: .5rem; border-radius: 10px; background: var(--bg); border: 1px solid var(--fg); }
 #ctl[hidden] { display: none; }
+#ctl { flex-wrap: wrap; max-width: calc(100vw - 16px); }
+#ctl button[aria-pressed="true"] { background: var(--fg); color: var(--bg); }
 #ctl button { min-width: 3rem; min-height: 2.75rem; padding: 0 .8rem; border: 1px solid var(--fg); border-radius: 8px; background: var(--bg); color: var(--fg); font: 600 1rem var(--font); cursor: pointer; }
 body.projector #gear, body.projector #ctl { display: none; }
 :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }

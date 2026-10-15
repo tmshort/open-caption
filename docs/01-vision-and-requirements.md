@@ -67,7 +67,7 @@ simultaneous shows, internet-facing deployment.
 - **REQ-042** Works on current Safari/iOS, Chrome/Android, desktop Chrome/Firefox/Edge/Safari.
 - **REQ-043** Keeps the screen awake where the browser allows (Wake Lock; fallback video trick as a documented option).
 - **REQ-044** Projector display mode: URL parameter for larger type, no chrome, cursor hidden.
-- **REQ-045** Accessibility-first defaults: pure black background / white text, high contrast, large type, responsive to orientation and screen size. Venue-level theme (colors, font size) and optional per-speaker colors set in setup; optional per-device local font-size control that is never required.
+- **REQ-045** Accessibility-first defaults: pure black background / white text, high contrast, large type, responsive to orientation and screen size. Venue-level theme (colors, font size) and optional per-speaker colors set in setup; optional per-device local font-size control that is never required. A dyslexia-friendly font (OpenDyslexic, bundled) is available as a show-wide choice and as a per-device option.
 
 ### Configuration and access
 - **REQ-050** Setup is a guided wizard: create show → import script → upload images → look → test → go live.

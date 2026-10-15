@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"io"
 	"net/http"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -136,5 +137,42 @@ func TestSnapshotCarriesSpeakerOrderForColors(t *testing.T) {
 	resp.Body.Close()
 	if resp.StatusCode != 200 {
 		t.Errorf("shared speakers.js: %d", resp.StatusCode)
+	}
+}
+
+// Every font the audience page's stylesheet asks for must actually be served (the program works with no internet).
+func TestBundledFontsAreServed(t *testing.T) {
+	_, ts, c := adminServer(t)
+	css, _ := http.Get(ts.URL + "/static/audience/audience.css")
+	body, _ := io.ReadAll(css.Body)
+	css.Body.Close()
+	urls := regexp.MustCompile(`url\((/[^)]+\.woff2)\)`).FindAllStringSubmatch(string(body), -1)
+	if len(urls) < 4 {
+		t.Fatalf("expected the OpenDyslexic @font-face rules, found %d", len(urls))
+	}
+	for _, m := range urls {
+		resp, err := http.Get(ts.URL + m[1])
+		if err != nil {
+			t.Fatal(err)
+		}
+		b, _ := io.ReadAll(resp.Body)
+		resp.Body.Close()
+		if resp.StatusCode != 200 || len(b) < 50000 || string(b[:4]) != "wOF2" ||
+			resp.Header.Get("Content-Type") != "font/woff2" || resp.Header.Get("X-Content-Type-Options") != "nosniff" ||
+			!strings.Contains(resp.Header.Get("Cache-Control"), "max-age") {
+			t.Errorf("%s: %d %s %v (%d bytes)", m[1], resp.StatusCode, resp.Header.Get("Content-Type"), resp.Header, len(b))
+		}
+	}
+	// The font can be chosen for a show and reaches audiences in the theme.
+	id := createShow(t, c, "Fonts")
+	if code, _ := c.do("PUT", "/api/admin/shows/"+id, map[string]any{"theme": map[string]any{"font": "dyslexic"}}); code != 200 {
+		t.Errorf("dyslexic font: %d", code)
+	}
+	if code, _ := c.do("PUT", "/api/admin/shows/"+id, map[string]any{"theme": map[string]any{"font": "comic-sans"}}); code != 400 {
+		t.Errorf("unknown font: %d", code)
+	}
+	// The license travels with the font.
+	if resp, _ := http.Get(ts.URL + "/static/shared/fonts/OFL.txt"); resp.StatusCode != 200 {
+		t.Errorf("OFL.txt: %d", resp.StatusCode)
 	}
 }

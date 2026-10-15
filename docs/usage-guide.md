@@ -132,7 +132,7 @@ Open the setup page and follow the six steps along the top. The **Help** button 
 1. **Show.** Create a show (or the sample show, to try things out).
 2. **Script.** Paste the script or drop in a `.txt` or `.md` file. Each line becomes one caption. Fix anything listed under *Problems and notes*; click one to jump to its line. Save.
 3. **Images.** Upload the pictures the script uses (PNG, JPG, GIF or WebP, ideally under 1 MB each).
-4. **Look.** Choose colors and text size. The defaults (white on black, large) are best for most people.
+4. **Look.** Choose colors, font and text size. The defaults (white on black, large) are best for most people. A dyslexia-friendly font (OpenDyslexic) is built in; individual audience members can also switch it on for their own device from the small **Aa** control.
 5. **Test.** Run a private rehearsal: you press Space as the operator would, and see the audience screen next to it. Nothing reaches the audience.
 6. **Go Live.** Check the readiness list, print the QR sign, and press **Start show**.
 

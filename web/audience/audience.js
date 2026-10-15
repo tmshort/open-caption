@@ -10,7 +10,7 @@
   const preloaded = new Set();
   let es = null, lastEvent = 0, backoff = 500, offlineTimer = null, retryTimer = null;
 
-  const FONTS = { system: 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif', serif: 'Georgia, "Times New Roman", serif', mono: 'ui-monospace, Menlo, Consolas, monospace' };
+  const FONTS = { dyslexic: '"OpenDyslexic", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif', system: 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif', serif: 'Georgia, "Times New Roman", serif', mono: 'ui-monospace, Menlo, Consolas, monospace' };
 
   // ---- this device's own preferences (optional; never required) ----
   const store = {
@@ -19,11 +19,16 @@
   };
   let localStep = parseInt(store.get('oc.step'), 10) || 0; // -3..+6 steps of 15%
   let lightScheme = store.get('oc.light') === '1';
+  let localFont = store.get('oc.font') === 'dyslexic'; // this device's own choice, on top of the show's font
   function paintLocal() {
     const t = state.theme || {}, r = document.documentElement.style;
     const urlPct = parseInt(params.get('size'), 10);
     const pct = (urlPct > 0 ? urlPct : (t.scalePct || 100)) * (1 + 0.15 * localStep);
     r.setProperty('--scale', String(Math.max(0.4, pct / 100) * (projector ? 1.5 : 1)));
+    const fontKey = localFont ? 'dyslexic' : t.font;
+    r.setProperty('--font', FONTS[fontKey] || FONTS.system);
+    document.body.classList.toggle('dys', fontKey === 'dyslexic');
+    $('dys').setAttribute('aria-pressed', String(localFont));
     if (lightScheme) { r.setProperty('--bg', '#ffffff'); r.setProperty('--fg', '#000000'); r.setProperty('--accent', '#000000'); }
     else {
       r.setProperty('--bg', t.bg || '#000000'); r.setProperty('--fg', t.fg || '#ffffff');
@@ -35,13 +40,13 @@
   $('gear').addEventListener('click', () => { const open = $('ctl').hidden; $('ctl').hidden = !open; $('gear').setAttribute('aria-expanded', String(open)); });
   $('bigger').addEventListener('click', () => { localStep = Math.min(6, localStep + 1); store.set('oc.step', String(localStep)); paintLocal(); });
   $('smaller').addEventListener('click', () => { localStep = Math.max(-3, localStep - 1); store.set('oc.step', String(localStep)); paintLocal(); });
+  $('dys').addEventListener('click', () => { localFont = !localFont; store.set('oc.font', localFont ? 'dyslexic' : ''); paintLocal(); });
   $('scheme').addEventListener('click', () => { lightScheme = !lightScheme; store.set('oc.light', lightScheme ? '1' : '0'); paintLocal(); });
 
   // ---- rendering ----
   function applyTheme(t) {
     state.theme = t || {};
     const r = document.documentElement.style;
-    r.setProperty('--font', FONTS[t.font] || FONTS.system);
     paintLocal();
     $('idle').textContent = t.idleMessage || '';
   }
