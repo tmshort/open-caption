@@ -188,7 +188,7 @@ You can edit and re-save a script while a show is live (for example to fix a typ
 
 - **Space** sends the next line (also Right arrow, Page Down, Enter, and most clickers).
 - **Backspace** undoes the last thing you sent.
-- **B** blanks or restores the audience screens. **C** clears the captions.
+- **B** blanks the audience screens (hides everything; the same captions return when you press **B** again). **C** clears them (erases the captions, so the next line starts on an empty screen). **Backspace** undoes either.
 - **Shift+Q** stops an intermission or pre-show loop (blank screen). **Space** continues.
 - **Message…** puts a one-off notice on every screen ("The show will resume shortly"). **Back** removes it.
 - Click a line, then confirm, to jump anywhere. **/** searches the script.
@@ -251,8 +251,8 @@ Print this and keep it by the operator.
 | **Space** | Send the next line |
 | **Backspace** | Undo the last thing sent |
 | **Shift+Q** | Stop a loop (blank screen) |
-| **B** | Blank / restore the screens |
-| **C** | Clear the captions |
+| **B** | Blank: hide everything, captions come back on unblank |
+| **C** | Clear: erase the captions for a fresh start |
 | **/** | Search the script |
 | **?** | Help (keys are paused while it is open) |
 

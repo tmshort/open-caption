@@ -10,6 +10,19 @@ The page shows the script as a list. Lines already sent are dim, the line **on s
 
 Follow the actors, and press **Space** as each line is spoken. You can use a clicker; a clicker's next and previous buttons work like Space and Backspace.
 
+## Blank and Clear
+
+Both leave the audience screens empty, but they are not the same:
+
+| | **Blank** (`B`) | **Clear** (`C`) |
+|---|---|---|
+| What the audience sees | Nothing: just the background | An empty caption area, ready for new lines |
+| The earlier lines | **Kept.** Press `B` again, or send the next line, and they are still there above it | **Erased.** The next line starts on an empty screen |
+| Use it for | A blackout, a pause, or hiding the captions for a moment | A new scene, or after a song, so old lines do not pile up |
+| Undo | `B` again, or **Backspace** | **Backspace** |
+
+A script can do the same with the `[blank]` and `[clear]` commands; they appear in your list as `BLANK SCREEN` and `CLEAR SCREEN`.
+
 ## Before the show
 
 - Sign in to the operator page. You will see "You are in control". If it says another operator is in control, use **Take over** only if you are meant to be the operator.
