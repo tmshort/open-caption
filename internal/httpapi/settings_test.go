@@ -332,6 +332,15 @@ func TestArchivingAShow(t *testing.T) {
 	if code, _ := c.do("POST", "/api/admin/shows/"+old+"/activate", map[string]bool{"force": true}); code != 200 {
 		t.Errorf("a restored show can go on air: %d", code)
 	}
+	// The show on air cannot be archived by typing the setting into its show file either.
+	_, cur := c.do("GET", "/api/admin/shows/"+old+"/showfile", nil)
+	code, r = c.do("PUT", "/api/admin/shows/"+old+"/showfile", map[string]string{"text": showfileWithArchived(cur["text"].(string))})
+	if code != 409 || !strings.Contains(r["error"].(string), "on air") {
+		t.Errorf("archiving the active show by editing: %d %v", code, r)
+	}
+	if _, g := c.do("GET", "/api/admin/shows/"+old+"/showfile", nil); strings.Contains(g["text"].(string), "archived") {
+		t.Error("the refused save must not change the file")
+	}
 	// An archived show can be deleted.
 	c.do("POST", "/api/admin/shows/"+keep+"/archive", nil)
 	if code, _ := c.do("DELETE", "/api/admin/shows/"+keep, nil); code != 200 {
@@ -363,4 +372,8 @@ func TestEarlierVersionsOfAShowFile(t *testing.T) {
 	if code, _ := c.do("GET", "/api/admin/shows/missing-0000/showfile/history", nil); code != 404 {
 		t.Errorf("unknown show: %d", code)
 	}
+}
+
+func showfileWithArchived(text string) string {
+	return "[settings]\narchived: yes\n[/settings]\n" + text
 }

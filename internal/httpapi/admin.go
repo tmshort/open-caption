@@ -549,6 +549,12 @@ func (s *Server) putShowFile(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	active := s.rt.ShowID() == id
+	if lang := r.URL.Query().Get("lang"); active && (lang == "" || lang == m.Language) {
+		if st := showfile.ReadSettings(req.Text, false); st.Archived != nil && *st.Archived {
+			writeErr(w, http.StatusConflict, "This show is the one on air, so it cannot be archived. Activate another show first, or remove the \"archived\" line.")
+			return
+		}
+	}
 	if active && s.rt.Engine().Operator().Live && strings.TrimSpace(req.Confirm) != m.Name {
 		writeJSON(w, http.StatusConflict, map[string]any{"error": "This show is live. Type the show's name to confirm the change.",
 			"needConfirm": true, "showName": m.Name})
