@@ -22,8 +22,10 @@ type Server struct {
 	auth    *auth
 	dev     bool
 	store   *show.Store
-	logs    interface{ String() string } // recent log lines for the support bundle (may be nil)
-	started time.Time
+
+	adminAllow, operatorAllow config.AllowList             // which computers may open Setup / the operator page
+	logs                      interface{ String() string } // recent log lines for the support bundle (may be nil)
+	started                   time.Time
 
 	lmu       sync.Mutex
 	listeners Listeners
@@ -42,6 +44,9 @@ type Server struct {
 func New(cfg config.Config, version string) *Server {
 	s := &Server{cfg: cfg, version: version, rt: NewRuntime(cfg), auth: newAuth(cfg.AdminPassword, cfg.OperatorPassword, sessionsPath(cfg)),
 		rehearsals: map[string]*Runtime{}, started: time.Now(), quit: make(chan struct{})}
+	// An unreadable list denies everything: never fall back to "anyone" by accident.
+	s.adminAllow, _ = config.ParseAllowList(cfg.Access.AdminAllow)
+	s.operatorAllow, _ = config.ParseAllowList(cfg.Access.OperatorAllow)
 	if cfg.DataDir != "" {
 		if st, err := show.NewStore(filepath.Join(cfg.DataDir, "shows"), cfg.Defaults.Language, cfg.Defaults.IdleMessage); err == nil {
 			s.store = st
@@ -147,7 +152,7 @@ func (s *Server) Handler() http.Handler {
 	if s.dev {
 		s.devRoutes(mux)
 	}
-	return mux
+	return s.originGuard(mux)
 }
 
 func writeJSON(w http.ResponseWriter, code int, v any) {

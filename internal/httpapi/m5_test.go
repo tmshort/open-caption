@@ -3,8 +3,11 @@ package httpapi
 import (
 	"archive/zip"
 	"bytes"
+	"github.com/tmshort/open-caption/internal/config"
 	"io"
 	"net/http"
+	"net/http/httptest"
+	"net/url"
 	"regexp"
 	"strings"
 	"testing"
@@ -231,5 +234,178 @@ func TestLookSavedIsRememberedOnTheServer(t *testing.T) {
 	c.do("PUT", "/api/admin/shows/"+id, map[string]any{"theme": map[string]any{"scalePct": 120}})
 	if _, r = c.do("GET", "/api/admin/shows/"+id, nil); r["lookSaved"] != true {
 		t.Error("saving the look should be remembered")
+	}
+}
+
+// ---- access list and forged-request protection ----
+
+func accessServer(t *testing.T, admin, operator []string) (*Server, *httptest.Server) {
+	t.Helper()
+	cfg := testConfig()
+	cfg.DataDir = t.TempDir()
+	cfg.Access.AdminAllow, cfg.Access.OperatorAllow = admin, operator
+	s := New(cfg, "t")
+	t.Cleanup(s.Close)
+	ts := httptest.NewServer(s.Handler()) // requests arrive from 127.0.0.1
+	t.Cleanup(ts.Close)
+	return s, ts
+}
+
+func status(t *testing.T, method, url string, hdr map[string]string, body string) int {
+	t.Helper()
+	req, _ := http.NewRequest(method, url, strings.NewReader(body))
+	for k, v := range hdr {
+		req.Header.Set(k, v)
+	}
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	resp.Body.Close()
+	return resp.StatusCode
+}
+
+func TestUnrestrictedByDefault(t *testing.T) {
+	_, ts := accessServer(t, nil, nil)
+	for _, p := range []string{"/admin", "/operator", "/static/admin/admin.js", "/static/operator/operator.js"} {
+		if code := status(t, "GET", ts.URL+p, nil, ""); code != 200 {
+			t.Errorf("%s: %d", p, code)
+		}
+	}
+}
+
+func TestSetupLimitedToTheListedComputers(t *testing.T) {
+	// Setup only from "elsewhere": this test computer (127.0.0.1) is not on the list.
+	_, ts := accessServer(t, []string{"10.0.0.0/8"}, nil)
+	for _, p := range []string{"/admin", "/static/admin/admin.js"} {
+		if code := status(t, "GET", ts.URL+p, nil, ""); code != 403 {
+			t.Errorf("%s from an unlisted computer: %d", p, code)
+		}
+	}
+	// Login for the admin role is refused; the operator role is unaffected (its list is empty).
+	if code := status(t, "POST", ts.URL+"/api/login", nil, `{"role":"admin","password":"adminpw"}`); code != 403 {
+		t.Errorf("admin login: %d", code)
+	}
+	if code := status(t, "POST", ts.URL+"/api/login", nil, `{"role":"operator","password":"operatorpw"}`); code != 200 {
+		t.Errorf("operator login: %d", code)
+	}
+	if code := status(t, "GET", ts.URL+"/operator", nil, ""); code != 200 {
+		t.Errorf("operator page: %d", code)
+	}
+	// The audience page is never limited.
+	for _, p := range []string{"/", "/healthz", "/static/audience/audience.js"} {
+		if code := status(t, "GET", ts.URL+p, nil, ""); code != 200 {
+			t.Errorf("%s: %d", p, code)
+		}
+	}
+	// An unusable setting denies everything instead of allowing everyone.
+	_, ts2 := accessServer(t, []string{"not an address"}, nil)
+	if code := status(t, "GET", ts2.URL+"/admin", nil, ""); code != 403 {
+		t.Errorf("bad list should deny: %d", code)
+	}
+}
+
+func TestAListedComputerCanUseSetupAndTheOperatorPage(t *testing.T) {
+	_, ts := accessServer(t, []string{"localhost"}, []string{"10.0.0.0/8"})
+	c := newClient(t, ts.URL)
+	if c.login("admin", "adminpw") != 200 {
+		t.Fatal("admin login from the listed computer")
+	}
+	if code, _ := c.do("GET", "/api/admin/ping", nil); code != 200 {
+		t.Errorf("admin api: %d", code)
+	}
+	// This address is not in operator_allow but is in admin_allow, so the admin may still run the show.
+	if code, _ := c.do("GET", "/api/operator/state", nil); code != 200 {
+		t.Errorf("an admin address may use the operator pages: %d", code)
+	}
+	if code := status(t, "GET", ts.URL+"/operator", nil, ""); code != 200 {
+		t.Errorf("operator page from an admin address: %d", code)
+	}
+}
+
+func TestOperatorListAloneKeepsSetupOpenOnlyToAdminAddresses(t *testing.T) {
+	_, ts := accessServer(t, nil, []string{"10.0.0.0/8"})
+	// Operator pages: refused for this computer (not on operator_allow, and admin_allow is unrestricted so it IS allowed).
+	if code := status(t, "GET", ts.URL+"/operator", nil, ""); code != 200 {
+		t.Errorf("unrestricted admin list lets this computer in: %d", code)
+	}
+	_, ts2 := accessServer(t, []string{"10.0.0.0/8"}, []string{"10.0.0.0/8"})
+	if code := status(t, "GET", ts2.URL+"/operator", nil, ""); code != 403 {
+		t.Errorf("neither list allows this computer: %d", code)
+	}
+	c := newClient(t, ts2.URL)
+	if code := c.login("operator", "operatorpw"); code != 403 {
+		t.Errorf("operator login: %d", code)
+	}
+}
+
+func TestSessionCookieDoesNotWorkFromAnotherComputer(t *testing.T) {
+	s, ts := accessServer(t, nil, nil)
+	c := newClient(t, ts.URL)
+	c.login("admin", "adminpw")
+	if code, _ := c.do("GET", "/api/admin/ping", nil); code != 200 {
+		t.Fatal("setup")
+	}
+	// The list is tightened (as if the cookie had been taken to another computer): the valid cookie no longer works.
+	s.adminAllow, _ = config.ParseAllowList([]string{"10.0.0.0/8"})
+	if code, _ := c.do("GET", "/api/admin/ping", nil); code != 403 {
+		t.Errorf("a stolen cookie must not work from an unlisted computer: %d", code)
+	}
+}
+
+func TestForgedRequestsAreRefused(t *testing.T) {
+	_, ts := accessServer(t, nil, nil)
+	c := newClient(t, ts.URL)
+	c.login("admin", "adminpw")
+	host := strings.TrimPrefix(ts.URL, "http://")
+	cookie := ""
+	for _, ck := range c.hc.Jar.Cookies(mustURL(ts.URL)) {
+		cookie = ck.String()
+	}
+	if cookie == "" {
+		t.Fatal("no session cookie")
+	}
+	post := func(h map[string]string) int {
+		h["Cookie"] = cookie
+		return status(t, "POST", ts.URL+"/api/admin/shows", h, `{"name":"x"}`)
+	}
+	cases := []struct {
+		name string
+		hdr  map[string]string
+		want int
+	}{
+		{"no origin (command line)", map[string]string{}, 201},
+		{"same origin", map[string]string{"Origin": "http://" + host, "Sec-Fetch-Site": "same-origin"}, 201},
+		{"another website", map[string]string{"Origin": "http://evil.example"}, 403},
+		{"another port on this computer", map[string]string{"Origin": "http://" + strings.Split(host, ":")[0] + ":9999"}, 403},
+		{"browser says cross-site", map[string]string{"Sec-Fetch-Site": "cross-site"}, 403},
+		{"browser says same-site", map[string]string{"Sec-Fetch-Site": "same-site"}, 403},
+		{"opaque origin", map[string]string{"Origin": "null"}, 403},
+		{"user typed it (none)", map[string]string{"Sec-Fetch-Site": "none"}, 201},
+	}
+	for _, tc := range cases {
+		if got := post(tc.hdr); got != tc.want {
+			t.Errorf("%s: %d, want %d", tc.name, got, tc.want)
+		}
+	}
+	// Reads and the open audience stream are not affected.
+	if code := status(t, "GET", ts.URL+"/healthz", map[string]string{"Origin": "http://evil.example"}, ""); code != 200 {
+		t.Errorf("GET: %d", code)
+	}
+	// Login itself is also protected.
+	if code := status(t, "POST", ts.URL+"/api/login", map[string]string{"Origin": "http://evil.example"}, `{"role":"admin","password":"adminpw"}`); code != 403 {
+		t.Errorf("forged login: %d", code)
+	}
+}
+
+func mustURL(s string) *url.URL { u, _ := url.Parse(s); return u }
+
+func TestSettingsReportTheAccessRules(t *testing.T) {
+	_, ts := accessServer(t, []string{"localhost"}, nil)
+	c := newClient(t, ts.URL)
+	c.login("admin", "adminpw")
+	_, r := c.do("GET", "/api/admin/settings", nil)
+	if r["adminRestricted"] != true || r["operatorRestricted"] != false || toJSON(r["adminAllow"]) != `["localhost"]` {
+		t.Errorf("%v", r)
 	}
 }

@@ -89,12 +89,12 @@ type resolver func(r *http.Request) *Runtime
 func (s *Server) operatorRoutes(mux *http.ServeMux) {
 	sub, _ := fs.Sub(web.Operator, "operator")
 	static := http.StripPrefix("/static/operator/", http.FileServer(http.FS(sub)))
-	mux.HandleFunc("GET /operator", func(w http.ResponseWriter, r *http.Request) { servePage(w, sub, "index.html") })
-	mux.HandleFunc("GET /static/operator/", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("GET /operator", s.gate(RoleOperator, func(w http.ResponseWriter, r *http.Request) { servePage(w, sub, "index.html") }))
+	mux.HandleFunc("GET /static/operator/", s.gate(RoleOperator, func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-cache")
 		w.Header().Set("X-Content-Type-Options", "nosniff")
 		static.ServeHTTP(w, r)
-	})
+	}))
 
 	s.operatorAPI(mux, "/api/operator/", RoleOperator, func(*http.Request) *Runtime { return s.rt })
 }

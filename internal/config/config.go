@@ -51,6 +51,7 @@ type Config struct {
 	HTTPS            HTTPS    `yaml:"https"`
 	Defaults         Defaults `yaml:"defaults"`
 	Audience         Audience `yaml:"audience"`
+	Access           Access   `yaml:"access"`
 
 	// Path is where the config was loaded from or generated (not serialized).
 	Path string `yaml:"-"`
@@ -110,7 +111,10 @@ func (c Config) Save() error {
 	if err != nil {
 		return err
 	}
-	header := "# open-caption configuration. Passwords are stored in plain text; keep this file private.\n"
+	header := "# open-caption configuration. Passwords are stored in plain text; keep this file private.\n" +
+		"# access: limits which computers may open the Setup (admin_allow) and operator (operator_allow) pages.\n" +
+		"# An empty list lets anyone on the network try the password. Entries: localhost, private,\n" +
+		"# an address (192.168.1.50) or a network (192.168.1.0/24). Example: admin_allow: [localhost]\n"
 	tmp := c.Path + ".tmp"
 	if err := os.WriteFile(tmp, append([]byte(header), b...), 0o600); err != nil {
 		return err
@@ -147,10 +151,22 @@ func (c Config) Validate() error {
 		return errors.New("config: admin_password must not be empty")
 	case c.OperatorPassword == "":
 		return errors.New("config: operator_password must not be empty")
+	case c.accessError() != nil:
+		return c.accessError()
 	case c.HTTPS.Enabled && (c.HTTPS.CertFile == "") != (c.HTTPS.KeyFile == ""):
 		return errors.New("config: https.cert_file and https.key_file must be set together")
 	case c.HTTPS.Enabled && c.HTTPS.CertFile == "" && !c.HTTPS.SelfSigned:
 		return errors.New("config: https enabled but no cert_file/key_file and self_signed is false")
+	}
+	return nil
+}
+
+func (c Config) accessError() error {
+	if _, err := ParseAllowList(c.Access.AdminAllow); err != nil {
+		return fmt.Errorf("config: access.admin_allow: %w", err)
+	}
+	if _, err := ParseAllowList(c.Access.OperatorAllow); err != nil {
+		return fmt.Errorf("config: access.operator_allow: %w", err)
 	}
 	return nil
 }

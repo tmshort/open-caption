@@ -213,12 +213,12 @@ func decode(w http.ResponseWriter, r *http.Request, v any) bool {
 func (s *Server) adminRoutes(mux *http.ServeMux) {
 	sub, _ := fs.Sub(web.Admin, "admin")
 	static := http.StripPrefix("/static/admin/", http.FileServer(http.FS(sub)))
-	mux.HandleFunc("GET /admin", func(w http.ResponseWriter, r *http.Request) { servePage(w, sub, "index.html") })
-	mux.HandleFunc("GET /static/admin/", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("GET /admin", s.gate(RoleAdmin, func(w http.ResponseWriter, r *http.Request) { servePage(w, sub, "index.html") }))
+	mux.HandleFunc("GET /static/admin/", s.gate(RoleAdmin, func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-cache")
 		w.Header().Set("X-Content-Type-Options", "nosniff")
 		static.ServeHTTP(w, r)
-	})
+	}))
 
 	adm := func(h http.HandlerFunc) http.HandlerFunc {
 		return s.require(RoleAdmin, func(w http.ResponseWriter, r *http.Request) {
@@ -1069,6 +1069,8 @@ func (s *Server) settings(w http.ResponseWriter, r *http.Request) {
 		"config": s.cfg.Redacted(), "configPath": s.cfg.Path, "dataDir": s.cfg.DataDir,
 		"httpAddr": l.HTTPAddr, "httpsAddr": l.HTTPSAddr, "version": s.version,
 		"canChangePasswords": s.cfg.Path != "",
+		"adminAllow":         s.cfg.Access.AdminAllow, "operatorAllow": s.cfg.Access.OperatorAllow,
+		"adminRestricted": s.adminAllow.Restricted(), "operatorRestricted": s.operatorAllow.Restricted(),
 	})
 }
 

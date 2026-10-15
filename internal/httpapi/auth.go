@@ -10,8 +10,11 @@ import (
 	"encoding/json"
 	"net"
 	"net/http"
+	"net/netip"
+	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 )
@@ -249,9 +252,75 @@ func principal(r *http.Request) Principal {
 	return p
 }
 
+// clientAddr is the address the request came from. Proxy headers are deliberately not trusted.
+func clientAddr(r *http.Request) netip.Addr {
+	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		host = r.RemoteAddr
+	}
+	a, err := netip.ParseAddr(host)
+	if err != nil {
+		return netip.Addr{}
+	}
+	return a.Unmap()
+}
+
+// allowedFor reports whether this computer may use the Setup (RoleAdmin) or operator pages. An admin
+// address may always use the operator pages too.
+func (s *Server) allowedFor(role string, r *http.Request) bool {
+	ip := clientAddr(r)
+	if !ip.IsValid() {
+		return !s.adminAllow.Restricted() && !s.operatorAllow.Restricted()
+	}
+	if role == RoleAdmin {
+		return s.adminAllow.Allows(ip)
+	}
+	return s.operatorAllow.Allows(ip) || s.adminAllow.Allows(ip)
+}
+
+const notFromHere = "That page is not available from this computer. It can only be opened from the computers listed under access in config.yaml."
+
+// gate protects a page (HTML or its scripts) with the access list.
+func (s *Server) gate(role string, h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if !s.allowedFor(role, r) {
+			http.Error(w, notFromHere, http.StatusForbidden)
+			return
+		}
+		h(w, r)
+	}
+}
+
+// originGuard refuses state-changing /api requests that a browser says came from another website or
+// another port of this computer (a forged request), whatever cookies it carries. Requests with no
+// Origin header (command-line tools, the program's own tests) are allowed.
+func (s *Server) originGuard(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasPrefix(r.URL.Path, "/api/") && r.Method != http.MethodGet && r.Method != http.MethodHead && r.Method != http.MethodOptions {
+			site := r.Header.Get("Sec-Fetch-Site")
+			bad := site == "cross-site" || site == "same-site"
+			if o := r.Header.Get("Origin"); o != "" && o != "null" {
+				u, err := url.Parse(o)
+				bad = bad || err != nil || u.Host != r.Host
+			} else if o == "null" {
+				bad = true
+			}
+			if bad {
+				writeErr(w, http.StatusForbidden, "this request did not come from the program's own pages")
+				return
+			}
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
 // require wraps h so only sessions with at least role may call it.
 func (s *Server) require(role string, h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !s.allowedFor(role, r) {
+			writeErr(w, http.StatusForbidden, "not available from this computer")
+			return
+		}
 		c, err := r.Cookie(cookieName)
 		if err != nil {
 			writeErr(w, http.StatusUnauthorized, "login required")
@@ -287,6 +356,10 @@ func (s *Server) authRoutes(mux *http.ServeMux) {
 		var req struct{ Role, Password string }
 		if err := json.NewDecoder(http.MaxBytesReader(w, r.Body, maxLoginBody)).Decode(&req); err != nil {
 			writeErr(w, http.StatusBadRequest, "bad request")
+			return
+		}
+		if (req.Role == RoleAdmin || req.Role == RoleOperator) && !s.allowedFor(req.Role, r) {
+			writeErr(w, http.StatusForbidden, "signing in is not available from this computer")
 			return
 		}
 		if !s.auth.allow(clientIP(r)) {
