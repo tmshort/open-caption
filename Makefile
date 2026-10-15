@@ -2,7 +2,7 @@ VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
 LDFLAGS := -s -w -X main.version=$(VERSION)
 
 .DEFAULT_GOAL := help
-.PHONY: help build test race fuzz vet e2e a11y i18n dist clean
+.PHONY: help build test race fuzz vet tidy e2e a11y i18n dist clean
 
 help: ## Show this list of targets
 	@echo "open-caption: make <target>"; echo
@@ -18,6 +18,8 @@ fuzz: ## Fuzz the show-file parser for 30 seconds
 	go test ./internal/showfile -run xxx -fuzz FuzzParse -fuzztime 30s
 vet: ## Run go vet
 	go vet ./...
+tidy: ## Tidy go.mod and go.sum (go mod tidy)
+	go mod tidy
 e2e: build ## Browser end-to-end test (needs Node and Chrome; set CHROME if not in the default place)
 	cd test/e2e && npm install --no-audit --no-fund && node run.js
 a11y: build ## Accessibility audit with axe-core in real Chrome (needs Node and Chrome)
