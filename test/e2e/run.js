@@ -346,9 +346,9 @@ async function main() {
       return [...new Set(out)];
     });
     const uiPage = async (url, lang) => {
-      const p = await b4.newPage(); p.setDefaultTimeout(8000); await p.setViewport({ width: 1300, height: 950 });
+      const p = await b4.newPage(); p.setDefaultTimeout(30000); await p.setViewport({ width: 1300, height: 950 }); // generous: a slow runner loads six languages' pages here
       p.on('pageerror', (e) => errs.push(e.message)); await p.bringToFront();
-      await p.goto(B + url + (url.includes('?') ? '&' : '?') + 'ui=' + lang); return p;
+      await p.goto(B + url + (url.includes('?') ? '&' : '?') + 'ui=' + lang, { waitUntil: 'domcontentloaded' }); return p;
     };
     const HELP_TITLE = { es: 'Primeros pasos', fr: 'Premiers pas', de: 'Erste Schritte', it: 'Primi passi', pt: 'Primeiros passos' };
     const SEEN = { es: 'Espectáculos', fr: 'Spectacles', de: 'Shows', it: 'Spettacoli', pt: 'Espetáculos' };
