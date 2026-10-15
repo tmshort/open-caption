@@ -860,11 +860,10 @@ func (s *Server) importShow(w http.ResponseWriter, r *http.Request) {
 		}
 		return b, err
 	}
-	// Both the current layout (show.md, show.<lang>.md) and the older one (show.yaml, script.<lang>.md) are accepted.
 	files := map[string]string{}
 	for _, f := range zr.File {
 		name := path.Clean(f.Name)
-		if strings.Contains(name, "/") || !strings.HasSuffix(name, ".md") && name != "show.yaml" {
+		if strings.Contains(name, "/") || !strings.HasSuffix(name, ".md") {
 			continue
 		}
 		if b, err := read(f, show.MaxShowFile); err == nil {

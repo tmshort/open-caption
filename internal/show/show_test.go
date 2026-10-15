@@ -5,8 +5,6 @@ import (
 	"errors"
 	"image"
 	"image/png"
-	"os"
-	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -307,82 +305,7 @@ func TestPreShowMessagesLiveInEachLanguagesOwnShowFile(t *testing.T) {
 	}
 }
 
-func TestOlderLayoutIsConvertedAndKept(t *testing.T) {
-	dir := t.TempDir()
-	id := "old-show-1234"
-	sd := filepath.Join(dir, id)
-	os.MkdirAll(filepath.Join(sd, "assets"), 0o755)
-	os.WriteFile(filepath.Join(sd, "show.yaml"), []byte(`name: Old Show
-created: 2026-01-01T00:00:00Z
-updated: 2026-01-02T00:00:00Z
-language: en
-theme:
-  bg: "#101010"
-  fg: "#ffee00"
-  accent: "#ffffff"
-  font: serif
-  scale_pct: 130
-  speakers: color
-  idle_message: Almost time
-  idle_messages:
-    es: Casi es la hora
-look_saved: true
-`), 0o644)
-	os.WriteFile(filepath.Join(sd, "script.en.md"), []byte("[language: en | English]\nHello\n"), 0o644)
-	os.WriteFile(filepath.Join(sd, "script.es.md"), []byte("[language: es | Español]\nHola\n"), 0o644)
-	os.WriteFile(filepath.Join(sd, "assets", "a.png"), pngBytes(t, 4), 0o644)
-
-	s, err := NewStore(dir, testDefaults())
-	if err != nil {
-		t.Fatal(err)
-	}
-	m, err := s.Get(id)
-	if err != nil {
-		t.Fatal(err)
-	}
-	th := m.Theme
-	if m.Name != "Old Show" || th.BG != "#101010" || th.FG != "#ffee00" || th.Font != "serif" || th.ScalePct != 130 || th.Speakers != "color" ||
-		th.IdleMessage != "Almost time" || th.IdleMessages["es"] != "Casi es la hora" || !m.LookSaved {
-		t.Errorf("%+v", m)
-	}
-	if txt := read(t, s, id, ""); !strings.Contains(txt, "Hello") || !strings.Contains(txt, "title: Old Show") {
-		t.Errorf("main:\n%s", txt)
-	}
-	if txt := read(t, s, id, "es"); !strings.Contains(txt, "Hola") || !strings.Contains(txt, "idle message: Casi es la hora") {
-		t.Errorf("translation:\n%s", txt)
-	}
-	for _, gone := range []string{"show.yaml", "script.en.md", "script.es.md"} {
-		if _, err := os.Stat(filepath.Join(sd, gone)); err == nil {
-			t.Errorf("%s should have been moved", gone)
-		}
-		if _, err := os.Stat(filepath.Join(sd, "old-format", gone)); err != nil {
-			t.Errorf("%s should be kept in old-format/", gone)
-		}
-	}
-	if names := s.AssetNames(id); len(names) != 1 {
-		t.Errorf("images are untouched: %v", names)
-	}
-	// Opening the store again does nothing more.
-	if _, err := NewStore(dir, testDefaults()); err != nil {
-		t.Fatal(err)
-	}
-}
-
-func TestOlderShowThatNeverSavedItsLookKeepsTheDefaults(t *testing.T) {
-	dir := t.TempDir()
-	sd := filepath.Join(dir, "plain-0001")
-	os.MkdirAll(sd, 0o755)
-	os.WriteFile(filepath.Join(sd, "show.yaml"), []byte("name: Plain\ntheme:\n  bg: \"#000000\"\n  fg: \"#ffffff\"\n  idle_message: Soon\n"), 0o644)
-	os.WriteFile(filepath.Join(sd, "script.en.md"), []byte("Hello"), 0o644)
-	s, _ := NewStore(dir, testDefaults())
-	m, _ := s.Get("plain-0001")
-	txt := read(t, s, "plain-0001", "")
-	if m.LookSaved || strings.Contains(txt, "background") || strings.Contains(txt, "idle message") {
-		t.Errorf("an untouched look must stay the default, not become explicit: %+v\n%s", m.LookSaved, txt)
-	}
-}
-
-func TestImportFilesNewAndOldLayouts(t *testing.T) {
+func TestImportFiles(t *testing.T) {
 	s := newStore(t)
 	m, err := s.ImportFiles(map[string]string{"show.md": "[settings]\ntitle: Exported\nfont: serif\n[/settings]\nHi", "show.es.md": "Hola", "readme.txt": "ignored"}, " (imported)")
 	if err != nil || m.Name != "Exported (imported)" || m.Theme.Font != "serif" {
@@ -391,14 +314,7 @@ func TestImportFilesNewAndOldLayouts(t *testing.T) {
 	if l, _ := s.Languages(m.ID); len(l) != 2 {
 		t.Errorf("%v", l)
 	}
-	old, err := s.ImportFiles(map[string]string{"show.yaml": "name: Old\nlanguage: en\n", "script.en.md": "Hello"}, " (imported)")
-	if err != nil || old.Name != "Old (imported)" || !strings.Contains(read(t, s, old.ID, ""), "Hello") {
-		t.Errorf("%v %+v", err, old)
-	}
 	if _, err := s.ImportFiles(map[string]string{"nothing.txt": "x"}, ""); err == nil {
 		t.Error("an archive with no show file must be refused")
-	}
-	if _, err := s.ImportFiles(map[string]string{"show.yaml": ": not yaml ["}, ""); err == nil {
-		t.Error("garbage must be refused")
 	}
 }

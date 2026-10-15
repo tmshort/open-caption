@@ -29,7 +29,7 @@ that reflect it. Add new questions at the bottom.
 | Q20 | Archive shows? | Not built; Export and Delete cover it | 05 |
 | Q21 | Hidden-video fallback to keep iPhones awake? | Not built; a one-time Auto-Lock tip is shown instead | 01 (REQ-043) |
 | Q22 | Log levels? | Not built; plain lines to the console, an optional file, and the support bundle | 01 (REQ-061) |
-| Q23 | Where is a show's configuration stored? | In its show file (`[settings]` block), layered over `config.yaml` defaults over built-in values; environment settings stay in `config.yaml`. "Script" is now called the **show file** everywhere; `show.yaml` is gone (older shows are converted on first start) | 01 (REQ-008), 02, 03 |
+| Q23 | Where is a show's configuration stored? | In its show file (`[settings]` block), layered over `config.yaml` defaults over built-in values; environment settings stay in `config.yaml`. "Script" is now called the **show file** everywhere; there is no separate show metadata file | 01 (REQ-008), 02, 03 |
 
 ## Open
 

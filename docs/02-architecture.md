@@ -217,8 +217,7 @@ access:
 `show.Defaults.Resolve(showfile.Settings)` layers a show file's settings over the defaults. Setup's Look step and Rename write
 the show file's `[settings]` block (`showfile.UpdateSettings`); the server then re-reads the files and applies the result to the
 show on air (`Server.applyActive`: look to every device, title to the operator, loop time and scrollback size to the engines,
-and every language's lines). Shows saved by an older version (a `show.yaml` plus `script.<lang>.md` files) are converted to show
-files the first time the store opens, and the old files are kept in `old-format/`.
+and every language's lines).
 
 ## Persistence layout
 
@@ -228,7 +227,6 @@ files the first time the store opens, and the old files are kept in `old-format/
   shows/<id>/
     show.md               the show file, main language: title, [settings] (look, loop time, …) and the lines — the source of truth
     show.<lang>.md        one show file per translation (its own idle message, and the lines)
-    old-format/           (only after an upgrade) the replaced show.yaml and script files, kept
     assets/<filename>     uploaded images
   sessions.json           signed-in sessions (hashed), so a restart does not sign anyone out
   live.json               active show id and, per language: cursor, scrollback, mode, the last 10 undo steps (debounced ≤ 250 ms)

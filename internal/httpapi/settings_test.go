@@ -6,8 +6,6 @@ import (
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
-	"os"
-	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -206,33 +204,6 @@ func TestSettingProblemsAreShownWithLineNumbers(t *testing.T) {
 	}
 	if _, g := c.do("GET", "/api/admin/shows/"+id, nil); g["name"] != "Untitled show" {
 		t.Errorf("%v", g["name"])
-	}
-}
-
-func TestShowsSavedInTheOlderLayoutAreConvertedWhenTheServerStarts(t *testing.T) {
-	cfg := testConfig()
-	cfg.DataDir = t.TempDir()
-	sd := filepath.Join(cfg.DataDir, "shows", "garden-1234")
-	os.MkdirAll(filepath.Join(sd, "assets"), 0o755)
-	os.WriteFile(filepath.Join(sd, "show.yaml"), []byte("name: Garden\nlanguage: en\nlook_saved: true\ntheme:\n  bg: \"#202020\"\n  fg: \"#ffffff\"\n  accent: \"#ffffff\"\n  font: mono\n  scale_pct: 110\n  speakers: label\n  idle_message: Hi\n"), 0o644)
-	os.WriteFile(filepath.Join(sd, "script.en.md"), []byte("[clear]\nHello"), 0o644)
-	s := New(cfg, "t")
-	defer s.Close()
-	ts := httptest.NewServer(s.Handler())
-	defer ts.Close()
-	c := newClient(t, ts.URL)
-	c.login("admin", "adminpw")
-	_, r := c.do("GET", "/api/admin/shows/garden-1234", nil)
-	th, _ := r["theme"].(map[string]any)
-	if r["name"] != "Garden" || th["font"] != "mono" || th["scalePct"].(float64) != 110 || th["bg"] != "#202020" {
-		t.Fatalf("%v", r)
-	}
-	_, f := c.do("GET", "/api/admin/shows/garden-1234/showfile", nil)
-	if !strings.Contains(f["text"].(string), "title: Garden") || !strings.Contains(f["text"].(string), "Hello") {
-		t.Errorf("%v", f["text"])
-	}
-	if _, err := os.Stat(filepath.Join(sd, "old-format", "show.yaml")); err != nil {
-		t.Error("the old files are kept")
 	}
 }
 

@@ -10,7 +10,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -19,8 +18,6 @@ import (
 	"strings"
 	"time"
 	"unicode"
-
-	"gopkg.in/yaml.v3"
 
 	"github.com/tmshort/open-caption/internal/showfile"
 )
@@ -201,23 +198,12 @@ type Store struct {
 	def Defaults
 }
 
-// NewStore creates the shows directory if needed and converts any shows saved in the older layout
-// (show.yaml plus script files) to show files.
+// NewStore creates the shows directory if needed.
 func NewStore(dir string, def Defaults) (*Store, error) {
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return nil, err
 	}
-	s := &Store{dir: dir, def: def}
-	if ents, err := os.ReadDir(dir); err == nil {
-		for _, e := range ents {
-			if e.IsDir() && ValidID(e.Name()) {
-				if err := s.migrate(e.Name()); err != nil {
-					log.Printf("show %s: could not convert to the new layout: %v", e.Name(), err)
-				}
-			}
-		}
-	}
-	return s, nil
+	return &Store{dir: dir, def: def}, nil
 }
 
 // ValidID reports whether id is a well-formed show id.
@@ -722,151 +708,16 @@ func (s *Store) DeleteAsset(id, name string) error {
 	return nil
 }
 
-// ---- the older layout (show.yaml plus script files) ----
-
-type oldMeta struct {
-	Name      string `yaml:"name"`
-	Language  string `yaml:"language"`
-	LookSaved bool   `yaml:"look_saved"`
-	Theme     struct {
-		BG           string            `yaml:"bg"`
-		FG           string            `yaml:"fg"`
-		Accent       string            `yaml:"accent"`
-		Font         string            `yaml:"font"`
-		ScalePct     int               `yaml:"scale_pct"`
-		Speakers     string            `yaml:"speakers"`
-		IdleMessage  string            `yaml:"idle_message"`
-		IdleMessages map[string]string `yaml:"idle_messages"`
-	} `yaml:"theme"`
-}
-
-// convertOld turns the old layout's metadata and scripts into show file contents (file name to text).
-func (d Defaults) convertOld(old oldMeta, scripts map[string]string) map[string]string {
-	main := old.Language
-	if main == "" {
-		main = d.Language
-	}
-	out := map[string]string{}
-	mainText := scripts[main]
-	if main != d.Language && !strings.Contains(strings.ToLower(mainText), "[language") {
-		mainText = "[language: " + main + " | " + showfile.LanguageName(main) + "]\n" + mainText
-	}
-	mainText = showfile.UpdateSettings(mainText, false, func(st *showfile.Settings) {
-		if t := strings.TrimSpace(old.Name); t != "" {
-			st.Title = &t
-		}
-		th := old.Theme
-		if old.LookSaved {
-			for _, f := range []struct {
-				dst **string
-				val string
-				fn  func(string) (string, error)
-			}{{&st.Background, th.BG, showfile.NormalizeColor}, {&st.TextColor, th.FG, showfile.NormalizeColor}, {&st.SpeakerColor, th.Accent, showfile.NormalizeColor},
-				{&st.Font, th.Font, showfile.NormalizeFont}, {&st.SpeakerNames, th.Speakers, showfile.NormalizeSpeakerNames}} {
-				if v, err := f.fn(f.val); err == nil && f.val != "" {
-					v := v
-					*f.dst = &v
-				}
-			}
-			if th.ScalePct >= 50 && th.ScalePct <= 300 {
-				n := th.ScalePct
-				st.TextSize = &n
-			}
-		}
-		if im := strings.TrimSpace(th.IdleMessage); im != "" && (old.LookSaved || im != d.IdleMessage) {
-			st.IdleMessage = &im
-		}
-	})
-	out[mainFile] = mainText
-	for code, text := range scripts {
-		if code == main || !langRe.MatchString(code) {
-			continue
-		}
-		if im := strings.TrimSpace(old.Theme.IdleMessages[code]); im != "" {
-			text = showfile.UpdateSettings(text, true, func(st *showfile.Settings) { st.IdleMessage = &im })
-		}
-		out["show."+code+".md"] = text
-	}
-	return out
-}
-
-// migrate converts a show saved in the older layout. The old files are kept in an old-format folder.
-func (s *Store) migrate(id string) error {
-	dir, _ := s.path(id)
-	if _, err := os.Stat(filepath.Join(dir, mainFile)); err == nil {
-		return nil // already in the current layout
-	}
-	yb, err := os.ReadFile(filepath.Join(dir, "show.yaml"))
-	if err != nil {
-		return nil // nothing recognisable to convert
-	}
-	var old oldMeta
-	if err := yaml.Unmarshal(yb, &old); err != nil {
-		return err
-	}
-	scripts := map[string]string{}
-	var oldFiles []string
-	ents, _ := os.ReadDir(dir)
-	for _, e := range ents {
-		n := e.Name()
-		var code string
-		switch {
-		case strings.HasPrefix(n, "script.") && strings.HasSuffix(n, ".md"):
-			code = strings.TrimSuffix(strings.TrimPrefix(n, "script."), ".md")
-		case strings.HasPrefix(n, "show.") && strings.HasSuffix(n, ".md") && n != mainFile:
-			code = strings.TrimSuffix(strings.TrimPrefix(n, "show."), ".md")
-		default:
-			continue
-		}
-		if b, err := os.ReadFile(filepath.Join(dir, n)); err == nil && langRe.MatchString(code) {
-			if _, dup := scripts[code]; !dup || strings.HasPrefix(n, "script.") {
-				scripts[code] = string(b)
-			}
-			oldFiles = append(oldFiles, n)
-		}
-	}
-	files := s.def.convertOld(old, scripts)
-	for name, text := range files {
-		if err := atomicWrite(filepath.Join(dir, name), []byte(text), 0o644); err != nil {
-			return err
-		}
-	}
-	keep := filepath.Join(dir, "old-format")
-	os.MkdirAll(keep, 0o755)
-	for _, n := range append(oldFiles, "show.yaml") {
-		if _, isNew := files[n]; isNew {
-			continue // a stage-1 name that the new layout also uses was just rewritten in place
-		}
-		os.Rename(filepath.Join(dir, n), filepath.Join(keep, n))
-	}
-	return nil
-}
-
-// ImportFiles creates a show from exported files (file name to text): either the current layout
-// (show.md, show.<lang>.md) or the older one (show.yaml with script.<lang>.md). The new show's title
-// gets suffix appended.
+// ImportFiles creates a show from exported files (file name to text: show.md and show.<lang>.md). The
+// new show's title gets suffix appended.
 func (s *Store) ImportFiles(files map[string]string, suffix string) (Meta, error) {
 	out := map[string]string{}
-	if _, current := files[mainFile]; current {
-		for n, t := range files {
-			if _, isT := translationCode(n); n == mainFile || isT {
-				out[n] = t
-			}
+	for n, t := range files {
+		if _, isT := translationCode(n); n == mainFile || isT {
+			out[n] = t
 		}
-	} else if y, ok := files["show.yaml"]; ok {
-		var old oldMeta
-		if err := yaml.Unmarshal([]byte(y), &old); err != nil || strings.TrimSpace(old.Name) == "" {
-			return Meta{}, fmt.Errorf("%w: unreadable show.yaml", ErrBadName)
-		}
-		scripts := map[string]string{}
-		for n, t := range files {
-			if strings.HasPrefix(n, "script.") && strings.HasSuffix(n, ".md") {
-				scripts[strings.TrimSuffix(strings.TrimPrefix(n, "script."), ".md")] = t
-			}
-		}
-		out = s.def.convertOld(old, scripts)
 	}
-	if out[mainFile] == "" && len(out) == 0 {
+	if _, ok := out[mainFile]; !ok {
 		return Meta{}, fmt.Errorf("%w: no show file found", ErrNotFound)
 	}
 	title := showfile.ReadSettings(out[mainFile], false).TitleOr("Imported show") + suffix
