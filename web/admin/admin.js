@@ -91,7 +91,7 @@
     const r = await api('GET', '/api/admin/shows');
     if (r.ok) { A.shows = r.data.shows; A.activeId = r.data.activeId; }
   }
-  function setCur(id) { A.cur = id; A.text = A.saved = ''; A.analysis = null; try { localStorage.setItem('oc.cur', id || ''); } catch (e) { /* ignore */ } }
+  function setCur(id) { A.cur = id; A.rehearsing = false; A.text = A.saved = ''; A.analysis = null; try { localStorage.setItem('oc.cur', id || ''); } catch (e) { /* ignore */ } }
 
   // live status via the operator stream (admins may use it)
   function openOpStream() {
@@ -112,8 +112,16 @@
   function go(step) { A.step = step; location.hash = step; render(); }
   window.addEventListener('hashchange', () => { const s = location.hash.slice(1); if (s !== A.step && STEPS.some((x) => x[0] === s)) { A.step = s; render(); } });
 
+  // "Look" has no wrong answer, so it is ticked once the person has saved it for this show.
+  const lookKey = () => 'oc.look.' + A.cur;
+  const lookSaved = () => { try { return localStorage.getItem(lookKey()) === '1'; } catch (e) { return false; } };
+  const markLookSaved = () => { try { localStorage.setItem(lookKey(), '1'); } catch (e) { /* ignore */ } refreshNav(); };
+
   function done(step) {
     switch (step) {
+      case 'look': return lookSaved();
+      case 'test': return A.rehearsing;
+      case 'golive': return !!A.cur && A.activeId === A.cur;
       case 'show': return !!A.cur;
       case 'script': return !!(A.analysis && A.analysis.cues.length && !A.analysis.diagnostics.some((d) => d.severity === 'error'));
       case 'images': return !!(A.analysis && !(A.analysis.missing || []).length && (A.analysis.assets || []).length);
@@ -121,15 +129,28 @@
     }
   }
 
-  async function render() {
-    const s = curShow();
-    $('working').textContent = s ? s.name : 'No show selected';
-    $('working').hidden = false;
+  function refreshNav() {
     const nav = $('steps'); nav.replaceChildren();
     STEPS.forEach(([id, label], i) => {
       nav.append(h('button', { class: (A.step === id ? 'on ' : '') + (done(id) ? 'done' : ''), onclick: () => go(id), disabled: id !== 'show' && !A.cur, 'aria-current': A.step === id ? 'step' : false },
         h('span', { class: 'n' }, h('span', {}, String(i + 1))), label));
     });
+  }
+
+  // Ticks for Script and Images depend on the script analysis, so load it in the background when not yet known.
+  async function warmAnalysis() {
+    const id = A.cur;
+    if (!id || A.analysis) return;
+    const r = await api('GET', '/api/admin/shows/' + id + '/script');
+    if (r.ok && A.cur === id && !A.analysis) { A.analysis = r.data.analysis; refreshNav(); }
+  }
+
+  async function render() {
+    const s = curShow();
+    $('working').textContent = s ? s.name : 'No show selected';
+    $('working').hidden = false;
+    refreshNav();
+    warmAnalysis();
     const panel = $('panel'); panel.replaceChildren();
     document.title = 'Setup — ' + (STEPS.find((x) => x[0] === A.step) || ['', ''])[1];
     try { await ({ show: stepShow, script: stepScript, images: stepImages, look: stepLook, test: stepTest, golive: stepGoLive })[A.step](panel); } catch (e) { if (e.message !== 'login') console.error(e); }
@@ -392,7 +413,7 @@
     p.append(h('h2', {}, 'Look'), h('p', { class: 'hint' }, 'Large, high-contrast text is the default and is best for accessibility. Changes apply to connected devices as soon as you save.'),
       h('div', { class: 'look-grid' },
         h('div', { class: 'card' }, presets, ...Object.keys(ctl).map((k) => ctl[k].closest('label')), sizeLabel, ratio,
-          h('div', { class: 'row end' }, h('button', { class: 'primary', onclick: async () => { read(); const s = await api('PUT', '/api/admin/shows/' + show.id, { theme: t }); if (!s.ok) return fail(s); toast('Look saved'); } }, 'Save look'))),
+          h('div', { class: 'row end' }, h('button', { class: 'primary', onclick: async () => { read(); const s = await api('PUT', '/api/admin/shows/' + show.id, { theme: t }); if (!s.ok) return fail(s); markLookSaved(); toast('Look saved'); } }, 'Save look'))),
         h('div', { class: 'previews' }, h('div', {}, h('div', { class: 'hint' }, 'Phone'), phone), h('div', {}, h('div', { class: 'hint' }, 'Projector'), proj))));
   }
 
@@ -405,7 +426,7 @@
     p.append(h('div', { class: 'row' }, h('button', { class: 'primary', onclick: start }, A.rehearsing ? 'Restart rehearsal' : 'Start rehearsal')), area);
     async function start() {
       const r = await api('POST', '/api/admin/rehearsal/start', { showId: show.id }); if (!r.ok) return fail(r);
-      A.rehearsing = true;
+      A.rehearsing = true; refreshNav();
       area.replaceChildren(h('div', { class: 'reh' },
         h('iframe', { src: '/operator?rehearsal=1', title: 'Operator (rehearsal)' }),
         h('div', { class: 'phoneframe' }, h('div', { class: 'hint' }, 'What the audience sees'), h('iframe', { src: '/?rehearsal=1', title: 'Audience (rehearsal)' }))),
@@ -452,6 +473,7 @@
       r = await api('POST', '/api/admin/shows/' + show.id + '/activate', { force: true });
     }
     if (!r.ok) return fail(r);
+    A.activeId = show.id; refreshNav();
     location.href = '/operator';
   }
 
