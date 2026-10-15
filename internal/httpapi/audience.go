@@ -56,13 +56,16 @@ func (s *Server) audienceRoutes(mux *http.ServeMux) {
 // ordering guarantees no event is missed or applied twice.
 func (s *Server) serveEvents(w http.ResponseWriter, r *http.Request, rt *Runtime) {
 	rc := http.NewResponseController(w)
-	cl := rt.Hub.Subscribe()
+	lang := rt.Negotiate(r.URL.Query().Get("lang"), r.Header.Get("Accept-Language"))
+	hb := rt.HubFor(lang)
+	cl := hb.Subscribe()
 	if cl == nil {
 		w.Header().Set("Retry-After", "2")
 		http.Error(w, "too many viewers", http.StatusServiceUnavailable)
 		return
 	}
-	defer rt.Hub.Unsubscribe(cl)
+	defer hb.Unsubscribe(cl)
+	w.Header().Set("Vary", "Accept-Language")
 
 	h := w.Header()
 	h.Set("Content-Type", "text/event-stream")
@@ -71,7 +74,7 @@ func (s *Server) serveEvents(w http.ResponseWriter, r *http.Request, rt *Runtime
 	h.Set("X-Accel-Buffering", "no")
 	rc.SetWriteDeadline(time.Time{})
 
-	snap := rt.State()
+	snap := rt.State(lang)
 	b, _ := json.Marshal(snap)
 	w.Write([]byte("retry: 1000\n\n"))
 	w.Write(formatSnapshot(snap.Seq, b))

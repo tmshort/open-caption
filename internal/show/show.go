@@ -53,6 +53,8 @@ type Theme struct {
 	ScalePct    int    `yaml:"scale_pct" json:"scalePct"`
 	Speakers    string `yaml:"speakers" json:"speakers"`
 	IdleMessage string `yaml:"idle_message" json:"idleMessage"`
+	// IdleMessages gives the pre-show message in other languages (by language code).
+	IdleMessages map[string]string `yaml:"idle_messages,omitempty" json:"idleMessages,omitempty"`
 }
 
 // Normalize fills defaults and validates.
@@ -90,6 +92,20 @@ func (t Theme) Normalize(defIdle string) (Theme, error) {
 		return t, fmt.Errorf("%w: unknown speaker style", ErrBadTheme)
 	case len(t.IdleMessage) > 200:
 		return t, fmt.Errorf("%w: idle message too long", ErrBadTheme)
+	}
+	clean := map[string]string{}
+	for code, msg := range t.IdleMessages {
+		msg = strings.TrimSpace(msg)
+		if !langRe.MatchString(code) || len(msg) > 200 {
+			return t, fmt.Errorf("%w: bad idle message for %q", ErrBadTheme, code)
+		}
+		if msg != "" {
+			clean[code] = msg
+		}
+	}
+	t.IdleMessages = nil
+	if len(clean) > 0 {
+		t.IdleMessages = clean
 	}
 	return t, nil
 }
@@ -345,6 +361,55 @@ func (s *Store) WriteScript(id, lang, text string) error {
 	if m, err := s.Get(id); err == nil {
 		m.Updated = time.Now().UTC()
 		s.writeMeta(m)
+	}
+	return nil
+}
+
+// Languages lists the languages a show has scripts for, the show's primary language first.
+func (s *Store) Languages(id string) ([]string, error) {
+	m, err := s.Get(id)
+	if err != nil {
+		return nil, err
+	}
+	dir, _ := s.path(id)
+	ents, err := os.ReadDir(dir)
+	if err != nil {
+		return nil, err
+	}
+	var others []string
+	for _, e := range ents {
+		n := e.Name()
+		if e.IsDir() || !strings.HasPrefix(n, "script.") || !strings.HasSuffix(n, ".md") {
+			continue
+		}
+		code := strings.TrimSuffix(strings.TrimPrefix(n, "script."), ".md")
+		if langRe.MatchString(code) && code != m.Language {
+			others = append(others, code)
+		}
+	}
+	sort.Strings(others)
+	return append([]string{m.Language}, others...), nil
+}
+
+// DeleteScript removes a translation. The primary language cannot be removed.
+func (s *Store) DeleteScript(id, lang string) error {
+	m, err := s.Get(id)
+	if err != nil {
+		return err
+	}
+	if lang == "" || lang == m.Language {
+		return fmt.Errorf("%w: the main language cannot be removed", ErrBadName)
+	}
+	n, err := s.scriptName(lang)
+	if err != nil {
+		return err
+	}
+	p, _ := s.path(id, n)
+	if err := os.Remove(p); err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return ErrNotFound
+		}
+		return err
 	}
 	return nil
 }

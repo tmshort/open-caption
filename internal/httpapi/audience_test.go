@@ -3,6 +3,7 @@ package httpapi
 import (
 	"bufio"
 	"encoding/json"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -35,27 +36,7 @@ func connect(t *testing.T, url string) *sseReader {
 		t.Fatalf("status %d", resp.StatusCode)
 	}
 	r := &sseReader{resp: resp, ch: make(chan sseEvent, 100)}
-	go func() {
-		defer close(r.ch)
-		sc := bufio.NewScanner(resp.Body)
-		var ev sseEvent
-		for sc.Scan() {
-			line := sc.Text()
-			switch {
-			case line == "":
-				if ev.Type != "" {
-					r.ch <- ev
-				}
-				ev = sseEvent{}
-			case strings.HasPrefix(line, "id: "):
-				ev.ID = line[4:]
-			case strings.HasPrefix(line, "event: "):
-				ev.Type = line[7:]
-			case strings.HasPrefix(line, "data: "):
-				json.Unmarshal([]byte(line[6:]), &ev.Data)
-			}
-		}
-	}()
+	go readSSE(resp.Body, r.ch)
 	t.Cleanup(func() { resp.Body.Close() })
 	return r
 }
@@ -245,4 +226,26 @@ func TestDevEndpointsOffByDefault(t *testing.T) {
 		t.Error("dev endpoint must not exist unless enabled")
 	}
 	resp.Body.Close()
+}
+
+func readSSE(body io.Reader, out chan sseEvent) {
+	defer close(out)
+	sc := bufio.NewScanner(body)
+	var ev sseEvent
+	for sc.Scan() {
+		line := sc.Text()
+		switch {
+		case line == "":
+			if ev.Type != "" {
+				out <- ev
+			}
+			ev = sseEvent{}
+		case strings.HasPrefix(line, "id: "):
+			ev.ID = line[4:]
+		case strings.HasPrefix(line, "event: "):
+			ev.Type = line[7:]
+		case strings.HasPrefix(line, "data: "):
+			json.Unmarshal([]byte(line[6:]), &ev.Data)
+		}
+	}
 }

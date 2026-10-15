@@ -53,7 +53,7 @@ func (s *Server) SetListeners(l Listeners) {
 }
 
 func themeToRuntime(t show.Theme) Theme {
-	return Theme{BG: t.BG, FG: t.FG, Accent: t.Accent, Font: t.Font, ScalePct: t.ScalePct, Speakers: t.Speakers, IdleMessage: t.IdleMessage}
+	return Theme{BG: t.BG, FG: t.FG, Accent: t.Accent, Font: t.Font, ScalePct: t.ScalePct, Speakers: t.Speakers, IdleMessage: t.IdleMessage, IdleMessages: t.IdleMessages}
 }
 
 // ---- analysis of a script (what the editor shows) ----
@@ -111,9 +111,12 @@ func analyze(text string, assets []show.Asset) (Analysis, []script.Cue) {
 // ---- loading shows into runtimes ----
 
 type loaded struct {
-	meta   show.Meta
-	cues   []script.Cue
-	assets string
+	meta    show.Meta
+	primary LangScript
+	others  []LangScript // translations whose structure matches the primary
+	assets  string
+	// skipped are translations left out because their structure does not match the primary's.
+	skipped map[string][]script.Diagnostic
 }
 
 func (s *Server) loadShow(id string) (loaded, error) {
@@ -121,12 +124,43 @@ func (s *Server) loadShow(id string) (loaded, error) {
 	if err != nil {
 		return loaded{}, err
 	}
-	text, err := s.store.ReadScript(id, "")
+	codes, err := s.store.Languages(id)
 	if err != nil {
 		return loaded{}, err
 	}
-	_, cues := analyze(text, mustAssets(s.store, id))
-	return loaded{meta: m, cues: cues, assets: s.store.AssetsDir(id)}, nil
+	assets := mustAssets(s.store, id)
+	l := loaded{meta: m, assets: s.store.AssetsDir(id), skipped: map[string][]script.Diagnostic{}}
+	var primaryRes script.Result
+	for i, code := range codes {
+		text, err := s.store.ReadScript(id, code)
+		if err != nil {
+			return loaded{}, err
+		}
+		res := parseWith(text, assets)
+		name := res.LanguageName
+		if name == "" {
+			name = script.LanguageName(code)
+		}
+		if i == 0 {
+			primaryRes = res
+			l.primary = LangScript{Code: code, Name: name, Cues: res.Cues}
+			continue
+		}
+		if issues := script.CompareStructure(primaryRes.Cues, res.Cues, l.primary.Name); len(issues) > 0 {
+			l.skipped[code] = issues // not offered to the audience until it is fixed
+			continue
+		}
+		l.others = append(l.others, LangScript{Code: code, Name: name, Cues: res.Cues})
+	}
+	return l, nil
+}
+
+func parseWith(text string, assets []show.Asset) script.Result {
+	names := make([]string, 0, len(assets))
+	for _, a := range assets {
+		names = append(names, a.Name)
+	}
+	return script.Parse(text, script.Options{Assets: names})
 }
 
 func mustAssets(st *show.Store, id string) []show.Asset {
@@ -147,7 +181,7 @@ func (s *Server) BootActive() bool {
 	if err != nil {
 		return false
 	}
-	s.rt.SetShow(id, l.meta.Name, l.assets, l.cues, themeToRuntime(l.meta.Theme))
+	s.rt.SetShowLangs(id, l.meta.Name, l.assets, l.primary, l.others, themeToRuntime(l.meta.Theme))
 	return true
 }
 
@@ -208,6 +242,9 @@ func (s *Server) adminRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/admin/shows/{id}/script", adm(s.getScript))
 	mux.HandleFunc("PUT /api/admin/shows/{id}/script", adm(s.putScript))
 	mux.HandleFunc("POST /api/admin/shows/{id}/script/validate", adm(s.validateScript))
+	mux.HandleFunc("GET /api/admin/shows/{id}/languages", adm(s.listLanguages))
+	mux.HandleFunc("POST /api/admin/shows/{id}/languages", adm(s.addLanguage))
+	mux.HandleFunc("DELETE /api/admin/shows/{id}/languages/{lang}", adm(s.deleteLanguage))
 	mux.HandleFunc("GET /api/admin/shows/{id}/assets", adm(s.listAssets))
 	mux.HandleFunc("POST /api/admin/shows/{id}/assets", adm(s.uploadAssets))
 	mux.HandleFunc("GET /api/admin/shows/{id}/assets/{file}", adm(s.getAsset))
@@ -384,8 +421,25 @@ func (s *Server) deleteShow(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{"ok": true})
 }
 
-func (s *Server) scriptResponse(id, text string) (Analysis, []script.Cue) {
-	return analyze(text, mustAssets(s.store, id))
+// scriptResponse analyses one language's script text. For a translation it also reports whether the
+// structure matches the main language's script (as errors, listed first).
+func (s *Server) scriptResponse(id, lang, text string) (Analysis, []script.Cue) {
+	assets := mustAssets(s.store, id)
+	a, cues := analyze(text, assets)
+	m, err := s.store.Get(id)
+	if err != nil || lang == "" || lang == m.Language {
+		return a, cues
+	}
+	ptext, _ := s.store.ReadScript(id, m.Language)
+	pres := parseWith(ptext, assets)
+	pname := pres.LanguageName
+	if pname == "" {
+		pname = script.LanguageName(m.Language)
+	}
+	if issues := script.CompareStructure(pres.Cues, cues, pname); len(issues) > 0 {
+		a.Diagnostics = append(issues, a.Diagnostics...)
+	}
+	return a, cues
 }
 
 // scriptVersion identifies a script's text, so two people editing the same script are noticed.
@@ -401,7 +455,7 @@ func (s *Server) getScript(w http.ResponseWriter, r *http.Request) {
 		storeErr(w, err)
 		return
 	}
-	a, _ := s.scriptResponse(id, text)
+	a, _ := s.scriptResponse(id, r.URL.Query().Get("lang"), text)
 	writeJSON(w, http.StatusOK, map[string]any{"text": text, "version": scriptVersion(text), "analysis": a})
 }
 
@@ -417,7 +471,7 @@ func (s *Server) validateScript(w http.ResponseWriter, r *http.Request) {
 		storeErr(w, err)
 		return
 	}
-	a, _ := s.scriptResponse(id, req.Text)
+	a, _ := s.scriptResponse(id, r.URL.Query().Get("lang"), req.Text)
 	writeJSON(w, http.StatusOK, map[string]any{"analysis": a})
 }
 
@@ -456,14 +510,168 @@ func (s *Server) putScript(w http.ResponseWriter, r *http.Request) {
 		storeErr(w, err)
 		return
 	}
-	a, cues := s.scriptResponse(id, req.Text)
+	a, _ := s.scriptResponse(id, r.URL.Query().Get("lang"), req.Text)
 	resp := map[string]any{"analysis": a, "saved": true, "version": scriptVersion(req.Text)}
-	if active && r.URL.Query().Get("lang") == "" {
-		changed, wasLive := s.rt.ReplaceCues(cues)
-		resp["applied"], resp["countChanged"], resp["wasLive"] = true, changed, wasLive
-		s.rt.Flush()
+	if active {
+		// Every language of the show on air is rebuilt together, so they stay in step.
+		if l, err := s.loadShow(id); err == nil {
+			changed, wasLive := s.rt.ReplaceLangs(l.primary, l.others)
+			resp["applied"], resp["countChanged"], resp["wasLive"] = true, changed, wasLive
+			if len(l.skipped) > 0 {
+				resp["skippedLanguages"] = sortedKeys(l.skipped)
+			}
+			s.rt.Flush()
+		}
 	}
 	writeJSON(w, http.StatusOK, resp)
+}
+
+func sortedKeys[V any](m map[string]V) []string {
+	out := make([]string, 0, len(m))
+	for k := range m {
+		out = append(out, k)
+	}
+	sort.Strings(out)
+	return out
+}
+
+// ---- languages ----
+
+type langSummary struct {
+	Code      string              `json:"code"`
+	Name      string              `json:"name"`
+	Primary   bool                `json:"primary"`
+	Cues      int                 `json:"cues"`
+	Errors    int                 `json:"errors"`
+	Warnings  int                 `json:"warnings"`
+	Structure []script.Diagnostic `json:"structure"` // why this translation is not offered to the audience (empty = fine)
+	Available bool                `json:"available"`
+}
+
+func (s *Server) listLanguages(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	codes, err := s.store.Languages(id)
+	if err != nil {
+		storeErr(w, err)
+		return
+	}
+	assets := mustAssets(s.store, id)
+	var out []langSummary
+	var primary script.Result
+	primaryName := ""
+	for i, code := range codes {
+		text, _ := s.store.ReadScript(id, code)
+		res := parseWith(text, assets)
+		sum := langSummary{Code: code, Name: res.LanguageName, Primary: i == 0, Cues: len(res.Cues), Structure: []script.Diagnostic{}}
+		if sum.Name == "" {
+			sum.Name = script.LanguageName(code)
+		}
+		for _, d := range res.Diagnostics {
+			switch d.Severity {
+			case script.SevError:
+				sum.Errors++
+			case script.SevWarning:
+				sum.Warnings++
+			}
+		}
+		if i == 0 {
+			primary, primaryName = res, sum.Name
+		} else if issues := script.CompareStructure(primary.Cues, res.Cues, primaryName); len(issues) > 0 {
+			sum.Structure = issues
+		}
+		sum.Available = len(sum.Structure) == 0
+		out = append(out, sum)
+	}
+	known := make([]LangInfo, 0, len(script.KnownLanguages))
+	for _, l := range script.KnownLanguages {
+		known = append(known, LangInfo{Code: l.Code, Name: l.Name})
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"languages": out, "known": known})
+}
+
+// addLanguage starts a translation: an empty script, or (to translate line by line) a copy of the main
+// script, which already has the right structure.
+func (s *Server) addLanguage(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		Code         string `json:"code"`
+		Name         string `json:"name"`
+		CopyFromMain bool   `json:"copyFromMain"`
+	}
+	if !decode(w, r, &req) {
+		return
+	}
+	id := r.PathValue("id")
+	m, err := s.store.Get(id)
+	if err != nil {
+		storeErr(w, err)
+		return
+	}
+	code := strings.ToLower(strings.TrimSpace(req.Code))
+	if !script.LangCodeRe.MatchString(code) {
+		writeErr(w, http.StatusBadRequest, "Use a short language code such as es, fr or pt-br.")
+		return
+	}
+	if existing, _ := s.store.Languages(id); containsStr(existing, code) {
+		writeErr(w, http.StatusConflict, "This show already has that language.")
+		return
+	}
+	name := strings.TrimSpace(req.Name)
+	if name == "" {
+		name = script.LanguageName(code)
+	}
+	if strings.ContainsAny(name, "|\n[]") || len(name) > 40 {
+		writeErr(w, http.StatusBadRequest, "The language name cannot contain | [ ] or line breaks, and must be under 40 characters.")
+		return
+	}
+	header := "[language: " + code + " | " + name + "]\n"
+	body := header
+	if req.CopyFromMain {
+		main, _ := s.store.ReadScript(id, m.Language)
+		body += "<!-- Translate the words. Keep every line, command and blank screen in the same order as the main script: one press of Space shows the same line in every language. -->\n" + stripLanguageLine(main)
+	}
+	if err := s.store.WriteScript(id, code, body); err != nil {
+		storeErr(w, err)
+		return
+	}
+	writeJSON(w, http.StatusCreated, map[string]any{"code": code, "name": name})
+}
+
+// stripLanguageLine removes a leading [language: ...] directive so a copy does not carry the main language's.
+func stripLanguageLine(text string) string {
+	lines := strings.Split(text, "\n")
+	for i, ln := range lines {
+		if t := strings.ToLower(strings.TrimSpace(ln)); strings.HasPrefix(t, "[language") && strings.HasSuffix(t, "]") {
+			return strings.Join(append(lines[:i:i], lines[i+1:]...), "\n")
+		}
+	}
+	return text
+}
+
+func containsStr(list []string, s string) bool {
+	for _, x := range list {
+		if x == s {
+			return true
+		}
+	}
+	return false
+}
+
+func (s *Server) deleteLanguage(w http.ResponseWriter, r *http.Request) {
+	id, code := r.PathValue("id"), r.PathValue("lang")
+	if s.rt.ShowID() == id && s.rt.Engine().Operator().Live {
+		writeErr(w, http.StatusConflict, "This show is live. Restart it before removing a language.")
+		return
+	}
+	if err := s.store.DeleteScript(id, code); err != nil {
+		storeErr(w, err)
+		return
+	}
+	if s.rt.ShowID() == id {
+		if l, err := s.loadShow(id); err == nil {
+			s.rt.ReplaceLangs(l.primary, l.others)
+		}
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"ok": true})
 }
 
 // ---- assets ----
@@ -560,17 +768,21 @@ func (s *Server) activateShow(w http.ResponseWriter, r *http.Request) {
 			"live": true, "activeId": s.rt.ShowID()})
 		return
 	}
-	s.rt.SetShow(id, l.meta.Name, l.assets, l.cues, themeToRuntime(l.meta.Theme))
+	s.rt.SetShowLangs(id, l.meta.Name, l.assets, l.primary, l.others, themeToRuntime(l.meta.Theme))
 	s.rt.Flush()
-	writeJSON(w, http.StatusOK, map[string]any{"ok": true, "activeId": id})
+	skipped := []string{}
+	for code := range l.skipped {
+		skipped = append(skipped, code)
+	}
+	sort.Strings(skipped)
+	writeJSON(w, http.StatusOK, map[string]any{"ok": true, "activeId": id, "skippedLanguages": skipped})
 }
 
 // ---- export / import ----
 
 func (s *Server) exportShow(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
-	m, err := s.store.Get(id)
-	if err != nil {
+	if _, err := s.store.Get(id); err != nil {
 		storeErr(w, err)
 		return
 	}
@@ -585,8 +797,11 @@ func (s *Server) exportShow(w http.ResponseWriter, r *http.Request) {
 	}
 	meta, _ := os.ReadFile(filepath.Join(filepath.Dir(s.store.AssetsDir(id)), "show.yaml"))
 	put("show.yaml", meta)
-	if text, err := s.store.ReadScript(id, m.Language); err == nil {
-		put("script."+m.Language+".md", []byte(text))
+	codes, _ := s.store.Languages(id)
+	for _, code := range codes {
+		if text, err := s.store.ReadScript(id, code); err == nil {
+			put("script."+code+".md", []byte(text))
+		}
 	}
 	for _, a := range mustAssets(s.store, id) {
 		if b, err := os.ReadFile(filepath.Join(s.store.AssetsDir(id), a.Name)); err == nil {
@@ -731,7 +946,7 @@ func (s *Server) network(w http.ResponseWriter, r *http.Request) {
 		warnings = append(warnings, "HTTPS is using a self-signed certificate. Each device shows a security warning the first time. Plain http:// avoids this.")
 	}
 	writeJSON(w, http.StatusOK, map[string]any{"hostname": host, "ips": ipStrings(ips), "urls": urls, "warnings": warnings,
-		"audience": s.rt.Hub.Count()})
+		"audience": s.rt.AudienceCount()})
 }
 
 func portOf(addr string) string {
@@ -831,7 +1046,7 @@ func (s *Server) startRehearsal(w http.ResponseWriter, r *http.Request) {
 	cfg.Audience.MaxClients = 8
 	rt := NewRuntime(cfg)
 	rt.SetAssetBase("/api/admin/shows/" + url.PathEscape(req.ShowID) + "/assets/")
-	rt.SetShow(req.ShowID, l.meta.Name, l.assets, l.cues, themeToRuntime(l.meta.Theme))
+	rt.SetShowLangs(req.ShowID, l.meta.Name, l.assets, l.primary, l.others, themeToRuntime(l.meta.Theme))
 	rt.Claim(tok, true)
 	s.rehearsals[tok] = rt
 	s.rmu.Unlock()
@@ -924,7 +1139,7 @@ func (s *Server) supportBundle(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(&info, "host: %s\naddresses: %s\n", host, strings.Join(ipStrings(netinfo.LocalIPs()), ", "))
 	fmt.Fprintf(&info, "http: %s (configured %s)\nhttps: %s (configured %s)\n", l.HTTPAddr, l.HTTPConfigured, l.HTTPSAddr, l.HTTPSConfigured)
 	fmt.Fprintf(&info, "data dir: %s\n", s.cfg.DataDir)
-	fmt.Fprintf(&info, "audience devices connected: %d\n", s.rt.Hub.Count())
+	fmt.Fprintf(&info, "audience devices connected: %d\n", s.rt.AudienceCount())
 	fmt.Fprintf(&info, "active show: %q live=%v cursor=%d of %d mode=%s\n", s.rt.ShowID(), op.Live, op.Cursor, op.Total, op.Mode)
 	put("info.txt", info.String())
 

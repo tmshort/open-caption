@@ -7,6 +7,9 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"sort"
+	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -25,6 +28,9 @@ type Theme struct {
 	ScalePct    int    `json:"scalePct"`
 	Speakers    string `json:"speakers"` // "label" | "color" | "hidden"
 	IdleMessage string `json:"idleMessage"`
+	// IdleMessages are the pre-show messages in other languages (by code). Clients are sent only the
+	// one for their language, in IdleMessage.
+	IdleMessages map[string]string `json:"-"`
 }
 
 // DefaultTheme is pure black on white, high contrast (REQ-045).
@@ -40,11 +46,24 @@ type AudItem struct {
 	Caption string `json:"caption,omitempty"`
 }
 
+// LangInfo names a language a show is available in.
+type LangInfo struct {
+	Code string `json:"code"`
+	Name string `json:"name"`
+}
+
+// LangScript is one language's parsed script.
+type LangScript struct {
+	Code, Name string
+	Cues       []script.Cue
+}
+
 // AudState is the audience snapshot.
 type AudState struct {
 	Seq        int64              `json:"seq"`
 	TS         int64              `json:"ts"`
 	Lang       string             `json:"lang"`
+	Languages  []LangInfo         `json:"languages"`
 	Mode       string             `json:"mode"`
 	Scrollback []live.CaptionItem `json:"scrollback"`
 	Fullscreen *AudItem           `json:"fullscreen"`
@@ -55,25 +74,34 @@ type AudState struct {
 
 const preloadMax = 8
 
-// Runtime owns the active show's engine and the audience hub.
+// langRT is one language of the active show: its own engine (kept in step with the others by Do).
+type langRT struct {
+	code, name  string
+	engine      *live.Engine
+	speakers    []string
+	lastPreload []string
+}
+
+// Runtime owns the active show: one engine per language, driven together by the operator, and one
+// audience hub per language.
 type Runtime struct {
 	cfg config.Config
-	Hub *hub.Hub
 
 	// OpHub carries operator-level state updates (/api/operator/stream).
 	OpHub *hub.Hub
 
-	mu          sync.RWMutex
-	gen         int
-	showID      string
-	showName    string
-	assetBase   string // URL prefix for image assets ("" = /assets/<showID>/)
-	cuesVer     int
-	assetsDir   string
-	theme       Theme
-	engine      *live.Engine
-	lastPreload []string
-	speakers    []string
+	mu        sync.RWMutex
+	gen       int
+	showID    string
+	showName  string
+	assetBase string // URL prefix for image assets ("" = /assets/<showID>/)
+	cuesVer   int
+	assetsDir string
+	theme     Theme
+	primary   string              // the language the operator sees
+	order     []string            // language codes, primary first
+	langs     map[string]*langRT  // languages of the active show
+	hubs      map[string]*hub.Hub // one per language code; kept across shows so connected devices stay put
 
 	ctrlMu   sync.Mutex
 	ctrl     string // session token of the controlling operator
@@ -92,22 +120,29 @@ const controllerLease = 30 * time.Second
 
 // NewRuntime creates a runtime with no show loaded (audience sees the idle message).
 func NewRuntime(cfg config.Config) *Runtime {
-	rt := &Runtime{cfg: cfg, Hub: hub.New(cfg.Audience.MaxClients), OpHub: hub.New(0),
+	rt := &Runtime{cfg: cfg, OpHub: hub.New(0), hubs: map[string]*hub.Hub{}, langs: map[string]*langRT{},
 		theme: DefaultTheme(cfg.Defaults.IdleMessage), streams: map[string]int{},
 		opDirty: make(chan struct{}, 1), saveDirty: make(chan struct{}, 1), quit: make(chan struct{})}
-	rt.Hub.OnChange = rt.notify
 	rt.SetShow("", "", "", nil, rt.theme)
 	rt.wg.Add(1)
 	go rt.opLoop()
 	return rt
 }
 
-// Close stops background goroutines and the engine, flushing live state.
+// Close stops background goroutines and the engines, flushing live state.
 func (rt *Runtime) Close() {
 	close(rt.quit)
 	rt.wg.Wait()
 	rt.Flush()
-	rt.Engine().Close()
+	rt.mu.RLock()
+	var engs []*live.Engine
+	for _, l := range rt.langs {
+		engs = append(engs, l.engine)
+	}
+	rt.mu.RUnlock()
+	for _, e := range engs {
+		e.Close()
+	}
 }
 
 // notify marks operator state and saved state as dirty. It never blocks.
@@ -146,36 +181,158 @@ func (rt *Runtime) opLoop() {
 	}
 }
 
-// SetShow swaps in a show's cues (and resets live state), then pushes a
-// snapshot to every connected client.
+// hubLocked returns the hub for a language, creating it on first use (caller holds rt.mu for writing).
+func (rt *Runtime) hubLocked(code string) *hub.Hub {
+	h := rt.hubs[code]
+	if h == nil {
+		h = hub.New(rt.cfg.Audience.MaxClients)
+		h.OnChange = rt.notify
+		rt.hubs[code] = h
+	}
+	return h
+}
+
+// HubFor returns the audience hub for a language code.
+func (rt *Runtime) HubFor(code string) *hub.Hub {
+	rt.mu.Lock()
+	defer rt.mu.Unlock()
+	return rt.hubLocked(code)
+}
+
+// AudienceCount is the number of connected audience devices across all languages.
+func (rt *Runtime) AudienceCount() int {
+	n := 0
+	for _, c := range rt.AudienceByLang() {
+		n += c
+	}
+	return n
+}
+
+// AudienceByLang counts connected devices per language code.
+func (rt *Runtime) AudienceByLang() map[string]int {
+	rt.mu.RLock()
+	hubs := make(map[string]*hub.Hub, len(rt.hubs))
+	for k, h := range rt.hubs {
+		hubs[k] = h
+	}
+	rt.mu.RUnlock()
+	out := map[string]int{}
+	for k, h := range hubs {
+		if c := h.Count(); c > 0 {
+			out[k] = c
+		}
+	}
+	return out
+}
+
+func (rt *Runtime) newEngine(gen int, code string, cues []script.Cue, startSeq int64) *live.Engine {
+	return live.New(cues, live.Config{DefaultLoopSeconds: rt.cfg.Defaults.LoopItemSeconds,
+		ScrollbackMax: rt.cfg.Audience.ScrollbackLines, StartSeq: startSeq}, func(ev live.Event) { rt.onEvent(gen, code, ev) })
+}
+
+// oldSeqs reads each language's current sequence number. It is done before taking rt.mu for writing
+// because an engine may be holding its own lock while waiting for rt.mu in onEvent.
+func (rt *Runtime) oldSeqs() map[string]int64 {
+	rt.mu.RLock()
+	engs := map[string]*live.Engine{}
+	for c, l := range rt.langs {
+		engs[c] = l.engine
+	}
+	rt.mu.RUnlock()
+	out := map[string]int64{}
+	for c, e := range engs {
+		out[c] = e.Snapshot().Seq + 1
+	}
+	return out
+}
+
+// SetShow swaps in a one-language show (and resets live state), then pushes a snapshot to every client.
 func (rt *Runtime) SetShow(id, name, assetsDir string, cues []script.Cue, theme Theme) {
+	code := rt.cfg.Defaults.Language
+	if code == "" {
+		code = "en"
+	}
+	rt.SetShowLangs(id, name, assetsDir, LangScript{Code: code, Name: script.LanguageName(code), Cues: cues}, nil, theme)
+}
+
+// SetShowLangs swaps in a show with a primary language and any translations (which must already have
+// been checked to match the primary's structure), resets live state, and pushes a snapshot to every client.
+func (rt *Runtime) SetShowLangs(id, name, assetsDir string, primary LangScript, others []LangScript, theme Theme) {
+	seqs := rt.oldSeqs()
 	rt.mu.Lock()
 	rt.gen++
 	rt.cuesVer++
 	gen := rt.gen
-	old := rt.engine
-	var startSeq int64
-	if old != nil {
-		startSeq = old.Snapshot().Seq + 1
-	}
+	old := rt.langs
 	rt.showID, rt.showName, rt.assetsDir, rt.theme = id, name, assetsDir, theme
-	rt.speakers = script.SpeakersOf(cues)
-	rt.engine = live.New(cues, live.Config{DefaultLoopSeconds: rt.cfg.Defaults.LoopItemSeconds,
-		ScrollbackMax: rt.cfg.Audience.ScrollbackLines, StartSeq: startSeq}, func(ev live.Event) { rt.onEvent(gen, ev) })
-	rt.lastPreload = nil
-	rt.mu.Unlock()
-	if old != nil {
-		old.Close()
+	rt.primary = primary.Code
+	rt.langs = map[string]*langRT{}
+	rt.order = nil
+	for _, ls := range append([]LangScript{primary}, others...) {
+		if _, dup := rt.langs[ls.Code]; dup {
+			continue
+		}
+		rt.hubLocked(ls.Code)
+		rt.order = append(rt.order, ls.Code)
+		rt.langs[ls.Code] = &langRT{code: ls.Code, name: ls.Name, speakers: script.SpeakersOf(ls.Cues),
+			engine: rt.newEngine(gen, ls.Code, ls.Cues, seqs[ls.Code])}
 	}
-	rt.broadcastSnapshot()
+	hubs := make(map[string]*hub.Hub, len(rt.hubs))
+	for c, h := range rt.hubs {
+		hubs[c] = h
+	}
+	rt.mu.Unlock()
+	for _, l := range old {
+		l.engine.Close()
+	}
+	rt.pushToAll(hubs)
 	rt.notify()
 }
 
-// Engine returns the current engine.
+// pushToAll sends every language hub a fresh snapshot, or tells devices whose language no longer exists
+// in the show to reload (they then pick a language again).
+func (rt *Runtime) pushToAll(hubs map[string]*hub.Hub) {
+	for code, h := range hubs {
+		rt.mu.RLock()
+		_, has := rt.langs[code]
+		rt.mu.RUnlock()
+		if !has {
+			h.Broadcast(hub.Frame{Seq: 0, Data: hub.FormatEvent(-1, "reload", []byte("{}"))})
+			continue
+		}
+		s := rt.State(code)
+		b, _ := json.Marshal(s)
+		h.Broadcast(hub.Frame{Seq: 0, Data: hub.FormatEvent(s.Seq, live.EvSnapshot, b)})
+	}
+}
+
+// Engine returns the primary language's engine (what the operator sees and controls).
 func (rt *Runtime) Engine() *live.Engine {
 	rt.mu.RLock()
 	defer rt.mu.RUnlock()
-	return rt.engine
+	return rt.langs[rt.primary].engine
+}
+
+// Languages lists the active show's languages, the primary first.
+func (rt *Runtime) Languages() []LangInfo {
+	rt.mu.RLock()
+	defer rt.mu.RUnlock()
+	return rt.languagesLocked()
+}
+
+func (rt *Runtime) languagesLocked() []LangInfo {
+	out := make([]LangInfo, 0, len(rt.order))
+	for _, c := range rt.order {
+		out = append(out, LangInfo{Code: c, Name: rt.langs[c].name})
+	}
+	return out
+}
+
+// PrimaryLang is the code of the language the operator follows.
+func (rt *Runtime) PrimaryLang() string {
+	rt.mu.RLock()
+	defer rt.mu.RUnlock()
+	return rt.primary
 }
 
 // ShowID returns the active show id.
@@ -192,9 +349,29 @@ func (rt *Runtime) AssetsDir() string {
 	return rt.assetsDir
 }
 
-// Do runs an operator command and then refreshes the audience's image preload list.
+// Do runs an operator command on the primary language and then on every translation, so all languages
+// move to the same cue together; then it refreshes the audience's image preload lists.
 func (rt *Runtime) Do(fn func(*live.Engine) (live.OperatorState, error)) (live.OperatorState, error) {
-	st, err := fn(rt.Engine())
+	rt.mu.RLock()
+	primary := rt.langs[rt.primary]
+	var others []*langRT
+	for _, c := range rt.order[1:] {
+		others = append(others, rt.langs[c])
+	}
+	rt.mu.RUnlock()
+
+	st, err := fn(primary.engine)
+	if err == live.ErrStale || len(others) == 0 {
+		rt.refreshPreload()
+		return st, err
+	}
+	for _, l := range others {
+		fn(l.engine) // their errors (such as end of script) mirror the primary's
+		// A translation must never drift from the primary: put it on the same cue if it did.
+		if l.engine.Operator().Cursor != st.Cursor {
+			l.engine.Jump(st.Cursor, -1)
+		}
+	}
 	rt.refreshPreload()
 	return st, err
 }
@@ -216,32 +393,61 @@ func (rt *Runtime) item(it *script.Item) *AudItem {
 	return &AudItem{Kind: "blank"}
 }
 
-// State builds the audience snapshot for the current engine state.
-func (rt *Runtime) State() AudState {
+// resolveLang maps a requested code to one the show has (exact, then its base language), or the primary.
+func (rt *Runtime) resolveLang(code string) string {
 	rt.mu.RLock()
-	eng, theme := rt.engine, rt.theme
-	rt.mu.RUnlock()
-	st := eng.Snapshot()
-	return rt.audState(st, theme, rt.preloadFor(eng))
+	defer rt.mu.RUnlock()
+	return rt.resolveLangLocked(code)
 }
 
-func (rt *Runtime) audState(st live.State, theme Theme, preload []string) AudState {
+func (rt *Runtime) resolveLangLocked(code string) string {
+	if _, ok := rt.langs[code]; ok {
+		return code
+	}
+	return rt.primary
+}
+
+// State builds the audience snapshot for a language (the primary if the show lacks it).
+func (rt *Runtime) State(lang string) AudState {
+	rt.mu.RLock()
+	lang = rt.resolveLangLocked(lang)
+	l := rt.langs[lang]
+	eng := l.engine
+	rt.mu.RUnlock()
+	st := eng.Snapshot()
+	return rt.audState(lang, st, rt.preloadFor(l))
+}
+
+func (rt *Runtime) audState(lang string, st live.State, preload []string) AudState {
 	rt.mu.RLock()
 	defer rt.mu.RUnlock()
 	if st.Scrollback == nil {
 		st.Scrollback = []live.CaptionItem{}
 	}
-	return AudState{Seq: st.Seq, TS: time.Now().UnixMilli(), Lang: rt.cfg.Defaults.Language, Mode: st.Mode,
-		Scrollback: st.Scrollback, Fullscreen: rt.item(st.Fullscreen), Preload: preload, Speakers: rt.speakers, Theme: theme}
+	return AudState{Seq: st.Seq, TS: time.Now().UnixMilli(), Lang: lang, Languages: rt.languagesLocked(), Mode: st.Mode,
+		Scrollback: st.Scrollback, Fullscreen: rt.item(st.Fullscreen), Preload: preload,
+		Speakers: rt.langs[lang].speakers, Theme: rt.themeForLocked(lang)}
 }
 
-// onEvent runs under the engine lock: convert and broadcast without blocking.
-func (rt *Runtime) onEvent(gen int, ev live.Event) {
+// themeForLocked is the theme with the pre-show message in the viewer's language.
+func (rt *Runtime) themeForLocked(lang string) Theme {
+	t := rt.theme
+	if m := t.IdleMessages[lang]; m != "" {
+		t.IdleMessage = m
+	}
+	return t
+}
+
+// onEvent runs under an engine lock: convert and broadcast without blocking.
+func (rt *Runtime) onEvent(gen int, lang string, ev live.Event) {
 	rt.mu.RLock()
-	stale := gen != rt.gen
+	l := rt.langs[lang]
+	stale := gen != rt.gen || l == nil
 	var payload any
+	var h *hub.Hub
 	ts := time.Now().UnixMilli()
 	if !stale {
+		h = rt.hubs[lang]
 		switch ev.Type {
 		case live.EvCaption:
 			payload = map[string]any{"seq": ev.Seq, "ts": ts, "item": ev.Data}
@@ -255,30 +461,22 @@ func (rt *Runtime) onEvent(gen int, ev live.Event) {
 			if st.Scrollback == nil {
 				st.Scrollback = []live.CaptionItem{}
 			}
-			payload = AudState{Seq: st.Seq, TS: ts, Lang: rt.cfg.Defaults.Language, Mode: st.Mode, Scrollback: st.Scrollback,
-				Fullscreen: rt.item(st.Fullscreen), Preload: rt.lastPreload, Speakers: rt.speakers, Theme: rt.theme}
+			payload = AudState{Seq: st.Seq, TS: ts, Lang: lang, Languages: rt.languagesLocked(), Mode: st.Mode, Scrollback: st.Scrollback,
+				Fullscreen: rt.item(st.Fullscreen), Preload: l.lastPreload, Speakers: l.speakers, Theme: rt.themeForLocked(lang)}
 		default:
 			payload = map[string]any{"seq": ev.Seq, "ts": ts}
 		}
 	}
 	rt.mu.RUnlock()
-	if stale {
+	if stale || h == nil {
 		return
 	}
 	b, err := json.Marshal(payload)
 	if err != nil {
 		return
 	}
-	rt.Hub.Broadcast(hub.Frame{Seq: ev.Seq, Data: hub.FormatEvent(ev.Seq, ev.Type, b)})
+	h.Broadcast(hub.Frame{Seq: ev.Seq, Data: hub.FormatEvent(ev.Seq, ev.Type, b)})
 	rt.notify()
-}
-
-// broadcastSnapshot pushes a full snapshot to every client. The frame carries
-// Seq 0 so the per-connection "already covered by my snapshot" filter never drops it.
-func (rt *Runtime) broadcastSnapshot() {
-	s := rt.State()
-	b, _ := json.Marshal(s)
-	rt.Hub.Broadcast(hub.Frame{Seq: 0, Data: hub.FormatEvent(s.Seq, live.EvSnapshot, b)})
 }
 
 // SetAssetBase sets the URL prefix for image assets (used by rehearsal runtimes).
@@ -292,32 +490,111 @@ func (rt *Runtime) SetAssetBase(base string) {
 func (rt *Runtime) SetTheme(t Theme) {
 	rt.mu.Lock()
 	rt.theme = t
+	hubs := make(map[string]*hub.Hub, len(rt.hubs))
+	for c, h := range rt.hubs {
+		hubs[c] = h
+	}
 	rt.mu.Unlock()
-	rt.broadcastSnapshot()
+	rt.pushToAll(hubs)
 }
 
-// ReplaceCues swaps in an edited script. If the show is not live it is reset
-// (so a leading loop starts correctly); if live, the cursor is kept by index.
-// It reports whether the cue count changed.
-func (rt *Runtime) ReplaceCues(cues []script.Cue) (countChanged, wasLive bool) {
+// ReplaceLangs swaps in edited scripts for the active show. If the show is not live it is reset (so a
+// leading loop starts correctly); if live, every language keeps the operator's place by cue number.
+// It reports whether the primary script's cue count changed.
+func (rt *Runtime) ReplaceLangs(primary LangScript, others []LangScript) (countChanged, wasLive bool) {
 	eng := rt.Engine()
-	rt.mu.Lock()
-	rt.speakers = script.SpeakersOf(cues)
-	rt.mu.Unlock()
+	oldCount := len(eng.Cues())
 	wasLive = eng.Operator().Live
-	if wasLive {
-		countChanged = eng.ReplaceCues(cues)
-	} else {
-		countChanged = len(cues) != len(eng.Cues())
-		eng.ReplaceCues(cues)
-		eng.Reset(-1)
+	countChanged = oldCount != len(primary.Cues)
+	if !wasLive {
+		rt.mu.RLock()
+		id, name, dir, theme := rt.showID, rt.showName, rt.assetsDir, rt.theme
+		rt.mu.RUnlock()
+		rt.SetShowLangs(id, name, dir, primary, others, theme)
+		return
 	}
+
+	cursor := eng.Operator().Cursor
+	all := append([]LangScript{primary}, others...)
 	rt.mu.Lock()
+	gen := rt.gen
 	rt.cuesVer++
+	rt.primary = primary.Code
+	var removed []*langRT
+	for c, l := range rt.langs {
+		keep := false
+		for _, ls := range all {
+			keep = keep || ls.Code == c
+		}
+		if !keep {
+			removed = append(removed, l)
+			delete(rt.langs, c)
+		}
+	}
+	var added []*langRT
+	type replace struct {
+		eng  *live.Engine
+		cues []script.Cue
+	}
+	var replaces []replace
+	rt.order = nil
+	for _, ls := range all {
+		if _, dup := rt.langsOrderHas(ls.Code); dup {
+			continue
+		}
+		rt.order = append(rt.order, ls.Code)
+		if l, ok := rt.langs[ls.Code]; ok {
+			l.name, l.speakers = ls.Name, script.SpeakersOf(ls.Cues)
+			replaces = append(replaces, replace{l.engine, ls.Cues}) // applied after unlocking: the engine emits a snapshot, which calls onEvent
+		} else {
+			l := &langRT{code: ls.Code, name: ls.Name, speakers: script.SpeakersOf(ls.Cues)}
+			l.engine = rt.newEngine(gen, ls.Code, ls.Cues, 0)
+			rt.langs[ls.Code] = l
+			rt.hubLocked(ls.Code)
+			added = append(added, l)
+		}
+	}
+	reload := make([]*hub.Hub, 0, len(removed))
+	for _, l := range removed {
+		reload = append(reload, rt.hubs[l.code])
+	}
 	rt.mu.Unlock()
+	for i, l := range removed {
+		l.engine.Close()
+		if reload[i] != nil {
+			reload[i].Broadcast(hub.Frame{Seq: 0, Data: hub.FormatEvent(-1, "reload", []byte("{}"))})
+		}
+	}
+	for _, r := range replaces {
+		r.eng.ReplaceCues(r.cues)
+	}
+	for _, l := range added {
+		l.engine.Jump(cursor, -1)
+	}
 	rt.refreshPreload()
 	rt.notify()
-	return countChanged, wasLive
+	return
+}
+
+func (rt *Runtime) langsOrderHas(code string) (int, bool) {
+	for i, c := range rt.order {
+		if c == code {
+			return i, true
+		}
+	}
+	return -1, false
+}
+
+// ReplaceCues replaces the primary language's script only (kept for single-language callers).
+func (rt *Runtime) ReplaceCues(cues []script.Cue) (countChanged, wasLive bool) {
+	rt.mu.RLock()
+	code, name := rt.primary, rt.langs[rt.primary].name
+	var others []LangScript
+	for _, c := range rt.order[1:] {
+		others = append(others, LangScript{Code: c, Name: rt.langs[c].name, Cues: rt.langs[c].engine.Cues()})
+	}
+	rt.mu.RUnlock()
+	return rt.ReplaceLangs(LangScript{Code: code, Name: name, Cues: cues}, others)
 }
 
 // SavedShowID returns the show id recorded in live.json, if any.
@@ -344,15 +621,18 @@ func (rt *Runtime) Theme() Theme {
 }
 
 // preloadFor lists the next few image URLs at or after the cursor.
-func (rt *Runtime) preloadFor(eng *live.Engine) []string {
-	cues, cursor := eng.Cues(), eng.Operator().Cursor
+func (rt *Runtime) preloadFor(l *langRT) []string {
+	cues, cursor := l.engine.Cues(), l.engine.Operator().Cursor
 	seen := map[string]bool{}
 	out := []string{}
 	add := func(it script.Item) {
 		if it.Kind != "image" || len(out) >= preloadMax {
 			return
 		}
-		if u := rt.item(&it).Src; !seen[u] {
+		rt.mu.RLock()
+		u := rt.item(&it).Src
+		rt.mu.RUnlock()
+		if !seen[u] {
 			seen[u] = true
 			out = append(out, u)
 		}
@@ -369,23 +649,31 @@ func (rt *Runtime) preloadFor(eng *live.Engine) []string {
 	return out
 }
 
-// refreshPreload broadcasts the preload hint (no seq) if it changed.
+// refreshPreload broadcasts each language's preload hint (no seq) if it changed.
 func (rt *Runtime) refreshPreload() {
-	eng := rt.Engine()
-	list := rt.preloadFor(eng)
-	rt.mu.Lock()
-	same := len(list) == len(rt.lastPreload)
-	for i := 0; same && i < len(list); i++ {
-		same = list[i] == rt.lastPreload[i]
+	rt.mu.RLock()
+	ls := make([]*langRT, 0, len(rt.order))
+	for _, c := range rt.order {
+		ls = append(ls, rt.langs[c])
 	}
-	if same {
+	rt.mu.RUnlock()
+	for _, l := range ls {
+		list := rt.preloadFor(l)
+		rt.mu.Lock()
+		same := len(list) == len(l.lastPreload)
+		for i := 0; same && i < len(list); i++ {
+			same = list[i] == l.lastPreload[i]
+		}
+		if same {
+			rt.mu.Unlock()
+			continue
+		}
+		l.lastPreload = list
+		h := rt.hubs[l.code]
 		rt.mu.Unlock()
-		return
+		b, _ := json.Marshal(map[string]any{"urls": list})
+		h.Broadcast(hub.Frame{Seq: 0, Data: hub.FormatEvent(-1, "preload", b)})
 	}
-	rt.lastPreload = list
-	rt.mu.Unlock()
-	b, _ := json.Marshal(map[string]any{"urls": list})
-	rt.Hub.Broadcast(hub.Frame{Seq: 0, Data: hub.FormatEvent(-1, "preload", b)})
 }
 
 // --- operator control (REQ-034): one controlling operator at a time ---
@@ -453,11 +741,13 @@ func (rt *Runtime) ControllerSID() string {
 
 // OperatorPayload is what operator streams carry on every change.
 type OperatorPayload struct {
-	Op         live.OperatorState `json:"op"`
-	Audience   int                `json:"audience"`
-	Controller string             `json:"controller"`
-	CuesVer    int                `json:"cuesVer"`
-	Show       struct {
+	Op             live.OperatorState `json:"op"`
+	Audience       int                `json:"audience"`
+	AudienceByLang map[string]int     `json:"audienceByLang"`
+	Languages      []LangInfo         `json:"languages"`
+	Controller     string             `json:"controller"`
+	CuesVer        int                `json:"cuesVer"`
+	Show           struct {
 		ID   string `json:"id"`
 		Name string `json:"name"`
 	} `json:"show"`
@@ -466,9 +756,14 @@ type OperatorPayload struct {
 // OperatorPayload snapshots the operator-visible state.
 func (rt *Runtime) OperatorPayload() OperatorPayload {
 	rt.mu.RLock()
-	eng, ver, id, name := rt.engine, rt.cuesVer, rt.showID, rt.showName
+	eng, ver, id, name, langs := rt.langs[rt.primary].engine, rt.cuesVer, rt.showID, rt.showName, rt.languagesLocked()
 	rt.mu.RUnlock()
-	p := OperatorPayload{Op: eng.Operator(), Audience: rt.Hub.Count(), Controller: rt.ControllerSID(), CuesVer: ver}
+	by := rt.AudienceByLang()
+	total := 0
+	for _, c := range by {
+		total += c
+	}
+	p := OperatorPayload{Op: eng.Operator(), Audience: total, AudienceByLang: by, Languages: langs, Controller: rt.ControllerSID(), CuesVer: ver}
 	p.Show.ID, p.Show.Name = id, name
 	return p
 }
@@ -476,8 +771,9 @@ func (rt *Runtime) OperatorPayload() OperatorPayload {
 // --- persistence (REQ-012) ---
 
 type savedLive struct {
-	ShowID string         `json:"showId"`
-	State  live.Persisted `json:"state"`
+	ShowID string                    `json:"showId"`
+	State  live.Persisted            `json:"state"` // the primary language (older files have only this)
+	Langs  map[string]live.Persisted `json:"langs,omitempty"`
 }
 
 // EnablePersistence turns on debounced saving of live state to path.
@@ -490,12 +786,21 @@ func (rt *Runtime) EnablePersistence(path string) {
 // Flush writes live state now (no-op if persistence is off or no show is loaded).
 func (rt *Runtime) Flush() {
 	rt.mu.RLock()
-	path, id, eng := rt.livePath, rt.showID, rt.engine
+	path, id := rt.livePath, rt.showID
+	engs := map[string]*live.Engine{}
+	for c, l := range rt.langs {
+		engs[c] = l.engine
+	}
+	primary := rt.primary
 	rt.mu.RUnlock()
 	if path == "" || id == "" {
 		return
 	}
-	b, err := json.Marshal(savedLive{ShowID: id, State: eng.Export()})
+	sv := savedLive{ShowID: id, State: engs[primary].Export(), Langs: map[string]live.Persisted{}}
+	for c, e := range engs {
+		sv.Langs[c] = e.Export()
+	}
+	b, err := json.Marshal(sv)
 	if err != nil {
 		return
 	}
@@ -506,10 +811,15 @@ func (rt *Runtime) Flush() {
 	}
 }
 
-// Restore reloads saved live state if it belongs to the currently loaded show.
+// Restore reloads saved live state if it belongs to the currently loaded show. A language with no saved
+// state (added since) is moved to the primary's cue.
 func (rt *Runtime) Restore() bool {
 	rt.mu.RLock()
-	path, id, eng := rt.livePath, rt.showID, rt.engine
+	path, id, primary := rt.livePath, rt.showID, rt.primary
+	engs := map[string]*live.Engine{}
+	for c, l := range rt.langs {
+		engs[c] = l.engine
+	}
 	rt.mu.RUnlock()
 	b, err := os.ReadFile(path)
 	if path == "" || err != nil {
@@ -519,7 +829,17 @@ func (rt *Runtime) Restore() bool {
 	if json.Unmarshal(b, &sv) != nil || sv.ShowID != id {
 		return false
 	}
-	eng.Restore(sv.State)
+	engs[primary].Restore(sv.State)
+	for c, e := range engs {
+		if c == primary {
+			continue
+		}
+		if p, ok := sv.Langs[c]; ok {
+			e.Restore(p)
+		} else {
+			e.Jump(sv.State.Cursor, -1)
+		}
+	}
 	rt.refreshPreload()
 	return true
 }
@@ -530,4 +850,77 @@ func (rt *Runtime) SetName(name string) {
 	rt.showName = name
 	rt.mu.Unlock()
 	rt.notify()
+}
+
+// negotiateLang picks the language for an audience request: an explicit ?lang= wins; otherwise the
+// browser's Accept-Language header (quality values respected, regional tags falling back to the base
+// language, e.g. es-MX to es); otherwise the show's primary language.
+func negotiateLang(query, acceptLanguage string, langs []LangInfo, primary string) string {
+	has := func(code string) (string, bool) {
+		for _, l := range langs {
+			if l.Code == code {
+				return l.Code, true
+			}
+		}
+		return "", false
+	}
+	// match finds a show language for one requested tag: exact, then its base language, then a regional
+	// variant of the base (a request for "pt" is served "pt-br" if that is all there is).
+	match := func(tag string) (string, bool) {
+		tag = strings.ToLower(strings.TrimSpace(tag))
+		if tag == "" || tag == "*" {
+			return "", false
+		}
+		if c, ok := has(tag); ok {
+			return c, true
+		}
+		base := tag
+		if i := strings.IndexByte(tag, '-'); i >= 0 {
+			base = tag[:i]
+			if c, ok := has(base); ok {
+				return c, true
+			}
+		}
+		for _, l := range langs {
+			if strings.HasPrefix(l.Code, base+"-") {
+				return l.Code, true
+			}
+		}
+		return "", false
+	}
+	if c, ok := match(query); ok {
+		return c
+	}
+	type cand struct {
+		tag string
+		q   float64
+		pos int
+	}
+	var cands []cand
+	for i, part := range strings.Split(acceptLanguage, ",") {
+		tag, params, _ := strings.Cut(strings.TrimSpace(part), ";")
+		q := 1.0
+		if _, v, ok := strings.Cut(strings.TrimSpace(params), "q="); ok {
+			if f, err := strconv.ParseFloat(strings.TrimSpace(v), 64); err == nil {
+				q = f
+			}
+		}
+		if q > 0 {
+			cands = append(cands, cand{tag, q, i})
+		}
+	}
+	sort.SliceStable(cands, func(i, j int) bool { return cands[i].q > cands[j].q })
+	for _, c := range cands {
+		if code, ok := match(c.tag); ok {
+			return code
+		}
+	}
+	return primary
+}
+
+// Negotiate chooses the language for an audience request to this runtime.
+func (rt *Runtime) Negotiate(query, acceptLanguage string) string {
+	rt.mu.RLock()
+	defer rt.mu.RUnlock()
+	return negotiateLang(query, acceptLanguage, rt.languagesLocked(), rt.primary)
 }

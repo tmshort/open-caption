@@ -171,3 +171,50 @@ func TestDuplicateCopiesEverything(t *testing.T) {
 		t.Errorf("missing show: %v", err)
 	}
 }
+
+func TestLanguagesAndTranslations(t *testing.T) {
+	s := newStore(t)
+	m, _ := s.Create("Multi", "Hello")
+	if l, _ := s.Languages(m.ID); len(l) != 1 || l[0] != "en" {
+		t.Fatalf("%v", l)
+	}
+	s.WriteScript(m.ID, "fr", "Bonjour")
+	s.WriteScript(m.ID, "es", "Hola")
+	if l, _ := s.Languages(m.ID); len(l) != 3 || l[0] != "en" || l[1] != "es" || l[2] != "fr" {
+		t.Errorf("primary first, then alphabetical: %v", l)
+	}
+	if err := s.DeleteScript(m.ID, "en"); err == nil {
+		t.Error("the main language must not be removable")
+	}
+	if err := s.DeleteScript(m.ID, "fr"); err != nil {
+		t.Error(err)
+	}
+	if err := s.DeleteScript(m.ID, "fr"); !errors.Is(err, ErrNotFound) {
+		t.Errorf("already gone: %v", err)
+	}
+	if err := s.DeleteScript(m.ID, "../x"); err == nil {
+		t.Error("invalid language accepted")
+	}
+	if l, _ := s.Languages(m.ID); len(l) != 2 {
+		t.Errorf("%v", l)
+	}
+	// translated idle messages are validated and cleaned
+	th, err := (Theme{IdleMessages: map[string]string{"es": "  Pronto  ", "fr": "", "../x": "no"}}).Normalize("Soon")
+	if err == nil {
+		t.Errorf("bad language key accepted: %+v", th)
+	}
+	th, err = (Theme{IdleMessages: map[string]string{"es": "  Pronto  ", "fr": ""}}).Normalize("Soon")
+	if err != nil || len(th.IdleMessages) != 1 || th.IdleMessages["es"] != "Pronto" {
+		t.Errorf("%v %+v", err, th.IdleMessages)
+	}
+}
+
+func TestDuplicateKeepsEveryLanguage(t *testing.T) {
+	s := newStore(t)
+	m, _ := s.Create("Multi", "Hello")
+	s.WriteScript(m.ID, "es", "Hola")
+	cp, _ := s.Duplicate(m.ID, "")
+	if l, _ := s.Languages(cp.ID); len(l) != 2 {
+		t.Errorf("%v", l)
+	}
+}
