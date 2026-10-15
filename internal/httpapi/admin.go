@@ -17,6 +17,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"sort"
 	"strconv"
@@ -277,6 +278,7 @@ func (s *Server) adminRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/admin/settings", adm(s.settings))
 	mux.HandleFunc("PUT /api/admin/settings/passwords", adm(s.changePasswords))
 	mux.HandleFunc("PUT /api/admin/settings/log-level", adm(s.setLogLevel))
+	mux.HandleFunc("GET /api/admin/log", adm(s.recentLog))
 	mux.HandleFunc("GET /api/admin/settings/operator-password", adm(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-store")
 		s.pwMu.Lock()
@@ -1122,6 +1124,48 @@ func (s *Server) settings(w http.ResponseWriter, r *http.Request) {
 		"adminAllow": s.cfg.Access.AdminAllow, "operatorAllow": s.cfg.Access.OperatorAllow,
 		"adminRestricted": s.adminAllow.Restricted(), "operatorRestricted": s.operatorAllow.Restricted(),
 	})
+}
+
+var logLevelRe = regexp.MustCompile(`^\d{4}/\d\d/\d\d \d\d:\d\d:\d\d(?:\.\d+)? (DEBUG|INFO|WARN|ERROR) `)
+
+// recentLog returns the last lines of the in-memory log (the same lines the support bundle holds), for the
+// log viewer in Setup. ?level= is the lowest severity to show (debug, info, warn or error) and ?lines= how
+// many of the newest matching lines to return (up to 1000).
+func (s *Server) recentLog(w http.ResponseWriter, r *http.Request) {
+	min := logx.Debug
+	if q := r.URL.Query().Get("level"); q != "" {
+		lv, err := logx.Parse(q)
+		if err != nil {
+			writeErr(w, http.StatusBadRequest, "The level must be debug, info, warn or error.")
+			return
+		}
+		min = lv
+	}
+	n := 300
+	if q := r.URL.Query().Get("lines"); q != "" {
+		if v, err := strconv.Atoi(q); err == nil && v > 0 {
+			n = v
+		}
+	}
+	if n > 1000 {
+		n = 1000
+	}
+	out := []string{}
+	if s.logs != nil {
+		for _, ln := range s.logs.Lines() {
+			lv := logx.Info // a line without a level (from another writer) counts as normal
+			if m := logLevelRe.FindStringSubmatch(ln); m != nil {
+				lv, _ = logx.Parse(m[1])
+			}
+			if lv >= min {
+				out = append(out, ln)
+			}
+		}
+	}
+	if len(out) > n {
+		out = out[len(out)-n:]
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"lines": out, "level": logx.Current().String()})
 }
 
 // setLogLevel changes how much is logged, at once, and records it in config.yaml so it is kept at the next start.

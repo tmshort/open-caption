@@ -37,6 +37,7 @@
   function ask(title, body, okLabel, opts) {
     return new Promise((resolve) => {
       const d = $('dlg');
+      d.classList.toggle('wide', !!(opts && opts.wide));
       $('dlgtitle').textContent = title;
       $('dlgbody').replaceChildren(body);
       $('dlgok').textContent = okLabel || 'OK';
@@ -103,11 +104,38 @@
             h('label', { class: 'field' }, h('span', {}, 'New admin password'), adminPw),
             h('label', { class: 'field' }, h('span', {}, 'New operator password'), opPw), reveal, shown)
         : h('p', { class: 'hint' }, 'This copy was started without a settings file, so passwords cannot be changed here.'));
-    if (!await ask('Settings', body, s.canChangePasswords ? 'Change passwords' : 'Close', { noCancel: !s.canChangePasswords })) return;
+    if (!await ask('Settings', body, s.canChangePasswords ? 'Change passwords' : 'Close', { noCancel: !s.canChangePasswords, extra: { label: 'Recent log…', run: showLog } })) return;
     if (!s.canChangePasswords) return;
     const res = await api('PUT', '/api/admin/settings/passwords', { admin: adminPw.value, operator: opPw.value });
     if (!res.ok) return fail(res);
     toast('Passwords changed');
+  }
+  // The program's recent log (the last 1000 lines it keeps in memory), so a problem can be looked at without
+  // opening the log file or the support bundle.
+  async function showLog() {
+    const pre = h('pre', { class: 'logview', tabindex: '0', 'aria-label': 'Recent log' });
+    const level = h('select', { 'aria-label': 'Show' }, ...[['debug', 'Everything'], ['info', 'Normal and up'], ['warn', 'Problems only (warnings and errors)'], ['error', 'Errors only']].map(([v, t]) => h('option', { value: v }, t)));
+    level.value = 'info';
+    const auto = h('input', { type: 'checkbox', checked: '' });
+    const count = h('span', { class: 'hint' });
+    let lastLines = [];
+    async function load() {
+      const r = await api('GET', '/api/admin/log?lines=400&level=' + level.value);
+      if (!r.ok) { pre.textContent = (r.data && r.data.error) || 'Could not read the log.'; return; }
+      lastLines = r.data.lines;
+      const atEnd = pre.scrollHeight - pre.scrollTop - pre.clientHeight < 40;
+      pre.textContent = lastLines.length ? lastLines.join('\n') : 'Nothing at this level yet.';
+      count.textContent = lastLines.length + ' line(s); the program logs at "' + r.data.level + '" and above';
+      if (atEnd) pre.scrollTop = pre.scrollHeight;
+    }
+    level.addEventListener('change', load);
+    const copy = h('button', { onclick: async () => { try { await navigator.clipboard.writeText(lastLines.join('\n')); toast('Copied'); } catch (e) { toast('Select the text and copy it by hand'); } } }, 'Copy');
+    const body = h('div', {}, h('div', { class: 'row' }, h('label', { class: 'row' }, 'Show: ', level), h('label', { class: 'row' }, auto, ' Update every few seconds'), h('button', { onclick: load }, 'Refresh'), copy),
+      pre, count, h('p', { class: 'hint' }, 'Passwords are never written to the log. Setup → Go Live has a support bundle with this log and more, for sending to someone who is helping.'));
+    await load(); pre.scrollTop = pre.scrollHeight;
+    const timer = setInterval(() => { if (auto.checked) load(); }, 3000);
+    await ask('Recent log', body, 'Close', { noCancel: true, wide: true });
+    clearInterval(timer);
   }
   $('settingsbtn').addEventListener('click', openSettings);
 

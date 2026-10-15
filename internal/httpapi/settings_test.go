@@ -3,6 +3,7 @@ package httpapi
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/tmshort/open-caption/internal/logbuf"
 	"github.com/tmshort/open-caption/internal/logx"
 	"io"
 	"log"
@@ -427,5 +428,54 @@ func TestSetupSaysWhenALogLevelFlagOverridesTheSavedOne(t *testing.T) {
 	_, r := c.do("PUT", "/api/admin/settings/log-level", map[string]string{"level": "info"})
 	if note, _ := r["note"].(string); !strings.Contains(note, "--log-level debug") || !strings.Contains(note, "restarted") || r["level"] != "info" {
 		t.Errorf("%v", r)
+	}
+}
+
+func TestRecentLogViewer(t *testing.T) {
+	s, ts, c := serverWith(t, nil)
+	lb := logbuf.New(100)
+	for _, ln := range []string{
+		"2026/10/15 10:00:00 INFO admin signed in from 10.0.0.2",
+		"2026/10/15 10:00:01 DEBUG GET /healthz -> 200 (0s) from 10.0.0.2",
+		"2026/10/15 10:00:02 WARN failed sign-in as admin from 10.0.0.9: wrong password",
+		"2026/10/15 10:00:03 ERROR config: something broke",
+		"a line from another writer",
+	} {
+		lb.Write([]byte(ln + "\n"))
+	}
+	s.SetLogSource(lb)
+	lines := func(q string) []any {
+		code, r := c.do("GET", "/api/admin/log"+q, nil)
+		if code != 200 {
+			t.Fatalf("%s: %d %v", q, code, r)
+		}
+		return r["lines"].([]any)
+	}
+	if got := lines(""); len(got) != 5 {
+		t.Errorf("everything by default: %v", got)
+	}
+	if got := lines("?level=info"); len(got) != 4 {
+		t.Errorf("info and up (a line with no level counts as info): %v", got)
+	}
+	if got := lines("?level=warn"); len(got) != 2 || !strings.Contains(got[0].(string), "failed sign-in") {
+		t.Errorf("problems only: %v", got)
+	}
+	if got := lines("?level=error"); len(got) != 1 {
+		t.Errorf("errors only: %v", got)
+	}
+	if got := lines("?lines=2"); len(got) != 2 || got[1] != "a line from another writer" {
+		t.Errorf("the newest lines: %v", got)
+	}
+	if code, _ := c.do("GET", "/api/admin/log?level=loud", nil); code != 400 {
+		t.Errorf("bad level: %d", code)
+	}
+	// Only Setup may read it.
+	op := newClient(t, ts.URL)
+	op.login("operator", "operatorpw")
+	if code, _ := op.do("GET", "/api/admin/log", nil); code != 403 && code != 401 {
+		t.Errorf("the operator must not read the log: %d", code)
+	}
+	if code, _ := newClient(t, ts.URL).do("GET", "/api/admin/log", nil); code != 401 {
+		t.Errorf("signed out: %d", code)
 	}
 }

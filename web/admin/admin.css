@@ -130,3 +130,5 @@ body.print-qr header, body.print-qr nav, body.print-qr dialog, body.print-qr #to
 @media print { body { background: #fff; color: #000; } .noprint { display: none !important; } }
 details.archive{margin-top:1.5rem}details.archive summary{cursor:pointer;font-weight:600;margin-bottom:.5rem}
 ul.versions{list-style:none;padding:0;max-height:50vh;overflow:auto}ul.versions li{padding:.25rem 0}
+dialog.wide { max-width: 60rem; }
+pre.logview { height: 50vh; overflow: auto; margin: .6rem 0; padding: .6rem; background: #000; color: #ddd; border-radius: 6px; font: .8rem/1.4 ui-monospace, Menlo, Consolas, monospace; white-space: pre-wrap; word-break: break-word; }

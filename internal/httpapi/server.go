@@ -23,10 +23,13 @@ type Server struct {
 	dev     bool
 	store   *show.Store
 
-	adminAllow, operatorAllow config.AllowList             // which computers may open Setup / the operator page
-	pinnedLevel               string                       // the --log-level / OPEN_CAPTION_LOG_LEVEL value, if one was given
-	logs                      interface{ String() string } // recent log lines for the support bundle (may be nil)
-	started                   time.Time
+	adminAllow, operatorAllow config.AllowList // which computers may open Setup / the operator page
+	pinnedLevel               string           // the --log-level / OPEN_CAPTION_LOG_LEVEL value, if one was given
+	logs                      interface {
+		String() string
+		Lines() []string
+	} // recent log lines for the support bundle (may be nil)
+	started time.Time
 
 	lmu       sync.Mutex
 	listeners Listeners
@@ -129,7 +132,12 @@ func (s *Server) closeAll() {
 // config.yaml at every start; Setup says so when the level is changed there.
 func (s *Server) PinLogLevel(level string) { s.pinnedLevel = level }
 
-func (s *Server) SetLogSource(l interface{ String() string }) { s.logs = l }
+func (s *Server) SetLogSource(l interface {
+	String() string
+	Lines() []string
+}) {
+	s.logs = l
+}
 
 // captiveAPI answers RFC 8908 clients (DHCP option 114): this network is not a
 // captive portal, but here is the page to show people (docs/06).

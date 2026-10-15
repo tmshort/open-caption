@@ -34,6 +34,17 @@ func (b *Buffer) Write(p []byte) (int, error) {
 	return len(p), nil
 }
 
+// Lines returns the retained lines, oldest first.
+func (b *Buffer) Lines() []string {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	out := append([]string(nil), b.lines...)
+	if b.partial != "" {
+		out = append(out, b.partial)
+	}
+	return out
+}
+
 // String returns the retained lines, oldest first.
 func (b *Buffer) String() string {
 	b.mu.Lock()
