@@ -72,6 +72,12 @@
 
   async function setPayload(p) {
     const needCues = S.cuesVer !== p.cuesVer;
+    // After a server restart nobody holds control; take it back if this page had it.
+    if (S.hadControl && !p.controller && !S.reclaiming) {
+      S.reclaiming = true;
+      claim(false).finally(() => { S.reclaiming = false; });
+    }
+    S.hadControl = p.controller === S.me;
     S.payload = p;
     if (needCues) {
       const r = await api('GET', API + '/state');

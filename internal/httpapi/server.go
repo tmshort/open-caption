@@ -34,7 +34,7 @@ type Server struct {
 
 // New creates a Server with an empty runtime.
 func New(cfg config.Config, version string) *Server {
-	s := &Server{cfg: cfg, version: version, rt: NewRuntime(cfg), auth: newAuth(cfg.AdminPassword, cfg.OperatorPassword),
+	s := &Server{cfg: cfg, version: version, rt: NewRuntime(cfg), auth: newAuth(cfg.AdminPassword, cfg.OperatorPassword, sessionsPath(cfg)),
 		rehearsals: map[string]*Runtime{}, started: time.Now()}
 	if cfg.DataDir != "" {
 		if st, err := show.NewStore(filepath.Join(cfg.DataDir, "shows"), cfg.Defaults.Language, cfg.Defaults.IdleMessage); err == nil {
@@ -42,6 +42,13 @@ func New(cfg config.Config, version string) *Server {
 		}
 	}
 	return s
+}
+
+func sessionsPath(cfg config.Config) string {
+	if cfg.DataDir == "" {
+		return ""
+	}
+	return filepath.Join(cfg.DataDir, "sessions.json")
 }
 
 // Close stops background work and flushes live state.

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/cookiejar"
 	"net/http/httptest"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -392,3 +393,56 @@ type (
 	liveEngine  = live.Engine
 	liveOpState = live.OperatorState
 )
+
+func TestSessionsSurviveARestartButNotAPasswordChange(t *testing.T) {
+	cfg := testConfig()
+	cfg.DataDir = t.TempDir()
+
+	s1 := New(cfg, "t")
+	ts1 := httptest.NewServer(s1.Handler())
+	c := newClient(t, ts1.URL)
+	if c.login("operator", "operatorpw") != 200 {
+		t.Fatal("login")
+	}
+	ts1.Close()
+	s1.Close()
+
+	// Same passwords: the browser's cookie still works on the new server.
+	s2 := New(cfg, "t")
+	ts2 := httptest.NewServer(s2.Handler())
+	c2 := &client{t: t, base: ts2.URL, hc: c.hc}
+	if code, _ := c2.do("GET", "/api/operator/state", nil); code != 200 {
+		t.Errorf("session lost across restart: %d", code)
+	}
+	b, _ := os.ReadFile(filepath.Join(cfg.DataDir, "sessions.json"))
+	if len(b) == 0 || strings.Contains(string(b), "operatorpw") {
+		t.Errorf("sessions file should exist and never hold passwords: %s", b)
+	}
+	// Logging out removes it from disk too.
+	c2.do("POST", "/api/logout", nil)
+	ts2.Close()
+	s2.Close()
+	s3 := New(cfg, "t")
+	ts3 := httptest.NewServer(s3.Handler())
+	if code, _ := (&client{t: t, base: ts3.URL, hc: c.hc}).do("GET", "/api/operator/state", nil); code != 401 {
+		t.Errorf("logged-out session came back: %d", code)
+	}
+	ts3.Close()
+	s3.Close()
+
+	// A changed password signs everyone out.
+	s4 := New(cfg, "t")
+	ts4 := httptest.NewServer(s4.Handler())
+	c4 := newClient(t, ts4.URL)
+	c4.login("operator", "operatorpw")
+	ts4.Close()
+	s4.Close()
+	cfg.OperatorPassword = "newpassword"
+	s5 := New(cfg, "t")
+	defer s5.Close()
+	ts5 := httptest.NewServer(s5.Handler())
+	defer ts5.Close()
+	if code, _ := (&client{t: t, base: ts5.URL, hc: c4.hc}).do("GET", "/api/operator/state", nil); code != 401 {
+		t.Errorf("session should not survive a password change: %d", code)
+	}
+}

@@ -6,9 +6,12 @@ import (
 	"crypto/sha256"
 	"crypto/subtle"
 	"encoding/base64"
+	"encoding/hex"
 	"encoding/json"
 	"net"
 	"net/http"
+	"os"
+	"path/filepath"
 	"sync"
 	"time"
 )
@@ -33,18 +36,85 @@ type session struct {
 	expires time.Time
 }
 
+// savedSessions is the on-disk form. Only a hash of each token is stored, and
+// the file is discarded if either password changed since it was written.
+type savedSessions struct {
+	Fingerprint string                  `json:"fingerprint"`
+	Sessions    map[string]savedSession `json:"sessions"`
+}
+
+type savedSession struct {
+	Role    string `json:"role"`
+	Expires int64  `json:"expires"`
+}
+
+func tokenKey(token string) string {
+	h := sha256.Sum256([]byte("session:" + token))
+	return hex.EncodeToString(h[:])
+}
+
 // auth keeps sessions and login rate limits in memory.
 type auth struct {
 	adminPW, operatorPW [32]byte // sha256 of the configured passwords
 
+	path string // where sessions are saved ("" = memory only)
+	fp   string
+
 	mu       sync.Mutex
-	sessions map[string]session
+	sessions map[string]session // keyed by tokenKey(token)
 	attempts map[string][]time.Time
 }
 
-func newAuth(adminPW, operatorPW string) *auth {
-	return &auth{adminPW: sha256.Sum256([]byte(adminPW)), operatorPW: sha256.Sum256([]byte(operatorPW)),
+// newAuth creates the session store. With a path, sessions survive a restart,
+// so an operator is not signed out if the program is restarted mid-show.
+func newAuth(adminPW, operatorPW, path string) *auth {
+	fp := sha256.Sum256([]byte(adminPW + "\x00" + operatorPW))
+	a := &auth{adminPW: sha256.Sum256([]byte(adminPW)), operatorPW: sha256.Sum256([]byte(operatorPW)),
+		path: path, fp: hex.EncodeToString(fp[:]),
 		sessions: map[string]session{}, attempts: map[string][]time.Time{}}
+	a.load()
+	return a
+}
+
+func (a *auth) load() {
+	if a.path == "" {
+		return
+	}
+	b, err := os.ReadFile(a.path)
+	if err != nil {
+		return
+	}
+	var sv savedSessions
+	if json.Unmarshal(b, &sv) != nil || sv.Fingerprint != a.fp {
+		return // unreadable, or a password changed: everyone signs in again
+	}
+	for k, s := range sv.Sessions {
+		if exp := time.Unix(s.Expires, 0); time.Now().Before(exp) && (s.Role == RoleAdmin || s.Role == RoleOperator) {
+			a.sessions[k] = session{role: s.Role, expires: exp}
+		}
+	}
+}
+
+// saveLocked writes the sessions (caller holds a.mu).
+func (a *auth) saveLocked() {
+	if a.path == "" {
+		return
+	}
+	sv := savedSessions{Fingerprint: a.fp, Sessions: map[string]savedSession{}}
+	for k, s := range a.sessions {
+		if time.Now().Before(s.expires) {
+			sv.Sessions[k] = savedSession{Role: s.role, Expires: s.expires.Unix()}
+		}
+	}
+	b, err := json.Marshal(sv)
+	if err != nil {
+		return
+	}
+	os.MkdirAll(filepath.Dir(a.path), 0o755)
+	tmp := a.path + ".tmp"
+	if os.WriteFile(tmp, b, 0o600) == nil {
+		os.Rename(tmp, a.path)
+	}
 }
 
 func pwEqual(a [32]byte, pw string) bool {
@@ -98,16 +168,18 @@ func (a *auth) login(role, password string) (token, granted string, ok bool) {
 			}
 		}
 	}
-	a.sessions[token] = session{role: granted, expires: time.Now().Add(sessionTTL)}
+	a.sessions[tokenKey(token)] = session{role: granted, expires: time.Now().Add(sessionTTL)}
+	a.saveLocked()
 	return token, granted, true
 }
 
 func (a *auth) lookup(token string) (session, bool) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
-	s, ok := a.sessions[token]
+	k := tokenKey(token)
+	s, ok := a.sessions[k]
 	if !ok || time.Now().After(s.expires) {
-		delete(a.sessions, token)
+		delete(a.sessions, k)
 		return session{}, false
 	}
 	return s, true
@@ -115,7 +187,8 @@ func (a *auth) lookup(token string) (session, bool) {
 
 func (a *auth) revoke(token string) {
 	a.mu.Lock()
-	delete(a.sessions, token)
+	delete(a.sessions, tokenKey(token))
+	a.saveLocked()
 	a.mu.Unlock()
 }
 
