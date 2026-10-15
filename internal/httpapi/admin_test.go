@@ -4,12 +4,14 @@ import (
 	"archive/zip"
 	"bytes"
 	"encoding/json"
+	"github.com/tmshort/open-caption/internal/config"
 	"image"
 	"image/png"
 	"io"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 )
@@ -425,5 +427,137 @@ func TestRenameAndDuplicateShowAPI(t *testing.T) {
 	}
 	if code, _ := c.do("POST", "/api/admin/shows/missing-0000/duplicate", nil); code != 404 {
 		t.Errorf("duplicate missing: %d", code)
+	}
+}
+
+func TestTwoPeopleEditingTheSameScript(t *testing.T) {
+	_, _, c := adminServer(t)
+	id := createShow(t, c, "Shared")
+	_, r := c.do("GET", "/api/admin/shows/"+id+"/script", nil)
+	v0 := r["version"].(string)
+	if v0 == "" {
+		t.Fatal("no version")
+	}
+	// Person A saves first.
+	code, r := c.do("PUT", "/api/admin/shows/"+id+"/script", map[string]string{"text": "A's line", "baseVersion": v0})
+	if code != 200 || r["version"] == v0 {
+		t.Fatalf("first save: %d %v", code, r)
+	}
+	vA := r["version"].(string)
+	// Person B is still on the old version: refused, and shown what is there now.
+	code, r = c.do("PUT", "/api/admin/shows/"+id+"/script", map[string]string{"text": "B's line", "baseVersion": v0})
+	if code != 409 || r["conflict"] != true || r["text"] != "A's line" || r["version"] != vA {
+		t.Fatalf("stale save: %d %v", code, r)
+	}
+	if _, r = c.do("GET", "/api/admin/shows/"+id+"/script", nil); r["text"] != "A's line" {
+		t.Error("the stale save must not overwrite")
+	}
+	// B chooses to overwrite: sends the current version as the base.
+	if code, _ = c.do("PUT", "/api/admin/shows/"+id+"/script", map[string]string{"text": "B's line", "baseVersion": vA}); code != 200 {
+		t.Errorf("overwrite with current base: %d", code)
+	}
+	// Saving the same text someone else already saved is not a conflict.
+	if code, _ = c.do("PUT", "/api/admin/shows/"+id+"/script", map[string]string{"text": "B's line", "baseVersion": v0}); code != 200 {
+		t.Errorf("identical text: %d", code)
+	}
+	// Older clients that send no base still work.
+	if code, _ = c.do("PUT", "/api/admin/shows/"+id+"/script", map[string]string{"text": "no base"}); code != 200 {
+		t.Errorf("no base: %d", code)
+	}
+}
+
+func TestChangePasswordsFromSetup(t *testing.T) {
+	dir := t.TempDir()
+	cfgPath := dir + "/config.yaml"
+	os.WriteFile(cfgPath, []byte("admin_password: adminpw\noperator_password: operatorpw\nhttp:\n  addr: \":9999\"\n"), 0o600)
+	cfg := testConfig()
+	cfg.DataDir, cfg.Path = dir, cfgPath
+	s := New(cfg, "t")
+	defer s.Close()
+	ts := httptest.NewServer(s.Handler())
+	defer ts.Close()
+
+	admin, op := newClient(t, ts.URL), newClient(t, ts.URL)
+	admin.login("admin", "adminpw")
+	op.login("operator", "operatorpw")
+	otherAdmin := newClient(t, ts.URL)
+	otherAdmin.login("admin", "adminpw")
+
+	for body, want := range map[string]int{
+		`{}`: 400, `{"admin":"short"}`: 400, `{"operator":"adminpw"}`: 400, `{"admin":"operatorpw"}`: 400,
+	} {
+		req, _ := http.NewRequest("PUT", ts.URL+"/api/admin/settings/passwords", strings.NewReader(body))
+		resp, _ := admin.hc.Do(req)
+		resp.Body.Close()
+		if resp.StatusCode != want {
+			t.Errorf("%s: %d, want %d", body, resp.StatusCode, want)
+		}
+	}
+	if code, _ := op.do("PUT", "/api/admin/settings/passwords", map[string]string{"operator": "hunter22"}); code != 403 {
+		t.Errorf("operator must not change passwords: %d", code)
+	}
+
+	// Change only the operator password.
+	if code, r := admin.do("PUT", "/api/admin/settings/passwords", map[string]string{"operator": "new-operator-pw"}); code != 200 {
+		t.Fatalf("change operator: %d %v", code, r)
+	}
+	if code, _ := op.do("GET", "/api/operator/state", nil); code != 401 {
+		t.Errorf("the old operator login should be signed out: %d", code)
+	}
+	if code, _ := admin.do("GET", "/api/admin/ping", nil); code != 200 {
+		t.Errorf("admin sessions are unaffected: %d", code)
+	}
+	fresh := newClient(t, ts.URL)
+	if fresh.login("operator", "operatorpw") != 401 || fresh.login("operator", "new-operator-pw") != 200 {
+		t.Error("the new operator password should work, and the old one not")
+	}
+	if _, r := admin.do("GET", "/api/admin/settings/operator-password", nil); r["password"] != "new-operator-pw" {
+		t.Errorf("reveal: %v", r)
+	}
+
+	// Change the admin password: the caller stays signed in, other admin sessions do not.
+	if code, _ := admin.do("PUT", "/api/admin/settings/passwords", map[string]string{"admin": "brand-new-admin"}); code != 200 {
+		t.Fatal("change admin")
+	}
+	if code, _ := admin.do("GET", "/api/admin/ping", nil); code != 200 {
+		t.Errorf("the person who changed it stays signed in: %d", code)
+	}
+	if code, _ := otherAdmin.do("GET", "/api/admin/ping", nil); code != 401 {
+		t.Errorf("another admin session should be signed out: %d", code)
+	}
+
+	// The file on disk has the new passwords and kept the setting that was not touched.
+	b, _ := os.ReadFile(cfgPath)
+	if !strings.Contains(string(b), "brand-new-admin") || !strings.Contains(string(b), "new-operator-pw") || !strings.Contains(string(b), ":9999") {
+		t.Errorf("config.yaml:\n%s", b)
+	}
+	// ...and the settings endpoint still never shows them.
+	_, st := admin.do("GET", "/api/admin/settings", nil)
+	if strings.Contains(toJSON(st), "brand-new-admin") || st["configPath"] != cfgPath {
+		t.Errorf("settings: %v", st)
+	}
+	// A new server reading that file accepts the new passwords and keeps the remaining login.
+	s.Close()
+	cfg2, err := config.Load(cfgPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	cfg2.DataDir = dir
+	s2 := New(cfg2, "t")
+	defer s2.Close()
+	ts2 := httptest.NewServer(s2.Handler())
+	defer ts2.Close()
+	if code, _ := (&client{t: t, base: ts2.URL, hc: admin.hc}).do("GET", "/api/admin/ping", nil); code != 200 {
+		t.Errorf("the remaining login should survive a restart after a password change: %d", code)
+	}
+}
+
+func TestChangePasswordsNeedsAConfigFile(t *testing.T) {
+	_, _, c := adminServer(t) // started without a config file
+	if code, _ := c.do("PUT", "/api/admin/settings/passwords", map[string]string{"admin": "long-enough-pw"}); code != 409 {
+		t.Errorf("%d", code)
+	}
+	if _, r := c.do("GET", "/api/admin/settings", nil); r["canChangePasswords"] != false {
+		t.Errorf("%v", r["canChangePasswords"])
 	}
 }

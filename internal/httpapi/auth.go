@@ -68,12 +68,17 @@ type auth struct {
 // newAuth creates the session store. With a path, sessions survive a restart,
 // so an operator is not signed out if the program is restarted mid-show.
 func newAuth(adminPW, operatorPW, path string) *auth {
-	fp := sha256.Sum256([]byte(adminPW + "\x00" + operatorPW))
-	a := &auth{adminPW: sha256.Sum256([]byte(adminPW)), operatorPW: sha256.Sum256([]byte(operatorPW)),
-		path: path, fp: hex.EncodeToString(fp[:]),
+	a := &auth{adminPW: sha256.Sum256([]byte(adminPW)), operatorPW: sha256.Sum256([]byte(operatorPW)), path: path,
 		sessions: map[string]session{}, attempts: map[string][]time.Time{}}
+	a.fp = fingerprint(a.adminPW, a.operatorPW)
 	a.load()
 	return a
+}
+
+// fingerprint changes whenever either password does (it is derived from hashes, never the passwords).
+func fingerprint(admin, operator [32]byte) string {
+	h := sha256.Sum256(append(append([]byte("fp:"), admin[:]...), operator[:]...))
+	return hex.EncodeToString(h[:])
 }
 
 func (a *auth) load() {
@@ -183,6 +188,29 @@ func (a *auth) lookup(token string) (session, bool) {
 		return session{}, false
 	}
 	return s, true
+}
+
+// setPasswords switches to new passwords. Logins made with a password that changed are dropped, except
+// keep (the person making the change, who stays signed in).
+func (a *auth) setPasswords(adminPW, operatorPW, keep string) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	if adminPW != "" {
+		a.adminPW = sha256.Sum256([]byte(adminPW))
+	}
+	if operatorPW != "" {
+		a.operatorPW = sha256.Sum256([]byte(operatorPW))
+	}
+	a.fp = fingerprint(a.adminPW, a.operatorPW)
+	for k, s := range a.sessions {
+		if k == tokenKey(keep) {
+			continue
+		}
+		if (adminPW != "" && s.role == RoleAdmin) || (operatorPW != "" && s.role == RoleOperator) {
+			delete(a.sessions, k)
+		}
+	}
+	a.saveLocked()
 }
 
 // prune forgets expired sessions.

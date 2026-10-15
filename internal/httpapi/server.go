@@ -28,11 +28,14 @@ type Server struct {
 	lmu       sync.Mutex
 	listeners Listeners
 
+	pwMu sync.Mutex // guards password changes (s.cfg passwords)
+
 	rmu        sync.Mutex
 	rehearsals map[string]*Runtime // admin session token -> isolated rehearsal
 
-	quit chan struct{}
-	done sync.WaitGroup
+	quit      chan struct{}
+	done      sync.WaitGroup
+	closeOnce sync.Once
 }
 
 // New creates a Server with an empty runtime.
@@ -88,8 +91,14 @@ func sessionsPath(cfg config.Config) string {
 
 // Close stops background work and flushes live state.
 func (s *Server) Close() {
-	close(s.quit)
-	s.done.Wait()
+	s.closeOnce.Do(func() {
+		close(s.quit)
+		s.done.Wait()
+		s.closeAll()
+	})
+}
+
+func (s *Server) closeAll() {
 	s.rmu.Lock()
 	rts := s.rehearsals
 	s.rehearsals = map[string]*Runtime{}

@@ -3,6 +3,8 @@ package httpapi
 import (
 	"archive/zip"
 	"bytes"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -24,6 +26,7 @@ import (
 
 	qrcode "github.com/skip2/go-qrcode"
 
+	"github.com/tmshort/open-caption/internal/config"
 	"github.com/tmshort/open-caption/internal/netinfo"
 	"github.com/tmshort/open-caption/internal/script"
 	"github.com/tmshort/open-caption/internal/show"
@@ -214,8 +217,13 @@ func (s *Server) adminRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/admin/network", adm(s.network))
 	mux.HandleFunc("GET /api/admin/network/qr.png", adm(s.qr))
 	mux.HandleFunc("GET /api/admin/support-bundle", adm(s.supportBundle))
-	mux.HandleFunc("GET /api/admin/settings", adm(func(w http.ResponseWriter, r *http.Request) {
-		writeJSON(w, http.StatusOK, s.cfg.Redacted())
+	mux.HandleFunc("GET /api/admin/settings", adm(s.settings))
+	mux.HandleFunc("PUT /api/admin/settings/passwords", adm(s.changePasswords))
+	mux.HandleFunc("GET /api/admin/settings/operator-password", adm(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "no-store")
+		s.pwMu.Lock()
+		defer s.pwMu.Unlock()
+		writeJSON(w, http.StatusOK, map[string]any{"password": s.cfg.OperatorPassword})
 	}))
 
 	// Rehearsal: the operator API against a private, isolated runtime (docs/02, "Rehearsal").
@@ -380,6 +388,12 @@ func (s *Server) scriptResponse(id, text string) (Analysis, []script.Cue) {
 	return analyze(text, mustAssets(s.store, id))
 }
 
+// scriptVersion identifies a script's text, so two people editing the same script are noticed.
+func scriptVersion(text string) string {
+	h := sha256.Sum256([]byte(text))
+	return hex.EncodeToString(h[:8])
+}
+
 func (s *Server) getScript(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	text, err := s.store.ReadScript(id, r.URL.Query().Get("lang"))
@@ -388,7 +402,7 @@ func (s *Server) getScript(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	a, _ := s.scriptResponse(id, text)
-	writeJSON(w, http.StatusOK, map[string]any{"text": text, "analysis": a})
+	writeJSON(w, http.StatusOK, map[string]any{"text": text, "version": scriptVersion(text), "analysis": a})
 }
 
 func (s *Server) validateScript(w http.ResponseWriter, r *http.Request) {
@@ -411,6 +425,9 @@ func (s *Server) putScript(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		Text    string `json:"text"`
 		Confirm string `json:"confirm"`
+		// BaseVersion is the version the editor was based on. If the saved script has changed since
+		// (another person saved), the save is refused so nobody's work is silently lost.
+		BaseVersion string `json:"baseVersion"`
 	}
 	if !decode(w, r, &req) {
 		return
@@ -420,6 +437,14 @@ func (s *Server) putScript(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		storeErr(w, err)
 		return
+	}
+	if req.BaseVersion != "" {
+		cur, _ := s.store.ReadScript(id, r.URL.Query().Get("lang"))
+		if scriptVersion(cur) != req.BaseVersion && cur != req.Text {
+			writeJSON(w, http.StatusConflict, map[string]any{"conflict": true, "text": cur, "version": scriptVersion(cur),
+				"error": "This script was changed by someone else after you opened it."})
+			return
+		}
 	}
 	active := s.rt.ShowID() == id
 	if active && s.rt.Engine().Operator().Live && strings.TrimSpace(req.Confirm) != m.Name {
@@ -432,7 +457,7 @@ func (s *Server) putScript(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	a, cues := s.scriptResponse(id, req.Text)
-	resp := map[string]any{"analysis": a, "saved": true}
+	resp := map[string]any{"analysis": a, "saved": true, "version": scriptVersion(req.Text)}
 	if active && r.URL.Query().Get("lang") == "" {
 		changed, wasLive := s.rt.ReplaceCues(cues)
 		resp["applied"], resp["countChanged"], resp["wasLive"] = true, changed, wasLive
@@ -811,6 +836,64 @@ func (s *Server) startRehearsal(w http.ResponseWriter, r *http.Request) {
 	s.rehearsals[tok] = rt
 	s.rmu.Unlock()
 	writeJSON(w, http.StatusOK, map[string]any{"ok": true, "showId": req.ShowID})
+}
+
+// ---- settings ----
+
+func (s *Server) settings(w http.ResponseWriter, r *http.Request) {
+	s.lmu.Lock()
+	l := s.listeners
+	s.lmu.Unlock()
+	writeJSON(w, http.StatusOK, map[string]any{
+		"config": s.cfg.Redacted(), "configPath": s.cfg.Path, "dataDir": s.cfg.DataDir,
+		"httpAddr": l.HTTPAddr, "httpsAddr": l.HTTPSAddr, "version": s.version,
+		"canChangePasswords": s.cfg.Path != "",
+	})
+}
+
+// changePasswords sets new admin and/or operator passwords (blank = keep). The new values are written to
+// config.yaml, take effect immediately, and sign out anyone using a password that changed (except the caller).
+func (s *Server) changePasswords(w http.ResponseWriter, r *http.Request) {
+	var req struct{ Admin, Operator string }
+	if !decode(w, r, &req) {
+		return
+	}
+	req.Admin, req.Operator = strings.TrimSpace(req.Admin), strings.TrimSpace(req.Operator)
+	if s.cfg.Path == "" {
+		writeErr(w, http.StatusConflict, "This copy was started without a config file, so passwords cannot be changed here.")
+		return
+	}
+	if req.Admin == "" && req.Operator == "" {
+		writeErr(w, http.StatusBadRequest, "Enter a new password in at least one box.")
+		return
+	}
+	for _, pw := range []string{req.Admin, req.Operator} {
+		if pw != "" && len(pw) < config.MinPasswordLength {
+			writeErr(w, http.StatusBadRequest, fmt.Sprintf("Passwords must be at least %d characters.", config.MinPasswordLength))
+			return
+		}
+	}
+	s.pwMu.Lock()
+	defer s.pwMu.Unlock()
+	newAdmin, newOp := req.Admin, req.Operator
+	effAdmin, effOp := s.cfg.AdminPassword, s.cfg.OperatorPassword
+	if newAdmin != "" {
+		effAdmin = newAdmin
+	}
+	if newOp != "" {
+		effOp = newOp
+	}
+	if effAdmin == effOp {
+		writeErr(w, http.StatusBadRequest, "The admin and operator passwords must be different.")
+		return
+	}
+	if err := config.SetPasswords(s.cfg.Path, newAdmin, newOp); err != nil {
+		writeErr(w, http.StatusInternalServerError, "Could not save config.yaml: "+err.Error())
+		return
+	}
+	s.cfg.AdminPassword, s.cfg.OperatorPassword = effAdmin, effOp
+	s.auth.setPasswords(newAdmin, newOp, principal(r).Token)
+	writeJSON(w, http.StatusOK, map[string]any{"ok": true, "changed": map[string]bool{"admin": newAdmin != "", "operator": newOp != ""}})
 }
 
 // ---- support bundle (REQ-061) ----

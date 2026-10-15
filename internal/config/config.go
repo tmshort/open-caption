@@ -118,6 +118,28 @@ func (c Config) Save() error {
 	return os.Rename(tmp, c.Path)
 }
 
+// MinPasswordLength is the shortest password the Setup page accepts.
+const MinPasswordLength = 6
+
+// SetPasswords changes the passwords in the config file at path, leaving every other setting as it is
+// on disk (so command-line overrides are never written into the file). Empty arguments are left alone.
+func SetPasswords(path, admin, operator string) error {
+	if _, err := os.Stat(path); err != nil {
+		return errors.New("config file not found")
+	}
+	c, err := Load(path)
+	if err != nil {
+		return err
+	}
+	if admin != "" {
+		c.AdminPassword = admin
+	}
+	if operator != "" {
+		c.OperatorPassword = operator
+	}
+	return c.Save()
+}
+
 // Validate checks required settings.
 func (c Config) Validate() error {
 	switch {
