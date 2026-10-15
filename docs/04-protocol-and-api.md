@@ -18,8 +18,8 @@ All JSON is UTF-8.
 | GET | `/captive-api` | RFC 8908 captive-portal API: `application/captive+json` `{"captive": false, "user-portal-url": "<scheme>://<host>/"}`. Always reports not captive; clients require HTTPS with a trusted certificate (doc 06) |
 
 Query parameters on `/` and `/events`: `?display=projector`, `?size=<pct>`,
-`?theme=light|dark`, `?lang=<code>` (planned, doc 03). If `lang` is absent, the server picks one from the
-`Accept-Language` request header, falling back to `defaults.language` (`en`).
+`?theme=light|dark`, `?lang=<code>`. If `lang` is absent or not offered, the server picks one from the
+`Accept-Language` request header, falling back to the show's main language (doc 02). The page's language menu just navigates to `/?lang=<code>`.
 
 ### Help — admin or operator session
 
@@ -61,6 +61,9 @@ everywhere an operator session is; the reverse is not true.
 | GET | `/api/admin/shows/{id}/script` | Raw text + parsed cues + diagnostics (`?lang=`) |
 | PUT | `/api/admin/shows/{id}/script` | Body: raw script text (`?lang=`) → diagnostics |
 | POST | `/api/admin/shows/{id}/script/validate` | Dry-run parse without saving |
+| GET | `/api/admin/shows/{id}/languages` | The show's languages (main first) with cue/error/warning counts, `available` (false when a translation does not match the main script) and the `structure` problems; plus the `known` language names offered in Setup |
+| POST | `/api/admin/shows/{id}/languages` | `{code, name?, copyFromMain}`: start a translation (409 if it exists) |
+| DELETE | `/api/admin/shows/{id}/languages/{lang}` | Remove a translation (not the main language; not while live) |
 | POST | `/api/admin/shows/{id}/assets` | multipart image upload: png/jpg/gif/webp only (SVG rejected); 10 MB limit; stored as-is (no server-side scaling); response includes a `large: true` flag above 1 MB |
 | GET/DELETE | `/api/admin/shows/{id}/assets/{file}` | |
 | POST | `/api/admin/shows/{id}/activate` | Make active (blocked if live unless `force`) |

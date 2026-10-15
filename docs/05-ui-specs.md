@@ -17,7 +17,7 @@ Goal: a first-time volunteer can finish without reading documentation.
 
 ### Steps
 - **Show**: name; list of existing shows with Rename / Duplicate / Export / Delete (delete asks first). *(Archive is not built; export and delete cover it.)*
-- **Script**: (a **Help** link here opens the "Writing a script" topic)
+- **Script**: (a **Help** link here opens the "Writing a script" topic). **Language tabs** sit above the editor: the main language, each translation, and ＋ Add a language. A ⚠ marks a translation held back for not matching the main script; translations show the main script for reference, and structure errors appear in the problem list.
   - Drag-and-drop file, "Choose file…", or paste into an editor.
   - Editor pane (monospace, line numbers) + Diagnostics pane. Clicking a diagnostic jumps to the line.
   - Live preview of the parsed cue list (kinds shown as icons: 💬 caption, 🖼 image, ⛶ fullscreen, 🔁 loop, ⬛ blank, 🧹 clear, 📑 section, 📝 note).
@@ -96,6 +96,7 @@ Principle: **no interaction needed.** Controls, if any, are hidden/minimal.
 - **Connection**: a small unobtrusive status dot; if offline > 5 s shows "Reconnecting…" overlay while retaining the last text visible underneath, and auto-recovers on reconnect (re-snapshot). Reconnect backoff 0.5 s → 5 s with jitter.
 - **Keep awake**: request Screen Wake Lock on load and on first user visibility change; on iOS Safari where unavailable, silent hidden `<video>` loop fallback (documented, off by default). Page shows a one-time tiny hint "Tip: turn off Auto-Lock to keep captions on" only when wake lock fails.
 - **Language** (when the show has more than one language): the page starts in the language matched from the browser's `Accept-Language` header, or the default (`en`). A small picker in a corner lists the available languages; choosing one navigates to `/?lang=xx`, so the URL form (e.g. on a lobby QR code) works identically. With a single language there is no picker. The page never blocks on a choice.
+- **Language menu** (🌐, top left, only when the show has several languages): lists the languages by their own names and navigates to `/?lang=xx`. The page's own labels are translated for es, fr, de, it and pt; other languages use English labels.
 - **Optional local controls** (collapsed, appear on tap/click in a corner): text size − / +, light/dark toggle. Stored in `localStorage`; never required.
 - **Projector mode** (`?display=projector`): font scale ×1.5 by default, hidden cursor, no controls, no connection dot unless offline.
 - **Responsive**: font size uses `clamp()` with `vw`/`vh` units relative to the theme `scalePct`; works portrait and landscape; safe-area insets for iPhone.

@@ -175,6 +175,10 @@ EDWIN: Whistling all day long
 
 If someone else saves a script while you have it open, the program warns you when you save instead of overwriting their work, and lets you take their version or keep yours.
 
+### More than one language
+
+A show can offer captions in several languages. In Setup → Script, click **＋ Add a language**, keep "Start from a copy of the main script" ticked, and translate the words. Each language is its own script with the same lines, commands and blank screens in the same order, so one press of Space shows the same moment in every language. The operator follows the main language only. Audience devices get the language their phone is set to (or the main one) and can switch from the small 🌐 menu, or be given a link ending in `?lang=es`. A translation that stops matching the main script is reported and held back until it is fixed. The sample show includes a Spanish translation to look at. See the *Languages* help topic.
+
 ### Changing things during rehearsals and shows
 
 You can edit and re-save a script while a show is live (for example to fix a typo). The program asks you to type the show's name to be sure, keeps the operator's place by line number, and warns if the number of lines changed.

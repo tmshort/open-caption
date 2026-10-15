@@ -51,9 +51,10 @@ Each milestone is shippable and ends with a demoable result. Tasks reference req
 - [x] Logins survive a restart; the operator page takes control back automatically
 - [x] Operational niceties: undo survives a restart (last 10 steps), script edit-conflict detection, change passwords from Setup, Look tick kept on the server, expired-session/rehearsal cleanup, `--dev` listens on this computer only, operator section menu and "last sent" timer
 
+- [x] Multiple languages (REQ-026): per-language engines and hubs driven in lockstep, structure checking, language negotiation and menu, Setup language tabs, sample Spanish translation
+
 ## Stretch / Later
 - mDNS advertisement; signed/notarized macOS build; Windows installer
-- Multi-language scripts (identical structure, `[language: xx]`, `?lang=`) (REQ-026); engine/protocol already carry `lang`
 - ACME/Let's Encrypt certificates (needs Internet + public name)
 - Markdown headings as section markers
 - Hashed passwords in config
