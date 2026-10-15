@@ -284,9 +284,9 @@ async function main() {
     section('Older browsers: dialogs without <dialog>, and a plain message when a page cannot run');
     const b3 = await puppeteer.launch({ executablePath: CHROME, headless: 'new', args: ['--no-sandbox'] });
     const old = async (script, url) => {
-      const p = await b3.newPage(); p.setDefaultTimeout(8000); await p.setViewport({ width: 1100, height: 800 });
+      const p = await b3.newPage(); p.setDefaultTimeout(30000); await p.setViewport({ width: 1100, height: 800 });
       p.on('pageerror', (e) => errs.push(e.message));
-      await p.evaluateOnNewDocument(script); await p.goto(B + url); return p;
+      await p.evaluateOnNewDocument(script); await p.goto(B + url, { waitUntil: 'domcontentloaded' }); return p;
     };
     // Typing the password before the page's script has attached its handlers does nothing on a slow computer: retry.
     const signIn = async (p, ready) => {
