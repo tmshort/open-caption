@@ -57,6 +57,7 @@ is the item's display time (only meaningful inside a loop).
 | `[fullscreen: text]` | Fullscreen centered large text until the next cue (Markdown formatting allowed) |
 | `[fullscreen]` … `[/fullscreen]` | Same, multi-line text |
 | `[loop]` … `[/loop]` / `[loop: 10s]` | Looping fullscreen items (see *Loops*) |
+| `[together]` … `[/together]` (aliases `[duet]`, `[counterpoint]`) | Voices shown at the same time, one cue |
 | `[song]` … `[/song]` / `[song: title]` | Every caption inside is a sung lyric (see *Songs and lyrics*) |
 | `[section: name]` | Operator-only marker/bookmark; no audience effect |
 | `[note: text]` | Operator-only note shown inline in the operator view (e.g. "wait for door slam") |
@@ -128,6 +129,17 @@ Lyrics are captions flagged as *sung*. The server shows a sung caption in italic
 
 Details: `~` alone (or `~ ~`) is a bare `♪`. The marker works after a speaker (`ELSA: ~ Let it go`). A `~` that is not followed by a space, or is not at the start of the line, is plain text; `\~` escapes it. Inside `[song]`, `[note]`, `[section]`, `[clear]`, `[blank]` and images still work, and a speaker label is kept. If `[song]` is never closed, the lyrics are kept and an error is reported. Songs cannot nest or appear inside a loop. For multi-line captions (`[[ … ]]` or a trailing backslash), a leading `~` makes every line of the caption sung.
 
+### Voices at the same time (counterpoint, duets)
+
+Several voices shown together are **one cue** (one press of Space) with `Parts`. Two ways to write them:
+
+| Write | Result |
+|-------|--------|
+| `[together]` … `[/together]` (aliases `[duet]`, `[counterpoint]`) | every line inside is one voice; each keeps its own speaker label and `~` / song styling |
+| `A: ~ one ~ \|\| B: ~ two ~` on a single line (voices separated by ` \|\| `) | the same, for short exchanges |
+
+A block needs at least two lines (with one, it is shown as an ordinary caption and a warning is given). Only lines of text may appear inside; other commands are skipped with a warning. An unclosed block keeps its lines and reports an error. Inside `[song]`, every voice is sung. The cue's `Text` is the voices joined with newlines, each prefixed with its speaker, for search; the audience gets each voice separately so it can lay them out side by side. Voices that enter one after another are separate cues.
+
 ### Speaker detection
 
 A leading label is a speaker if it matches `^[A-Z][A-Z0-9 .'\-]{0,29}:\s+\S`
@@ -174,6 +186,7 @@ type Cue struct {
     Line    int         // 1-based source line (start)
     Speaker string      // caption only
     Sung    bool        // lyric: Text/HTML already include the surrounding ♪ notes
+    Parts   []Part      // two or more voices shown at the same time (caption only)
     HTML    string      // caption: generated, escaped HTML
     Text    string      // plain text (operator display, search)
     Item    *Item       // image / fullscreen

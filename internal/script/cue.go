@@ -29,6 +29,15 @@ type Item struct {
 	Seconds float64 `json:"seconds,omitempty"` // display time inside a loop; 0 = default
 }
 
+// Part is one voice of a caption sung or spoken together with others.
+type Part struct {
+	Speaker string `json:"speaker,omitempty"`
+	HTML    string `json:"html"`
+	Text    string `json:"text"`
+	Stage   bool   `json:"stage,omitempty"`
+	Sung    bool   `json:"sung,omitempty"`
+}
+
 // Cue is one step the operator can send.
 type Cue struct {
 	Index   int     `json:"index"`
@@ -39,6 +48,7 @@ type Cue struct {
 	Text    string  `json:"text,omitempty"` // plain text (operator display, search)
 	Stage   bool    `json:"stage,omitempty"`
 	Sung    bool    `json:"sung,omitempty"`   // a lyric: shown between musical notes
+	Parts   []Part  `json:"parts,omitempty"`  // caption: two or more voices shown at the same time
 	Item    *Item   `json:"item,omitempty"`   // image / fullscreen
 	Items   []Item  `json:"items,omitempty"`  // loop
 	Period  float64 `json:"period,omitempty"` // loop default seconds; 0 = config default
@@ -76,4 +86,4 @@ type Options struct {
 // DirectiveNames lists every command a script may use as [name] or [name: ...].
 // Help text and tests are checked against this list, so adding a directive
 // without documenting it fails the build's tests.
-var DirectiveNames = []string{"clear", "blank", "image", "fullscreen", "loop", "section", "note", "song", "language"}
+var DirectiveNames = []string{"clear", "blank", "image", "fullscreen", "loop", "section", "note", "song", "together", "language"}

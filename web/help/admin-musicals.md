@@ -18,6 +18,25 @@ Use `[song]` for long numbers, and `~` for a single sung line in the middle of a
 
 In Setup, the **🎵 Song**, **♪** and **♫** buttons above the script editor put these in for you. The ♪ and ♫ characters can also be copied from anywhere, because they are ordinary text.
 
+## Two singers at once (counterpoint and duets)
+
+When different singers sing different words **at the same time**, show them together on the audience's screens with `[together]`:
+
+```script
+[together]
+ANNA: ~ I love you, I love you ~
+KRIS: ~ Me too, me too ~
+[/together]
+```
+
+- Both lines appear **at once** and the operator presses Space **once**.
+- On a wide screen the voices sit side by side, each with a bar down its left edge and its speaker's name above; on a phone they stack.
+- Add as many voices as you need, for example a trio or a spoken line over a sung one.
+- For a quick two-voice line you can write `ANNA: ~ I love you ~ || KRIS: ~ Me too ~` on a single line.
+- Voices that **enter one after another** (a round or canon, or a second singer who answers) are ordinary separate lines: one press of Space each. Write the first voice, then the second when it enters.
+- Keep each voice short. Three or four words per voice is easier to read at the same time than a whole sentence.
+- Use speaker names so the audience can tell the voices apart.
+
 ## Tips for good lyric captions
 
 - **One line per sung phrase.** Break lines where the singers breathe, so the operator's press of Space matches the music. Shorter lines are easier to keep up with.

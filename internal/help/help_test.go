@@ -96,7 +96,7 @@ func TestScriptHelpCoversEveryConvention(t *testing.T) {
 			t.Errorf("help never shows the [%s] command", name)
 		}
 	}
-	for _, closer := range []string{"[/loop]", "[/fullscreen]", "[[", "]]", "<!--", "-->", "![", "**", "\\\n"} {
+	for _, closer := range []string{"[/loop]", "[/fullscreen]", "[/together]", " || ", "[[", "]]", "<!--", "-->", "![", "**", "\\\n"} {
 		if !strings.Contains(text, closer) {
 			t.Errorf("help never shows %q", closer)
 		}

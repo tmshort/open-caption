@@ -114,6 +114,16 @@
   function fillBody(body, c) {
     switch (c.kind) {
       case 'caption': {
+        if (c.parts && c.parts.length) { // several voices at once
+          body.append(chip('⏸ TOGETHER'));
+          c.parts.forEach((v) => {
+            const d = document.createElement('div'); d.className = 'part' + (v.sung ? ' sung' : '');
+            if (v.speaker) { const s = document.createElement('span'); s.className = 'spk'; s.textContent = v.speaker; d.appendChild(s); }
+            const t = document.createElement('span'); t.className = 'txt'; t.textContent = v.text; d.appendChild(t);
+            body.appendChild(d);
+          });
+          break;
+        }
         if (c.speaker) { const s = document.createElement('span'); s.className = 'spk'; s.textContent = c.speaker; body.appendChild(s); }
         const t = document.createElement('span'); t.className = 'txt'; t.textContent = c.text; t.style.whiteSpace = 'pre-line'; body.appendChild(t);
         break;

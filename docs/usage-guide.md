@@ -166,7 +166,7 @@ EDWIN: Whistling all day long
 - **One line = one caption** = one press of Space. You decide where to break long speeches.
 - **Speaker names** in capitals followed by a colon are shown above the line.
 - **Stage directions** in `(parentheses)` are shown in italics.
-- **Lyrics** between `♪` notes, in italics: start a line with `~`, or wrap the song in `[song]`…`[/song]`. The editor's **♪**, **♫** and **🎵 Song** buttons insert these. See the *Musicals* help topic.
+- **Lyrics** between `♪` notes, in italics: start a line with `~`, or wrap the song in `[song]`…`[/song]`. For two singers at the same time (a duet or counterpoint), put their lines between `[together]` and `[/together]`, or join them with ` || ` on one line; both show at once on one press of Space. The editor's **♪**, **♫** and **🎵 Song** buttons insert these. See the *Musicals* help topic.
 - **Loops** (pre-show and intermission) repeat pictures and text until the operator moves on. A loop at the very start of the script starts by itself.
 - **Notes** `[note: …]` and bookmarks `[section: …]` are for the operator only.
 - The **Writing a script** help topic lists everything, with examples, and the editor's *Script cheat sheet* summarizes it.

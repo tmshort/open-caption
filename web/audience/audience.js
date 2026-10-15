@@ -46,7 +46,30 @@
     $('idle').textContent = t.idleMessage || '';
   }
 
+  function voiceEl(v) {
+    const d = document.createElement('div');
+    d.className = 'part' + (v.sung ? ' sung' : '') + (v.stage ? ' stage' : '');
+    if (v.speaker && state.theme.speakers !== 'hidden') {
+      const s = document.createElement('span');
+      s.className = 'spk';
+      s.textContent = v.speaker;
+      d.appendChild(s);
+    }
+    const body = document.createElement('span');
+    body.innerHTML = v.html; // generated and escaped by the server
+    d.appendChild(body);
+    return d;
+  }
+
   function captionEl(c) {
+    if (c.parts && c.parts.length) { // several voices at the same time
+      const g = document.createElement('div');
+      g.className = 'cap group';
+      g.dataset.id = c.id;
+      g.setAttribute('role', 'group');
+      c.parts.forEach((v) => g.appendChild(voiceEl(v)));
+      return g;
+    }
     const p = document.createElement('p');
     p.className = 'cap' + (c.stage ? ' stage' : '') + (c.sung ? ' sung' : '');
     p.dataset.id = c.id;

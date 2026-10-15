@@ -360,3 +360,83 @@ func TestSongBlock(t *testing.T) {
 		t.Errorf("song in loop: %+v", r.Diagnostics)
 	}
 }
+
+func TestTogetherBlockShowsVoicesAtOnce(t *testing.T) {
+	src := "[together]\nANNA: ~ I love you ~\nKRIS: ~ Me too, me too ~\n[/together]\nNext line"
+	r := Parse(src, Options{})
+	if len(r.Cues) != 2 {
+		t.Fatalf("one cue for both voices expected: %+v %+v", r.Cues, r.Diagnostics)
+	}
+	c := r.Cues[0]
+	if len(c.Parts) != 2 || c.Parts[0].Speaker != "ANNA" || c.Parts[1].Speaker != "KRIS" || !c.Parts[0].Sung || !c.Parts[1].Sung ||
+		c.Parts[1].Text != "♪ Me too, me too ♪" || !c.Sung {
+		t.Errorf("%+v", c)
+	}
+	if c.Text != "ANNA: ♪ I love you ♪\nKRIS: ♪ Me too, me too ♪" || c.Line != 1 {
+		t.Errorf("text/line: %q %d", c.Text, c.Line)
+	}
+	if r.Cues[1].Text != "Next line" || len(r.Cues[1].Parts) != 0 {
+		t.Errorf("%+v", r.Cues[1])
+	}
+	for _, d := range r.Diagnostics {
+		if d.Severity != SevInfo {
+			t.Errorf("unexpected %+v", d)
+		}
+	}
+}
+
+func TestTogetherMixesSpokenAndSungAndAliases(t *testing.T) {
+	r := Parse("[duet]\nMARY: (spoken) Hello\nJOE: ~ la la ~\n[/duet]", Options{})
+	if len(r.Cues) != 1 || len(r.Cues[0].Parts) != 2 || r.Cues[0].Parts[0].Sung || !r.Cues[0].Parts[1].Sung || r.Cues[0].Sung {
+		t.Fatalf("%+v %+v", r.Cues, r.Diagnostics)
+	}
+	// Inside a song every voice is sung.
+	r = Parse("[song]\n[together]\nA: one\nB: two\n[/together]\n[/song]", Options{})
+	if len(r.Cues) != 1 || !r.Cues[0].Sung || r.Cues[0].Parts[1].Text != "♪ two ♪" {
+		t.Errorf("%+v %+v", r.Cues, r.Diagnostics)
+	}
+}
+
+func TestVoiceSeparatorOnOneLine(t *testing.T) {
+	r := Parse("ANNA: ~ I love you ~ || KRIS: ~ Me too ~ || BOB: Hello", Options{})
+	if len(r.Cues) != 1 || len(r.Cues[0].Parts) != 3 || r.Cues[0].Parts[2].Speaker != "BOB" || r.Cues[0].Parts[2].Sung {
+		t.Fatalf("%+v", r.Cues)
+	}
+	for _, in := range []string{"a||b", "a | | b", "this || ", "|| that"} {
+		r := Parse(in, Options{})
+		if len(r.Cues) != 1 || len(r.Cues[0].Parts) != 0 {
+			t.Errorf("%q should stay one ordinary caption: %+v", in, r.Cues)
+		}
+	}
+}
+
+func TestTogetherProblems(t *testing.T) {
+	r := Parse("[together]\nonly one\n[/together]", Options{})
+	if len(r.Cues) != 1 || len(r.Cues[0].Parts) != 0 || !hasDiag(r, SevWarning, "at least two lines") {
+		t.Errorf("single: %+v %+v", r.Cues, r.Diagnostics)
+	}
+	if r := Parse("[together]\n[/together]", Options{}); len(r.Cues) != 0 || !hasDiag(r, SevWarning, "empty") {
+		t.Errorf("empty: %+v", r.Diagnostics)
+	}
+	r = Parse("[together]\nA: one\nB: two", Options{})
+	if len(r.Cues) != 1 || len(r.Cues[0].Parts) != 2 || !hasDiag(r, SevError, "never closed") {
+		t.Errorf("unclosed keeps the lines: %+v %+v", r.Cues, r.Diagnostics)
+	}
+	if r := Parse("[/together]", Options{}); !hasDiag(r, SevWarning, "no matching [together]") {
+		t.Errorf("%+v", r.Diagnostics)
+	}
+	r = Parse("[together]\nA: one\n[clear]\nB: two\n[/together]", Options{})
+	if !hasDiag(r, SevWarning, "[clear] can't go inside [together]") || len(r.Cues) != 1 || len(r.Cues[0].Parts) != 2 {
+		t.Errorf("directive inside: %+v %+v", r.Cues, r.Diagnostics)
+	}
+	if r := Parse("[loop]\n[together]\n[/loop]", Options{}); !hasDiag(r, SevWarning, "can't go inside a loop") {
+		t.Errorf("loop: %+v", r.Diagnostics)
+	}
+}
+
+func TestCounterpointAlias(t *testing.T) {
+	r := Parse("[counterpoint]\nA: x\nB: y\n[/counterpoint]", Options{})
+	if len(r.Cues) != 1 || len(r.Cues[0].Parts) != 2 {
+		t.Errorf("%+v %+v", r.Cues, r.Diagnostics)
+	}
+}

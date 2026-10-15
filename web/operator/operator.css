@@ -34,7 +34,8 @@ header .grow { flex: 1; }
 .cue .body { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .cue .ln { flex: none; color: #4b4f58; font-size: .75rem; padding-top: .3rem; }
 .cue .spk { color: var(--accent); font-size: .75em; letter-spacing: .06em; margin-right: .5rem; }
-.cue.stage .txt, .cue.sung .txt { font-style: italic; }
+.cue.stage .txt, .cue.sung .txt, .cue .part.sung .txt { font-style: italic; }
+.cue .part { padding-left: .6rem; border-left: 3px solid #4a5a7a; margin-top: .15rem; }
 .cue.sent { color: #6e737d; }
 .cue.now { color: var(--fg); border-left-color: #2ecc71; background: #10201a; }
 .cue.now .gut::before { content: "●"; color: var(--ok); }

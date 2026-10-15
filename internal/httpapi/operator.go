@@ -27,6 +27,13 @@ type ItemView struct {
 	Seconds float64 `json:"seconds,omitempty"`
 }
 
+// PartView is one voice of a caption shown together with others.
+type PartView struct {
+	Speaker string `json:"speaker,omitempty"`
+	Text    string `json:"text"`
+	Sung    bool   `json:"sung,omitempty"`
+}
+
 // CueView is one row of the operator's script list.
 type CueView struct {
 	Index   int        `json:"index"`
@@ -36,6 +43,7 @@ type CueView struct {
 	Text    string     `json:"text,omitempty"`
 	Stage   bool       `json:"stage,omitempty"`
 	Sung    bool       `json:"sung,omitempty"`
+	Parts   []PartView `json:"parts,omitempty"`
 	Label   string     `json:"label,omitempty"`
 	Period  float64    `json:"period,omitempty"`
 	Items   []ItemView `json:"items,omitempty"`
@@ -66,6 +74,9 @@ func cueViews(cues []script.Cue) []CueView {
 		}
 		for _, it := range c.Items {
 			v.Items = append(v.Items, itemView(it))
+		}
+		for _, pt := range c.Parts {
+			v.Parts = append(v.Parts, PartView{Speaker: pt.Speaker, Text: pt.Text, Sung: pt.Sung})
 		}
 		out[i] = v
 	}

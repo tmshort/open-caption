@@ -40,6 +40,21 @@ EDWIN: Whistling all day long
 [/song]
 ```
 
+### Two or more voices at once (duets and counterpoint)
+
+When singers sing different lines **at the same time**, put them in `[together]` … `[/together]`. Every line inside is shown at once, side by side on a wide screen and stacked on a phone, and the operator sends them with a single press of Space. Each keeps its own speaker name. For a short exchange you can write the voices on one line, separated by ` || ` (a space, two vertical bars, a space). `[duet]` and `[counterpoint]` mean the same as `[together]`.
+
+```script
+[together]
+ANNA: ~ I love you, I love you ~
+KRIS: ~ Me too, me too ~
+[/together]
+
+OLIVER: ~ Where is love? ~ || NANCY: ~ Who will buy? ~
+```
+
+Voices that join in **one after another** are separate lines: press Space for each. Use `[together]` only for lines that appear at the same moment. A `[together]` block holds only lines of text, needs at least two, and inside a `[song]` every voice is sung.
+
 A tilde in the middle of a line, such as `about ~5 minutes`, is just text. To start an ordinary line with one, write `\~`. See [Musicals](topic:admin-musicals) for more advice.
 
 ## Several lines in one caption
@@ -82,6 +97,7 @@ A line in square brackets is a command. Names are not case-sensitive.
 | `![caption](file.png)` | The same, written the Markdown way |
 | `[fullscreen: text]` | Show large text full screen. For several lines use `[fullscreen]` … `[/fullscreen]` |
 | `[loop]` … `[/loop]` | A repeating set of full-screen items for pre-show or intermission. See [Loops](topic:admin-loops) |
+| `[together]` … `[/together]` | Two or more voices shown at the same time. See [Songs and music](topic:admin-musicals) |
 | `[song: title]` … `[/song]` | A song: every line inside is shown as a sung lyric. See [Songs and music](topic:admin-musicals) |
 | `[section: name]` | A bookmark for the operator |
 | `[note: text]` | A note for the operator |
@@ -120,6 +136,7 @@ The Script step lists problems with line numbers. Click one to jump to the line.
 - **"[loop] was opened but never closed"** — add `[/loop]` after the last item. The same applies to `[fullscreen]` blocks, `[[` blocks and comments.
 - **"HTML is not supported"** — use `**bold**` and `*italic*` instead of tags.
 - **"can't go inside a loop"** — loops hold only pictures and text.
+- **"[together] needs at least two lines"** — a `[together]` block with one line is shown as an ordinary caption. **"[together] was opened but never closed"** — add `[/together]`; the lines you wrote are kept.
 - **"[song] was opened but never closed"** — add `[/song]` after the last lyric. The lyrics you wrote are still kept.
 
 Errors never stop you from saving. The part with the error is skipped, and the rest of the script still works.

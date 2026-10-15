@@ -16,11 +16,15 @@ var (
 )
 
 var directiveAlias = map[string]string{
-	"clear screen": "clear",
-	"blank screen": "blank",
-	"full screen":  "fullscreen",
-	"/full screen": "/fullscreen",
-	"end loop":     "/loop",
+	"clear screen":  "clear",
+	"blank screen":  "blank",
+	"full screen":   "fullscreen",
+	"/full screen":  "/fullscreen",
+	"end loop":      "/loop",
+	"duet":          "together",
+	"/duet":         "/together",
+	"counterpoint":  "together",
+	"/counterpoint": "/together",
 }
 
 type parser struct {
@@ -31,6 +35,13 @@ type parser struct {
 
 	song     bool // inside [song] ... [/song]: every caption is a sung lyric
 	songLine int
+
+	together *togetherBlock // inside [together] ... [/together]: lines are voices shown at once
+}
+
+type togetherBlock struct {
+	line  int
+	parts []Part
 }
 
 // Parse parses a script. It never fails: problems become Diagnostics and the
@@ -46,6 +57,10 @@ func Parse(src string, opts Options) Result {
 	p.run()
 	if p.song {
 		p.diag(p.songLine, SevError, "[song] was opened but never closed with [/song]. The lyrics so far were kept.")
+	}
+	if p.together != nil {
+		p.diag(p.together.line, SevError, "[together] was opened but never closed with [/together]. The lines so far were kept.")
+		p.closeTogether()
 	}
 
 	for i := range res.Cues {
@@ -186,25 +201,27 @@ func singMarks(l string) (string, bool) {
 	return l, false
 }
 
-func (p *parser) caption(lines []string, lineNo int) {
-	c := Cue{Kind: KindCaption, Line: lineNo}
+// part renders one voice: speaker label, ~ lyric markers, Markdown.
+func (p *parser) part(lines []string, lineNo int) Part {
+	var pt Part
+	lines = append([]string(nil), lines...)
 	if m := speakerRe.FindStringSubmatch(lines[0]); m != nil {
-		c.Speaker = m[1]
+		pt.Speaker = m[1]
 		lines[0] = m[2]
 	}
 	_, shorthand := singMarks(lines[0])
-	c.Sung = p.song || shorthand
+	pt.Sung = p.song || shorthand
 	var hs, ps []string
 	for _, l := range lines {
 		if htmlTagRe.MatchString(l) {
 			p.diag(lineNo, SevInfo, "HTML is not supported; %q will appear as plain text. Use **bold** or *italic* instead.", htmlTagRe.FindString(l))
 		}
-		if c.Sung {
+		if pt.Sung {
 			l, _ = singMarks(l)
 			l = strings.TrimSpace(strings.TrimSuffix(strings.TrimSpace(l), " ~")) // a closing marker on a later line
 		}
 		h, t := RenderInline(l)
-		if c.Sung {
+		if pt.Sung {
 			// Lyrics sit between musical notes; an empty lyric is just a note.
 			if t == "" {
 				h, t = "♪", "♪"
@@ -214,16 +231,80 @@ func (p *parser) caption(lines []string, lineNo int) {
 		}
 		hs, ps = append(hs, h), append(ps, t)
 	}
-	c.HTML = strings.Join(hs, "<br>")
-	c.Text = strings.Join(ps, "\n")
-	if c.Speaker == "" && !c.Sung && strings.HasPrefix(c.Text, "(") && strings.HasSuffix(c.Text, ")") {
-		c.Stage = true
+	pt.HTML = strings.Join(hs, "<br>")
+	pt.Text = strings.Join(ps, "\n")
+	if pt.Speaker == "" && !pt.Sung && strings.HasPrefix(pt.Text, "(") && strings.HasSuffix(pt.Text, ")") {
+		pt.Stage = true
 	}
+	return pt
+}
+
+// voiceSep separates voices that are shown at the same time on one line.
+const voiceSep = " || "
+
+func (p *parser) caption(lines []string, lineNo int) {
+	if p.together != nil { // inside [together]: every line is one more voice
+		p.together.parts = append(p.together.parts, p.part(lines, lineNo))
+		return
+	}
+	if len(lines) == 1 && strings.Contains(lines[0], voiceSep) {
+		var parts []Part
+		for _, seg := range strings.Split(lines[0], voiceSep) {
+			if seg = strings.TrimSpace(seg); seg != "" {
+				parts = append(parts, p.part([]string{seg}, lineNo))
+			}
+		}
+		p.addVoices(parts, lineNo)
+		return
+	}
+	p.addVoices([]Part{p.part(lines, lineNo)}, lineNo)
+}
+
+// addVoices appends a caption made of one voice, or of several shown together.
+func (p *parser) addVoices(parts []Part, lineNo int) {
+	switch len(parts) {
+	case 0:
+		return
+	case 1:
+		pt := parts[0]
+		p.res.Cues = append(p.res.Cues, Cue{Kind: KindCaption, Line: lineNo, Speaker: pt.Speaker, HTML: pt.HTML, Text: pt.Text, Stage: pt.Stage, Sung: pt.Sung})
+		return
+	}
+	c := Cue{Kind: KindCaption, Line: lineNo, Parts: parts, Sung: true}
+	var hs, ts []string
+	for _, pt := range parts {
+		c.Sung = c.Sung && pt.Sung
+		hs = append(hs, pt.HTML)
+		if pt.Speaker != "" {
+			ts = append(ts, pt.Speaker+": "+pt.Text)
+		} else {
+			ts = append(ts, pt.Text)
+		}
+	}
+	c.HTML, c.Text = strings.Join(hs, "<br>"), strings.Join(ts, "\n")
 	p.res.Cues = append(p.res.Cues, c)
+}
+
+func (p *parser) closeTogether() {
+	t := p.together
+	p.together = nil
+	switch len(t.parts) {
+	case 0:
+		p.diag(t.line, SevWarning, "This [together] block is empty and was skipped.")
+	case 1:
+		p.diag(t.line, SevWarning, "[together] needs at least two lines to show at the same time; this one was shown as an ordinary caption.")
+		p.addVoices(t.parts, t.line)
+	default:
+		p.addVoices(t.parts, t.line)
+	}
 }
 
 func (p *parser) directive(raw string, lineNo int) {
 	name, args := parseDirective(raw)
+	if p.together != nil && name != "/together" && name != "together" {
+		p.diag(lineNo, SevWarning, "[%s] can't go inside [together]; only lines of text can. This line was skipped.", name)
+		return
+	}
 	switch name {
 	case "clear", "blank":
 		if args != "" {
@@ -258,6 +339,18 @@ func (p *parser) directive(raw string, lineNo int) {
 			h, t := RenderInline(args)
 			p.res.Cues = append(p.res.Cues, Cue{Kind: KindSection, Line: lineNo, Text: "♪ " + t, HTML: "♪ " + h})
 		}
+	case "together":
+		if p.together != nil {
+			p.diag(lineNo, SevWarning, "[together] can't go inside another [together]. Close the first one with [/together].")
+			return
+		}
+		p.together = &togetherBlock{line: lineNo}
+	case "/together":
+		if p.together == nil {
+			p.diag(lineNo, SevWarning, "[/together] has no matching [together]. The line was skipped.")
+			return
+		}
+		p.closeTogether()
 	case "/song":
 		if !p.song {
 			p.diag(lineNo, SevWarning, "[/song] has no matching [song]. The line was skipped.")

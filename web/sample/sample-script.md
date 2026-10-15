@@ -83,6 +83,14 @@ EDWIN: And the tea goes cold, cold, cold,
 Cold as a garden gate
 [/song]
 ~ Tea for two, and two for tea ~
+<!-- COUNTERPOINT: two singers at the same time. Both lines appear together, side by
+     side on wide screens, from ONE press of the spacebar. -->
+[together]
+MARGARET: ~ Tea for two, and two for tea ~
+EDWIN: ~ Biscuits too, if you please ~
+[/together]
+<!-- The same thing on one line, with || between the voices. -->
+MARGARET: ~ Milk and sugar ~ || EDWIN: ~ Lemon, thank you ~
 
 [section: Intermission]
 <!-- INTERMISSION: a loop that starts when the operator presses the spacebar on it.

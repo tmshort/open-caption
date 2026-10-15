@@ -39,6 +39,15 @@ func TestSampleScriptParsesClean(t *testing.T) {
 			sung++
 		}
 	}
+	groups := 0
+	for _, c := range r.Cues {
+		if len(c.Parts) >= 2 {
+			groups++
+		}
+	}
+	if groups < 2 {
+		t.Errorf("sample should show two voices at once, found %d groups", groups)
+	}
 	if sung < 5 {
 		t.Errorf("sample should include a song, found %d sung lines", sung)
 	}
