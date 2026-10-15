@@ -82,7 +82,13 @@ func main() {
 	if *httpAddr != "" {
 		cfg.HTTP.Addr = *httpAddr
 	}
-	if *httpsAddr != "" {
+	if *dev {
+		// The --dev controls have no password, so they must never be reachable from the network.
+		cfg.HTTP.Addr = loopbackOf(cfg.HTTP.Addr)
+		cfg.HTTP.FallbackAddr = ""
+		cfg.HTTPS.Enabled = false
+	}
+	if *httpsAddr != "" && !*dev {
 		cfg.HTTPS.Enabled, cfg.HTTPS.Addr = true, *httpsAddr
 	}
 	log.Printf("config file: %s (data directory: %s)", cfg.Path, cfg.DataDir)
@@ -200,7 +206,7 @@ func urls(scheme string, addr net.Addr) []string {
 
 func loadDevShow(api *httpapi.Server, cfg config.Config, scriptPath, assetsDir string) {
 	api.EnableDev()
-	log.Printf("WARNING: --dev enabled: /dev/* control endpoints are UNAUTHENTICATED")
+	log.Printf("WARNING: --dev enabled: /dev/* control endpoints are UNAUTHENTICATED; listening on this computer only (%s)", cfg.HTTP.Addr)
 	if scriptPath == "" {
 		return
 	}
@@ -243,6 +249,15 @@ func env(k, def string) string {
 		return v
 	}
 	return def
+}
+
+// loopbackOf rewrites ":8080" or "0.0.0.0:8080" to "127.0.0.1:8080".
+func loopbackOf(addr string) string {
+	_, port, err := net.SplitHostPort(addr)
+	if err != nil || port == "" {
+		return "127.0.0.1:8080"
+	}
+	return "127.0.0.1:" + port
 }
 
 // firstURL returns the local URL (ending in "/") for a bound address.

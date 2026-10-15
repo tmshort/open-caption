@@ -102,6 +102,8 @@ type Meta struct {
 	Updated  time.Time `yaml:"updated" json:"updated"`
 	Language string    `yaml:"language" json:"language"`
 	Theme    Theme     `yaml:"theme" json:"theme"`
+	// LookSaved is set once someone has saved the look, so Setup can tick that step on any computer.
+	LookSaved bool `yaml:"look_saved" json:"lookSaved"`
 }
 
 // Asset describes an uploaded image.
@@ -276,6 +278,7 @@ func (s *Store) Update(id string, name *string, theme *Theme) (Meta, error) {
 			return m, err
 		}
 		m.Theme = th
+		m.LookSaved = true
 	}
 	m.Updated = time.Now().UTC()
 	return m, s.writeMeta(m)

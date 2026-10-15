@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/tmshort/open-caption/internal/logbuf"
 )
@@ -179,5 +180,56 @@ func TestBundledFontsAreServed(t *testing.T) {
 	}
 	if code, _ := c.do("PUT", "/api/admin/shows/"+id, map[string]any{"theme": map[string]any{"font": "hyperlegible"}}); code != 200 {
 		t.Errorf("hyperlegible font: %d", code)
+	}
+}
+
+func TestSweepDropsRehearsalsOfExpiredSessions(t *testing.T) {
+	s, _, c := adminServer(t)
+	id := createShow(t, c, "Janitor")
+	if code, _ := c.do("POST", "/api/admin/rehearsal/start", map[string]string{"showId": id}); code != 200 {
+		t.Fatal("start rehearsal")
+	}
+	s.rmu.Lock()
+	n := len(s.rehearsals)
+	s.rmu.Unlock()
+	if n != 1 {
+		t.Fatalf("rehearsals: %d", n)
+	}
+	s.sweep() // still signed in: kept
+	s.rmu.Lock()
+	n = len(s.rehearsals)
+	s.rmu.Unlock()
+	if n != 1 {
+		t.Errorf("a live session's rehearsal was dropped")
+	}
+	s.auth.mu.Lock()
+	for k, sess := range s.auth.sessions { // simulate the login expiring
+		sess.expires = time.Now().Add(-time.Minute)
+		s.auth.sessions[k] = sess
+	}
+	s.auth.mu.Unlock()
+	s.sweep()
+	s.rmu.Lock()
+	n = len(s.rehearsals)
+	s.rmu.Unlock()
+	if n != 0 {
+		t.Errorf("rehearsal of an expired session should be dropped, have %d", n)
+	}
+}
+
+func TestLookSavedIsRememberedOnTheServer(t *testing.T) {
+	_, _, c := adminServer(t)
+	id := createShow(t, c, "Look")
+	_, r := c.do("GET", "/api/admin/shows/"+id, nil)
+	if r["lookSaved"] != false {
+		t.Errorf("new show: %v", r["lookSaved"])
+	}
+	c.do("PUT", "/api/admin/shows/"+id, map[string]any{"name": "Renamed"})
+	if _, r = c.do("GET", "/api/admin/shows/"+id, nil); r["lookSaved"] != false {
+		t.Error("renaming must not count as saving the look")
+	}
+	c.do("PUT", "/api/admin/shows/"+id, map[string]any{"theme": map[string]any{"scalePct": 120}})
+	if _, r = c.do("GET", "/api/admin/shows/"+id, nil); r["lookSaved"] != true {
+		t.Error("saving the look should be remembered")
 	}
 }

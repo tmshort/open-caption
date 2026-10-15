@@ -185,6 +185,22 @@ func (a *auth) lookup(token string) (session, bool) {
 	return s, true
 }
 
+// prune forgets expired sessions.
+func (a *auth) prune() {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	changed := false
+	for k, s := range a.sessions {
+		if time.Now().After(s.expires) {
+			delete(a.sessions, k)
+			changed = true
+		}
+	}
+	if changed {
+		a.saveLocked()
+	}
+}
+
 func (a *auth) revoke(token string) {
 	a.mu.Lock()
 	delete(a.sessions, tokenKey(token))

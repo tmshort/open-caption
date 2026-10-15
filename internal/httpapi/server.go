@@ -30,18 +30,53 @@ type Server struct {
 
 	rmu        sync.Mutex
 	rehearsals map[string]*Runtime // admin session token -> isolated rehearsal
+
+	quit chan struct{}
+	done sync.WaitGroup
 }
 
 // New creates a Server with an empty runtime.
 func New(cfg config.Config, version string) *Server {
 	s := &Server{cfg: cfg, version: version, rt: NewRuntime(cfg), auth: newAuth(cfg.AdminPassword, cfg.OperatorPassword, sessionsPath(cfg)),
-		rehearsals: map[string]*Runtime{}, started: time.Now()}
+		rehearsals: map[string]*Runtime{}, started: time.Now(), quit: make(chan struct{})}
 	if cfg.DataDir != "" {
 		if st, err := show.NewStore(filepath.Join(cfg.DataDir, "shows"), cfg.Defaults.Language, cfg.Defaults.IdleMessage); err == nil {
 			s.store = st
 		}
 	}
+	s.done.Add(1)
+	go s.janitor()
 	return s
+}
+
+// janitor drops rehearsals whose login has expired or been revoked, and forgets expired logins.
+func (s *Server) janitor() {
+	defer s.done.Done()
+	t := time.NewTicker(time.Minute)
+	defer t.Stop()
+	for {
+		select {
+		case <-s.quit:
+			return
+		case <-t.C:
+			s.sweep()
+		}
+	}
+}
+
+func (s *Server) sweep() {
+	s.auth.prune()
+	s.rmu.Lock()
+	var stale []string
+	for tok := range s.rehearsals {
+		if _, ok := s.auth.lookup(tok); !ok {
+			stale = append(stale, tok)
+		}
+	}
+	s.rmu.Unlock()
+	for _, tok := range stale {
+		s.dropRehearsal(tok)
+	}
 }
 
 func sessionsPath(cfg config.Config) string {
@@ -53,6 +88,8 @@ func sessionsPath(cfg config.Config) string {
 
 // Close stops background work and flushes live state.
 func (s *Server) Close() {
+	close(s.quit)
+	s.done.Wait()
 	s.rmu.Lock()
 	rts := s.rehearsals
 	s.rehearsals = map[string]*Runtime{}

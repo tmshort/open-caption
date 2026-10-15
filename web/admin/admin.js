@@ -113,9 +113,8 @@
   window.addEventListener('hashchange', () => { const s = location.hash.slice(1); if (s !== A.step && STEPS.some((x) => x[0] === s)) { A.step = s; render(); } });
 
   // "Look" has no wrong answer, so it is ticked once the person has saved it for this show.
-  const lookKey = () => 'oc.look.' + A.cur;
-  const lookSaved = () => { try { return localStorage.getItem(lookKey()) === '1'; } catch (e) { return false; } };
-  const markLookSaved = () => { try { localStorage.setItem(lookKey(), '1'); } catch (e) { /* ignore */ } refreshNav(); };
+  const lookSaved = () => { const s = curShow(); return !!(s && s.lookSaved); };
+  const markLookSaved = () => { const s = curShow(); if (s) s.lookSaved = true; refreshNav(); };
 
   function done(step) {
     switch (step) {
