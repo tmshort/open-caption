@@ -64,7 +64,8 @@ async function main() {
     await admin.goto(B + '/admin'); await admin.waitForSelector('#pw');
     await admin.type('#pw', 'wrong-password'); await admin.keyboard.press('Enter');
     await admin.waitForFunction(() => document.getElementById('loginerr').textContent.trim() !== '', { timeout: 6000 }).catch(() => {});
-    check('a wrong password is refused', (await admin.evaluate(() => document.getElementById('loginerr').textContent)).includes('not accepted'));
+    const loginErr = await admin.evaluate(() => document.getElementById('loginerr').textContent);
+    check('a wrong password is refused', loginErr.includes('not accepted'), loginErr);
     await admin.evaluate(() => { document.getElementById('pw').value = ''; });
     await admin.type('#pw', ADMIN); await admin.keyboard.press('Enter');
     await admin.waitForSelector('#steps button');
@@ -225,8 +226,9 @@ async function main() {
     section('Setup: archive a show and bring it back');
     const arch = await open();
     await arch.goto(B + '/admin#show'); await arch.waitForSelector('#steps button');
-    await api(arch, 'POST', '/api/admin/shows', { name: 'Last year' });
-    await arch.reload(); await arch.waitForSelector('.card.show');
+    const made = await api(arch, 'POST', '/api/admin/shows', { name: 'Last year' });
+    check('a show to archive is created', made.status === 201 || made.status === 200, made);
+    await arch.reload(); await arch.waitForFunction(() => [...document.querySelectorAll('.card.show')].some((x) => x.textContent.includes('Last year')), { timeout: 15000 });
     const onCard = (label) => arch.evaluate((l) => { const c = [...document.querySelectorAll('.card.show')].find((x) => x.textContent.includes('Last year')); [...c.querySelectorAll('button')].find((b) => b.textContent.startsWith(l)).click(); }, label);
     await onCard('Archive'); await sleep(700);
     check('an archived show moves to the archive list', (await arch.evaluate(() => document.getElementById('panel').innerText)).includes('Archived shows (1)'));
