@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"reflect"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -383,5 +384,63 @@ func TestReplaceCuesKeepsCursor(t *testing.T) {
 	e.ReplaceCues(parse("A"))
 	if e.Operator().Cursor != 1 {
 		t.Errorf("%+v", e.Operator())
+	}
+}
+
+func TestBackStillWorksAfterARestart(t *testing.T) {
+	cues := parse("A\nB\nC\nD")
+	a := New(cues, Config{}, nil)
+	defer a.Close()
+	for i := 0; i < 3; i++ {
+		mustNext(t, a)
+	}
+	b := New(cues, Config{}, nil)
+	defer b.Close()
+	b.Restore(a.Export())
+	if got := texts(b.Snapshot()); !reflect.DeepEqual(got, []string{"A", "B", "C"}) {
+		t.Fatalf("restored screen: %v", got)
+	}
+	if _, err := b.Back(-1); err != nil {
+		t.Fatalf("Back after restart: %v", err)
+	}
+	if got := texts(b.Snapshot()); !reflect.DeepEqual(got, []string{"A", "B"}) || b.Operator().Cursor != 2 {
+		t.Errorf("after Back: %v cursor %d", got, b.Operator().Cursor)
+	}
+	// Only the most recent steps are kept.
+	long := parse(strings.Repeat("x\n", 40))
+	c := New(long, Config{}, nil)
+	defer c.Close()
+	for i := 0; i < 30; i++ {
+		mustNext(t, c)
+	}
+	if n := len(c.Export().History); n != persistedHistory {
+		t.Errorf("history entries saved: %d, want %d", n, persistedHistory)
+	}
+	// A script that shrank must not restore steps that point past its end.
+	d := New(parse("A"), Config{}, nil)
+	defer d.Close()
+	d.Restore(c.Export())
+	if len(d.Export().History) != 0 {
+		t.Errorf("stale history kept: %d", len(d.Export().History))
+	}
+}
+
+func TestLastActionTimeIsRecordedAndSurvivesRestart(t *testing.T) {
+	a := New(parse("A\nB"), Config{}, nil)
+	defer a.Close()
+	if a.Operator().LastAt != 0 {
+		t.Error("no action yet")
+	}
+	before := time.Now().UnixMilli()
+	mustNext(t, a)
+	at := a.Operator().LastAt
+	if at < before || at > time.Now().UnixMilli() {
+		t.Errorf("lastAt %d", at)
+	}
+	b := New(parse("A\nB"), Config{}, nil)
+	defer b.Close()
+	b.Restore(a.Export())
+	if b.Operator().LastAt != at {
+		t.Errorf("lastAt after restore: %d vs %d", b.Operator().LastAt, at)
 	}
 }

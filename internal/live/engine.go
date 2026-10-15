@@ -87,7 +87,8 @@ type OperatorState struct {
 	NextIndex int         `json:"nextIndex"` // next audience-visible cue, -1 at the end
 	Total     int         `json:"total"`
 	Live      bool        `json:"live"`
-	Mode      string      `json:"mode"` // audience mode: idle | captions | blank
+	Mode      string      `json:"mode"`   // audience mode: idle | captions | blank
+	LastAt    int64       `json:"lastAt"` // unix ms of the operator's last action (0 = none yet)
 	Loop      *LoopStatus `json:"loop"`
 }
 
@@ -128,7 +129,8 @@ type Engine struct {
 	gen     int
 	history []snapshot
 	loop    *loopRun
-	touched bool // a cue has been applied since activation/reset
+	touched bool  // a cue has been applied since activation/reset
+	lastAt  int64 // unix ms of the last operator action (0 = none yet)
 }
 
 // New creates an engine in its initial state (auto-starting a leading loop).
@@ -180,7 +182,7 @@ func (e *Engine) Operator() OperatorState {
 
 func (e *Engine) operatorLocked() OperatorState {
 	o := OperatorState{Seq: e.st.Seq, Rev: e.rev, Cursor: e.cursor, NextIndex: e.visibleFrom(e.cursor),
-		Total: len(e.cues), Live: e.touched, Mode: e.st.Mode}
+		Total: len(e.cues), Live: e.touched, Mode: e.st.Mode, LastAt: e.lastAt}
 	if e.loop != nil {
 		o.Loop = &LoopStatus{Cue: e.loop.cue, Item: e.loop.item}
 	}
@@ -212,7 +214,7 @@ func (e *Engine) Next(rev int64) (OperatorState, error) {
 	e.applyLocked(e.cues[idx], idx)
 	e.cursor = idx + 1
 	e.touched = true
-	e.rev++
+	e.bumpLocked()
 	return e.operatorLocked(), nil
 }
 
@@ -238,7 +240,7 @@ func (e *Engine) Back(rev int64) (OperatorState, error) {
 	if s.loopCue >= 0 && s.loopCue < len(e.cues) {
 		e.beginLoopLocked(s.loopCue, false)
 	}
-	e.rev++
+	e.bumpLocked()
 	e.emitSnapshot()
 	return e.operatorLocked(), nil
 }
@@ -257,7 +259,7 @@ func (e *Engine) Stop(rev int64) (OperatorState, error) {
 	e.stopLoopLocked()
 	e.st.Mode, e.st.Fullscreen = ModeBlank, nil
 	e.emit(EvBlank, map[string]bool{"on": true})
-	e.rev++
+	e.bumpLocked()
 	return e.operatorLocked(), nil
 }
 
@@ -282,7 +284,7 @@ func (e *Engine) Jump(index int, rev int64) (OperatorState, error) {
 		e.beginLoopLocked(loopCue, false)
 	}
 	e.touched = cursor > e.initialCursor()
-	e.rev++
+	e.bumpLocked()
 	e.emitSnapshot()
 	return e.operatorLocked(), nil
 }
@@ -306,7 +308,7 @@ func (e *Engine) SetBlank(on bool, rev int64) (OperatorState, error) {
 	}
 	e.emit(EvBlank, map[string]bool{"on": on})
 	e.touched = true
-	e.rev++
+	e.bumpLocked()
 	return e.operatorLocked(), nil
 }
 
@@ -320,7 +322,7 @@ func (e *Engine) Clear(rev int64) (OperatorState, error) {
 	e.pushLocked()
 	e.applyLocked(script.Cue{Kind: script.KindClear}, -1)
 	e.touched = true
-	e.rev++
+	e.bumpLocked()
 	return e.operatorLocked(), nil
 }
 
@@ -335,7 +337,7 @@ func (e *Engine) Message(text string, rev int64) (OperatorState, error) {
 	e.pushLocked()
 	e.applyLocked(script.Cue{Kind: script.KindFullscreen, Item: &script.Item{Kind: "text", HTML: h, Text: p}}, -1)
 	e.touched = true
-	e.rev++
+	e.bumpLocked()
 	return e.operatorLocked(), nil
 }
 
@@ -350,7 +352,7 @@ func (e *Engine) Reset(rev int64) (OperatorState, error) {
 	e.history = nil
 	e.st.Scrollback = nil
 	e.initialLocked()
-	e.rev++
+	e.bumpLocked()
 	e.emitSnapshot()
 	return e.operatorLocked(), nil
 }
@@ -375,9 +377,15 @@ func (e *Engine) ReplaceCues(cues []script.Cue) (countChanged bool) {
 			e.st.Fullscreen = nil
 		}
 	}
-	e.rev++
+	e.bumpLocked()
 	e.emitSnapshot()
 	return countChanged
+}
+
+// bumpLocked marks that an operator command was applied.
+func (e *Engine) bumpLocked() {
+	e.rev++
+	e.lastAt = time.Now().UnixMilli()
 }
 
 func (e *Engine) checkLocked(rev int64) error {
@@ -582,7 +590,20 @@ type Persisted struct {
 	Fullscreen *script.Item  `json:"fullscreen,omitempty"`
 	LoopCue    int           `json:"loopCue"` // -1: none
 	Touched    bool          `json:"touched"`
+	LastAt     int64         `json:"lastAt,omitempty"`
+	// History holds the most recent undo steps so Back still works after a restart.
+	History []HistoryEntry `json:"history,omitempty"`
 }
+
+// HistoryEntry is one saved undo step.
+type HistoryEntry struct {
+	State   State `json:"state"`
+	Cursor  int   `json:"cursor"`
+	LoopCue int   `json:"loopCue"`
+}
+
+// persistedHistory is how many undo steps survive a restart (kept small: each holds the screen's captions).
+const persistedHistory = 10
 
 // Export captures the state to save.
 func (e *Engine) Export() Persisted {
@@ -590,7 +611,11 @@ func (e *Engine) Export() Persisted {
 	defer e.mu.Unlock()
 	p := Persisted{Cursor: e.cursor, Rev: e.rev, NextID: e.nextID, Seq: e.st.Seq, Mode: e.st.Mode,
 		Scrollback: append([]CaptionItem(nil), e.st.Scrollback...), Fullscreen: e.st.Fullscreen,
-		LoopCue: -1, Touched: e.touched}
+		LoopCue: -1, Touched: e.touched, LastAt: e.lastAt}
+	from := max(0, len(e.history)-persistedHistory)
+	for _, h := range e.history[from:] {
+		p.History = append(p.History, HistoryEntry{State: h.st.clone(), Cursor: h.cursor, LoopCue: h.loopCue})
+	}
 	if e.loop != nil {
 		p.LoopCue = e.loop.cue
 	}
@@ -603,6 +628,12 @@ func (e *Engine) Restore(p Persisted) {
 	defer e.mu.Unlock()
 	e.stopLoopLocked()
 	e.history = nil
+	e.lastAt = p.LastAt
+	for _, h := range p.History {
+		if h.Cursor >= 0 && h.Cursor <= len(e.cues) && h.LoopCue < len(e.cues) {
+			e.history = append(e.history, snapshot{st: h.State.clone(), cursor: h.Cursor, loopCue: h.LoopCue})
+		}
+	}
 	if p.Cursor < 0 || p.Cursor > len(e.cues) {
 		p.Cursor = len(e.cues)
 	}
