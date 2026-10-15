@@ -63,6 +63,7 @@ simultaneous shows, internet-facing deployment.
 
 ### Audience
 - **REQ-040** One URL, no interaction needed. Page auto-scrolls as captions arrive, newest at bottom, older text dimmed.
+- **REQ-046** A viewer can scroll up to re-read earlier lines without losing the live captions (a "back to live" control with a count of new lines); shared screens are not scrollable.
 - **REQ-041** Fullscreen mode (text or image) takes over the entire display, e.g. "Intermission", and later returns to scrolling captions.
 - **REQ-042** Works on current Safari/iOS, Chrome/Android, desktop Chrome/Firefox/Edge/Safari.
 - **REQ-043** Keeps the screen awake where the browser allows (Wake Lock; fallback video trick as a documented option).

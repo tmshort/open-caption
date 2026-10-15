@@ -10,12 +10,12 @@
 
   // The page's own labels, in the languages we have translations for (others show English).
   const I18N = {
-    en: { reconnecting: 'Reconnecting…', tip: 'Tip: turn off Auto-Lock in your device settings so the screen stays on during the show.', textSize: 'Text size and colors', yourDisplay: 'Your display', smaller: 'Smaller text', bigger: 'Larger text', darkOnLight: 'Dark on light', lightOnDark: 'Light on dark', fontAsChosen: 'Font: as chosen', fontDyslexic: 'Dyslexia-friendly font', fontHyper: 'High-legibility font', language: 'Language' },
-    es: { reconnecting: 'Reconectando…', tip: 'Consejo: desactiva el bloqueo automático para que la pantalla siga encendida durante la función.', textSize: 'Tamaño del texto y colores', yourDisplay: 'Tu pantalla', smaller: 'Texto más pequeño', bigger: 'Texto más grande', darkOnLight: 'Oscuro sobre claro', lightOnDark: 'Claro sobre oscuro', fontAsChosen: 'Fuente: la del espectáculo', fontDyslexic: 'Fuente para dislexia', fontHyper: 'Fuente de alta legibilidad', language: 'Idioma' },
-    fr: { reconnecting: 'Reconnexion…', tip: "Astuce : désactivez le verrouillage automatique pour que l'écran reste allumé pendant le spectacle.", textSize: 'Taille du texte et couleurs', yourDisplay: 'Votre affichage', smaller: 'Texte plus petit', bigger: 'Texte plus grand', darkOnLight: 'Sombre sur clair', lightOnDark: 'Clair sur sombre', fontAsChosen: 'Police : celle du spectacle', fontDyslexic: 'Police pour la dyslexie', fontHyper: 'Police très lisible', language: 'Langue' },
-    de: { reconnecting: 'Verbindung wird wiederhergestellt …', tip: 'Tipp: Schalten Sie die automatische Sperre aus, damit der Bildschirm während der Vorstellung an bleibt.', textSize: 'Textgröße und Farben', yourDisplay: 'Ihre Anzeige', smaller: 'Kleinerer Text', bigger: 'Größerer Text', darkOnLight: 'Dunkel auf hell', lightOnDark: 'Hell auf dunkel', fontAsChosen: 'Schrift: wie vorgegeben', fontDyslexic: 'Schrift für Legasthenie', fontHyper: 'Gut lesbare Schrift', language: 'Sprache' },
-    it: { reconnecting: 'Riconnessione…', tip: 'Suggerimento: disattiva il blocco automatico per tenere lo schermo acceso durante lo spettacolo.', textSize: 'Dimensione del testo e colori', yourDisplay: 'Il tuo schermo', smaller: 'Testo più piccolo', bigger: 'Testo più grande', darkOnLight: 'Scuro su chiaro', lightOnDark: 'Chiaro su scuro', fontAsChosen: 'Carattere: quello dello spettacolo', fontDyslexic: 'Carattere per la dislessia', fontHyper: 'Carattere ad alta leggibilità', language: 'Lingua' },
-    pt: { reconnecting: 'Reconectando…', tip: 'Dica: desative o bloqueio automático para a tela continuar acesa durante o espetáculo.', textSize: 'Tamanho do texto e cores', yourDisplay: 'Sua tela', smaller: 'Texto menor', bigger: 'Texto maior', darkOnLight: 'Escuro sobre claro', lightOnDark: 'Claro sobre escuro', fontAsChosen: 'Fonte: a do espetáculo', fontDyslexic: 'Fonte para dislexia', fontHyper: 'Fonte de alta legibilidade', language: 'Idioma' },
+    en: { reconnecting: 'Reconnecting…', tip: 'Tip: turn off Auto-Lock in your device settings so the screen stays on during the show.', textSize: 'Text size and colors', yourDisplay: 'Your display', smaller: 'Smaller text', bigger: 'Larger text', darkOnLight: 'Dark on light', lightOnDark: 'Light on dark', fontAsChosen: 'Font: as chosen', fontDyslexic: 'Dyslexia-friendly font', fontHyper: 'High-legibility font', language: 'Language', backToLive: 'Back to live' },
+    es: { reconnecting: 'Reconectando…', tip: 'Consejo: desactiva el bloqueo automático para que la pantalla siga encendida durante la función.', textSize: 'Tamaño del texto y colores', yourDisplay: 'Tu pantalla', smaller: 'Texto más pequeño', bigger: 'Texto más grande', darkOnLight: 'Oscuro sobre claro', lightOnDark: 'Claro sobre oscuro', fontAsChosen: 'Fuente: la del espectáculo', fontDyslexic: 'Fuente para dislexia', fontHyper: 'Fuente de alta legibilidad', language: 'Idioma', backToLive: 'Volver al directo' },
+    fr: { reconnecting: 'Reconnexion…', tip: "Astuce : désactivez le verrouillage automatique pour que l'écran reste allumé pendant le spectacle.", textSize: 'Taille du texte et couleurs', yourDisplay: 'Votre affichage', smaller: 'Texte plus petit', bigger: 'Texte plus grand', darkOnLight: 'Sombre sur clair', lightOnDark: 'Clair sur sombre', fontAsChosen: 'Police : celle du spectacle', fontDyslexic: 'Police pour la dyslexie', fontHyper: 'Police très lisible', language: 'Langue', backToLive: 'Retour au direct' },
+    de: { reconnecting: 'Verbindung wird wiederhergestellt …', tip: 'Tipp: Schalten Sie die automatische Sperre aus, damit der Bildschirm während der Vorstellung an bleibt.', textSize: 'Textgröße und Farben', yourDisplay: 'Ihre Anzeige', smaller: 'Kleinerer Text', bigger: 'Größerer Text', darkOnLight: 'Dunkel auf hell', lightOnDark: 'Hell auf dunkel', fontAsChosen: 'Schrift: wie vorgegeben', fontDyslexic: 'Schrift für Legasthenie', fontHyper: 'Gut lesbare Schrift', language: 'Sprache', backToLive: 'Zurück zum Live-Text' },
+    it: { reconnecting: 'Riconnessione…', tip: 'Suggerimento: disattiva il blocco automatico per tenere lo schermo acceso durante lo spettacolo.', textSize: 'Dimensione del testo e colori', yourDisplay: 'Il tuo schermo', smaller: 'Testo più piccolo', bigger: 'Testo più grande', darkOnLight: 'Scuro su chiaro', lightOnDark: 'Chiaro su scuro', fontAsChosen: 'Carattere: quello dello spettacolo', fontDyslexic: 'Carattere per la dislessia', fontHyper: 'Carattere ad alta leggibilità', language: 'Lingua', backToLive: 'Torna al live' },
+    pt: { reconnecting: 'Reconectando…', tip: 'Dica: desative o bloqueio automático para a tela continuar acesa durante o espetáculo.', textSize: 'Tamanho do texto e cores', yourDisplay: 'Sua tela', smaller: 'Texto menor', bigger: 'Texto maior', darkOnLight: 'Escuro sobre claro', lightOnDark: 'Claro sobre escuro', fontAsChosen: 'Fonte: a do espetáculo', fontDyslexic: 'Fonte para dislexia', fontHyper: 'Fonte de alta legibilidade', language: 'Idioma', backToLive: 'Voltar ao vivo' },
   };
   const tr = (k) => (I18N[(state.lang || 'en').split('-')[0]] || I18N.en)[k] || I18N.en[k];
   function applyI18n() {
@@ -30,6 +30,7 @@
     fs.setAttribute('aria-label', tr('fontAsChosen').split(':')[0]);
     fs.options[0].text = tr('fontAsChosen'); fs.options[1].text = tr('fontDyslexic'); fs.options[2].text = tr('fontHyper');
     $('langbtn').setAttribute('aria-label', tr('language'));
+    paintLive();
     $('langmenu').setAttribute('aria-label', tr('language'));
     paintLocal();
   }
@@ -51,6 +52,8 @@
   }
   $('langbtn').addEventListener('click', () => { const open = $('langmenu').hidden; $('langmenu').hidden = !open; $('langbtn').setAttribute('aria-expanded', String(open)); });
   const preloaded = new Set();
+  let pinned = true; // following the live captions (false while the reader has scrolled up)
+  let unread = 0;    // lines that arrived while the reader was scrolled up
   let es = null, lastEvent = 0, backoff = 500, offlineTimer = null, retryTimer = null;
 
   const FONTS = { hyperlegible: '"Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif', dyslexic: '"OpenDyslexic", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif', system: 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif', serif: 'Georgia, "Times New Roman", serif', mono: 'ui-monospace, Menlo, Consolas, monospace' };
@@ -148,6 +151,25 @@
     return p;
   }
 
+  // ---- re-reading: scroll up freely; new lines wait behind a button ----
+  const nearBottom = (box) => box.scrollHeight - box.scrollTop - box.clientHeight < 48;
+  function paintLive() {
+    const b = $('live');
+    b.hidden = pinned;
+    b.textContent = '↓ ' + tr('backToLive') + (unread ? ' (' + unread + ')' : '');
+    document.body.classList.toggle('reading', !pinned);
+  }
+  function toBottom() { const box = $('captions'); box.scrollTop = box.scrollHeight; }
+  function goLive() { pinned = true; unread = 0; toBottom(); paintLive(); }
+  $('live').addEventListener('click', goLive);
+  $('captions').addEventListener('scroll', () => {
+    if (projector) return;
+    const wasPinned = pinned;
+    pinned = nearBottom($('captions'));
+    if (pinned) unread = 0;
+    if (pinned !== wasPinned || !pinned) paintLive();
+  }, { passive: true });
+
   function fade() {
     // Older lines dim with age (newest = full brightness).
     const els = $('captions').children;
@@ -188,9 +210,11 @@
     document.body.classList.remove('mode-idle', 'mode-captions', 'mode-blank');
     document.body.classList.add('mode-' + state.mode);
     const box = $('captions');
+    const top = box.scrollTop;
     box.replaceChildren(...state.scrollback.map(captionEl));
     fade();
     renderFullscreen();
+    if (pinned) toBottom(); else box.scrollTop = top; // a snapshot must not move a reader who is re-reading
   }
 
   function preload(urls) {
@@ -222,15 +246,22 @@
       document.body.classList.add('mode-captions');
       const box = $('captions');
       box.appendChild(captionEl(d.item));
-      while (box.children.length > 200) box.removeChild(box.firstChild);
+      while (box.children.length > 200) {
+        const before = box.scrollHeight;
+        box.removeChild(box.firstChild);
+        if (!pinned) box.scrollTop -= before - box.scrollHeight; // keep the reader's place when old lines are trimmed
+      }
       fade();
       renderFullscreen();
+      if (pinned) toBottom(); else { unread++; paintLive(); }
     },
     clear() {
       state.mode = 'captions';
       state.fullscreen = null;
       state.scrollback = [];
+      pinned = true; unread = 0; // an empty screen has nothing to scroll back to
       renderAll();
+      paintLive();
     },
     blank(d) {
       if (d.on) { state.mode = 'blank'; state.fullscreen = null; } else { state.mode = 'captions'; }

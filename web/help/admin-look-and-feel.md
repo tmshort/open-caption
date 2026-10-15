@@ -14,6 +14,10 @@ Changes are saved with **Save look** and reach connected devices straight away.
 
 If a browser is showing captions on a projector or large monitor, open the audience address with `?display=projector` on the end. The text is larger, the mouse pointer is hidden and nothing else is shown.
 
+## Re-reading earlier lines
+
+Anyone can scroll the captions up to re-read something they missed. New lines then wait behind a **↓ Back to live (3)** button (it counts what arrived) instead of pulling the page away, and the older lines stop fading while someone is reading them. Tapping the button, or scrolling to the bottom, returns to the live captions. A screen showing `?display=projector` is never scrollable.
+
 ## Audience controls
 
 Audience members never need to do anything. A small, faint **Aa** control in the top-right corner of the audience page lets a person make their own text bigger or smaller, switch to dark-on-light, or choose the dyslexia-friendly or high-legibility font, but only on their own device.

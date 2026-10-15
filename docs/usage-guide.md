@@ -235,6 +235,7 @@ Press `Ctrl+C` in the program's window (or stop the service). The position is sa
 | Nobody can open the address | Is the phone on the right WiFi (not mobile data)? Does the address include `:8080` if the program used that port? Is guest-to-server traffic allowed? Is the computer's firewall allowing the program on private networks? See [venue-network-guide.md](venue-network-guide.md). |
 | Some devices connect and others do not | The access point may be at its device limit. Add a second access point, or move the first into the room. |
 | Captions are late or stall on a few phones | Weak signal or a busy channel. Those phones reconnect on their own. Improve access-point placement; use 5 GHz. |
+| Someone missed a line | They can scroll the captions up to re-read it; new lines wait behind a **Back to live** button until they tap it. |
 | Screens go dark on phones | Phones lock their screens. The page asks the browser to stay awake where it can, but plain-HTTP pages are often refused. Tell people to switch off Auto-Lock for the evening, or use a projector. |
 | The wrong line was sent | **Backspace** undoes it. |
 | The operator page says another operator is in control | Use **Take over**, if you are the operator. |

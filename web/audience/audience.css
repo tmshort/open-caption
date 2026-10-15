@@ -31,12 +31,14 @@ body.projector { cursor: none; }
 body.dys #captions { line-height: 1.5; }
 body.dys #fs { line-height: 1.35; }
 
-/* Scrolling captions: newest at the bottom, older lines clipped off the top. */
+/* Scrolling captions: newest at the bottom. A reader can scroll up to re-read; new lines then wait
+   behind a "back to live" button instead of yanking the page away. */
 #captions {
   position: fixed; inset: 0;
-  display: flex; flex-direction: column; justify-content: flex-end;
+  display: flex; flex-direction: column;
   padding: 3vmin 4vmin 5vmin;
-  overflow: hidden;
+  overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin; scrollbar-color: #8888 transparent;
   font-size: calc(var(--scale) * clamp(1.5rem, 3.4vmin + 1.6vw, 4.5rem));
   line-height: 1.3;
 }
@@ -54,6 +56,13 @@ body.dys #fs { line-height: 1.35; }
 @keyframes rise { from { opacity: 0; transform: translateY(.4em); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .cap, #fs > * { animation: none !important; } }
 
+#captions > :first-child { margin-top: auto; } /* keeps short content at the bottom while still letting long content scroll */
+#captions:focus { outline: none; }
+#captions:focus-visible { outline: 3px solid var(--accent); outline-offset: -3px; }
+body.projector #captions { overflow: hidden; } /* a shared screen is never scrolled */
+body.reading .cap { opacity: 1 !important; } /* while re-reading, no line is dimmed */
+#live { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 7; min-height: 2.9rem; padding: 0 1.4rem; border: 2px solid var(--fg); border-radius: 99px; background: var(--bg); color: var(--fg); font: 700 1.05rem var(--font); cursor: pointer; box-shadow: 0 2px 14px #000a; }
+#live[hidden] { display: none; }
 body.mode-blank #captions, body.mode-idle #captions { visibility: hidden; }
 
 #idle {
