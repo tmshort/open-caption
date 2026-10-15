@@ -1,8 +1,10 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-floor="modern">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="stylesheet" href="/static/shared/compat.css">
+<script src="/static/shared/compat.js"></script>
 <link rel="icon" type="image/svg+xml" href="/static/shared/favicon.svg">
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="apple-touch-icon" href="/static/shared/apple-touch-icon.png">
@@ -41,7 +43,7 @@
   <div id="toast" role="status"></div>
   <footer>
     <select id="sections" aria-label="Go to a section" hidden></select>
-    <input id="search" type="search" placeholder="Search script ( / )" aria-label="Search script">
+    <input id="search" type="search" placeholder="Search show file ( / )" aria-label="Search show file">
     <button id="back" title="Undo the last thing sent (Backspace)">◀ Back<small>Backspace</small></button>
     <button id="next" class="primary" title="Next (Space)">NEXT ▶<small>Space</small></button>
     <button id="stop" title="Stop loop (Shift+Q)" hidden>■ STOP loop<small>Shift+Q</small></button>
@@ -67,7 +69,7 @@
 <dialog id="resetdlg">
   <form method="dialog">
     <h2>Restart the show?</h2>
-    <p>The audience screens will clear and the script returns to the beginning.</p>
+    <p>The audience screens will clear and the show returns to the beginning.</p>
     <menu><button value="cancel">Cancel</button><button id="resetgo" value="go" class="primary">Restart</button></menu>
   </form>
 </dialog>

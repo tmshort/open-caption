@@ -28,5 +28,7 @@ body.embed #topics a { padding: .2rem .5rem; font-size: .85rem; border: 1px soli
 #doc th, #doc td { border: 1px solid var(--line); padding: .35rem .5rem; text-align: left; vertical-align: top; }
 #doc th { background: var(--code); }
 #doc blockquote { margin: 1rem 0; padding: .1rem 1rem; border-left: 4px solid var(--accent); background: var(--code); }
+:focus { outline: 3px solid var(--accent); outline-offset: 2px; }
+:focus:not(:focus-visible) { outline: none; }
 :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 @media (max-width: 700px) { #app { grid-template-columns: 1fr; grid-template-rows: auto 1fr; } #side { border-right: none; border-bottom: 1px solid var(--line); } }

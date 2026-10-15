@@ -268,6 +268,7 @@ Press `Ctrl+C` in the program's window (or stop the service). The position is sa
 | Some devices connect and others do not | The access point may be at its device limit. Add a second access point, or move the first into the room. |
 | Captions are late or stall on a few phones | Weak signal or a busy channel. Those phones reconnect on their own. Improve access-point placement; use 5 GHz. |
 | Someone missed a line | They can scroll the captions up to re-read it; new lines wait behind a **Back to live** button until they tap it. |
+| A page says "This browser is too old" | The device's browser is below what the page needs: about iOS 12 for the audience page, iOS 14.1 / Chrome 87 for Setup and the operator page. Update the device, or use another one. |
 | Screens go dark on phones | Phones lock their screens. The page asks the browser to stay awake where it can, but plain-HTTP pages are often refused. The page keeps the screen on with the browser's wake lock where it can and, where it cannot (plain HTTP), with a tiny invisible looping video. Anyone who would rather let their phone sleep (a low battery, say) can turn *Screen stays on* off in the "Aa" panel. Some phones in low-power mode refuse both: the page then shows a tip to switch off Auto-Lock for the evening. |
 | The wrong line was sent | **Backspace** undoes it. |
 | The operator page says another operator is in control | Use **Take over**, if you are the operator. |

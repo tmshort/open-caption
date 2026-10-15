@@ -1,6 +1,7 @@
 // Operator page: follows the show file, sends NEXT/BACK/STOP, shows what the audience sees.
 (() => {
   'use strict';
+  if (window.OC_UNSUPPORTED) return; // compat.js has already shown the "too old" message
   const $ = (id) => document.getElementById(id);
   // In a rehearsal (started from Setup) the same page drives an isolated, private show.
   const REHEARSAL = new URLSearchParams(location.search).has('rehearsal');

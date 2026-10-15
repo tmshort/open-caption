@@ -1,6 +1,7 @@
 // Help viewer: topic list, search, and rendered topics. Works offline (all content is served by this program).
 (() => {
   'use strict';
+  if (window.OC_UNSUPPORTED) return; // compat.js has already shown the "too old" message
   const $ = (id) => document.getElementById(id);
   const params = new URLSearchParams(location.search);
   const role = params.get('role') === 'operator' ? 'operator' : 'admin';

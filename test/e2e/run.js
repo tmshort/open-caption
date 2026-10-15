@@ -57,6 +57,9 @@ async function main() {
   const step = (p, label) => click(p, label, '#steps button');
   const api = (p, method, url, body) => p.evaluate(async (m, u, bd) => { const r = await fetch(u, { method: m, headers: { 'Content-Type': 'application/json' }, body: bd === undefined ? undefined : JSON.stringify(bd) }); let j = null; try { j = await r.json(); } catch (e) { /* none */ } return { status: r.status, body: j }; }, method, url, body);
 
+  const compat = require('child_process').spawnSync(process.execPath, [path.join(__dirname, 'check-compat.js')], { encoding: 'utf8' });
+  check('the pages stay inside the browser floor (ES2018 syntax, no newer APIs or CSS)', compat.status === 0, compat.stdout);
+
   try {
     // ------------------------------------------------------------------ Setup
     section('Setup: sign in, sample show, show file, languages');
@@ -265,6 +268,48 @@ async function main() {
     await arch.evaluate(() => document.getElementById('dlgok').click()); await sleep(700);
     check('a show can be deleted', !(await arch.evaluate(() => document.getElementById('panel').innerText)).includes('Last year'));
     await arch.close();
+
+    // ------------------------------------------------------------------ older browsers
+    section('Older browsers: dialogs without <dialog>, and a plain message when a page cannot run');
+    const b3 = await puppeteer.launch({ executablePath: CHROME, headless: 'new', args: ['--no-sandbox'] });
+    const old = async (script, url) => {
+      const p = await b3.newPage(); p.setDefaultTimeout(8000); await p.setViewport({ width: 1100, height: 800 });
+      p.on('pageerror', (e) => errs.push(e.message));
+      await p.evaluateOnNewDocument(script); await p.goto(B + url); return p;
+    };
+    const noDialog = () => { delete HTMLDialogElement.prototype.showModal; delete Element.prototype.replaceChildren; };
+    const oldAdmin = await old(noDialog, '/admin'); await oldAdmin.waitForSelector('#pw'); await oldAdmin.type('#pw', ADMIN); await oldAdmin.keyboard.press('Enter');
+    await oldAdmin.waitForSelector('.card.show');
+    await click(oldAdmin, 'Rename'); await oldAdmin.waitForFunction(() => document.getElementById('dlg').hasAttribute('open'));
+    const shown = await oldAdmin.evaluate(() => { const d = document.getElementById('dlg'), r = d.getBoundingClientRect(); return { fixed: getComputedStyle(d).position === 'fixed', w: r.width, onScreen: r.left >= 0 && r.top >= 0 && r.right <= innerWidth && r.bottom <= innerHeight, hasShowModal: typeof HTMLDialogElement !== 'undefined' && !!HTMLDialogElement.prototype.showModal }; });
+    check('without <dialog> support the dialog still appears, centred over the page', shown.fixed && shown.w > 200 && shown.onScreen && !shown.hasShowModal, shown);
+    await oldAdmin.keyboard.press('Escape'); await sleep(200);
+    check('Escape closes it', await oldAdmin.evaluate(() => !document.getElementById('dlg').hasAttribute('open')));
+    await click(oldAdmin, 'Rename'); await oldAdmin.waitForFunction(() => document.getElementById('dlg').hasAttribute('open'));
+    await oldAdmin.evaluate(() => { const i = document.querySelector('#dlgbody input'); i.value = 'Renamed in an old browser'; });
+    await oldAdmin.click('#dlgok'); await oldAdmin.waitForFunction(() => document.getElementById('panel').innerText.includes('Renamed in an old browser'), { timeout: 8000 }).catch(() => {});
+    check('and its buttons work (OK renames the show)', (await oldAdmin.evaluate(() => document.getElementById('panel').innerText)).includes('Renamed in an old browser'));
+    await oldAdmin.close();
+    const oldOp = await old(noDialog, '/operator'); await oldOp.waitForSelector('#pw'); await oldOp.type('#pw', ADMIN); await oldOp.keyboard.press('Enter');
+    await oldOp.waitForSelector('#message', { visible: true });
+    await api(oldOp, 'POST', '/api/operator/claim', { takeover: true }); await sleep(800);
+    await oldOp.click('#message'); await oldOp.waitForFunction(() => document.getElementById('msgdlg').hasAttribute('open'));
+    await oldOp.type('#msgtext', 'Back soon'); await oldOp.click('#msgsend'); await sleep(500);
+    check('the operator page works without <dialog> too (Send closes the dialog)', await oldOp.evaluate(() => !document.getElementById('msgdlg').hasAttribute('open') && document.getElementById('msgtext').value === 'Back soon'));
+    await oldOp.close();
+    await api(op, 'POST', '/api/operator/claim', { takeover: true }); await sleep(500); // give control back to the operator page used below
+    const fine = await old(() => {}, '/'); await sleep(500);
+    check('a current browser is never shown the "too old" message', !(await fine.evaluate(() => !!document.querySelector('[role=alert]'))));
+    await fine.close();
+    const tooOld = await old(() => { delete window.EventSource; }, '/');
+    check('a browser that cannot run the audience page is told so in plain words', (await tooOld.evaluate(() => (document.querySelector('[role=alert]') || {}).textContent || '')).includes('too old'));
+    await tooOld.close();
+    const tooOldSetup = await old(() => { CSS.supports = function (a) { return a !== 'inset'; }; }, '/admin');
+    check('Setup says so when the browser lacks what it needs', (await tooOldSetup.evaluate(() => (document.querySelector('[role=alert]') || {}).textContent || '')).includes('Safari 14.1'));
+    const stillAudience = await old(() => { CSS.supports = function (a) { return a !== 'inset'; }; }, '/');
+    await sleep(600);
+    check('the audience page does not need that (it has fallbacks)', !(await stillAudience.evaluate(() => !!document.querySelector('[role=alert]'))));
+    await tooOldSetup.close(); await stillAudience.close(); await b3.close();
 
     // ------------------------------------------------------------------ restart
     section('Restart: logins, control and undo survive');

@@ -34,7 +34,7 @@ that reflect it. Add new questions at the bottom.
 ## Open
 
 - **Real devices:** the program has only been tested in desktop Chrome on one Mac (its browser end-to-end test also runs on Linux, macOS and Windows in CI, in Chrome). The keep-awake video in particular is untested on real iPhones and Android phones. A rehearsal on the oldest phones, tablets and computers you expect, on the real WiFi, is the main remaining risk (see the acceptance checklist).
-- **Browser floor:** the audience page works on current browsers; Setup and the operator page need `<dialog>` (Safari 15.4+). The exact minimum versions are unverified.
+- **Browser floor:** now defined and enforced in code (doc 01, REQ-042: audience about iOS 12 / Chrome 66, Setup and operator about iOS 14.1 / Chrome 87; `<dialog>` is filled in; older browsers get a plain message), but derived from the features used, not from testing old devices.
 - **Passwords are plain text** in `config.yaml` by decision (Q4); hashing them is a later option.
 - **Release packaging:** no signed or notarized builds, installers or auto-update.
 - **Screen-reader and contrast audit** of all four pages has not been done.

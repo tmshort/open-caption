@@ -1,6 +1,7 @@
 // Setup page: a six-step wizard (Show, Show file, Images, Look, Test, Go Live).
 (() => {
   'use strict';
+  if (window.OC_UNSUPPORTED) return; // compat.js has already shown the "too old" message
   const $ = (id) => document.getElementById(id);
   const A = { shows: [], activeId: '', cur: null, step: 'show', text: '', saved: '', analysis: null, mainAnalysis: null, lang: '', loadedLang: null, langs: [], net: null, live: false, audience: 0, rehearsing: false };
   const STEPS = [['show', 'Shows'], ['showfile', 'Show file'], ['images', 'Images'], ['look', 'Look'], ['test', 'Test'], ['golive', 'Go Live']];

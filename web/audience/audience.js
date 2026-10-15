@@ -1,6 +1,7 @@
 // Audience page: renders the live state pushed by the server. No interaction is needed.
 (() => {
   'use strict';
+  if (window.OC_UNSUPPORTED) return; // compat.js has already shown the "too old" message
   const $ = (id) => document.getElementById(id);
   const params = new URLSearchParams(location.search);
   const projector = params.get('display') === 'projector';

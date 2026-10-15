@@ -40,5 +40,6 @@ Run `gofmt`, `go vet ./...` and `go test -race ./...` before committing.
 - Show-file edits while live require confirmation (typing the show name); the cursor is kept by cue index. Saving the look is refused when the editor has unsaved changes (it rewrites the saved file).
 - Archiving a show is the `archived: yes` setting in its show file (`Store.SetArchived`); archived shows cannot be activated.
 - The audience page keeps the screen on with the Wake Lock API, or a tiny looping video (`web/audience/nosleep.*`) where that API is missing (plain HTTP).
+- Browser floor: `web/shared/compat.js` (plain ES5, loaded first on every page) gates old browsers and fills in `<dialog>`/`replaceChildren`; `test/e2e/check-compat.js` keeps JS at ES2018 and CSS free of newer features (the audience page also avoids `inset` and flex `gap`). Page CSPs forbid `eval`/`new Function`.
 - Sessions persist hashed in `sessions.json`; per-language live state in `live.json`.
 - Multi-language: one operator keypress advances every language, so structure mismatches are errors and the mismatching translation is not served.

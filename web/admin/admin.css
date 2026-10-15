@@ -20,6 +20,8 @@ button.danger { color: var(--bad); }
 button.primary.danger { background: var(--bad); border-color: var(--bad); color: #fff; }
 #dlg td { word-break: break-all; }
 button.quiet, a.quiet { background: none; border: none; color: var(--dim); text-decoration: none; padding: .3rem .5rem; }
+:focus { outline: 3px solid var(--accent); outline-offset: 2px; }
+:focus:not(:focus-visible) { outline: none; }
 :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 #login { max-width: 28rem; margin: 12vh auto; padding: 0 1rem; }
 #login label { display: block; margin: 1rem 0; } #login input { width: 100%; max-width: 20rem; }
@@ -92,7 +94,7 @@ table.cheat { border-collapse: collapse; width: 100%; font-size: .9rem; } table.
 .previews { display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-start; }
 .preview { background: var(--pbg, #000); color: var(--pfg, #fff); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; padding: .8rem; font-family: var(--pfont, system-ui); line-height: 1.3; border: 1px solid var(--line); }
 .preview.phone { width: 15rem; height: 26rem; font-size: calc(var(--pscale, 1) * .95rem); }
-.preview.proj { width: 28rem; max-width: 100%; aspect-ratio: 16/9; font-size: calc(var(--pscale, 1) * 1.2rem); }
+.preview.proj { width: 28rem; max-width: 100%; height: 15.75rem; aspect-ratio: 16/9; font-size: calc(var(--pscale, 1) * 1.2rem); }
 .preview p { margin: 0 0 .5em; } .preview .spk { display: block; font-size: .55em; text-transform: uppercase; letter-spacing: .08em; color: var(--paccent, #fff); }
 .preview .dim1 { opacity: .8; } .preview .dim2 { opacity: .55; }
 

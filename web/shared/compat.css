@@ -1,0 +1,7 @@
+/* <dialog> for browsers that do not have it (see compat.js). Browsers that do have it ignore this. */
+dialog:not([open]) { display: none; }
+dialog.oc-fallback[open] {
+  display: block; position: fixed; top: 50%; left: 50%; -webkit-transform: translate(-50%, -50%); transform: translate(-50%, -50%);
+  margin: 0; z-index: 1000; max-height: 90vh; overflow: auto; box-sizing: border-box;
+  -webkit-box-shadow: 0 0 0 100vmax rgba(0, 0, 0, .6); box-shadow: 0 0 0 100vmax rgba(0, 0, 0, .6);
+}
