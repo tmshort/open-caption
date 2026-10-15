@@ -147,8 +147,8 @@ func TestBundledFontsAreServed(t *testing.T) {
 	body, _ := io.ReadAll(css.Body)
 	css.Body.Close()
 	urls := regexp.MustCompile(`url\((/[^)]+\.woff2)\)`).FindAllStringSubmatch(string(body), -1)
-	if len(urls) < 4 {
-		t.Fatalf("expected the OpenDyslexic @font-face rules, found %d", len(urls))
+	if len(urls) < 8 {
+		t.Fatalf("expected the OpenDyslexic and Atkinson @font-face rules, found %d", len(urls))
 	}
 	for _, m := range urls {
 		resp, err := http.Get(ts.URL + m[1])
@@ -157,7 +157,7 @@ func TestBundledFontsAreServed(t *testing.T) {
 		}
 		b, _ := io.ReadAll(resp.Body)
 		resp.Body.Close()
-		if resp.StatusCode != 200 || len(b) < 50000 || string(b[:4]) != "wOF2" ||
+		if resp.StatusCode != 200 || len(b) < 10000 || string(b[:4]) != "wOF2" ||
 			resp.Header.Get("Content-Type") != "font/woff2" || resp.Header.Get("X-Content-Type-Options") != "nosniff" ||
 			!strings.Contains(resp.Header.Get("Cache-Control"), "max-age") {
 			t.Errorf("%s: %d %s %v (%d bytes)", m[1], resp.StatusCode, resp.Header.Get("Content-Type"), resp.Header, len(b))
@@ -172,7 +172,12 @@ func TestBundledFontsAreServed(t *testing.T) {
 		t.Errorf("unknown font: %d", code)
 	}
 	// The license travels with the font.
-	if resp, _ := http.Get(ts.URL + "/static/shared/fonts/OFL.txt"); resp.StatusCode != 200 {
-		t.Errorf("OFL.txt: %d", resp.StatusCode)
+	for _, lic := range []string{"OFL-OpenDyslexic.txt", "OFL-Atkinson.txt"} {
+		if resp, _ := http.Get(ts.URL + "/static/shared/fonts/" + lic); resp.StatusCode != 200 {
+			t.Errorf("%s: %d", lic, resp.StatusCode)
+		}
+	}
+	if code, _ := c.do("PUT", "/api/admin/shows/"+id, map[string]any{"theme": map[string]any{"font": "hyperlegible"}}); code != 200 {
+		t.Errorf("hyperlegible font: %d", code)
 	}
 }

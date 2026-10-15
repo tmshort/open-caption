@@ -79,8 +79,10 @@ func TestIDsCannotEscape(t *testing.T) {
 }
 
 func TestThemeValidation(t *testing.T) {
-	if _, err := (Theme{Font: "dyslexic"}).Normalize(""); err != nil {
-		t.Errorf("dyslexic font rejected: %v", err)
+	for _, f := range []string{"dyslexic", "hyperlegible"} {
+		if _, err := (Theme{Font: f}).Normalize(""); err != nil {
+			t.Errorf("%s font rejected: %v", f, err)
+		}
 	}
 	bad := []Theme{{BG: "red"}, {FG: "#12345"}, {Font: "comic"}, {ScalePct: 10}, {ScalePct: 900}, {Speakers: "loud"}}
 	for _, th := range bad {

@@ -18,7 +18,11 @@
 <div id="ctl" role="group" aria-label="Your display" hidden>
   <button type="button" id="smaller" aria-label="Smaller text">A−</button>
   <button type="button" id="bigger" aria-label="Larger text">A+</button>
-  <button type="button" id="dys" aria-pressed="false" title="Use a font designed to be easier to read for people with dyslexia">Dyslexia-friendly font</button>
+  <select id="fontsel" aria-label="Font">
+    <option value="">Font: as chosen</option>
+    <option value="dyslexic">Dyslexia-friendly font</option>
+    <option value="hyperlegible">High-legibility font</option>
+  </select>
   <button type="button" id="scheme" aria-pressed="false">Dark on light</button>
 </div>
 <script src="/static/shared/speakers.js"></script>

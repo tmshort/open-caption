@@ -394,7 +394,7 @@
 
   // ---- step 4: look ----
   const PRESETS = [['White on black (default)', '#000000', '#ffffff', '#ffffff'], ['Black on white', '#ffffff', '#000000', '#000000'], ['Yellow on black', '#000000', '#ffee00', '#ffee00'], ['Dark blue', '#001a33', '#ffffff', '#ffd166']];
-  const FONTS = { dyslexic: '"OpenDyslexic", system-ui, sans-serif', system: 'system-ui, sans-serif', serif: 'Georgia, "Times New Roman", serif', mono: 'ui-monospace, Menlo, Consolas, monospace' };
+  const FONTS = { hyperlegible: '"Atkinson Hyperlegible", system-ui, sans-serif', dyslexic: '"OpenDyslexic", system-ui, sans-serif', system: 'system-ui, sans-serif', serif: 'Georgia, "Times New Roman", serif', mono: 'ui-monospace, Menlo, Consolas, monospace' };
   function lum(hex) { const c = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((v) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4))); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; }
   function contrast(a, b) { const x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
   async function stepLook(p) {
@@ -404,7 +404,7 @@
     const ctl = {};
     const mk = (name, label, input) => { ctl[name] = input; return h('label', { class: 'field' }, h('span', {}, label), input); };
     mk('bg', 'Background', h('input', { type: 'color' })); mk('fg', 'Text', h('input', { type: 'color' })); mk('accent', 'Speaker name color', h('input', { type: 'color' }));
-    mk('font', 'Font', h('select', {}, h('option', { value: 'system' }, 'Clean (system)'), h('option', { value: 'serif' }, 'Serif'), h('option', { value: 'mono' }, 'Monospace'), h('option', { value: 'dyslexic' }, 'Dyslexia-friendly (OpenDyslexic)')));
+    mk('font', 'Font', h('select', {}, h('option', { value: 'system' }, 'Clean (system)'), h('option', { value: 'serif' }, 'Serif'), h('option', { value: 'mono' }, 'Monospace'), h('option', { value: 'dyslexic' }, 'Dyslexia-friendly (OpenDyslexic)'), h('option', { value: 'hyperlegible' }, 'High legibility (Atkinson Hyperlegible)')));
     mk('scalePct', 'Text size', h('input', { type: 'range', min: '60', max: '200', step: '10' }));
     mk('speakers', 'Speaker names', h('select', {}, h('option', { value: 'label' }, 'Show above the line (in the speaker name color)'), h('option', { value: 'color' }, 'Show above the line, a different color for each character'), h('option', { value: 'hidden' }, 'Hide')));
     mk('idleMessage', 'Message before the show starts', h('input', { type: 'text', maxlength: '200' }));

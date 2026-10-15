@@ -1,8 +1,13 @@
-/* OpenDyslexic (SIL Open Font License; see web/shared/fonts/OFL.txt). A device only downloads it if it is used. */
+/* OpenDyslexic (SIL Open Font License; see web/shared/fonts/OFL-OpenDyslexic.txt). A device only downloads it if it is used. */
 @font-face { font-family: "OpenDyslexic"; font-style: normal; font-weight: 400; font-display: swap; src: url(/static/shared/fonts/opendyslexic-400-normal.woff2) format("woff2"); }
 @font-face { font-family: "OpenDyslexic"; font-style: italic; font-weight: 400; font-display: swap; src: url(/static/shared/fonts/opendyslexic-400-italic.woff2) format("woff2"); }
 @font-face { font-family: "OpenDyslexic"; font-style: normal; font-weight: 700; font-display: swap; src: url(/static/shared/fonts/opendyslexic-700-normal.woff2) format("woff2"); }
 @font-face { font-family: "OpenDyslexic"; font-style: italic; font-weight: 700; font-display: swap; src: url(/static/shared/fonts/opendyslexic-700-italic.woff2) format("woff2"); }
+/* Atkinson Hyperlegible (SIL Open Font License; see web/shared/fonts/OFL-Atkinson.txt), designed for low vision. */
+@font-face { font-family: "Atkinson Hyperlegible"; font-style: normal; font-weight: 400; font-display: swap; src: url(/static/shared/fonts/atkinson-400-normal.woff2) format("woff2"); }
+@font-face { font-family: "Atkinson Hyperlegible"; font-style: italic; font-weight: 400; font-display: swap; src: url(/static/shared/fonts/atkinson-400-italic.woff2) format("woff2"); }
+@font-face { font-family: "Atkinson Hyperlegible"; font-style: normal; font-weight: 700; font-display: swap; src: url(/static/shared/fonts/atkinson-700-normal.woff2) format("woff2"); }
+@font-face { font-family: "Atkinson Hyperlegible"; font-style: italic; font-weight: 700; font-display: swap; src: url(/static/shared/fonts/atkinson-700-italic.woff2) format("woff2"); }
 
 :root {
   --bg: #000;
@@ -89,6 +94,7 @@ body.projector #dot:not(.off) { display: none; }
 #ctl[hidden] { display: none; }
 #ctl { flex-wrap: wrap; max-width: calc(100vw - 16px); }
 #ctl button[aria-pressed="true"] { background: var(--fg); color: var(--bg); }
+#ctl select { min-height: 2.75rem; padding: 0 .6rem; border: 1px solid var(--fg); border-radius: 8px; background: var(--bg); color: var(--fg); font: 600 1rem var(--font); }
 #ctl button { min-width: 3rem; min-height: 2.75rem; padding: 0 .8rem; border: 1px solid var(--fg); border-radius: 8px; background: var(--bg); color: var(--fg); font: 600 1rem var(--font); cursor: pointer; }
 body.projector #gear, body.projector #ctl { display: none; }
 :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
