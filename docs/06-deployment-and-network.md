@@ -81,4 +81,23 @@ The app should not run its own DHCP/DNS in v1 (conflicts, privileges, scope).
 
 ## Backups
 
-Data directory is plain files; "Export show" (zip of show file + assets) and "Import show" in setup for moving between machines / sharing with other volunteers.
+Data directory is plain files; "Export" and "Import" on the Show step of Setup move a show between machines or share it with other volunteers.
+
+### Show archive (.zip)
+
+An export is a `.zip` with these entries, all at the top level except the images:
+
+| Entry | Contents |
+|-------|----------|
+| `show.md` | The main-language show file, including its `[settings]` block (title, look, idle message, loop time, scrollback size). **Required.** |
+| `show.<lang>.md` | One show file per translation, for example `show.es.md`. Optional. |
+| `assets/<filename>` | The show's images (PNG, JPG, GIF or WebP). Optional; no sub-folders. |
+
+Nothing else is stored: the show file is the whole configuration of a show, so there is no separate metadata file.
+
+Import creates a **new** show (it never overwrites one), titled with the archive's title plus " (imported)", and does not activate it. Rules:
+
+- Only top-level `.md` files and `assets/*` are read; any other entry is ignored. A `.md` file that is not `show.md` or `show.<valid-language-code>.md` is ignored.
+- Each image goes through the normal upload checks (type sniffed from its content, 10 MB limit, SVG refused). Images that fail are skipped and counted; Setup reports how many.
+- Limits: 64 MB for the upload, at most 500 entries, and each file is size-limited. A file that is not a zip, or has no `show.md`, is refused with an explanation and nothing is created.
+- You can write an archive by hand: zip `show.md` (and any translations and an `assets/` folder) with any zip tool.

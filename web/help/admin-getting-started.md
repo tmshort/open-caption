@@ -17,7 +17,7 @@ A show is a folder containing its **show file** (a plain text file, `show.md`), 
 
 - This computer must be on the same WiFi network as the audience's phones and tablets. See [Network and joining](topic:admin-network).
 - The admin password and the operator password are in `config.yaml`; they were also printed in the console the first time the program started. The operator page has its own password so you can hand it to someone else without giving them setup access.
-- Your work is saved on this computer. Use **Export** on the Show step to make a backup you can move to another computer.
+- Your work is saved on this computer. Use **Export** on the Show step to make a backup you can move to another computer. The export is a `.zip` holding `show.md` (the show file, with its title and look), a `show.<language>.md` for each translation, and an `assets` folder of images; **Import** turns such a zip into a new show.
 
 ## New to show files?
 

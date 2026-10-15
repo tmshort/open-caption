@@ -63,6 +63,8 @@ everywhere an operator session is; the reverse is not true.
 | POST | `/api/admin/shows/{id}/duplicate` | `{name?}` copy show files (every language), images and look |
 | GET | `/api/admin/shows/{id}/showfile` | Raw text + parsed cues + diagnostics (`?lang=`) |
 | PUT | `/api/admin/shows/{id}/showfile` | Body: raw show file text (`?lang=`) → diagnostics |
+| GET | `/api/admin/shows/{id}/export` | Download the show as a `.zip` (format: doc 06, *Show archive*) |
+| POST | `/api/admin/shows/import` | multipart field `file`: a show `.zip`; creates a new show titled `<title> (imported)` and returns `201 {show, skippedFiles}`; 400 if it is not a zip or has no `show.md` |
 | POST | `/api/admin/shows/{id}/showfile/validate` | Dry-run parse without saving |
 | GET | `/api/admin/shows/{id}/languages` | The show's languages (main first) with cue/error/warning counts, `available` (false when a translation does not match the main show file) and the `structure` problems; plus the `known` language names offered in Setup |
 | POST | `/api/admin/shows/{id}/languages` | `{code, name?, copyFromMain}`: start a translation (409 if it exists) |
