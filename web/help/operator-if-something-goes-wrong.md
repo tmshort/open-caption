@@ -14,6 +14,6 @@
 
 **The page says it is disconnected.** The dot turns red and the page reconnects by itself. The show position is kept on the server, so nothing is lost. If it does not return within a few seconds, reload the page; you will land where you were.
 
-**The server was restarted.** It remembers where the show was and carries on from there. A running loop starts over from its first item.
+**The server was restarted.** It remembers where the show was and carries on from there, and you stay signed in and in control. A running loop starts over from its first item. **Backspace** still undoes the last few things you sent before the restart.
 
 **Nothing happens when I press keys.** Click on an empty part of the page first, and check that no window (such as this help) is open.

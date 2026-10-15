@@ -20,6 +20,7 @@
     <span id="live" class="badge">NOT LIVE</span>
     <span id="viewers" title="Audience devices connected">👥 0</span>
     <span id="ctrl"></span>
+    <span id="lastsent" title="How long ago a line was last sent"></span>
     <button id="takeover" hidden>Take over</button>
     <span class="grow"></span>
     <button id="helpbtn" class="quiet" title="Help (?)">Help</button>
@@ -36,6 +37,7 @@
   </div>
   <div id="toast" role="status"></div>
   <footer>
+    <select id="sections" aria-label="Go to a section" hidden></select>
     <input id="search" type="search" placeholder="Search script ( / )" aria-label="Search script">
     <button id="back" title="Undo the last thing sent (Backspace)">◀ Back<small>Backspace</small></button>
     <button id="next" class="primary" title="Next (Space)">NEXT ▶<small>Space</small></button>

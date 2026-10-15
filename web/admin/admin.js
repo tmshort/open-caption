@@ -42,6 +42,9 @@
       $('dlgok').classList.toggle('danger', !!(opts && opts.danger));
       $('dlgcancel').hidden = !!(opts && opts.noCancel);
       $('dlgcancel').onclick = () => d.close('cancel');
+      const extra = $('dlgextra');
+      extra.hidden = !(opts && opts.extra);
+      if (opts && opts.extra) { extra.textContent = opts.extra.label; extra.onclick = () => { d.close('extra'); if (opts.extra.run) opts.extra.run(); }; }
       d.returnValue = '';
       d.onclose = () => resolve(d.returnValue === 'ok');
       d.showModal();
@@ -62,6 +65,36 @@
   $('helpclose').addEventListener('click', closeHelp);
   window.addEventListener('message', (e) => { if (e.origin === location.origin && e.data && e.data.type === 'help-close') closeHelp(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'F1') { e.preventDefault(); openHelp(); } });
+
+  // ---- settings: passwords and where things are ----
+  async function openSettings() {
+    const r = await api('GET', '/api/admin/settings'); if (!r.ok) return fail(r);
+    const s = r.data;
+    const adminPw = h('input', { type: 'password', autocomplete: 'new-password', 'aria-label': 'New admin password', minlength: '6' });
+    const opPw = h('input', { type: 'password', autocomplete: 'new-password', 'aria-label': 'New operator password', minlength: '6' });
+    const shown = h('div', { class: 'hint' });
+    const reveal = h('button', { type: 'button', class: 'quiet', onclick: async () => {
+      const x = await api('GET', '/api/admin/settings/operator-password');
+      shown.textContent = x.ok ? 'Operator password: ' + x.data.password : 'Could not read it';
+    } }, 'Show the current operator password');
+    const row = (k, v) => h('tr', {}, h('td', {}, k), h('td', {}, v || '—'));
+    const body = h('div', {},
+      h('table', { class: 'cheat' },
+        row('Program', 'open-caption ' + s.version), row('Settings file', s.configPath), row('Shows and data', s.dataDir),
+        row('Web port (HTTP)', (s.httpAddr || '').replace(/^.*:/, '')), row('Web port (HTTPS)', (s.httpsAddr || '').replace(/^.*:/, ''))),
+      h('h3', {}, 'Change passwords'),
+      s.canChangePasswords
+        ? h('div', {}, h('p', { class: 'hint' }, 'Leave a box empty to keep that password. At least 6 characters. People signed in with a changed password are signed out; you stay signed in.'),
+            h('label', { class: 'field' }, h('span', {}, 'New admin password'), adminPw),
+            h('label', { class: 'field' }, h('span', {}, 'New operator password'), opPw), reveal, shown)
+        : h('p', { class: 'hint' }, 'This copy was started without a settings file, so passwords cannot be changed here.'));
+    if (!await ask('Settings', body, s.canChangePasswords ? 'Change passwords' : 'Close', { noCancel: !s.canChangePasswords })) return;
+    if (!s.canChangePasswords) return;
+    const res = await api('PUT', '/api/admin/settings/passwords', { admin: adminPw.value, operator: opPw.value });
+    if (!res.ok) return fail(res);
+    toast('Passwords changed');
+  }
+  $('settingsbtn').addEventListener('click', openSettings);
 
   // ---- login ----
   function showLogin() { $('app').hidden = true; $('login').hidden = false; $('pw').focus(); }
@@ -239,7 +272,7 @@
     if (!A.analysis || A.text === '') {
       const r = await api('GET', '/api/admin/shows/' + show.id + '/script');
       if (!r.ok) return fail(r);
-      A.text = A.saved = r.data.text; A.analysis = r.data.analysis;
+      A.text = A.saved = r.data.text; A.analysis = r.data.analysis; A.version = r.data.version;
     }
     const ta = h('textarea', { spellcheck: 'false', 'aria-label': 'Script', wrap: 'off', placeholder: 'Paste your script here, or drop a .txt / .md file onto this box.\n\nEach line becomes one caption.' });
     ta.value = A.text;
@@ -283,7 +316,7 @@
       }, 400);
     }
     async function save(confirmName) {
-      const body = { text: ta.value }; if (typeof confirmName === 'string') body.confirm = confirmName;
+      const body = { text: ta.value, baseVersion: A.version }; if (typeof confirmName === 'string') body.confirm = confirmName;
       const r = await api('PUT', '/api/admin/shows/' + show.id + '/script', body);
       if (r.status === 409 && r.data.needConfirm) {
         const inp = h('input', { type: 'text', 'aria-label': 'Show name', placeholder: r.data.showName });
@@ -291,8 +324,20 @@
         if (ok) return save(inp.value);
         return;
       }
+      if (r.status === 409 && r.data.conflict) {
+        // Someone else saved this script after it was opened here. Never overwrite silently.
+        const theirs = r.data;
+        const choice = await ask('This script was changed by someone else',
+          h('div', {}, h('p', {}, 'Another person (or another window) saved this script after you opened it. If you save yours, their changes are lost.'),
+            h('p', { class: 'hint' }, '“Use their version” replaces what is in the editor with theirs. Copy anything you want to keep first.')),
+          'Save mine anyway', { danger: true, extra: { label: 'Use their version', run: () => {
+            ta.value = theirs.text; A.version = theirs.version; A.saved = theirs.text; changed(); toast('Loaded their version');
+          } } });
+        if (choice) { A.version = theirs.version; return save(confirmName); }
+        return;
+      }
       if (!r.ok) return fail(r);
-      A.saved = ta.value; A.analysis = r.data.analysis; setStatus(); showAnalysis();
+      A.saved = ta.value; A.version = r.data.version; A.analysis = r.data.analysis; setStatus(); showAnalysis();
       toast(r.data.countChanged ? 'Saved. The number of lines changed, so check the operator’s position.' : 'Saved');
     }
     function insert(text) {
@@ -354,7 +399,7 @@
     const show = curShow(); if (!show) return go('show');
     const r = await api('GET', '/api/admin/shows/' + show.id + '/script');
     if (!r.ok) return fail(r);
-    A.analysis = r.data.analysis; A.text = A.saved = r.data.text;
+    A.analysis = r.data.analysis; A.text = A.saved = r.data.text; A.version = r.data.version;
     const a = A.analysis;
     p.append(h('h2', {}, 'Images'), h('p', { class: 'hint' }, 'PNG, JPG, GIF or WebP, up to 10 MB each. Images are sent to every device as they are, so keep them under about 1 MB (about 1920 pixels wide is plenty).'));
 

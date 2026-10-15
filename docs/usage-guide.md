@@ -113,7 +113,7 @@ In order of reliability:
 - The audience page can only read. It cannot change the show or reach the setup and operator pages.
 - Setup and operator each require their own password (stored in plain text in `config.yaml`, which is created readable only by you). Give the operator password to the operator, not the admin password.
 - The program is meant for a private network. **Do not expose it to the internet.**
-- Passwords can be changed by editing `config.yaml` and restarting the program. Changing a password signs everyone out. Otherwise logins last 12 hours and survive a restart, so an operator does not have to sign in again if the program is restarted mid-show.
+- Passwords can be changed from **Settings** in the Setup page (no restart needed) or by editing `config.yaml` and restarting the program. People signed in with a password that changed are signed out. Otherwise logins last 12 hours and survive a restart, so an operator does not have to sign in again if the program is restarted mid-show.
 
 ## Installing and starting
 
@@ -170,6 +170,10 @@ EDWIN: Whistling all day long
 - **Loops** (pre-show and intermission) repeat pictures and text until the operator moves on. A loop at the very start of the script starts by itself.
 - **Notes** `[note: …]` and bookmarks `[section: …]` are for the operator only.
 - The **Writing a script** help topic lists everything, with examples, and the editor's *Script cheat sheet* summarizes it.
+
+### Two people editing
+
+If someone else saves a script while you have it open, the program warns you when you save instead of overwriting their work, and lets you take their version or keep yours.
 
 ### Changing things during rehearsals and shows
 
@@ -230,8 +234,8 @@ Press `Ctrl+C` in the program's window (or stop the service). The position is sa
 | Screens go dark on phones | Phones lock their screens. The page asks the browser to stay awake where it can, but plain-HTTP pages are often refused. Tell people to switch off Auto-Lock for the evening, or use a projector. |
 | The wrong line was sent | **Backspace** undoes it. |
 | The operator page says another operator is in control | Use **Take over**, if you are the operator. |
-| The computer froze or was restarted mid-show | Start the program again. The operator page reconnects, stays signed in and takes control back by itself, the show is where you left it, and audience devices reconnect on their own. A loop restarts from its first item, and **Backspace** cannot undo anything sent before the restart. |
-| I forgot a password | Open `config.yaml` in the data folder in any text editor. |
+| The computer froze or was restarted mid-show | Start the program again. The operator page reconnects, stays signed in and takes control back by itself, the show is where you left it, and audience devices reconnect on their own. A loop restarts from its first item. **Backspace** can still undo the last few things sent before the restart. |
+| I forgot a password | Sign in with the other one and use **Settings** in Setup, or open `config.yaml` in the data folder in any text editor. |
 | Something else | Setup → Go Live → **Download a support bundle**; it holds the settings (without passwords) and recent log lines. |
 
 ## Maintenance

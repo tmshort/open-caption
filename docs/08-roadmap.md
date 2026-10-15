@@ -49,6 +49,7 @@ Each milestone is shippable and ends with a demoable result. Tasks reference req
 - [x] Rename and duplicate shows
 - [x] Per-character speaker colors; right-to-left caption direction
 - [x] Logins survive a restart; the operator page takes control back automatically
+- [x] Operational niceties: undo survives a restart (last 10 steps), script edit-conflict detection, change passwords from Setup, Look tick kept on the server, expired-session/rehearsal cleanup, `--dev` listens on this computer only, operator section menu and "last sent" timer
 
 ## Stretch / Later
 - mDNS advertisement; signed/notarized macOS build; Windows installer

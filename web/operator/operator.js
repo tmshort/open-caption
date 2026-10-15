@@ -87,12 +87,38 @@
     renderMarkers(true);
   }
 
+  // Sections double as a mini-map: pick one to jump to it (with the usual confirmation).
+  function buildSections() {
+    const sel = $('sections');
+    const secs = S.cues.filter((c) => c.kind === 'section');
+    sel.replaceChildren(new Option('Go to section…', ''), ...secs.map((c) => new Option(c.text, String(c.index))));
+    sel.hidden = secs.length === 0;
+  }
+  $('sections').addEventListener('change', () => {
+    const v = $('sections').value;
+    $('sections').value = '';
+    if (v === '') return;
+    const i = Number(v);
+    select(i); scrollTo(i);
+  });
+
+  // "Last sent 12 s ago": a quick check that the show and this page are still in step.
+  function renderLastSent() {
+    const el = $('lastsent'), at = S.payload && S.payload.op && S.payload.op.lastAt;
+    if (!at) { el.textContent = ''; return; }
+    const s = Math.max(0, Math.round((Date.now() - at) / 1000));
+    el.textContent = 'Last sent ' + (s < 60 ? s + ' s' : Math.floor(s / 60) + ' min ' + (s % 60) + ' s') + ' ago';
+    el.classList.toggle('stale', s >= 120);
+  }
+  setInterval(renderLastSent, 1000);
+
   function applyState(cues, payload) {
     S.cues = cues;
     S.payload = payload;
     S.cuesVer = payload.cuesVer;
     S.sel = null;
     buildList();
+    buildSections();
     renderStatus();
     renderMarkers(true);
   }
@@ -192,6 +218,7 @@
     $('takeover').hidden = mine;
     $('takeover').textContent = p.controller ? 'Take over' : 'Take control';
     $('stop').hidden = !o.loop;
+    renderLastSent();
     $('blank').firstChild.textContent = o.mode === 'blank' ? 'Unblank' : 'Blank';
     const b = $('banner');
     if (o.loop) { const c = S.cues[o.loop.cue]; b.hidden = false; b.className = 'loop'; b.textContent = '🔁 LOOP RUNNING — item ' + (o.loop.item + 1) + ' of ' + (c ? (c.items || []).length : '?') + '. NEXT ends it; STOP blanks the screen.'; }

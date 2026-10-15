@@ -22,9 +22,11 @@ For the full list of checks on the network side, see the [venue network guide](t
 
 See "What the warnings mean" in [Writing a script](topic:admin-writing-a-script).
 
-## I forgot a password
+## Passwords
 
-Both passwords are in `config.yaml`, in the program's data folder. Open the file in any text editor. Its location is printed when the program starts.
+To change either password, use **Settings** at the top of the Setup page. The new password takes effect immediately and is saved in `config.yaml`. Anyone signed in with a password that changed is signed out; you stay signed in. The same window can show the current operator password so you can give it to the operator.
+
+If you cannot sign in at all, both passwords are in `config.yaml`, in the program's data folder. Open the file in any text editor. Its location is printed when the program starts.
 
 ## Asking for help
 
