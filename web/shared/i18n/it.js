@@ -532,5 +532,6 @@ OCI18n.add("it", {
  "the name must be 1 to 80 characters on one line": "il nome deve avere da 1 a 80 caratteri su una sola riga",
  "About this copy": "Informazioni su questa copia",
  "These are fixed in the settings file. To change them, edit that file and start the program again.": "Questi valori sono fissati nel file delle impostazioni. Per cambiarli, modifica quel file e riavvia il programma.",
- "Hide the operator password": "Nascondi la password operatore"
+ "Hide the operator password": "Nascondi la password operatore",
+ "Opens in a new window": "Si apre in una nuova finestra"
 });

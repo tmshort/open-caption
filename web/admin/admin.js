@@ -810,7 +810,7 @@
     const big = h('div', { class: 'urlbig' }), qrBox = h('div', { class: 'qr' });
     const paint = () => { big.textContent = chosen || __('No address found'); qrBox.replaceChildren(chosen ? h('img', { src: '/api/admin/network/qr.png?size=512&url=' + encodeURIComponent(chosen), alt: __('QR code for {url}', { url: chosen }) }) : ''); };
     paint();
-    const list = h('div', { class: 'urls' }, ...net.data.urls.map((u) => h('div', { class: 'row' }, h('label', { class: 'row' }, h('input', { type: 'radio', name: 'u', checked: u.url === chosen, onchange: () => { chosen = u.url; paint(); } }), u.url, u.public ? '' : __(' (this computer only)'), u.name ? __(' (a name: easy to type, but some WiFi networks and phones cannot use it)') : ''))));
+    const list = h('div', { class: 'urls' }, ...net.data.urls.map((u) => h('div', { class: 'row' }, h('label', { class: 'row' }, h('input', { type: 'radio', name: 'u', checked: u.url === chosen, onchange: () => { chosen = u.url; paint(); } }), h('a', { href: u.url, target: '_blank', rel: 'noopener', title: __('Opens in a new window') }, u.url), u.public ? '' : __(' (this computer only)'), u.name ? __(' (a name: easy to type, but some WiFi networks and phones cannot use it)') : ''))));
     const isActive = A.activeId === show.id;
     p.append(h('h2', {}, __('Go live')), checks,
       h('div', { class: 'card' }, h('h3', {}, __('Tell the audience this address')), big,
