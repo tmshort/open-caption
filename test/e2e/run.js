@@ -74,6 +74,7 @@ async function main() {
     await admin.evaluate(() => { document.getElementById('pw').value = ''; });
     await admin.type('#pw', ADMIN); await admin.keyboard.press('Enter');
     await admin.waitForSelector('#steps button');
+    await admin.waitForFunction(() => [...document.querySelectorAll('button')].some((x) => x.textContent.includes('sample')), { timeout: 20000 });
     await click(admin, 'sample'); await admin.waitForSelector('.editor textarea'); await sleep(900);
     check('the sample show file has no problems', (await admin.evaluate(() => document.querySelector('.diags').innerText)).includes('No problems') || (await admin.evaluate(() => document.getElementById('panel').innerText)).includes('No problems found'));
     const tabs = await admin.evaluate(() => [...document.querySelectorAll('.langtabs button')].map((x) => x.textContent.trim()));
