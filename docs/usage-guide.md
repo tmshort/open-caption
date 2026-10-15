@@ -181,6 +181,22 @@ EDWIN: Whistling all day long
 - **Notes** `[note: …]` and bookmarks `[section: …]` are for the operator only.
 - The **Writing a show file** help topic lists everything, with examples, and the editor's *Show file cheat sheet* summarizes it.
 
+### Show settings (title, look and more)
+
+Everything about a show except its pictures is stored in its show file, including its title and how the captions look, in a `[settings]` block near the top:
+
+```text
+[settings]
+title: The Garden Party
+font: dyslexic
+text size: 120%
+speaker names: color
+idle message: Captions will begin shortly
+[/settings]
+```
+
+The **Look** step in Setup writes this block for you, and you can edit it by hand. Anything a show file leaves out uses a default: the program has built-in values, `config.yaml` (its `defaults` section) can change them for every show on this computer, and each show file overrides both. Ports, passwords, HTTPS and the access lists are not show settings and stay in `config.yaml`. Because the show file carries its look, copying or exporting the show carries the look too. See the *Writing a show file* help topic for every setting.
+
 ### Two people editing
 
 If someone else saves a show file while you have it open, the program warns you when you save instead of overwriting their work, and lets you take their version or keep yours.

@@ -10,6 +10,8 @@ import (
 	"path/filepath"
 
 	"gopkg.in/yaml.v3"
+
+	"github.com/tmshort/open-caption/internal/showfile"
 )
 
 // Listener is one HTTP(S) listen address with a fallback.
@@ -28,12 +30,24 @@ type HTTPS struct {
 	SelfSigned   bool   `yaml:"self_signed"`
 }
 
-// Defaults are show-independent defaults.
+// Look is the default appearance of the captions. A show file's [settings] override each value.
+type Look struct {
+	Background       string `yaml:"background"`
+	TextColor        string `yaml:"text_color"`
+	SpeakerNameColor string `yaml:"speaker_name_color"`
+	Font             string `yaml:"font"`
+	TextSizePercent  int    `yaml:"text_size_percent"`
+	SpeakerNames     string `yaml:"speaker_names"`
+}
+
+// Defaults are the values a show uses when its show file does not say otherwise. The layers are the
+// program's built-in values, then this section of config.yaml, then the show file's [settings].
 type Defaults struct {
 	Language        string  `yaml:"language"`
 	LoopItemSeconds float64 `yaml:"loop_item_seconds"`
 	IdleMessage     string  `yaml:"idle_message"`
 	OpenBrowser     bool    `yaml:"open_browser"`
+	Look            Look    `yaml:"look"`
 }
 
 // Audience limits.
@@ -65,7 +79,8 @@ func Default() Config {
 		HTTP:  Listener{Addr: ":80", FallbackAddr: ":8080"},
 		HTTPS: HTTPS{Addr: ":443", FallbackAddr: ":8443", SelfSigned: true},
 		Defaults: Defaults{Language: "en", LoopItemSeconds: 10,
-			IdleMessage: "Captions will begin shortly", OpenBrowser: true},
+			IdleMessage: "Captions will begin shortly", OpenBrowser: true,
+			Look: Look{Background: "#000000", TextColor: "#ffffff", SpeakerNameColor: "#ffffff", Font: "system", TextSizePercent: 100, SpeakerNames: "label"}},
 		Audience: Audience{MaxClients: 500, ScrollbackLines: 200},
 	}
 }
@@ -98,6 +113,9 @@ func Load(path string) (Config, error) {
 	}
 	if err := yaml.Unmarshal(b, &cfg); err != nil {
 		return cfg, fmt.Errorf("%s: %w", path, err)
+	}
+	if err := cfg.normalizeLook(); err != nil {
+		return cfg, err
 	}
 	return cfg, cfg.Validate()
 }
@@ -157,6 +175,42 @@ func (c Config) Validate() error {
 		return errors.New("config: https.cert_file and https.key_file must be set together")
 	case c.HTTPS.Enabled && c.HTTPS.CertFile == "" && !c.HTTPS.SelfSigned:
 		return errors.New("config: https enabled but no cert_file/key_file and self_signed is false")
+	}
+	return nil
+}
+
+// normalizeLook checks the default look and writes each value in its canonical form (for example
+// "#FFF" becomes "#ffffff").
+func (c *Config) normalizeLook() error {
+	l := &c.Defaults.Look
+	var err error
+	bad := func(key string, e error) error { return fmt.Errorf("config: defaults.look.%s: %w", key, e) }
+	if l.Background, err = showfile.NormalizeColor(l.Background); err != nil {
+		return bad("background", err)
+	}
+	if l.TextColor, err = showfile.NormalizeColor(l.TextColor); err != nil {
+		return bad("text_color", err)
+	}
+	if l.SpeakerNameColor, err = showfile.NormalizeColor(l.SpeakerNameColor); err != nil {
+		return bad("speaker_name_color", err)
+	}
+	if l.Font, err = showfile.NormalizeFont(l.Font); err != nil {
+		return bad("font", err)
+	}
+	if l.SpeakerNames, err = showfile.NormalizeSpeakerNames(l.SpeakerNames); err != nil {
+		return bad("speaker_names", err)
+	}
+	if l.TextSizePercent < 50 || l.TextSizePercent > 300 {
+		return bad("text_size_percent", fmt.Errorf("%d is not a text size: use 50 to 300", l.TextSizePercent))
+	}
+	if c.Defaults.LoopItemSeconds <= 0 || c.Defaults.LoopItemSeconds > 3600 {
+		return fmt.Errorf("config: defaults.loop_item_seconds: %v is not a time: use a number of seconds from 1 to 3600", c.Defaults.LoopItemSeconds)
+	}
+	if len(c.Defaults.IdleMessage) > showfile.MaxIdleMessage {
+		return fmt.Errorf("config: defaults.idle_message is longer than %d characters", showfile.MaxIdleMessage)
+	}
+	if n := c.Audience.ScrollbackLines; n < 20 || n > 2000 {
+		return fmt.Errorf("config: audience.scrollback_lines: %d is not a line count: use 20 to 2000", n)
 	}
 	return nil
 }

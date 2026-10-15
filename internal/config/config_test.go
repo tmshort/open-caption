@@ -113,3 +113,34 @@ func TestBadAccessSettingStopsStartupWithAClearMessage(t *testing.T) {
 		t.Errorf("%v %+v", err, c.Access)
 	}
 }
+
+func TestLookDefaultsAreValidatedAndNormalised(t *testing.T) {
+	p := filepath.Join(t.TempDir(), "c.yaml")
+	os.WriteFile(p, []byte("admin_password: a\noperator_password: b\ndefaults:\n  look:\n    background: \"#001\"\n    font: Dyslexia Friendly\n    text_size_percent: 130\n    speaker_names: colour\n"), 0o600)
+	c, err := Load(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	l := c.Defaults.Look
+	if l.Background != "#000011" || l.Font != "dyslexic" || l.TextSizePercent != 130 || l.SpeakerNames != "color" || l.TextColor != "#ffffff" {
+		t.Errorf("%+v", l)
+	}
+	for yaml, want := range map[string]string{
+		"defaults:\n  look:\n    font: comic\n":          "defaults.look.font",
+		"defaults:\n  look:\n    background: nope\n":     "defaults.look.background",
+		"defaults:\n  look:\n    text_size_percent: 5\n": "defaults.look.text_size_percent",
+		"defaults:\n  loop_item_seconds: -1\n":           "defaults.loop_item_seconds",
+		"audience:\n  scrollback_lines: 3\n":             "audience.scrollback_lines",
+	} {
+		os.WriteFile(p, []byte("admin_password: a\noperator_password: b\n"+yaml), 0o600)
+		if _, err := Load(p); err == nil || !strings.Contains(err.Error(), want) {
+			t.Errorf("%q: %v", yaml, err)
+		}
+	}
+	// A config file that says nothing about the look uses the built-in defaults.
+	os.WriteFile(p, []byte("admin_password: a\noperator_password: b\n"), 0o600)
+	c, _ = Load(p)
+	if c.Defaults.Look.Background != "#000000" || c.Defaults.Look.TextSizePercent != 100 || c.Defaults.Look.Font != "system" {
+		t.Errorf("%+v", c.Defaults.Look)
+	}
+}

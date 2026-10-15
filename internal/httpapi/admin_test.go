@@ -115,7 +115,7 @@ func TestShowLifecycleScriptAndAssets(t *testing.T) {
 	if code, _ := c.do("DELETE", "/api/admin/shows/"+id+"/assets/curtain.png", nil); code != 200 {
 		t.Errorf("delete asset: %d", code)
 	}
-	if code, _ := c.do("DELETE", "/api/admin/shows/"+id+"/assets/..%2Fshow.yaml", nil); code == 200 {
+	if code, _ := c.do("DELETE", "/api/admin/shows/"+id+"/assets/..%2Fshow.md", nil); code == 200 {
 		t.Error("traversal delete succeeded")
 	}
 	// validate does not save
@@ -136,7 +136,7 @@ func TestShowLifecycleScriptAndAssets(t *testing.T) {
 func TestThemeUpdateValidatesAndReachesAudience(t *testing.T) {
 	s, ts, c := adminServer(t)
 	id := createShow(t, c, "T")
-	if code, _ := c.do("PUT", "/api/admin/shows/"+id, map[string]any{"theme": map[string]any{"bg": "red"}}); code != 400 {
+	if code, _ := c.do("PUT", "/api/admin/shows/"+id, map[string]any{"theme": map[string]any{"bg": "red-ish"}}); code != 400 {
 		t.Errorf("bad theme: %d", code)
 	}
 	if code, _ := c.do("POST", "/api/admin/shows/"+id+"/activate", nil); code != 200 {
@@ -161,8 +161,8 @@ func TestThemeUpdateValidatesAndReachesAudience(t *testing.T) {
 func TestActivateAndLiveGuards(t *testing.T) {
 	s, ts, c := adminServer(t)
 	a, b := createShow(t, c, "First"), createShow(t, c, "Second")
-	c.do("PUT", "/api/admin/shows/"+a+"/showfile", map[string]string{"text": "One\nTwo\nThree"})
-	c.do("PUT", "/api/admin/shows/"+b+"/showfile", map[string]string{"text": "Other"})
+	c.do("PUT", "/api/admin/shows/"+a+"/showfile", map[string]string{"text": titled("First", "One\nTwo\nThree")})
+	c.do("PUT", "/api/admin/shows/"+b+"/showfile", map[string]string{"text": titled("Second", "Other")})
 
 	aud := connect(t, ts.URL)
 	aud.next(t)
@@ -182,11 +182,11 @@ func TestActivateAndLiveGuards(t *testing.T) {
 	if code, r := c.do("POST", "/api/admin/shows/"+b+"/activate", nil); code != 409 || r["live"] != true {
 		t.Errorf("activate while live: %d %v", code, r)
 	}
-	code, r := c.do("PUT", "/api/admin/shows/"+a+"/showfile", map[string]string{"text": "One\nTWO\nThree\nFour"})
+	code, r := c.do("PUT", "/api/admin/shows/"+a+"/showfile", map[string]string{"text": titled("First", "One\nTWO\nThree\nFour")})
 	if code != 409 || r["needConfirm"] != true || r["showName"] != "First" {
 		t.Errorf("live edit without confirm: %d %v", code, r)
 	}
-	code, r = c.do("PUT", "/api/admin/shows/"+a+"/showfile", map[string]string{"text": "One\nTWO\nThree\nFour", "confirm": "First"})
+	code, r = c.do("PUT", "/api/admin/shows/"+a+"/showfile", map[string]string{"text": titled("First", "One\nTWO\nThree\nFour"), "confirm": "First"})
 	if code != 200 || r["countChanged"] != true || r["wasLive"] != true {
 		t.Errorf("confirmed live edit: %d %v", code, r)
 	}
@@ -236,7 +236,7 @@ func TestSampleShowAndExportImportRoundTrip(t *testing.T) {
 	for _, f := range zr.File {
 		names = append(names, f.Name)
 	}
-	if !strings.Contains(strings.Join(names, ","), "show.yaml") || !strings.Contains(strings.Join(names, ","), "assets/welcome.png") {
+	if !strings.Contains(strings.Join(names, ","), "show.md") || !strings.Contains(strings.Join(names, ","), "show.es.md") || !strings.Contains(strings.Join(names, ","), "assets/welcome.png") {
 		t.Errorf("zip contents: %v", names)
 	}
 
@@ -410,7 +410,7 @@ func TestBootActiveRestoresShowAndPosition(t *testing.T) {
 func TestRenameAndDuplicateShowAPI(t *testing.T) {
 	_, _, c := adminServer(t)
 	id := createShow(t, c, "Old name")
-	c.do("PUT", "/api/admin/shows/"+id+"/showfile", map[string]string{"text": "One\nTwo"})
+	c.do("PUT", "/api/admin/shows/"+id+"/showfile", map[string]string{"text": titled("Old name", "One\nTwo")})
 	if code, r := c.do("PUT", "/api/admin/shows/"+id, map[string]any{"name": "New name"}); code != 200 || r["name"] != "New name" {
 		t.Fatalf("rename: %d %v", code, r)
 	}
@@ -422,7 +422,7 @@ func TestRenameAndDuplicateShowAPI(t *testing.T) {
 		t.Fatalf("duplicate: %d %v", code, r)
 	}
 	_, sc := c.do("GET", "/api/admin/shows/"+r["id"].(string)+"/showfile", nil)
-	if sc["text"] != "One\nTwo" {
+	if !strings.HasSuffix(sc["text"].(string), "One\nTwo") || !strings.Contains(sc["text"].(string), "title: New name (copy)") {
 		t.Errorf("copy show file: %v", sc["text"])
 	}
 	if code, _ := c.do("POST", "/api/admin/shows/missing-0000/duplicate", nil); code != 404 {
@@ -560,4 +560,9 @@ func TestChangePasswordsNeedsAConfigFile(t *testing.T) {
 	if _, r := c.do("GET", "/api/admin/settings", nil); r["canChangePasswords"] != false {
 		t.Errorf("%v", r["canChangePasswords"])
 	}
+}
+
+// titled puts a show title (kept in the show file's [settings]) in front of some lines.
+func titled(title, body string) string {
+	return "[settings]\ntitle: " + title + "\n[/settings]\n" + body
 }

@@ -77,6 +77,8 @@ type Result struct {
 	LanguageName string       `json:"languageName,omitempty"`
 	Cues         []Cue        `json:"cues"`
 	Diagnostics  []Diagnostic `json:"diagnostics"`
+	// Settings are the show-wide options written in a [settings] block.
+	Settings Settings `json:"settings"`
 }
 
 // Options control parsing.
@@ -84,6 +86,9 @@ type Options struct {
 	// Assets lists the uploaded image filenames. When non-nil, image references
 	// are checked against it. When nil, references are not checked.
 	Assets []string
+	// Translation is set for a translation's show file: only the pre-show message may be set there; the
+	// look and the rest are set once, in the main show file.
+	Translation bool
 }
 
 // SpeakersOf returns the speaker names used by cues, in order of first appearance.
@@ -108,4 +113,4 @@ func SpeakersOf(cues []Cue) []string {
 // DirectiveNames lists every command a show file may use as [name] or [name: ...].
 // Help text and tests are checked against this list, so adding a directive
 // without documenting it fails the build's tests.
-var DirectiveNames = []string{"clear", "blank", "image", "fullscreen", "loop", "section", "note", "song", "together", "language"}
+var DirectiveNames = []string{"clear", "blank", "image", "fullscreen", "loop", "section", "note", "song", "together", "language", "settings"}

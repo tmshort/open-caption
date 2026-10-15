@@ -21,6 +21,42 @@ HAMLET: To be, or not to be, **that** is the question.
 OPHELIA: My *lord*?
 ```
 
+## Show settings: the title and the look
+
+Everything about a show other than its pictures is stored in the show file, including its **title** and how the captions **look**. These go in a `[settings]` block, usually at the top, with one `name: value` per line:
+
+```showfile
+[settings]
+title: The Garden Party
+background: #000000
+text color: #ffffff
+speaker name color: #ffffff
+font: dyslexic
+text size: 120%
+speaker names: color
+idle message: Captions will begin shortly
+loop seconds: 10
+scrollback lines: 200
+[/settings]
+```
+
+| Setting | What it does |
+|---------|--------------|
+| `title` | The show's name, as listed in Setup |
+| `background` | The screen color behind the captions, like `#000000` (a name such as `black` or `yellow` also works) |
+| `text color` | The color of the captions, like `#ffffff` |
+| `speaker name color` | The color of speaker names (when they are not given a color each) |
+| `font` | `system`, `serif`, `mono`, `dyslexic` or `hyperlegible` |
+| `text size` | A percentage from 50 to 300; 100 is normal |
+| `speaker names` | `label` (one color), `color` (a different color for each character) or `hidden` |
+| `idle message` | The words shown before the first line is sent |
+| `loop seconds` | How long each item of a `[loop]` stays when it does not say |
+| `scrollback lines` | How many captions a viewer can scroll back through (20 to 2000) |
+
+**You do not have to write any of it.** The **Look** step in Setup fills in the block for you (and **Rename** sets the title), and anything you leave out simply uses a default. The defaults come in two layers: the program has built-in values, which the settings file `config.yaml` can change for every show (its `defaults` section), and then each show file overrides whatever it sets. The most specific one wins: **show file, then config.yaml, then built-in**.
+
+A few rules: a translation's show file may set only `idle message` (the look is set once, for the whole show, in the main show file); a setting that is misspelled or has a value that does not make sense is reported with its line number and ignored; and comments inside the block are not kept when Setup rewrites it, so put comments above it. Several `[settings]` blocks are combined, with later values winning.
+
 ## Songs and music
 
 For a musical, show lyrics between music notes (♪). There are three ways, from quickest to most flexible:
@@ -102,6 +138,7 @@ A line in square brackets is a command. Names are not case-sensitive.
 | `[section: name]` | A bookmark for the operator |
 | `[note: text]` | A note for the operator |
 | `[language: es]` | Marks a translated show file. See [Languages](topic:admin-languages) |
+| `[settings]` … `[/settings]` | The show's title and look. See *Show settings* above |
 
 ```showfile
 [clear]
@@ -137,6 +174,8 @@ The Show file step lists problems with line numbers. Click one to jump to the li
 - **"HTML is not supported"** — use `**bold**` and `*italic*` instead of tags.
 - **"can't go inside a loop"** — loops hold only pictures and text.
 - **"[together] needs at least two lines"** — a `[together]` block with one line is shown as an ordinary caption. **"[together] was opened but never closed"** — add `[/together]`; the lines you wrote are kept.
+- **"Unknown setting" / "is not a font" / "is not a color"** — a line in the `[settings]` block that Setup cannot use; it is ignored and the default applies. The message says what to write instead.
+- **"[settings] was opened but never closed"** — add `[/settings]`; everything after an unclosed block is read as settings.
 - **"[song] was opened but never closed"** — add `[/song]` after the last lyric. The lyrics you wrote are still kept.
 
 Errors never stop you from saving.

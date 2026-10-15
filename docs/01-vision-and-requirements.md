@@ -33,6 +33,7 @@ simultaneous shows, internet-facing deployment.
 - **REQ-004** Persistent data lives in one data directory (configurable); no external database.
 - **REQ-005** Settings (ports/addresses, TLS, passwords, defaults) live in a human-editable `config.yaml` (generated on first run); flags/env vars override it.
 - **REQ-006** The server listens on plain HTTP and, optionally, HTTPS (user-supplied cert or generated self-signed) at the same time. Automatic certificates (ACME/Let's Encrypt) are a possible later addition; they need Internet access and a public name and are out of scope for v1.
+- **REQ-008** All configuration of a show — its title, look, pre-show message(s), loop time, scrollback size and main language, as well as its lines — is stored in the show file(s) (a `[settings]` block); only the show's images are stored separately. Defaults are layered: built-in values, overridden by `config.yaml`, overridden by the show file. Environment settings (ports, HTTPS, passwords, access lists, data folder) are in `config.yaml` only.
 - **REQ-007** Licensed under Apache-2.0; dependencies must be license-compatible.
 
 ### Capacity and resilience

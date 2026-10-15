@@ -444,3 +444,23 @@ func TestLastActionTimeIsRecordedAndSurvivesRestart(t *testing.T) {
 		t.Errorf("lastAt after restore: %d vs %d", b.Operator().LastAt, at)
 	}
 }
+
+func TestConfigureChangesLoopTimeAndScrollbackOfARunningEngine(t *testing.T) {
+	e := New(parse("[loop]\nx\n[/loop]\nA\n[loop]\ny\nz\n[/loop]\nB\nC\nD\nE"), Config{DefaultLoopSeconds: 60, ScrollbackMax: 10}, nil)
+	defer e.Close()
+	e.Configure(Config{DefaultLoopSeconds: 0.03}) // applies to loops started from now on
+	mustNext(t, e)                                // A (ends the 60 s pre-show loop)
+	mustNext(t, e)                                // starts the second loop on the new, short time
+	waitFor(t, func() bool { return e.Operator().Loop != nil && e.Operator().Loop.Item == 1 })
+	for i := 0; i < 4; i++ {
+		mustNext(t, e)
+	}
+	e.Configure(Config{ScrollbackMax: 2})
+	if got := texts(e.Snapshot()); len(got) != 2 || got[1] != "E" {
+		t.Errorf("scrollback should shrink at once: %v", got)
+	}
+	e.Configure(Config{}) // zero values change nothing
+	if got := texts(e.Snapshot()); len(got) != 2 {
+		t.Errorf("%v", got)
+	}
+}

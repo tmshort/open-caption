@@ -358,6 +358,10 @@ func (p *parser) directive(raw string, lineNo int) {
 			return
 		}
 		p.song = false
+	case "settings":
+		p.settingsBlock(lineNo)
+	case "/settings":
+		p.diag(lineNo, SevWarning, "[/settings] has no matching [settings]. The line was skipped.")
 	case "section", "note":
 		if args == "" {
 			p.diag(lineNo, SevWarning, "[%s] needs some text, e.g. [%s: Act 2]. The line was skipped.", name, name)

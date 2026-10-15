@@ -10,6 +10,24 @@
     - [note: ...] shows a reminder to the operator only. The audience never sees it.
 -->
 
+<!-- SETTINGS: everything about how the show looks and behaves is in this show file, in a
+     [settings] block (usually at the top). Anything you leave out uses the defaults in the
+     program's config file. The Look step in Setup edits this block for you. Write colors like
+     #ffffff (or a name such as white), text size as a percentage, and "speaker names: color"
+     for a different color for each character. -->
+[settings]
+title: Sample show: The Garden Party
+background: #000000
+text color: #ffffff
+speaker name color: #ffffff
+font: system
+text size: 100%
+speaker names: color
+idle message: Captions will begin shortly
+loop seconds: 10
+scrollback lines: 200
+[/settings]
+
 <!-- PRE-SHOW: a loop of pictures and text. Because it is the first thing in the
      show file, it starts by itself as soon as the show is loaded. The operator presses
      the spacebar to end it and send the first line. Each item shows for 10 seconds

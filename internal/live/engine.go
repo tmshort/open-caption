@@ -150,6 +150,22 @@ func New(cues []showfile.Cue, cfg Config, sink func(Event)) *Engine {
 	return e
 }
 
+// Configure changes the loop default time and the scrollback size of a running engine (used when a
+// show's settings change while it is on air). Zero values are ignored.
+func (e *Engine) Configure(cfg Config) {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	if cfg.DefaultLoopSeconds > 0 {
+		e.cfg.DefaultLoopSeconds = cfg.DefaultLoopSeconds
+	}
+	if cfg.ScrollbackMax > 0 {
+		e.cfg.ScrollbackMax = cfg.ScrollbackMax
+		if over := len(e.st.Scrollback) - cfg.ScrollbackMax; over > 0 {
+			e.st.Scrollback = append([]CaptionItem(nil), e.st.Scrollback[over:]...)
+		}
+	}
+}
+
 // Close stops any running loop timer.
 func (e *Engine) Close() {
 	e.mu.Lock()

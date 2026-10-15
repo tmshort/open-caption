@@ -48,7 +48,7 @@ func New(cfg config.Config, version string) *Server {
 	s.adminAllow, _ = config.ParseAllowList(cfg.Access.AdminAllow)
 	s.operatorAllow, _ = config.ParseAllowList(cfg.Access.OperatorAllow)
 	if cfg.DataDir != "" {
-		if st, err := show.NewStore(filepath.Join(cfg.DataDir, "shows"), cfg.Defaults.Language, cfg.Defaults.IdleMessage); err == nil {
+		if st, err := show.NewStore(filepath.Join(cfg.DataDir, "shows"), showDefaults(cfg)); err == nil {
 			s.store = st
 		}
 	}
@@ -85,6 +85,15 @@ func (s *Server) sweep() {
 	for _, tok := range stale {
 		s.dropRehearsal(tok)
 	}
+}
+
+// showDefaults are what a show uses where its show file says nothing: the built-in values as changed
+// by config.yaml (config.Load starts from the built-in values, so cfg already has both layers).
+func showDefaults(cfg config.Config) show.Defaults {
+	l := cfg.Defaults.Look
+	return show.Defaults{Language: cfg.Defaults.Language, IdleMessage: cfg.Defaults.IdleMessage, LoopSeconds: cfg.Defaults.LoopItemSeconds,
+		ScrollbackLines: cfg.Audience.ScrollbackLines,
+		Look:            show.Theme{BG: l.Background, FG: l.TextColor, Accent: l.SpeakerNameColor, Font: l.Font, ScalePct: l.TextSizePercent, Speakers: l.SpeakerNames}}
 }
 
 func sessionsPath(cfg config.Config) string {

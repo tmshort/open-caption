@@ -267,6 +267,7 @@
     clear: '[clear]\n', blank: '[blank]\n', fullscreen: '[fullscreen: INTERMISSION]\n', section: '[section: Act 1, Scene 1]\n',
     note: '[note: reminder for the operator]\n', comment: '<!-- a comment nobody sees -->\n',
     loop: '[loop: 10s]\n[fullscreen: Welcome!]\nPlease silence your phones\n[/loop]\n',
+    settings: '[settings]\ntitle: The name of my show\nfont: system\ntext size: 100%\n[/settings]\n',
     together: '[together]\nANNA: ~ first voice ~\nKRIS: ~ second voice sung at the same time ~\n[/together]\n',
     song: '[song: Title of the song]\nFirst line of the lyrics\nSecond line of the lyrics\n[/song]\n',
   };
@@ -379,11 +380,21 @@
     const tools = h('div', { class: 'tools' },
       ...[['Clear', 'clear'], ['Blank', 'blank'], ['Fullscreen text', 'fullscreen'], ['Section', 'section'], ['Operator note', 'note'], ['Comment', 'comment'], ['Loop', 'loop']].map(([l, k]) => h('button', { onclick: () => insert(SNIPPETS[k]) }, l)),
       h('button', { onclick: pickImage }, 'Image…'),
+      h('button', { onclick: insertSettings, title: 'Title, colors, font, size and other options for the whole show' }, 'Settings'),
       h('span', { class: 'tools-sep', 'aria-hidden': 'true' }, '|'),
       h('button', { onclick: () => insert(SNIPPETS.song), title: 'A song: every line becomes a sung lyric' }, '🎵 Song'),
       h('button', { onclick: () => insert(SNIPPETS.together), title: 'Two or more singers at the same time' }, 'Together'),
       h('button', { onclick: () => insertInline('♪ '), title: 'Insert a music note', 'aria-label': 'Insert a music note' }, '♪'),
       h('button', { onclick: () => insertInline('♫ '), title: 'Insert beamed music notes', 'aria-label': 'Insert beamed music notes' }, '♫'));
+    // The [settings] block goes at the top (after a [language: …] line), and only once.
+    function insertSettings() {
+      const at = ta.value.search(/^\s*\[settings\]/im);
+      if (at >= 0) { jump(ta.value.slice(0, at).split('\n').length + (ta.value[at] === '\n' ? 1 : 0)); toast('This show file already has a settings block'); return; }
+      const lang = ta.value.match(/^\s*\[language[^\]]*\]\s*$/m);
+      const pos = lang && lang.index < 400 ? lang.index + lang[0].length + 1 : 0;
+      const block = A.lang ? '[settings]\nidle message: Captions will begin shortly\n[/settings]\n\n' : SNIPPETS.settings + '\n';
+      ta.setRangeText(block, pos, pos, 'end'); ta.focus(); changed();
+    }
     async function pickImage() {
       const names = (A.analysis.assets || []).map((a) => a.name);
       if (!names.length) { toast('Upload images in the Images step first'); return; }
@@ -439,7 +450,7 @@
     p.append(
       h('h2', {}, 'Show file' + (A.lang ? ' — ' + cur.name : '')),
       tabs, translating,
-      h('p', { class: 'hint' }, 'Each line is one caption; one press of the spacebar sends one line. You can paste, type, or drop a .txt or .md file. Click a problem to jump to its line.'),
+      h('p', { class: 'hint' }, 'This file holds everything about the show except its images: its title and look in a [settings] block, and the lines themselves. Each line is one caption; one press of the spacebar sends one line. You can paste, type, or drop a .txt or .md file. Click a problem to jump to its line.'),
       h('div', { class: 'row' }, h('label', { class: 'row' }, 'Open a file:', fileInput), h('button', { onclick: () => openHelp('admin-writing-a-show-file') }, 'Show file help'), h('span', { class: 'grow' }), status, saveBtn),
       tools,
       h('div', { class: 'editor-grid' }, editor, h('div', {}, h('div', { class: 'card' }, diagTitle, diagList), h('div', { class: 'card' }, h('h3', {}, 'What the operator will step through'), cueList))),
@@ -455,7 +466,7 @@
       ['<!-- comment -->', 'A comment: never shown to anyone'], ['[note: text]', 'A reminder shown to the operator only'], ['[section: Act 2]', 'A bookmark for the operator'],
       ['[clear]  [blank]', 'Clear the captions / blank the screen'], ['[image: file.png | caption]', 'Fullscreen image (also  ![caption](file.png) )'], ['[fullscreen: text]', 'Fullscreen text'],
       ['~ lyric ~', 'A sung line, shown between ♪ notes'], ['[song: Title] … [/song]', 'A whole song: every line inside is a sung lyric'], ['[together] … [/together]', 'Voices shown at the same time (a duet or counterpoint), one press of Space. Also  A: ~ one ~ || B: ~ two ~  on a single line'], ['♪  ♫', 'Music notes can be typed or pasted anywhere; the ♪ and ♫ buttons insert them'],
-      ['[loop: 10s] … [/loop]', 'Repeating items for pre-show or intermission. Add  | 15s  to an item to change its time'], ['# …', 'Reserved for headings; the line is ignored'],
+      ['[settings] … [/settings]', 'The show’s title and look (font, colors, size, speaker names) and other options, as lines like  font: dyslexic. Usually at the top. The Look step writes it for you. A translation may only set  idle message'], ['[loop: 10s] … [/loop]', 'Repeating items for pre-show or intermission. Add  | 15s  to an item to change its time'], ['# …', 'Reserved for headings; the line is ignored'],
     ];
     return h('details', { class: 'card' }, h('summary', {}, 'Show file cheat sheet'), h('table', { class: 'cheat' }, ...rows.map(([a, b]) => h('tr', {}, h('td', {}, a), h('td', {}, b)))));
   }
@@ -529,6 +540,8 @@
     mk('scalePct', 'Text size', h('input', { type: 'range', min: '60', max: '200', step: '10' }));
     mk('speakers', 'Speaker names', h('select', {}, h('option', { value: 'label' }, 'Show above the line (in the speaker name color)'), h('option', { value: 'color' }, 'Show above the line, a different color for each character'), h('option', { value: 'hidden' }, 'Hide')));
     mk('idleMessage', 'Message before the show starts', h('input', { type: 'text', maxlength: '200' }));
+    mk('loopSeconds', 'Default time for each item in a loop (seconds)', h('input', { type: 'number', min: '1', max: '3600', step: 'any' }));
+    mk('scrollbackLines', 'Captions a viewer can scroll back through', h('input', { type: 'number', min: '20', max: '2000', step: '10' }));
     // Other languages get their own pre-show message.
     const lgs = await api('GET', '/api/admin/shows/' + show.id + '/languages');
     const idleOthers = {};
@@ -546,10 +559,12 @@
     function read() {
       for (const k of ['bg', 'fg', 'accent', 'font', 'speakers', 'idleMessage']) t[k] = ctl[k].value;
       t.scalePct = Number(ctl.scalePct.value);
+      t.loopSeconds = Number(ctl.loopSeconds.value);
+      t.scrollbackLines = Number(ctl.scrollbackLines.value);
       t.idleMessages = {};
       Object.keys(idleOthers).forEach((c) => { if (idleOthers[c].value.trim()) t.idleMessages[c] = idleOthers[c].value.trim(); });
     }
-    function write() { for (const k of ['bg', 'fg', 'accent', 'font', 'speakers', 'idleMessage', 'scalePct']) ctl[k].value = t[k]; }
+    function write() { for (const k of ['bg', 'fg', 'accent', 'font', 'speakers', 'idleMessage', 'scalePct', 'loopSeconds', 'scrollbackLines']) ctl[k].value = t[k]; }
     function paint() {
       const c = contrast(t.bg, t.fg);
       ratio.textContent = 'Contrast ' + c.toFixed(1) + ' : 1 — ' + (c >= 7 ? 'excellent' : c >= 4.5 ? 'acceptable, but higher is easier to read in a dark room' : 'too low to read comfortably');
@@ -566,10 +581,13 @@
     write(); paint();
     Object.values(ctl).forEach((i) => i.addEventListener('input', () => { read(); paint(); }));
     const presets = h('div', { class: 'presets' }, ...PRESETS.map(([n, bg, fg, ac]) => h('button', { onclick: () => { Object.assign(t, { bg, fg, accent: ac }); write(); paint(); } }, n)));
-    p.append(h('h2', {}, 'Look'), h('p', { class: 'hint' }, 'Large, high-contrast text is the default and is best for accessibility. Changes apply to connected devices as soon as you save.'),
+    p.append(h('h2', {}, 'Look'), h('p', { class: 'hint' }, 'Large, high-contrast text is the default and is best for accessibility. Saving writes these choices into the [settings] block of the show file (which you can also edit by hand in the Show file step), and applies them to connected devices straight away.'),
       h('div', { class: 'look-grid' },
         h('div', { class: 'card' }, presets, ...Object.keys(ctl).map((k) => ctl[k].closest('label')), ...idleLabels, sizeLabel, ratio,
-          h('div', { class: 'row end' }, h('button', { class: 'primary', onclick: async () => { read(); const s = await api('PUT', '/api/admin/shows/' + show.id, { theme: t }); if (!s.ok) return fail(s); markLookSaved(); toast('Look saved'); } }, 'Save look'))),
+          h('div', { class: 'row end' }, h('button', { class: 'primary', onclick: async () => {
+            if (A.text !== A.saved && A.loadedLang === '') { toast('You have unsaved changes in the Show file step. Save them first: saving the look rewrites the settings in the saved show file.'); return; }
+            read(); const s = await api('PUT', '/api/admin/shows/' + show.id, { theme: t }); if (!s.ok) return fail(s); A.analysis = null; A.text = A.saved = ''; markLookSaved(); toast('Look saved in the show file');
+          } }, 'Save look'))),
         h('div', { class: 'previews' }, h('div', {}, h('div', { class: 'hint' }, 'Phone'), phone), h('div', {}, h('div', { class: 'hint' }, 'Projector'), proj))));
   }
 

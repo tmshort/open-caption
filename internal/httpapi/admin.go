@@ -53,7 +53,8 @@ func (s *Server) SetListeners(l Listeners) {
 }
 
 func themeToRuntime(t show.Theme) Theme {
-	return Theme{BG: t.BG, FG: t.FG, Accent: t.Accent, Font: t.Font, ScalePct: t.ScalePct, Speakers: t.Speakers, IdleMessage: t.IdleMessage, IdleMessages: t.IdleMessages}
+	return Theme{BG: t.BG, FG: t.FG, Accent: t.Accent, Font: t.Font, ScalePct: t.ScalePct, Speakers: t.Speakers, IdleMessage: t.IdleMessage,
+		IdleMessages: t.IdleMessages, LoopSeconds: t.LoopSeconds, ScrollbackLines: t.ScrollbackLines}
 }
 
 // ---- analysis of a show file (what the editor shows) ----
@@ -75,14 +76,14 @@ type Analysis struct {
 	Assets      []show.Asset          `json:"assets"`
 }
 
-func analyze(text string, assets []show.Asset) (Analysis, []showfile.Cue) {
+func analyze(text string, assets []show.Asset, translation bool) (Analysis, []showfile.Cue) {
 	names := make([]string, 0, len(assets))
 	have := map[string]bool{}
 	for _, a := range assets {
 		names = append(names, a.Name)
 		have[a.Name] = true
 	}
-	res := showfile.Parse(text, showfile.Options{Assets: names})
+	res := showfile.Parse(text, showfile.Options{Assets: names, Translation: translation})
 	used := map[string][]int{}
 	note := func(it showfile.Item, line int) {
 		if it.Kind == "image" {
@@ -136,7 +137,7 @@ func (s *Server) loadShow(id string) (loaded, error) {
 		if err != nil {
 			return loaded{}, err
 		}
-		res := parseWith(text, assets)
+		res := parseWith(text, assets, i > 0)
 		name := res.LanguageName
 		if name == "" {
 			name = showfile.LanguageName(code)
@@ -155,12 +156,12 @@ func (s *Server) loadShow(id string) (loaded, error) {
 	return l, nil
 }
 
-func parseWith(text string, assets []show.Asset) showfile.Result {
+func parseWith(text string, assets []show.Asset, translation bool) showfile.Result {
 	names := make([]string, 0, len(assets))
 	for _, a := range assets {
 		names = append(names, a.Name)
 	}
-	return showfile.Parse(text, showfile.Options{Assets: names})
+	return showfile.Parse(text, showfile.Options{Assets: names, Translation: translation})
 }
 
 func mustAssets(st *show.Store, id string) []show.Asset {
@@ -201,7 +202,7 @@ func storeErr(w http.ResponseWriter, err error) {
 }
 
 func decode(w http.ResponseWriter, r *http.Request, v any) bool {
-	if err := json.NewDecoder(http.MaxBytesReader(w, r.Body, show.MaxScript+(64<<10))).Decode(v); err != nil {
+	if err := json.NewDecoder(http.MaxBytesReader(w, r.Body, show.MaxShowFile+(64<<10))).Decode(v); err != nil {
 		writeErr(w, http.StatusBadRequest, "bad request")
 		return false
 	}
@@ -330,15 +331,12 @@ func (s *Server) createShow(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusCreated, s.summary(m))
 }
 
-func (s *Server) createSample(name string) (show.Meta, error) {
-	if strings.TrimSpace(name) == "" {
-		name = "Sample show: The Garden Party"
-	}
+func (s *Server) createSample(req string) (show.Meta, error) {
 	text, err := fs.ReadFile(web.Sample, "sample/sample-show.md")
 	if err != nil {
 		return show.Meta{}, err
 	}
-	m, err := s.store.Create(name, string(text))
+	m, err := s.store.Create(req, string(text)) // an empty name keeps the sample's own title
 	if err != nil {
 		return m, err
 	}
@@ -386,14 +384,7 @@ func (s *Server) updateShow(w http.ResponseWriter, r *http.Request) {
 		storeErr(w, err)
 		return
 	}
-	if s.rt.ShowID() == id {
-		if req.Theme != nil {
-			s.rt.SetTheme(themeToRuntime(m.Theme))
-		}
-		if req.Name != nil {
-			s.rt.SetName(m.Name)
-		}
-	}
+	s.applyActive(id)
 	writeJSON(w, http.StatusOK, s.summary(m))
 }
 
@@ -431,13 +422,18 @@ func (s *Server) deleteShow(w http.ResponseWriter, r *http.Request) {
 // structure matches the main language's show file (as errors, listed first).
 func (s *Server) showFileResponse(id, lang, text string) (Analysis, []showfile.Cue) {
 	assets := mustAssets(s.store, id)
-	a, cues := analyze(text, assets)
 	m, err := s.store.Get(id)
-	if err != nil || lang == "" || lang == m.Language {
+	translation := err == nil && lang != "" && lang != m.Language
+	a, cues := analyze(text, assets, translation)
+	if !translation {
+		if showfile.ReadSettings(text, false).Title == nil {
+			a.Diagnostics = append(a.Diagnostics, showfile.Diagnostic{Line: 1, Severity: showfile.SevInfo,
+				Message: "This show has no title, so it is listed as \"Untitled show\". Use Rename in the Shows step, or add a [settings] block with a title: line."})
+		}
 		return a, cues
 	}
 	ptext, _ := s.store.ReadShowFile(id, m.Language)
-	pres := parseWith(ptext, assets)
+	pres := parseWith(ptext, assets, false)
 	pname := pres.LanguageName
 	if pname == "" {
 		pname = showfile.LanguageName(m.Language)
@@ -519,17 +515,31 @@ func (s *Server) putShowFile(w http.ResponseWriter, r *http.Request) {
 	a, _ := s.showFileResponse(id, r.URL.Query().Get("lang"), req.Text)
 	resp := map[string]any{"analysis": a, "saved": true, "version": fileVersion(req.Text)}
 	if active {
-		// Every language of the show on air is rebuilt together, so they stay in step.
-		if l, err := s.loadShow(id); err == nil {
-			changed, wasLive := s.rt.ReplaceLangs(l.primary, l.others)
+		if changed, wasLive, skipped, ok := s.applyActive(id); ok {
 			resp["applied"], resp["countChanged"], resp["wasLive"] = true, changed, wasLive
-			if len(l.skipped) > 0 {
-				resp["skippedLanguages"] = sortedKeys(l.skipped)
+			if len(skipped) > 0 {
+				resp["skippedLanguages"] = skipped
 			}
-			s.rt.Flush()
 		}
 	}
 	writeJSON(w, http.StatusOK, resp)
+}
+
+// applyActive pushes a changed show to the audience if it is the show on air: the show files of every
+// language, the look and other settings, and the title all come from the show files.
+func (s *Server) applyActive(id string) (countChanged, wasLive bool, skipped []string, applied bool) {
+	if s.rt.ShowID() != id {
+		return
+	}
+	l, err := s.loadShow(id)
+	if err != nil {
+		return
+	}
+	s.rt.SetTheme(themeToRuntime(l.meta.Theme)) // first: engines created next use the new loop time and scrollback size
+	s.rt.SetName(l.meta.Name)
+	countChanged, wasLive = s.rt.ReplaceLangs(l.primary, l.others)
+	s.rt.Flush()
+	return countChanged, wasLive, sortedKeys(l.skipped), true
 }
 
 func sortedKeys[V any](m map[string]V) []string {
@@ -567,7 +577,7 @@ func (s *Server) listLanguages(w http.ResponseWriter, r *http.Request) {
 	primaryName := ""
 	for i, code := range codes {
 		text, _ := s.store.ReadShowFile(id, code)
-		res := parseWith(text, assets)
+		res := parseWith(text, assets, i > 0)
 		sum := langSummary{Code: code, Name: res.LanguageName, Primary: i == 0, Cues: len(res.Cues), Structure: []showfile.Diagnostic{}}
 		if sum.Name == "" {
 			sum.Name = showfile.LanguageName(code)
@@ -633,7 +643,8 @@ func (s *Server) addLanguage(w http.ResponseWriter, r *http.Request) {
 	body := header
 	if req.CopyFromMain {
 		main, _ := s.store.ReadShowFile(id, m.Language)
-		body += "<!-- Translate the words. Keep every line, command and blank screen in the same order as the main show file: one press of Space shows the same line in every language. -->\n" + stripLanguageLine(main)
+		// The look and other settings belong to the main show file only, so the copy leaves them out.
+		body += "<!-- Translate the words. Keep every line, command and blank screen in the same order as the main show file: one press of Space shows the same line in every language. -->\n" + showfile.ReplaceSettings(stripLanguageLine(main), showfile.Settings{})
 	}
 	if err := s.store.WriteShowFile(id, code, body); err != nil {
 		storeErr(w, err)
@@ -672,11 +683,7 @@ func (s *Server) deleteLanguage(w http.ResponseWriter, r *http.Request) {
 		storeErr(w, err)
 		return
 	}
-	if s.rt.ShowID() == id {
-		if l, err := s.loadShow(id); err == nil {
-			s.rt.ReplaceLangs(l.primary, l.others)
-		}
-	}
+	s.applyActive(id)
 	writeJSON(w, http.StatusOK, map[string]any{"ok": true})
 }
 
@@ -801,12 +808,15 @@ func (s *Server) exportShow(w http.ResponseWriter, r *http.Request) {
 			f.Write(data)
 		}
 	}
-	meta, _ := os.ReadFile(filepath.Join(filepath.Dir(s.store.AssetsDir(id)), "show.yaml"))
-	put("show.yaml", meta)
+	// The show file(s) hold everything but the images: show.md (main language) and show.<lang>.md.
 	codes, _ := s.store.Languages(id)
-	for _, code := range codes {
+	for i, code := range codes {
+		name := "show." + code + ".md"
+		if i == 0 {
+			name = "show.md"
+		}
 		if text, err := s.store.ReadShowFile(id, code); err == nil {
-			put("show."+code+".md", []byte(text))
+			put(name, []byte(text))
 		}
 	}
 	for _, a := range mustAssets(s.store, id) {
@@ -850,42 +860,25 @@ func (s *Server) importShow(w http.ResponseWriter, r *http.Request) {
 		}
 		return b, err
 	}
-	var metaYAML []byte
-	scripts := map[string]string{}
+	// Both the current layout (show.md, show.<lang>.md) and the older one (show.yaml, script.<lang>.md) are accepted.
+	files := map[string]string{}
 	for _, f := range zr.File {
 		name := path.Clean(f.Name)
-		switch {
-		case name == "show.yaml":
-			metaYAML, _ = read(f, 64<<10)
-		case strings.HasPrefix(name, "show.") && strings.HasSuffix(name, ".md") && !strings.Contains(name, "/"):
-			if b, err := read(f, show.MaxScript); err == nil {
-				scripts[strings.TrimSuffix(strings.TrimPrefix(name, "show."), ".md")] = string(b)
-			}
-		}
-	}
-	if metaYAML == nil || len(scripts) == 0 {
-		writeErr(w, http.StatusBadRequest, "That zip is missing show.yaml or a show file.")
-		return
-	}
-	var meta show.Meta
-	if err := yamlUnmarshal(metaYAML, &meta); err != nil || strings.TrimSpace(meta.Name) == "" {
-		writeErr(w, http.StatusBadRequest, "That zip has an unreadable show.yaml.")
-		return
-	}
-	m, err := s.store.Create(meta.Name+" (imported)", "")
-	if err != nil {
-		storeErr(w, err)
-		return
-	}
-	for lang, text := range scripts {
-		if lang == m.Language {
-			s.store.WriteShowFile(m.ID, "", text)
-		} else if err := s.store.WriteShowFile(m.ID, lang, text); err != nil {
+		if strings.Contains(name, "/") || !strings.HasSuffix(name, ".md") && name != "show.yaml" {
 			continue
 		}
+		if b, err := read(f, show.MaxShowFile); err == nil {
+			files[name] = string(b)
+		}
 	}
-	if th, err := meta.Theme.Normalize(s.cfg.Defaults.IdleMessage); err == nil {
-		s.store.Update(m.ID, nil, &th)
+	m, err := s.store.ImportFiles(files, " (imported)")
+	if err != nil {
+		if errors.Is(err, show.ErrNotFound) || errors.Is(err, show.ErrBadName) {
+			writeErr(w, http.StatusBadRequest, "That zip does not contain a show file (show.md).")
+			return
+		}
+		storeErr(w, err)
+		return
 	}
 	skipped := 0
 	for _, f := range zr.File {
@@ -1161,7 +1154,7 @@ func (s *Server) supportBundle(w http.ResponseWriter, r *http.Request) {
 	if list, err := s.store.List(); err == nil {
 		for _, m := range list {
 			text, _ := s.store.ReadShowFile(m.ID, "")
-			a, _ := analyze(text, mustAssets(s.store, m.ID))
+			a, _ := analyze(text, mustAssets(s.store, m.ID), false)
 			var errs, warns int
 			for _, d := range a.Diagnostics {
 				switch d.Severity {

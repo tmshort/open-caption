@@ -9,6 +9,10 @@ Setting up a show takes six steps. The row of buttons across the top of the page
 5. **Test** — rehearse privately before anyone is in the room.
 6. **Go Live** — share the address with the audience and start the show.
 
+## Where things are stored
+
+A show is a folder containing its **show file** (a plain text file, `show.md`), optional translations of it, and its images. The show file holds everything about the show except the pictures: its title, its look, and the lines. Settings the show file does not mention come from `config.yaml`, then from the program's built-in values.
+
 ## Before you start
 
 - This computer must be on the same WiFi network as the audience's phones and tablets. See [Network and joining](topic:admin-network).

@@ -186,11 +186,18 @@ https:
   cert_file: ""                    # supply both, or leave empty with self_signed: true
   key_file: ""
   self_signed: true
-defaults:
+defaults:                          # used when a show file does not say otherwise (a show file's [settings] override these)
   language: en
   loop_item_seconds: 10
   idle_message: "Captions will begin shortly"
-  open_browser: true
+  open_browser: true               # (environment: not a show setting)
+  look:
+    background: "#000000"
+    text_color: "#ffffff"
+    speaker_name_color: "#ffffff"
+    font: system                   # system | serif | mono | dyslexic | hyperlegible
+    text_size_percent: 100
+    speaker_names: label           # label | color | hidden
 audience:
   max_clients: 500                 # per language
   scrollback_lines: 200
@@ -199,14 +206,29 @@ access:
   operator_allow: []
 ```
 
+## Where configuration lives (layers)
+
+| What | Where | Notes |
+|------|-------|-------|
+| Environment: ports, HTTPS, passwords, access lists, data folder, audience limits, whether to open a browser | `config.yaml` only | Flags and `OPEN_CAPTION_*` override |
+| Show defaults: look, idle message, loop time, scrollback size, main language | built-in values, overridden by `config.yaml` (`defaults`, `audience.scrollback_lines`) | `config.Load` starts from the built-in values, so a file that omits a key keeps the built-in one |
+| The show itself: title, look, idle message(s), loop time, scrollback size, main language, and all lines | the show file(s) | Overrides the defaults above. Nothing else about a show is stored outside its show file(s) except its images |
+
+`show.Defaults.Resolve(showfile.Settings)` layers a show file's settings over the defaults. Setup's Look step and Rename write
+the show file's `[settings]` block (`showfile.UpdateSettings`); the server then re-reads the files and applies the result to the
+show on air (`Server.applyActive`: look to every device, title to the operator, loop time and scrollback size to the engines,
+and every language's lines). Shows saved by an older version (a `show.yaml` plus `script.<lang>.md` files) are converted to show
+files the first time the store opens, and the old files are kept in `old-format/`.
+
 ## Persistence layout
 
 ```
 <data-dir>/
   config.yaml             settings and passwords (above)
   shows/<id>/
-    show.yaml             name, main language, theme (incl. per-language idle messages), look_saved
-    show.<lang>.md      one show file per language, verbatim (source of truth)
+    show.md               the show file, main language: title, [settings] (look, loop time, …) and the lines — the source of truth
+    show.<lang>.md        one show file per translation (its own idle message, and the lines)
+    old-format/           (only after an upgrade) the replaced show.yaml and script files, kept
     assets/<filename>     uploaded images
   sessions.json           signed-in sessions (hashed), so a restart does not sign anyone out
   live.json               active show id and, per language: cursor, scrollback, mode, the last 10 undo steps (debounced ≤ 250 ms)

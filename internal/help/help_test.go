@@ -100,9 +100,14 @@ func TestScriptHelpCoversEveryConvention(t *testing.T) {
 			t.Errorf("help never shows the [%s] command", name)
 		}
 	}
-	for _, closer := range []string{"[/loop]", "[/fullscreen]", "[/together]", " || ", "[[", "]]", "<!--", "-->", "![", "**", "\\\n"} {
+	for _, closer := range []string{"[/loop]", "[/fullscreen]", "[/together]", "[/settings]", " || ", "[[", "]]", "<!--", "-->", "![", "**", "\\\n"} {
 		if !strings.Contains(text, closer) {
 			t.Errorf("help never shows %q", closer)
+		}
+	}
+	for _, name := range showfile.SettingNames() {
+		if !strings.Contains(text, "`"+name+"`") {
+			t.Errorf("help never documents the setting %q", name)
 		}
 	}
 	for _, ch := range showfile.Escapable {
@@ -111,7 +116,7 @@ func TestScriptHelpCoversEveryConvention(t *testing.T) {
 		}
 	}
 	// Every diagnostic the parser can raise is explained in plain words.
-	for _, phrase := range []string{"Unknown command", "not found", "never closed", "HTML is not supported", "can't go inside a loop"} {
+	for _, phrase := range []string{"Unknown setting", "never closed", "Unknown command", "not found", "never closed", "HTML is not supported", "can't go inside a loop"} {
 		if !strings.Contains(text, phrase) {
 			t.Errorf("help does not explain the warning %q", phrase)
 		}

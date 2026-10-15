@@ -51,12 +51,15 @@ func TestSampleScriptParsesClean(t *testing.T) {
 	if sung < 5 {
 		t.Errorf("sample should include a song, found %d sung lines", sung)
 	}
+	if r.Settings.Title == nil || *r.Settings.Title != "Sample show: The Garden Party" || r.Settings.SpeakerNames == nil || *r.Settings.SpeakerNames != "color" {
+		t.Errorf("the sample should show the [settings] block: %+v", r.Settings)
+	}
 	// The Spanish translation must have exactly the same shape as the English show file.
 	es, err := os.ReadFile(filepath.Join(dir, "sample-show.es.md"))
 	if err != nil {
 		t.Fatal(err)
 	}
-	esr := Parse(string(es), Options{Assets: assets})
+	esr := Parse(string(es), Options{Assets: assets, Translation: true})
 	for _, d := range esr.Diagnostics {
 		if d.Severity != SevInfo {
 			t.Errorf("Spanish line %d: %s: %s", d.Line, d.Severity, d.Message)

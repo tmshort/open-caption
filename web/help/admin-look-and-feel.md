@@ -8,7 +8,7 @@ The **Look** step sets how captions appear on every audience device. The default
 - **Speaker names:** show above the line in one color (the *speaker name color*), show them in a **different color for each character**, or hide them. Character colors are chosen automatically, in the order the characters first speak, from a palette that works for color-blind viewers, and are adjusted to stay readable on your background.
 - **Message before the show starts:** shown until the first line is sent, if the show file does not begin with a loop.
 
-Changes are saved with **Save look** and reach connected devices straight away.
+Changes are saved with **Save look** and reach connected devices straight away. **Save look writes your choices into the `[settings]` block at the top of the show file** (see [Writing a show file](topic:admin-writing-a-show-file)), so the show file carries its own look wherever it is copied; you can also edit that block by hand. Anything the show file does not set uses the defaults from `config.yaml` (its `defaults` section), which in turn start from the program's built-in values. If the Show file editor has unsaved changes, save them before saving the look.
 
 ## A screen for the whole room
 

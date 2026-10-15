@@ -1,4 +1,7 @@
 [language: es | Español]
+[settings]
+idle message: Los subtítulos comenzarán pronto
+[/settings]
 <!--
   Traducción al español de "The Garden Party". En cada idioma el guion tiene EXACTAMENTE las
   mismas líneas, comandos y pantallas en blanco, en el mismo orden: una pulsación de la barra

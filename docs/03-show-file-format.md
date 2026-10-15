@@ -43,6 +43,46 @@ emits only the small set of tags it generates itself.
 Not supported (shown as plain text): links, lists, tables, blockquotes, code,
 headings (ignored), raw HTML.
 
+## Settings: the title, the look and other show-wide options
+
+A show file also says how the show **looks and behaves**, so the file is self-contained: everything about a show except its
+images is in its show file(s). Settings go in a `[settings]` block, usually at the top, one `name: value` per line, ended by
+`[/settings]`. Names are not case-sensitive and `_`, `-` and spaces are interchangeable. Settings are not cues: they never
+affect the operator's list or the structure comparison between languages.
+
+| Setting (aliases) | Value | Default comes from |
+|-------------------|-------|--------------------|
+| `title` (name) | 1–100 characters | "Untitled show" |
+| `background` | `#rgb`, `#rrggbb`, or a name (black, white, yellow, red, green, blue, cyan, magenta, orange, gray) | `defaults.look.background` |
+| `text color` (foreground) | a color | `defaults.look.text_color` |
+| `speaker name color` (speaker color, accent) | a color | `defaults.look.speaker_name_color` |
+| `font` | `system` (default, clean, sans), `serif`, `mono` (monospace), `dyslexic` (dyslexia friendly, OpenDyslexic), `hyperlegible` (high legibility, Atkinson) | `defaults.look.font` |
+| `text size` (size, scale) | 50–300, optionally with `%` | `defaults.look.text_size_percent` |
+| `speaker names` (speakers) | `label` (one color), `color` (a different color per character), `hidden` | `defaults.look.speaker_names` |
+| `idle message` (idle) | up to 200 characters; shown before the first line is sent | `defaults.idle_message` |
+| `loop seconds` (loop time) | seconds, more than 0 and at most 3600 | `defaults.loop_item_seconds` |
+| `scrollback lines` (scrollback) | 20–2000 | `audience.scrollback_lines` |
+
+**Layering.** A value comes from the most specific place that sets it: **the show file's `[settings]`, then
+`config.yaml`'s `defaults`, then the program's built-in values** (config.yaml starts from the built-in values, so a
+config file that says nothing changes nothing). What is *not* show configuration stays in `config.yaml` only: ports,
+HTTPS, passwords, access lists, the data folder, audience limits.
+
+**Translations.** Only `idle message` may be set in a translation's show file (each language has its own pre-show
+message). Other settings there are reported as warnings and ignored, and `title` is ignored silently, because the look
+and the title are set once for the whole show, in the main show file.
+
+**Problems** are never fatal: an unknown name (with a suggestion), a value that does not make sense, a line without
+`name: value`, or an unclosed block is reported with its line number, and the rest of the show file still works. Later
+lines win over earlier ones, and several blocks are merged. An unclosed `[settings]` reads the rest of the file as
+settings (the error says so).
+
+**Setup edits the block.** The Look step and Rename rewrite one `[settings]` block near the top (after any leading comments
+and the `[language: …]` line), replacing existing blocks, keeping unknown lines, and leaving the rest of the file exactly
+as it was. Comments *inside* the block are not kept; put them above it. A saved look writes every look setting, so a
+show file records exactly how it looks wherever it is copied. A show whose file sets none of the look settings counts as
+"look not saved" in Setup.
+
 ## Directives
 
 A directive is a single line `[name]` or `[name: arguments]`. Arguments are
@@ -59,6 +99,7 @@ is the item's display time (only meaningful inside a loop).
 | `[loop]` … `[/loop]` / `[loop: 10s]` | Looping fullscreen items (see *Loops*) |
 | `[together]` … `[/together]` (aliases `[duet]`, `[counterpoint]`) | Voices shown at the same time, one cue |
 | `[song]` … `[/song]` / `[song: title]` | Every caption inside is a sung lyric (see *Songs and lyrics*) |
+| `[settings]` … `[/settings]` | Show-wide settings (see *Settings*); never a cue |
 | `[section: name]` | Operator-only marker/bookmark; no audience effect |
 | `[note: text]` | Operator-only note shown inline in the operator view (e.g. "wait for door slam") |
 | `[language: es]` or `[language: es \| Español]` | First line of a translated show file, with an optional display name for the picker; see *Languages* |
@@ -145,14 +186,12 @@ A block needs at least two lines (with one, it is shown as an ordinary caption a
 A leading label is a speaker if it matches `^[A-Z][A-Z0-9 .'\-]{0,29}:\s+\S`
 (upper-case word(s), colon, space). `HAMLET: To be, or not to be` → speaker
 `HAMLET`, text `To be, or not to be`. Mixed-case `Note: this` is not a speaker.
-Escape with `\:`. A show-level theme setting controls whether speakers are
+Escape with `\:`. The `speaker names` setting controls whether speakers are
 hidden, shown as a label, or shown in per-character colors (default: label, no color).
 
 ### Languages
 
-A show has one show file per language, stored as `show.<code>.md` (the file name's code is the language
-code). The **main** language (the show's `language`, by default `defaults.language`, usually `en`) is
-what the operator follows; the others are **translations**. A translation starts with a language line:
+A show has one show file per language: `show.md` for the **main** language (named by its `[language: …]` line, by default `defaults.language`, usually `en`), which is what the operator follows, and `show.<code>.md` for each **translation**. A translation starts with a language line:
 
 ```
 [language: es | Español]
@@ -264,5 +303,5 @@ I got lost in the kitchen.
 
 ## Round-tripping
 
-The original text is stored verbatim as the show's show file; the setup UI
+The original text is stored verbatim as the show's main show file (`show.md`, with translations in `show.<lang>.md`); the setup UI
 edits that text. There is no lossy intermediate format.

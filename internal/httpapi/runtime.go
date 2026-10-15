@@ -31,6 +31,10 @@ type Theme struct {
 	// IdleMessages are the pre-show messages in other languages (by code). Clients are sent only the
 	// one for their language, in IdleMessage.
 	IdleMessages map[string]string `json:"-"`
+	// LoopSeconds and ScrollbackLines are show-wide settings that travel with the theme but are not sent
+	// to audience devices.
+	LoopSeconds     float64 `json:"-"`
+	ScrollbackLines int     `json:"-"`
 }
 
 // DefaultTheme is pure black on white, high contrast (REQ-045).
@@ -226,8 +230,19 @@ func (rt *Runtime) AudienceByLang() map[string]int {
 }
 
 func (rt *Runtime) newEngine(gen int, code string, cues []showfile.Cue, startSeq int64) *live.Engine {
-	return live.New(cues, live.Config{DefaultLoopSeconds: rt.cfg.Defaults.LoopItemSeconds,
-		ScrollbackMax: rt.cfg.Audience.ScrollbackLines, StartSeq: startSeq}, func(ev live.Event) { rt.onEvent(gen, code, ev) })
+	return live.New(cues, rt.engineConfigLocked(startSeq), func(ev live.Event) { rt.onEvent(gen, code, ev) })
+}
+
+// engineConfigLocked is the engine configuration from the show's settings, falling back to config.yaml.
+func (rt *Runtime) engineConfigLocked(startSeq int64) live.Config {
+	c := live.Config{DefaultLoopSeconds: rt.cfg.Defaults.LoopItemSeconds, ScrollbackMax: rt.cfg.Audience.ScrollbackLines, StartSeq: startSeq}
+	if rt.theme.LoopSeconds > 0 {
+		c.DefaultLoopSeconds = rt.theme.LoopSeconds
+	}
+	if rt.theme.ScrollbackLines > 0 {
+		c.ScrollbackMax = rt.theme.ScrollbackLines
+	}
+	return c
 }
 
 // oldSeqs reads each language's current sequence number. It is done before taking rt.mu for writing
@@ -494,7 +509,15 @@ func (rt *Runtime) SetTheme(t Theme) {
 	for c, h := range rt.hubs {
 		hubs[c] = h
 	}
+	cfg := rt.engineConfigLocked(0)
+	var engs []*live.Engine
+	for _, l := range rt.langs {
+		engs = append(engs, l.engine)
+	}
 	rt.mu.Unlock()
+	for _, e := range engs { // loop time and scrollback size apply to the show on air
+		e.Configure(cfg)
+	}
 	rt.pushToAll(hubs)
 }
 

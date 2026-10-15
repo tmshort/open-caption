@@ -36,7 +36,7 @@ To tell the audience which words go with which line, keep the lines in step: if 
 ## Other things to know
 
 - **Pictures:** every language can use the same images. For a picture with words on it, upload a version per language and name each one in that language's show file.
-- **Pre-show message:** the Look step has a "message before the show starts" box for each language.
+- **Pre-show message:** each language has its own, kept in that language's own show file (`idle message:` in its `[settings]` block). The Look step has a box for each language and writes them for you. A translation's show file cannot set anything else: the look is set once, in the main show file.
 - **Messages from the operator** ("Message…") are sent exactly as typed to every language, so type them in the languages you need.
 - **Changing a show file while the show is on:** adding or fixing a translation takes effect straight away and keeps the operator's place. Removing a language is not allowed while the show is live.
 - **Counts:** the operator page shows how many devices are reading each language, for example `👥 83 (en 60 · es 23)`.
