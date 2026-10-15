@@ -285,9 +285,18 @@ async function main() {
       p.on('pageerror', (e) => errs.push(e.message));
       await p.evaluateOnNewDocument(script); await p.goto(B + url); return p;
     };
+    // Typing the password before the page's script has attached its handlers does nothing on a slow computer: retry.
+    const signIn = async (p, ready) => {
+      for (let attempt = 0; attempt < 4; attempt++) {
+        await p.waitForSelector('#pw'); await p.evaluate(() => { document.getElementById('pw').value = ''; });
+        await p.type('#pw', ADMIN); await p.keyboard.press('Enter');
+        if (await p.waitForSelector(ready, { timeout: 5000 }).then(() => true, () => false)) return;
+      }
+      throw new Error('could not sign in to ' + ready);
+    };
     const noDialog = () => { delete HTMLDialogElement.prototype.showModal; delete Element.prototype.replaceChildren; };
-    const oldAdmin = await old(noDialog, '/admin'); await oldAdmin.waitForSelector('#pw'); await oldAdmin.type('#pw', ADMIN); await oldAdmin.keyboard.press('Enter');
-    await oldAdmin.waitForSelector('.card.show');
+    const oldAdmin = await old(noDialog, '/admin'); await signIn(oldAdmin, '#steps button');
+    await oldAdmin.waitForFunction(() => [...document.querySelectorAll('button')].some((x) => x.textContent.includes('Rename')), { timeout: 15000 });
     await click(oldAdmin, 'Rename'); await oldAdmin.waitForFunction(() => document.getElementById('dlg').hasAttribute('open'));
     const shown = await oldAdmin.evaluate(() => { const d = document.getElementById('dlg'), r = d.getBoundingClientRect(); return { fixed: getComputedStyle(d).position === 'fixed', w: r.width, onScreen: r.left >= 0 && r.top >= 0 && r.right <= innerWidth && r.bottom <= innerHeight, hasShowModal: typeof HTMLDialogElement !== 'undefined' && !!HTMLDialogElement.prototype.showModal }; });
     check('without <dialog> support the dialog still appears, centred over the page', shown.fixed && shown.w > 200 && shown.onScreen && !shown.hasShowModal, shown);
@@ -298,7 +307,7 @@ async function main() {
     await oldAdmin.click('#dlgok'); await oldAdmin.waitForFunction(() => document.getElementById('panel').innerText.includes('Renamed in an old browser'), { timeout: 8000 }).catch(() => {});
     check('and its buttons work (OK renames the show)', (await oldAdmin.evaluate(() => document.getElementById('panel').innerText)).includes('Renamed in an old browser'));
     await oldAdmin.close();
-    const oldOp = await old(noDialog, '/operator'); await oldOp.waitForSelector('#pw'); await oldOp.type('#pw', ADMIN); await oldOp.keyboard.press('Enter');
+    const oldOp = await old(noDialog, '/operator'); await signIn(oldOp, '#message');
     await oldOp.waitForSelector('#message', { visible: true });
     await api(oldOp, 'POST', '/api/operator/claim', { takeover: true }); await sleep(800);
     await oldOp.click('#message'); await oldOp.waitForFunction(() => document.getElementById('msgdlg').hasAttribute('open'));
