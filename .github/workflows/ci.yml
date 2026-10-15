@@ -51,6 +51,11 @@ jobs:
         env:
           CHROME: ${{ matrix.chrome }}
           OC_SHOTS: ''
+      - name: Accessibility audit (axe-core, reflow, keyboard focus)
+        if: runner.os == 'Linux'
+        run: cd test/e2e && node a11y.js
+        env:
+          CHROME: ${{ matrix.chrome }}
   load:
     # The venue target (docs/07): 200 connected devices, every caption delivered to all of them, p95 latency under 250 ms.
     runs-on: ubuntu-latest

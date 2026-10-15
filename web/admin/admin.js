@@ -272,7 +272,7 @@
         h('button', { class: 'quiet', disabled: s.active, title: s.active ? __('The show on air cannot be archived. Activate another show first.') : __('Put this show away; you can restore it later'), onclick: () => archiveShow(s, true) }, __('Archive')),
         h('button', { class: 'danger quiet', onclick: () => deleteShow(s) }, __('Delete…')))));
       p.append(h('h3', {}, __('Add another show')), h('div', { class: 'card row' }, newShowForm(), h('button', { onclick: makeSample }, __('Sample show')),
-        h('label', { class: 'row' }, __('Import a show (.zip):'), h('input', { type: 'file', accept: '.zip', onchange: importShow }))));
+        h('label', { class: 'row' }, __('Import a show (.zip):'), h('input', { type: 'file', accept: '.zip', 'aria-label': __('Import a show (.zip):'), onchange: importShow }))));
     }
     if (archived.length) {
       p.append(h('details', { class: 'archive', open: A.showArchive ? '' : null, ontoggle: (e) => { A.showArchive = e.target.open; } },
@@ -375,7 +375,7 @@
     ta.value = A.text;
     const gutter = h('pre', { class: 'gutter', 'aria-hidden': 'true' });
     const status = h('span', { class: 'hint' });
-    const diagList = h('ul', { class: 'diags' }), cueList = h('ul', { class: 'cues' }), diagTitle = h('h3', {}, __('Problems and notes'));
+    const diagList = h('ul', { class: 'diags', tabindex: '0', 'aria-label': __('Problems and notes') }), cueList = h('ul', { class: 'cues', tabindex: '0', 'aria-label': __('What the operator will step through') }), diagTitle = h('h3', {}, __('Problems and notes'));
     const editor = h('div', { class: 'editor' }, gutter, ta);
     const saveBtn = h('button', { class: 'primary', onclick: save }, __('Save'));
 
@@ -502,19 +502,20 @@
       const sel = h('select', {}, ...names.map((n) => h('option', { value: n }, n)));
       if (await ask(__('Insert an image'), h('label', { class: 'field' }, h('span', {}, __('Which image?')), sel), __('Insert'))) insert('[image: ' + sel.value + ']\n');
     }
-    const fileInput = h('input', { type: 'file', accept: '.txt,.md,text/plain,text/markdown', onchange: (e) => readFile(e.target.files[0]) });
+    const fileInput = h('input', { type: 'file', accept: '.txt,.md,text/plain,text/markdown', 'aria-label': __('Open a file:'), onchange: (e) => readFile(e.target.files[0]) });
 
     // --- language tabs and translation helpers ---
-    const tabs = h('div', { class: 'langtabs', role: 'tablist', 'aria-label': __('Languages') });
+    const tabList = h('div', { class: 'tablist', role: 'tablist', 'aria-label': __('Languages') });
+    const tabs = h('div', { class: 'langtabs' }, tabList);
     async function switchTo(code) {
       if (ta.value !== A.saved && !await confirmBox(__('Discard your unsaved changes?'), __('The show file in the editor has changes that are not saved.'), __('Discard changes'), true)) return;
       A.lang = code === main.code ? '' : code; A.analysis = null; A.text = A.saved = ''; render();
     }
     function renderTabs() {
-      tabs.replaceChildren(...A.langs.map((l) => h('button', { role: 'tab', class: (l.code === cur.code ? 'on ' : '') + (l.available ? '' : 'bad'), 'aria-selected': String(l.code === cur.code), onclick: () => switchTo(l.code),
+      tabList.replaceChildren(...A.langs.map((l) => h('button', { role: 'tab', class: (l.code === cur.code ? 'on ' : '') + (l.available ? '' : 'bad'), 'aria-selected': String(l.code === cur.code), onclick: () => switchTo(l.code),
         title: l.available ? '' : __('Not shown to the audience until its structure matches the main show file') },
-        l.name, l.primary ? h('small', {}, __(' main')) : null, l.available ? null : ' ⚠')),
-        h('button', { class: 'quiet', onclick: addLanguage }, __('＋ Add a language')));
+        l.name, l.primary ? h('small', {}, __(' main')) : null, l.available ? null : ' ⚠')));
+      if (!tabs.querySelector('.addlang')) tabs.append(h('button', { class: 'quiet addlang', onclick: addLanguage }, __('＋ Add a language')));
     }
     async function addLanguage() {
       const have = new Set(A.langs.map((l) => l.code));
@@ -604,9 +605,9 @@
     if (a.missing.length) {
       p.append(h('div', { class: 'card missing' }, h('h3', {}, __('⚠ Images the show file uses but you have not uploaded')),
         ...a.missing.map((m) => h('div', { class: 'row' }, h('b', {}, m.name), h('span', { class: 'hint' }, __('used on line {lines}', { lines: m.lines.join(', ') })),
-          h('label', { class: 'row' }, h('input', { type: 'file', accept: 'image/png,image/jpeg,image/gif,image/webp', onchange: (e) => e.target.files[0] && upload([e.target.files[0]], m.name) }))))));
+          h('label', { class: 'row' }, h('input', { type: 'file', accept: 'image/png,image/jpeg,image/gif,image/webp', 'aria-label': __('Images'), onchange: (e) => e.target.files[0] && upload([e.target.files[0]], m.name) }))))));
     }
-    const dz = h('div', { class: 'dropzone' }, h('p', {}, __('Drag images here, or ')), h('input', { type: 'file', multiple: true, accept: 'image/png,image/jpeg,image/gif,image/webp', onchange: (e) => upload(e.target.files) }));
+    const dz = h('div', { class: 'dropzone' }, h('p', {}, __('Drag images here, or ')), h('input', { type: 'file', multiple: true, accept: 'image/png,image/jpeg,image/gif,image/webp', 'aria-label': __('Images'), onchange: (e) => upload(e.target.files) }));
     dz.addEventListener('dragover', (e) => { e.preventDefault(); dz.classList.add('drop'); });
     dz.addEventListener('dragleave', () => dz.classList.remove('drop'));
     dz.addEventListener('drop', (e) => { e.preventDefault(); dz.classList.remove('drop'); upload(e.dataTransfer.files); });

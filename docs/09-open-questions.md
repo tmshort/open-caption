@@ -37,4 +37,4 @@ that reflect it. Add new questions at the bottom.
 - **Browser floor:** now defined and enforced in code (doc 01, REQ-042: audience about iOS 12 / Chrome 66, Setup and operator about iOS 14.1 / Chrome 87; `<dialog>` is filled in; older browsers get a plain message), but derived from the features used, not from testing old devices.
 - **Passwords are plain text** in `config.yaml` by decision (Q4); hashing them is a later option.
 - **Release packaging:** no signed or notarized builds, installers or auto-update.
-- **Screen-reader and contrast audit** of all four pages has not been done.
+- **Accessibility:** an automated audit (axe-core, contrast, reflow, keyboard focus) now passes on every page, in both colour schemes (doc 07). Testing with real screen readers and forced-colors modes has not been done.

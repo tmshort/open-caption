@@ -63,3 +63,28 @@
 20. [ ] The oldest iPad/iPhone/Android device you expect in the audience shows captions, keeps its screen on (or shows the Auto-Lock tip), and reconnects after being locked.
 21. [ ] Setup and the operator page work on the oldest device you intend to use for them (the floor is about Safari/iOS 14.1 or Chrome 87; an older browser shows a "too old" message). The audience page is expected to work from about iOS 12; try the oldest phone you can find.
 22. [ ] On the venue's guest WiFi, `http://open-caption.local/` opens on an iPhone, an Android phone and a Windows laptop (or you know the network blocks multicast and the numeric address and QR code are what you will rely on).
+
+
+## Accessibility audit (REQ-063)
+
+`node test/e2e/a11y.js` (run in CI on Linux) drives real Chrome through every page and Setup step (audience waiting and with
+captions, Setup sign-in and all six steps, the Settings dialog, operator, Help), in **dark and light colour schemes** at a
+desktop and a phone width, and runs **axe-core** with the WCAG 2.0/2.1/2.2 A and AA rules plus best practices. It also checks
+**reflow** (no sideways scrolling at 320 px wide, WCAG 1.4.10) and that **Tab** walks the controls with a visible **focus
+ring** (2.4.7). It must report nothing.
+
+The first run found 8 kinds of problem, all fixed: the audience "Aa" and language buttons were too faint (contrast 1.5:1;
+now 6:1 or better); Setup, the operator page and Help had no `main` landmark, and the operator page no level-one heading;
+the language tabs held a non-tab button inside the `tablist`; the file pickers and the two scrollable lists had no
+accessible name or keyboard access; the key hints on buttons and the current Help topic had too little contrast; the
+language menu was below the 24 px minimum target size; the number boxes in the Look step were unreadable in the dark
+scheme; and the show list overflowed at 320 px.
+
+**Not covered by the automated audit (do by hand before relying on it):**
+- [ ] A screen reader (VoiceOver on iPhone and Mac, NVDA on Windows, TalkBack on Android) reads the audience page's caption
+  log sensibly as lines arrive, and the operator page's list and status messages make sense. The audience page is a
+  polite live region; whether a given screen reader speaks every line at show speed is untested.
+- [ ] Windows High Contrast / forced-colors mode and iOS "Increase Contrast" (no special styles are provided; the pages use
+  system colours only where the default styling does).
+- [ ] Browser zoom to 200% and larger system text sizes on a real phone (the audience text scales with its own size control).
+- [ ] The translated pages with a screen reader in each language.

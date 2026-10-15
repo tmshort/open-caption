@@ -99,13 +99,13 @@ body.projector #dot:not(.off) { display: none; }
 #tip { position: fixed; left: 0; right: 0; top: 0; z-index: 8; padding: .6em 1em; text-align: center; background: #ffd400; color: #000; font: 600 1rem/1.3 var(--font); }
 #tip[hidden] { display: none; }
 /* Optional per-device controls: nothing here is ever required. */
-#gear { position: fixed; top: 6px; right: 6px; z-index: 9; width: 2.75rem; height: 2.75rem; border: 0; border-radius: 50%; background: transparent; color: var(--fg); font: 700 1rem var(--font); opacity: .18; cursor: pointer; }
+#gear { position: fixed; top: 6px; right: 6px; z-index: 9; width: 2.75rem; height: 2.75rem; border: 0; border-radius: 50%; background: transparent; color: var(--fg); font: 700 1rem var(--font); opacity: .6; cursor: pointer; }
 #gear:hover, #gear[aria-expanded="true"] { opacity: .85; background: #8883; }
 #gear:focus-visible { opacity: .85; background: #8883; }
 #ctl { position: fixed; top: 3.4rem; right: 8px; z-index: 9; display: flex; padding: .5rem; border-radius: 10px; background: var(--bg); border: 1px solid var(--fg); }
 #ctl[hidden] { display: none; }
 /* Language menu: only present when the show has more than one language. */
-#langbtn { position: fixed; top: 6px; left: 6px; z-index: 9; width: 2.75rem; height: 2.75rem; border: 0; border-radius: 50%; background: transparent; color: var(--fg); font-size: 1.2rem; opacity: .22; cursor: pointer; }
+#langbtn { position: fixed; top: 6px; left: 6px; z-index: 9; width: 2.75rem; height: 2.75rem; border: 0; border-radius: 50%; background: transparent; color: var(--fg); font-size: 1.2rem; opacity: .6; cursor: pointer; }
 #langbtn:hover, #langbtn[aria-expanded="true"] { opacity: .9; background: #8883; }
 #langbtn:focus-visible { opacity: .9; background: #8883; }
 #langbtn[hidden], #langmenu[hidden] { display: none; }

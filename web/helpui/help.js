@@ -44,7 +44,7 @@
       b.addEventListener('click', async () => { try { await navigator.clipboard.writeText(code); b.textContent = __('Copied'); setTimeout(() => (b.textContent = __('Copy')), 1500); } catch (e) { b.textContent = __('Select and copy'); } });
       pre.appendChild(b);
     });
-    doc.scrollTop = 0; mark();
+    $('docmain').scrollTop = 0; mark();
     if (anchor) scrollToAnchor(anchor);
     if (location.hash.slice(1) !== t.id) history.replaceState(null, '', '#' + t.id + location.search.replace(/^\?/, '?'));
   }

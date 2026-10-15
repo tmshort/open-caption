@@ -13,12 +13,12 @@
 <link rel="stylesheet" href="/static/operator/operator.css">
 </head>
 <body class="viewonly">
-<form id="login" hidden>
+<main id="login" hidden><form>
   <h1>Operator</h1>
   <label>Operator password <input id="pw" type="password" name="password" autocomplete="current-password" required></label>
   <button>Sign in</button>
   <p id="loginerr" role="alert"></p>
-</form>
+</form></main>
 
 <div id="app" hidden>
   <header>
@@ -34,8 +34,11 @@
     <button id="logout" class="quiet">Sign out</button>
     <i id="dot" title="Connection"></i>
   </header>
+  <main id="stage">
+  <h1 class="sr">Operator</h1>
   <div id="banner" hidden></div>
-  <ol id="list" aria-label="Show file lines"></ol>
+  <ol id="list" aria-label="Show file lines" tabindex="0"></ol>
+  </main>
   <div id="jumpbar" hidden>
     <span id="jumptext"></span>
     <button id="jumpgo" class="primary">Jump here (Enter)</button>
