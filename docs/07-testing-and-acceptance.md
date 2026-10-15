@@ -88,3 +88,10 @@ scheme; and the show list overflowed at 320 px.
   system colours only where the default styling does).
 - [ ] Browser zoom to 200% and larger system text sizes on a real phone (the audience text scales with its own size control).
 - [ ] The translated pages with a screen reader in each language.
+
+## Running the browser test on a slow computer
+
+`test/e2e/run.js` stretches every pause and time limit by `OC_E2E_SLOW` (default 2 on CI, 1 elsewhere). A section that makes no
+progress for `OC_E2E_SECTION_LIMIT` seconds (default 120, also stretched) stops the run with `STUCK: the section "…"`, and the whole
+run is limited by `OC_E2E_TIMEOUT` (default 900 s). Whatever happens (a failure, a stuck section, Ctrl+C) every Chrome and the
+server it started are closed, so a bad run leaves nothing behind to disturb the next one.

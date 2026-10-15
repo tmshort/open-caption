@@ -14,14 +14,44 @@ const CHROME = process.env.CHROME || '/Applications/Google Chrome.app/Contents/M
 const BIN = process.env.OC_BIN || path.join(__dirname, '..', '..', 'bin', 'open-caption' + (process.platform === 'win32' ? '.exe' : ''));
 const SHOTS = process.env.OC_SHOTS || '';
 const ADMIN = 'e2e-admin-pw', OPERATOR = 'e2e-operator-pw';
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+// Slow computers (CI runners, a laptop on battery): OC_E2E_SLOW stretches every pause and time limit (default 2 on CI, else 1).
+const SLOW = Number(process.env.OC_E2E_SLOW) || (process.env.CI ? 2 : 1);
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms * SLOW));
+const T = (ms) => ms * SLOW;
+// Every browser started is remembered so that a stuck or failed run still closes them (no orphan Chrome or server left behind).
+const launched = [];
+const realLaunch = puppeteer.launch.bind(puppeteer);
+puppeteer.launch = async (opts) => { const b = await realLaunch(opts); launched.push(b); return b; };
+async function cleanup() {
+  for (const b of launched.splice(0)) {
+    const proc = b.process && b.process();
+    try { await Promise.race([b.close(), new Promise((r) => setTimeout(r, 3000))]); } catch (e) { /* already gone */ }
+    if (proc && proc.exitCode === null) { try { proc.kill('SIGKILL'); } catch (e) { /* ignore */ } }
+  }
+  await stopServer();
+  if (dataDir) { try { fs.rmSync(dataDir, { recursive: true, force: true }); } catch (e) { /* the server may still hold files on Windows */ } }
+}
 
 let failures = 0, passes = 0;
 function check(name, ok, detail) {
   if (ok) { passes++; console.log('  ok   ' + name); }
   else { failures++; console.log('  FAIL ' + name + (detail !== undefined ? '  -> ' + JSON.stringify(detail) : '')); }
 }
-const section = (s) => console.log('\n' + s);
+let sectionName = 'start', sectionStart = Date.now();
+const section = (s) => {
+  const took = (Date.now() - sectionStart) / 1000;
+  if (took > 20) console.log(`  (the section before took ${Math.round(took)} s)`);
+  sectionName = s; sectionStart = Date.now();
+  console.log('\n' + s);
+};
+// A section that makes no progress for this long means something hung: say which, clean up and stop, instead of waiting for the whole run to time out.
+const SECTION_LIMIT_S = Number(process.env.OC_E2E_SECTION_LIMIT) || 120;
+setInterval(() => {
+  if (Date.now() - sectionStart > SECTION_LIMIT_S * 1000 * SLOW) {
+    console.error(`\nSTUCK: the section "${sectionName}" has run for more than ${SECTION_LIMIT_S * SLOW} s; stopping.`);
+    cleanup().finally(() => process.exit(2));
+  }
+}, 5000).unref();
 
 function freePort() {
   return new Promise((res, rej) => { const s = net.createServer(); s.listen(0, '127.0.0.1', () => { const p = s.address().port; s.close(() => res(p)); }); s.on('error', rej); });
@@ -45,7 +75,7 @@ async function main() {
   const b = await puppeteer.launch({ executablePath: CHROME, headless: 'new', args: ['--no-sandbox'] });
   const errs = [];
   const open = async (opts = {}) => {
-    const p = await b.newPage(); p.setDefaultTimeout(8000);
+    const p = await b.newPage(); p.setDefaultTimeout(T(8000));
     await p.setViewport(opts.viewport || { width: 1300, height: 950 });
     p.on('dialog', (d) => d.accept());
     p.on('pageerror', (e) => errs.push(e.message));
@@ -231,7 +261,7 @@ async function main() {
     section('Audience: the screen stays on where the Wake Lock API is missing');
     // A separate browser: Chrome allows six connections per site, and the pages above hold them all open.
     const b2 = await puppeteer.launch({ executablePath: CHROME, headless: 'new', args: ['--no-sandbox'] });
-    const nolock = await b2.newPage(); nolock.setDefaultTimeout(8000);
+    const nolock = await b2.newPage(); nolock.setDefaultTimeout(T(8000));
     await nolock.setViewport({ width: 420, height: 760 });
     nolock.on('pageerror', (e) => errs.push(e.message));
     await nolock.evaluateOnNewDocument(() => { delete Navigator.prototype.wakeLock; }); // as on any browser over plain http
@@ -284,7 +314,7 @@ async function main() {
     section('Older browsers: dialogs without <dialog>, and a plain message when a page cannot run');
     const b3 = await puppeteer.launch({ executablePath: CHROME, headless: 'new', args: ['--no-sandbox'] });
     const old = async (script, url) => {
-      const p = await b3.newPage(); p.setDefaultTimeout(30000); await p.setViewport({ width: 1100, height: 800 });
+      const p = await b3.newPage(); p.setDefaultTimeout(T(30000)); await p.setViewport({ width: 1100, height: 800 });
       p.on('pageerror', (e) => errs.push(e.message));
       await p.evaluateOnNewDocument(script); await p.goto(B + url, { waitUntil: 'domcontentloaded' }); return p;
     };
@@ -346,7 +376,7 @@ async function main() {
       return [...new Set(out)];
     });
     const uiPage = async (url, lang) => {
-      const p = await b4.newPage(); p.setDefaultTimeout(30000); await p.setViewport({ width: 1300, height: 950 }); // generous: a slow runner loads six languages' pages here
+      const p = await b4.newPage(); p.setDefaultTimeout(T(30000)); await p.setViewport({ width: 1300, height: 950 }); // generous: a slow runner loads six languages' pages here
       p.on('pageerror', (e) => errs.push(e.message)); await p.bringToFront();
       await p.goto(B + url + (url.includes('?') ? '&' : '?') + 'ui=' + lang, { waitUntil: 'domcontentloaded' }); return p;
     };
@@ -400,10 +430,10 @@ async function main() {
   check('no JavaScript errors on any page', errs.length === 0, errs);
 }
 
-main().catch((e) => { console.error('\nERROR:', e.stack || e.message); failures++; }).finally(async () => {
-  await stopServer();
-  if (dataDir) fs.rmSync(dataDir, { recursive: true, force: true });
+main().catch((e) => { console.error('\nERROR (in the section "' + sectionName + '"):', e.stack || e.message); failures++; }).finally(async () => {
+  await cleanup();
   console.log(`\n${passes} passed, ${failures} failed`);
   process.exit(failures ? 1 : 0);
 });
-setTimeout(() => { console.error('timed out'); process.exit(2); }, 240000).unref();
+setTimeout(() => { console.error(`timed out in the section "${sectionName}"`); cleanup().finally(() => process.exit(2)); }, (Number(process.env.OC_E2E_TIMEOUT) || 900) * 1000).unref();
+for (const sig of ['SIGINT', 'SIGTERM']) process.on(sig, () => cleanup().finally(() => process.exit(130)));
