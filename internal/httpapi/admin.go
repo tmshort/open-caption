@@ -342,6 +342,12 @@ func (s *Server) createSample(name string) (show.Meta, error) {
 	if err != nil {
 		return m, err
 	}
+	// The sample ships with a Spanish translation to show how languages work.
+	if es, err := fs.ReadFile(web.Sample, "sample/sample-script.es.md"); err == nil {
+		if err := s.store.WriteScript(m.ID, "es", string(es)); err != nil {
+			return m, err
+		}
+	}
 	ents, _ := fs.ReadDir(web.Sample, "sample/assets")
 	for _, e := range ents {
 		f, err := web.Sample.Open("sample/assets/" + e.Name())

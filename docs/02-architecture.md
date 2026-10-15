@@ -107,18 +107,26 @@ as live control (`/api/admin/rehearsal/*`, doc 04) but publishes only to that
 session's preview pane, never to audience clients, and never touches `live.json`.
 It can't affect, or be affected by, the live show.
 
-### Languages (planned)
+### Languages
 
-Each language has its own parsed script of identical structure. The engine keeps
-one cursor; applying a cue updates one `LiveState` per language, and the hub
-routes events by the client's `lang`. v1 ships with a single language but the
-event stream, `LiveState.lang`, and the show model already carry it.
+Each language of the active show has its **own `Engine`** (its own cues, state, loop timer and sequence
+numbers) and its **own audience hub**. The operator drives the primary engine; `Runtime.Do` applies the
+same command to every other engine immediately afterwards, so all languages stay on the same cue index.
+Their rev, scrollback and loop positions stay equal because the structure is identical and the commands
+are the same; after each command, any translation whose cursor differs from the primary's is moved to it
+with `Jump`, so a language can never drift. Hubs are keyed by language code and kept across shows, so a
+connected device stays on its stream when the next show also has that language; a device whose language
+the new show lacks is sent a `reload` event and picks a language again.
 
-**Language selection** (per request to `/`): an explicit `?lang=xx` wins; otherwise the
+Edits apply to every language together (`Runtime.ReplaceLangs`): when the show is live, each engine keeps
+its place by cue index; a language added mid-show is created and jumped to the current cue; a removed one
+closes and its devices are told to reload. Live state is persisted per language and restored the same way.
+
+**Language selection** (per request to `/events`): an explicit `?lang=xx` wins; otherwise the
 server matches the `Accept-Language` header (quality values respected, regional tags
-fall back to the base language, e.g. `es-MX` → `es`) against the languages the active
-show provides; otherwise it uses `defaults.language` (`en`). Responses carry
-`Vary: Accept-Language`.
+fall back to the base language, e.g. `es-MX` → `es`, and a plain `pt` is served `pt-br` if that is
+the only Portuguese) against the languages the active show provides; otherwise it uses the show's main
+language. Responses carry `Vary: Accept-Language`.
 
 ## Package layout (proposed)
 

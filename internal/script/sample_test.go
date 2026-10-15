@@ -51,6 +51,23 @@ func TestSampleScriptParsesClean(t *testing.T) {
 	if sung < 5 {
 		t.Errorf("sample should include a song, found %d sung lines", sung)
 	}
+	// The Spanish translation must have exactly the same shape as the English script.
+	es, err := os.ReadFile(filepath.Join(dir, "sample-script.es.md"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	esr := Parse(string(es), Options{Assets: assets})
+	for _, d := range esr.Diagnostics {
+		if d.Severity != SevInfo {
+			t.Errorf("Spanish line %d: %s: %s", d.Line, d.Severity, d.Message)
+		}
+	}
+	if esr.Language != "es" || esr.LanguageName != "Español" {
+		t.Errorf("language header: %q %q", esr.Language, esr.LanguageName)
+	}
+	if issues := CompareStructure(r.Cues, esr.Cues, "English"); len(issues) > 0 {
+		t.Errorf("Spanish sample does not match the English one: %+v", issues)
+	}
 	if r.Cues[0].Kind != KindLoop {
 		t.Error("sample should open with a pre-show loop")
 	}

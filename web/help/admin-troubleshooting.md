@@ -18,6 +18,10 @@ Large pictures take time on a busy WiFi. Check the Images step for files marked 
 
 For the full list of checks on the network side, see the [venue network guide](topic:admin-venue-network-guide).
 
+## A language is missing for the audience
+
+Open the Script step and look at that language's tab: a ⚠ means its script no longer has the same cues as the main one. Fix the error shown; the language returns as soon as you save. See [Languages](topic:admin-languages).
+
 ## Script problems
 
 See "What the warnings mean" in [Writing a script](topic:admin-writing-a-script).

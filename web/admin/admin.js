@@ -2,7 +2,7 @@
 (() => {
   'use strict';
   const $ = (id) => document.getElementById(id);
-  const A = { shows: [], activeId: '', cur: null, step: 'show', text: '', saved: '', analysis: null, net: null, live: false, audience: 0, rehearsing: false };
+  const A = { shows: [], activeId: '', cur: null, step: 'show', text: '', saved: '', analysis: null, mainAnalysis: null, lang: '', loadedLang: null, langs: [], net: null, live: false, audience: 0, rehearsing: false };
   const STEPS = [['show', 'Show'], ['script', 'Script'], ['images', 'Images'], ['look', 'Look'], ['test', 'Test'], ['golive', 'Go Live']];
   const ICON = { caption: '💬', clear: '🧹', blank: '⬛', image: '🖼', fullscreen: '⛶', loop: '🔁', section: '📑', note: '📝' };
 
@@ -124,7 +124,7 @@
     const r = await api('GET', '/api/admin/shows');
     if (r.ok) { A.shows = r.data.shows; A.activeId = r.data.activeId; }
   }
-  function setCur(id) { A.cur = id; A.rehearsing = false; A.text = A.saved = ''; A.analysis = null; try { localStorage.setItem('oc.cur', id || ''); } catch (e) { /* ignore */ } }
+  function setCur(id) { A.cur = id; A.rehearsing = false; A.text = A.saved = ''; A.analysis = A.mainAnalysis = null; A.lang = ''; A.loadedLang = null; A.langs = []; try { localStorage.setItem('oc.cur', id || ''); } catch (e) { /* ignore */ } }
 
   // live status via the operator stream (admins may use it)
   function openOpStream() {
@@ -155,8 +155,8 @@
       case 'test': return A.rehearsing;
       case 'golive': return !!A.cur && A.activeId === A.cur;
       case 'show': return !!A.cur;
-      case 'script': return !!(A.analysis && A.analysis.cues.length && !A.analysis.diagnostics.some((d) => d.severity === 'error'));
-      case 'images': return !!(A.analysis && !(A.analysis.missing || []).length && (A.analysis.assets || []).length);
+      case 'script': return !!(A.mainAnalysis && A.mainAnalysis.cues.length && !A.mainAnalysis.diagnostics.some((d) => d.severity === 'error'));
+      case 'images': return !!(A.mainAnalysis && !(A.mainAnalysis.missing || []).length && (A.mainAnalysis.assets || []).length);
       default: return false;
     }
   }
@@ -172,9 +172,9 @@
   // Ticks for Script and Images depend on the script analysis, so load it in the background when not yet known.
   async function warmAnalysis() {
     const id = A.cur;
-    if (!id || A.analysis) return;
+    if (!id || A.mainAnalysis) return;
     const r = await api('GET', '/api/admin/shows/' + id + '/script');
-    if (r.ok && A.cur === id && !A.analysis) { A.analysis = r.data.analysis; refreshNav(); }
+    if (r.ok && A.cur === id && !A.mainAnalysis) { A.mainAnalysis = r.data.analysis; refreshNav(); }
   }
 
   async function render() {
@@ -269,10 +269,20 @@
   };
   async function stepScript(p) {
     const show = curShow(); if (!show) return go('show');
-    if (!A.analysis || A.text === '') {
-      const r = await api('GET', '/api/admin/shows/' + show.id + '/script');
+    // Languages: the tabs above the editor. A.lang is '' for the main language.
+    const lr = await api('GET', '/api/admin/shows/' + show.id + '/languages');
+    if (!lr.ok) return fail(lr);
+    A.langs = lr.data.languages; const known = lr.data.known;
+    const main = A.langs.find((l) => l.primary) || { code: 'en', name: 'English' };
+    if (A.lang && !A.langs.some((l) => l.code === A.lang)) A.lang = '';
+    const cur = A.langs.find((l) => l.code === (A.lang || main.code)) || main;
+    const q = A.lang ? '?lang=' + encodeURIComponent(A.lang) : '';
+    const dirty = A.text !== A.saved;
+    if (!A.analysis || A.loadedLang !== A.lang || !dirty) { // keep unsaved edits when coming back to this step
+      const r = await api('GET', '/api/admin/shows/' + show.id + '/script' + q);
       if (!r.ok) return fail(r);
-      A.text = A.saved = r.data.text; A.analysis = r.data.analysis; A.version = r.data.version;
+      A.text = A.saved = r.data.text; A.analysis = r.data.analysis; A.version = r.data.version; A.loadedLang = A.lang;
+      if (!A.lang) A.mainAnalysis = A.analysis;
     }
     const ta = h('textarea', { spellcheck: 'false', 'aria-label': 'Script', wrap: 'off', placeholder: 'Paste your script here, or drop a .txt / .md file onto this box.\n\nEach line becomes one caption.' });
     ta.value = A.text;
@@ -311,13 +321,13 @@
       A.text = ta.value; lines(); setStatus();
       clearTimeout(timer);
       timer = setTimeout(async () => {
-        const r = await api('POST', '/api/admin/shows/' + show.id + '/script/validate', { text: ta.value });
+        const r = await api('POST', '/api/admin/shows/' + show.id + '/script/validate' + q, { text: ta.value });
         if (r.ok && A.step === 'script') { A.analysis = r.data.analysis; showAnalysis(); }
       }, 400);
     }
     async function save(confirmName) {
       const body = { text: ta.value, baseVersion: A.version }; if (typeof confirmName === 'string') body.confirm = confirmName;
-      const r = await api('PUT', '/api/admin/shows/' + show.id + '/script', body);
+      const r = await api('PUT', '/api/admin/shows/' + show.id + '/script' + q, body);
       if (r.status === 409 && r.data.needConfirm) {
         const inp = h('input', { type: 'text', 'aria-label': 'Show name', placeholder: r.data.showName });
         const ok = await ask('This show is live', h('div', {}, h('p', {}, 'Changing the script now affects what the operator sees. The current position is kept by line number. To continue, type the show’s name:'), h('p', {}, h('b', {}, r.data.showName)), inp), 'Save change');
@@ -337,8 +347,15 @@
         return;
       }
       if (!r.ok) return fail(r);
-      A.saved = ta.value; A.version = r.data.version; A.analysis = r.data.analysis; setStatus(); showAnalysis();
+      A.saved = ta.value; A.version = r.data.version; A.analysis = r.data.analysis; if (!A.lang) A.mainAnalysis = A.analysis; setStatus(); showAnalysis(); refreshNav();
+      if (r.data.skippedLanguages && r.data.skippedLanguages.length) toast('Saved. These languages are not shown to the audience until their structure matches: ' + r.data.skippedLanguages.join(', '));
+      else
       toast(r.data.countChanged ? 'Saved. The number of lines changed, so check the operator’s position.' : 'Saved');
+      refreshLangs();
+    }
+    async function refreshLangs() {
+      const x = await api('GET', '/api/admin/shows/' + show.id + '/languages');
+      if (x.ok) { A.langs = x.data.languages; renderTabs(); }
     }
     function insert(text) {
       const s = ta.selectionStart, e = ta.selectionEnd, atLineStart = s === 0 || ta.value[s - 1] === '\n';
@@ -371,8 +388,54 @@
       if (await ask('Insert an image', h('label', { class: 'field' }, h('span', {}, 'Which image?'), sel), 'Insert')) insert('[image: ' + sel.value + ']\n');
     }
     const fileInput = h('input', { type: 'file', accept: '.txt,.md,text/plain,text/markdown', onchange: (e) => readFile(e.target.files[0]) });
+
+    // --- language tabs and translation helpers ---
+    const tabs = h('div', { class: 'langtabs', role: 'tablist', 'aria-label': 'Languages' });
+    async function switchTo(code) {
+      if (ta.value !== A.saved && !await confirmBox('Discard your unsaved changes?', 'The script in the editor has changes that are not saved.', 'Discard changes', true)) return;
+      A.lang = code === main.code ? '' : code; A.analysis = null; A.text = A.saved = ''; render();
+    }
+    function renderTabs() {
+      tabs.replaceChildren(...A.langs.map((l) => h('button', { role: 'tab', class: (l.code === cur.code ? 'on ' : '') + (l.available ? '' : 'bad'), 'aria-selected': String(l.code === cur.code), onclick: () => switchTo(l.code),
+        title: l.available ? '' : 'Not shown to the audience until its structure matches the main script' },
+        l.name, l.primary ? h('small', {}, ' main') : null, l.available ? null : ' ⚠')),
+        h('button', { class: 'quiet', onclick: addLanguage }, '＋ Add a language'));
+    }
+    async function addLanguage() {
+      const have = new Set(A.langs.map((l) => l.code));
+      const sel = h('select', {}, ...known.filter((k) => !have.has(k.code)).map((k) => h('option', { value: k.code }, k.name + ' (' + k.code + ')')), h('option', { value: '' }, 'Another language…'));
+      const code = h('input', { type: 'text', maxlength: '12', placeholder: 'language code, e.g. cy', 'aria-label': 'Language code' });
+      const name = h('input', { type: 'text', maxlength: '40', placeholder: 'name shown to the audience, e.g. Cymraeg', 'aria-label': 'Language name' });
+      const other = h('div', {}, h('label', { class: 'field' }, h('span', {}, 'Code'), code), h('label', { class: 'field' }, h('span', {}, 'Name the audience sees'), name)); other.hidden = true;
+      sel.addEventListener('change', () => { other.hidden = sel.value !== ''; });
+      const copy = h('input', { type: 'checkbox', checked: true, id: 'copymain' });
+      const body = h('div', {}, h('p', {}, 'Each language is its own script with exactly the same lines, commands and blank screens in the same order. Only the words change, so one press of Space shows the same moment in every language.'),
+        h('label', { class: 'field' }, h('span', {}, 'Language'), sel), other,
+        h('label', { class: 'row' }, copy, 'Start from a copy of the ' + main.name + ' script, so I only have to change the words (recommended)'));
+      if (!await ask('Add a language', body, 'Add language')) return;
+      const c = (sel.value || code.value).trim().toLowerCase();
+      const r = await api('POST', '/api/admin/shows/' + show.id + '/languages', { code: c, name: sel.value ? '' : name.value, copyFromMain: copy.checked });
+      if (!r.ok) return fail(r);
+      A.lang = r.data.code; A.analysis = null; A.text = A.saved = ''; toast(r.data.name + ' added'); render();
+    }
+    async function removeLanguage() {
+      if (!await confirmBox('Remove ' + cur.name + '?', 'The ' + cur.name + ' script will be deleted. The other languages are not affected.', 'Remove', true)) return;
+      const r = await api('DELETE', '/api/admin/shows/' + show.id + '/languages/' + encodeURIComponent(cur.code));
+      if (!r.ok) return fail(r);
+      A.lang = ''; A.analysis = null; A.text = A.saved = ''; toast(cur.name + ' removed'); render();
+    }
+    renderTabs();
+    let translating = null;
+    if (A.lang) {
+      const mainText = h('pre', { class: 'maintext' }, 'Loading…');
+      api('GET', '/api/admin/shows/' + show.id + '/script').then((m) => { mainText.textContent = m.ok ? m.data.text : ''; });
+      translating = h('div', { class: 'card' },
+        h('p', {}, h('b', {}, 'Translating into ' + cur.name + '. '), 'Keep every line, command and blank screen in the same order as the ' + main.name + ' script; change only the words. A problem is shown below if the shapes stop matching.'),
+        h('div', { class: 'row' }, h('details', {}, h('summary', {}, 'Show the ' + main.name + ' script for reference'), mainText), h('span', { class: 'grow' }), h('button', { class: 'danger quiet', onclick: removeLanguage }, 'Remove ' + cur.name + '…')));
+    }
     p.append(
-      h('h2', {}, 'Script'),
+      h('h2', {}, 'Script' + (A.lang ? ' — ' + cur.name : '')),
+      tabs, translating,
       h('p', { class: 'hint' }, 'Each line is one caption; one press of the spacebar sends one line. You can paste, type, or drop a .txt or .md file. Click a problem to jump to its line.'),
       h('div', { class: 'row' }, h('label', { class: 'row' }, 'Open a file:', fileInput), h('button', { onclick: () => openHelp('admin-writing-a-script') }, 'Script help'), h('span', { class: 'grow' }), status, saveBtn),
       tools,
@@ -397,10 +460,21 @@
   // ---- step 3: images ----
   async function stepImages(p) {
     const show = curShow(); if (!show) return go('show');
-    const r = await api('GET', '/api/admin/shows/' + show.id + '/script');
-    if (!r.ok) return fail(r);
-    A.analysis = r.data.analysis; A.text = A.saved = r.data.text; A.version = r.data.version;
-    const a = A.analysis;
+    // Every language's script can use images, so look at all of them together.
+    const lr = await api('GET', '/api/admin/shows/' + show.id + '/languages');
+    if (!lr.ok) return fail(lr);
+    const langs = lr.data.languages;
+    const rs = await Promise.all(langs.map((l) => api('GET', '/api/admin/shows/' + show.id + '/script' + (l.primary ? '' : '?lang=' + encodeURIComponent(l.code)))));
+    if (rs.some((x) => !x.ok)) return fail(rs.find((x) => !x.ok));
+    A.mainAnalysis = rs[0].data.analysis;
+    const used = {}, miss = {};
+    rs.forEach((x, i) => {
+      const tag = langs.length > 1 ? ' (' + langs[i].code + ')' : '';
+      const an = x.data.analysis;
+      Object.keys(an.used).forEach((f) => { (used[f] = used[f] || []).push(...an.used[f].map((n) => n + tag)); });
+      an.missing.forEach((m) => { (miss[m.name] = miss[m.name] || []).push(...m.lines.map((n) => n + tag)); });
+    });
+    const a = { assets: rs[0].data.analysis.assets, used, missing: Object.keys(miss).sort().map((name) => ({ name, lines: miss[name] })) };
     p.append(h('h2', {}, 'Images'), h('p', { class: 'hint' }, 'PNG, JPG, GIF or WebP, up to 10 MB each. Images are sent to every device as they are, so keep them under about 1 MB (about 1920 pixels wide is plenty).'));
 
     async function upload(files, renameTo) {
@@ -452,12 +526,26 @@
     mk('scalePct', 'Text size', h('input', { type: 'range', min: '60', max: '200', step: '10' }));
     mk('speakers', 'Speaker names', h('select', {}, h('option', { value: 'label' }, 'Show above the line (in the speaker name color)'), h('option', { value: 'color' }, 'Show above the line, a different color for each character'), h('option', { value: 'hidden' }, 'Hide')));
     mk('idleMessage', 'Message before the show starts', h('input', { type: 'text', maxlength: '200' }));
+    // Other languages get their own pre-show message.
+    const lgs = await api('GET', '/api/admin/shows/' + show.id + '/languages');
+    const idleOthers = {};
+    const idleLabels = (lgs.ok ? lgs.data.languages.filter((l) => !l.primary) : []).map((l) => {
+      const inp = h('input', { type: 'text', maxlength: '200', dir: 'auto', 'aria-label': 'Message before the show starts (' + l.name + ')' });
+      inp.value = (t.idleMessages || {})[l.code] || '';
+      idleOthers[l.code] = inp;
+      return h('label', { class: 'field' }, h('span', {}, 'Message before the show starts (' + l.name + ')'), inp);
+    });
     const ratio = h('div', { class: 'hint' });
     const sizeLabel = h('span', { class: 'hint' });
     const phone = h('div', { class: 'preview phone', role: 'img', 'aria-label': 'Phone preview' }), proj = h('div', { class: 'preview proj', role: 'img', 'aria-label': 'Projector preview' });
     const sample = () => [h('p', { class: 'dim2' }, 'The train was late, Margaret.'), h('p', { class: 'dim1' }, h('span', { class: 'spk' }, 'Margaret'), 'The train is never late.'), h('p', {}, h('span', { class: 'spk' }, 'Edwin'), 'Is that tea for ', h('b', {}, 'me?'))];
 
-    function read() { for (const k of ['bg', 'fg', 'accent', 'font', 'speakers', 'idleMessage']) t[k] = ctl[k].value; t.scalePct = Number(ctl.scalePct.value); }
+    function read() {
+      for (const k of ['bg', 'fg', 'accent', 'font', 'speakers', 'idleMessage']) t[k] = ctl[k].value;
+      t.scalePct = Number(ctl.scalePct.value);
+      t.idleMessages = {};
+      Object.keys(idleOthers).forEach((c) => { if (idleOthers[c].value.trim()) t.idleMessages[c] = idleOthers[c].value.trim(); });
+    }
     function write() { for (const k of ['bg', 'fg', 'accent', 'font', 'speakers', 'idleMessage', 'scalePct']) ctl[k].value = t[k]; }
     function paint() {
       const c = contrast(t.bg, t.fg);
@@ -477,7 +565,7 @@
     const presets = h('div', { class: 'presets' }, ...PRESETS.map(([n, bg, fg, ac]) => h('button', { onclick: () => { Object.assign(t, { bg, fg, accent: ac }); write(); paint(); } }, n)));
     p.append(h('h2', {}, 'Look'), h('p', { class: 'hint' }, 'Large, high-contrast text is the default and is best for accessibility. Changes apply to connected devices as soon as you save.'),
       h('div', { class: 'look-grid' },
-        h('div', { class: 'card' }, presets, ...Object.keys(ctl).map((k) => ctl[k].closest('label')), sizeLabel, ratio,
+        h('div', { class: 'card' }, presets, ...Object.keys(ctl).map((k) => ctl[k].closest('label')), ...idleLabels, sizeLabel, ratio,
           h('div', { class: 'row end' }, h('button', { class: 'primary', onclick: async () => { read(); const s = await api('PUT', '/api/admin/shows/' + show.id, { theme: t }); if (!s.ok) return fail(s); markLookSaved(); toast('Look saved'); } }, 'Save look'))),
         h('div', { class: 'previews' }, h('div', {}, h('div', { class: 'hint' }, 'Phone'), phone), h('div', {}, h('div', { class: 'hint' }, 'Projector'), proj))));
   }
@@ -503,14 +591,17 @@
   // ---- step 6: go live ----
   async function stepGoLive(p) {
     const show = curShow(); if (!show) return go('show');
-    const [net, sc] = await Promise.all([api('GET', '/api/admin/network'), api('GET', '/api/admin/shows/' + show.id + '/script')]);
-    if (!net.ok || !sc.ok) return fail(net.ok ? sc : net);
+    const [net, sc, lg] = await Promise.all([api('GET', '/api/admin/network'), api('GET', '/api/admin/shows/' + show.id + '/script'), api('GET', '/api/admin/shows/' + show.id + '/languages')]);
+    if (!net.ok || !sc.ok || !lg.ok) return fail(!net.ok ? net : !sc.ok ? sc : lg);
+    const langs = lg.data.languages;
     A.analysis = sc.data.analysis; A.net = net.data;
     const a = A.analysis, errs = a.diagnostics.filter((d) => d.severity === 'error').length, warns = a.diagnostics.filter((d) => d.severity === 'warning').length;
     const checks = h('div', { class: 'card' }, h('h3', {}, 'Ready?'),
       h('div', { class: 'check' + (a.cues.length ? '' : ' bad') }, a.cues.length ? a.cues.length + ' lines in the script' : 'The script is empty'),
       h('div', { class: 'check' + (errs ? ' bad' : warns ? ' warn' : '') }, errs ? errs + ' script error(s) to fix' : warns ? warns + ' script warning(s) to review' : 'No script problems'),
-      h('div', { class: 'check' + (a.missing.length ? ' warn' : '') }, a.missing.length ? 'Missing images: ' + a.missing.map((m) => m.name).join(', ') : 'All images are uploaded'));
+      h('div', { class: 'check' + (a.missing.length ? ' warn' : '') }, a.missing.length ? 'Missing images: ' + a.missing.map((m) => m.name).join(', ') : 'All images are uploaded'),
+      langs.length > 1 ? h('div', { class: 'check' }, 'Languages: ' + langs.filter((l) => l.available).map((l) => l.name).join(', ')) : null,
+      ...langs.filter((l) => !l.available).map((l) => h('div', { class: 'check bad' }, l.name + ' will NOT be shown to the audience until it matches the main script: ' + ((l.structure[0] || {}).message || ''))));
     const urls = net.data.urls.filter((u) => u.public);
     let chosen = (urls.find((u) => u.kind === 'http') || urls[0] || net.data.urls[0] || {}).url;
     const big = h('div', { class: 'urlbig' }), qrBox = h('div', { class: 'qr' });

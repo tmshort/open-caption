@@ -34,6 +34,7 @@ A script can do the same with the `[blank]` and `[clear]` commands; they appear 
 - Lines marked as notes or sections are for you. They never use up a press of Space.
 - Pictures and full-screen messages show only as a label here, such as `IMAGE: curtain.jpg`. You never see the picture itself.
 - **Songs:** sung lines have music notes (♪) around them and are shown in italics on the audience's screens. A song's title appears as a blue bookmark for you only. Aim to press Space as each phrase begins.
+- **Languages:** if the show has translations, you follow the main language and everything you send goes to every language at once. The audience count in the header lists each language, for example `83 (en 60 · es 23)`.
 - **Several voices at once:** a line marked `TOGETHER` shows two or more singers on the screens at the same time. One press of Space sends all of them.
 - The header shows **Last sent … ago**, so you can see at a glance that the show and your screen are still in step. It turns yellow after two minutes without a line.
 - **Go to section…** (beside the search box) lists the script's bookmarks; picking one selects it, and you confirm the jump.

@@ -25,7 +25,7 @@ var Admin embed.FS
 
 // Sample holds the example show (script + placeholder images).
 //
-//go:embed sample/sample-script.md sample/assets
+//go:embed sample/sample-script.md sample/sample-script.es.md sample/assets
 var Sample embed.FS
 
 // Help holds the help topics (Markdown), named admin-*.md and operator-*.md.

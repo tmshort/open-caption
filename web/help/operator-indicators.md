@@ -4,7 +4,7 @@
 |--------------|---------------|
 | Green dot at the top right | Connected to the server. Red means the connection dropped; the page reconnects by itself |
 | **● LIVE** | The show has started (at least one line has been sent) |
-| People icon and a number | How many audience devices are connected |
+| People icon and a number | How many audience devices are connected. With several languages the number is followed by a count per language, such as `(en 60 · es 23)` |
 | **You are in control** | Your keys control the show |
 | **Another operator is in control** | You can watch but not send. **Take over** takes control from them |
 | Yellow banner **Audience screen is blank** | The audience sees a blank screen (Blank or Stop was used) |

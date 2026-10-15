@@ -148,23 +148,31 @@ A leading label is a speaker if it matches `^[A-Z][A-Z0-9 .'\-]{0,29}:\s+\S`
 Escape with `\:`. A show-level theme setting controls whether speakers are
 hidden, shown as a label, or shown in per-character colors (default: label, no color).
 
-### Languages (planned; design reserved now)
+### Languages
 
-Additional languages are separate script files **identical in structure** to the
-primary one (same cues in the same order and of the same kinds), with a
-language identifier as the first directive:
+A show has one script per language, stored as `script.<code>.md` (the file name's code is the language
+code). The **main** language (the show's `language`, by default `defaults.language`, usually `en`) is
+what the operator follows; the others are **translations**. A translation starts with a language line:
 
 ```
-[language: es]
+[language: es | Español]
 ```
-The primary-language script may also declare `[language: en]`. The validator
-compares each translation against the primary and reports structural mismatches
-(cue count/kind) with line numbers. One operator NEXT advances *every*
-language to the same cue index; the operator sees the primary language.
-Image assets may differ per language by using different filenames at the same
-position. The audience gets a language automatically from the browser's `Accept-Language`
-header, can switch with a picker, and can be sent directly to `/?lang=es`
-(see doc 05). The default is `en` (the `defaults.language` setting) when nothing matches.
+
+The code should match the file name, and the optional name after `|` (written in its own language) is
+what the audience sees in the language menu. Without a name, a built-in name for the code is used.
+
+**Identical structure.** `script.CompareStructure(main, translation)` requires the same number of cues,
+in the same order, of the same kinds; captions with the same number of simultaneous voices; loops with
+the same number and kinds of items. Words, speaker names, section and note text, image names, and loop
+timings may differ. This is checked cue by cue, and the first difference is reported as an error with the
+translation's own line number (everything after it would be shifted, so later cues are not listed).
+One operator NEXT sends the same cue number in every language, so a mismatch would show the wrong line
+or run off the end. A translation that does not match is **not offered to the audience** (the other
+languages are unaffected) until it is fixed.
+
+The Setup editor can start a translation as a copy of the main script, which has the right structure
+already. Images may differ per language by using different filenames at the same position. The audience's
+language is chosen as described in doc 02 (`?lang=`, then `Accept-Language`, then the main language).
 
 ## Parsed model (Go)
 

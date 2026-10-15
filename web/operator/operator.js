@@ -211,7 +211,13 @@
     const o = p.op;
     $('show').textContent = (REHEARSAL ? 'REHEARSAL — ' : '') + (p.show.name || p.show.id || 'No show loaded');
     const live = $('live'); live.textContent = o.live ? '● LIVE' : 'NOT LIVE'; live.classList.toggle('on', o.live);
-    $('viewers').textContent = '👥 ' + p.audience;
+    const langs = p.languages || [];
+    let txt = '👥 ' + p.audience;
+    if (langs.length > 1) { // how many devices are reading each language
+      txt += ' (' + langs.map((l) => l.code + ' ' + ((p.audienceByLang || {})[l.code] || 0)).join(' · ') + ')';
+    }
+    $('viewers').textContent = txt;
+    $('viewers').title = langs.length > 1 ? 'Audience devices by language: ' + langs.map((l) => l.name + ' ' + ((p.audienceByLang || {})[l.code] || 0)).join(', ') + '. You are following ' + langs[0].name + '.' : 'Audience devices connected';
     const mine = isController();
     document.body.classList.toggle('viewonly', !mine);
     $('ctrl').textContent = mine ? 'You are in control' : (p.controller ? 'Another operator is in control' : 'Nobody is in control');

@@ -47,6 +47,11 @@ main { max-width: 70rem; margin: 0 auto; padding: 1rem; }
 .badge.active { background: var(--ok); color: #fff; } .badge.live { background: var(--bad); color: #fff; }
 
 /* script editor */
+.langtabs { display: flex; gap: .3rem; flex-wrap: wrap; margin: 0 0 .8rem; align-items: center; }
+.langtabs button.on { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); font-weight: 600; }
+.langtabs button.bad { border-color: var(--bad); }
+.langtabs small { opacity: .75; }
+.maintext { max-height: 16rem; overflow: auto; background: var(--bg); padding: .6rem; border-radius: 8px; font: .85rem/1.4 var(--mono); white-space: pre-wrap; }
 .editor-grid { display: grid; grid-template-columns: minmax(0, 3fr) minmax(16rem, 2fr); gap: 1rem; align-items: start; }
 @media (max-width: 900px) { .editor-grid { grid-template-columns: 1fr; } }
 .editor { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--panel); height: 62vh; min-height: 22rem; }

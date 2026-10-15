@@ -92,6 +92,14 @@ body.projector #dot:not(.off) { display: none; }
 #gear:hover, #gear:focus-visible, #gear[aria-expanded="true"] { opacity: .85; background: #8883; }
 #ctl { position: fixed; top: 3.4rem; right: 8px; z-index: 9; display: flex; gap: .4rem; padding: .5rem; border-radius: 10px; background: var(--bg); border: 1px solid var(--fg); }
 #ctl[hidden] { display: none; }
+/* Language menu: only present when the show has more than one language. */
+#langbtn { position: fixed; top: 6px; left: 6px; z-index: 9; width: 2.75rem; height: 2.75rem; border: 0; border-radius: 50%; background: transparent; color: var(--fg); font-size: 1.2rem; opacity: .22; cursor: pointer; }
+#langbtn:hover, #langbtn:focus-visible, #langbtn[aria-expanded="true"] { opacity: .9; background: #8883; }
+#langbtn[hidden], #langmenu[hidden] { display: none; }
+#langmenu { position: fixed; top: 3.4rem; left: 8px; z-index: 9; display: flex; flex-direction: column; gap: .3rem; padding: .5rem; border-radius: 10px; background: var(--bg); border: 1px solid var(--fg); max-height: 70vh; overflow: auto; }
+#langmenu button { text-align: start; min-height: 2.75rem; padding: 0 1rem; border: 1px solid var(--fg); border-radius: 8px; background: var(--bg); color: var(--fg); font: 600 1.05rem var(--font); cursor: pointer; }
+#langmenu button[aria-current="true"] { background: var(--fg); color: var(--bg); }
+body.projector #langbtn, body.projector #langmenu { display: none; }
 #ctl { flex-wrap: wrap; max-width: calc(100vw - 16px); }
 #ctl button[aria-pressed="true"] { background: var(--fg); color: var(--bg); }
 #ctl select { min-height: 2.75rem; padding: 0 .6rem; border: 1px solid var(--fg); border-radius: 8px; background: var(--bg); color: var(--fg); font: 600 1rem var(--font); }

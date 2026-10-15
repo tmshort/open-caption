@@ -6,7 +6,50 @@
   const projector = params.get('display') === 'projector';
   if (projector) document.body.classList.add('projector');
 
-  const state = { mode: 'idle', scrollback: [], fullscreen: null, theme: {}, speakers: [] };
+  const state = { mode: 'idle', scrollback: [], fullscreen: null, theme: {}, speakers: [], lang: 'en', languages: [] };
+
+  // The page's own labels, in the languages we have translations for (others show English).
+  const I18N = {
+    en: { reconnecting: 'Reconnecting…', tip: 'Tip: turn off Auto-Lock in your device settings so the screen stays on during the show.', textSize: 'Text size and colors', yourDisplay: 'Your display', smaller: 'Smaller text', bigger: 'Larger text', darkOnLight: 'Dark on light', lightOnDark: 'Light on dark', fontAsChosen: 'Font: as chosen', fontDyslexic: 'Dyslexia-friendly font', fontHyper: 'High-legibility font', language: 'Language' },
+    es: { reconnecting: 'Reconectando…', tip: 'Consejo: desactiva el bloqueo automático para que la pantalla siga encendida durante la función.', textSize: 'Tamaño del texto y colores', yourDisplay: 'Tu pantalla', smaller: 'Texto más pequeño', bigger: 'Texto más grande', darkOnLight: 'Oscuro sobre claro', lightOnDark: 'Claro sobre oscuro', fontAsChosen: 'Fuente: la del espectáculo', fontDyslexic: 'Fuente para dislexia', fontHyper: 'Fuente de alta legibilidad', language: 'Idioma' },
+    fr: { reconnecting: 'Reconnexion…', tip: "Astuce : désactivez le verrouillage automatique pour que l'écran reste allumé pendant le spectacle.", textSize: 'Taille du texte et couleurs', yourDisplay: 'Votre affichage', smaller: 'Texte plus petit', bigger: 'Texte plus grand', darkOnLight: 'Sombre sur clair', lightOnDark: 'Clair sur sombre', fontAsChosen: 'Police : celle du spectacle', fontDyslexic: 'Police pour la dyslexie', fontHyper: 'Police très lisible', language: 'Langue' },
+    de: { reconnecting: 'Verbindung wird wiederhergestellt …', tip: 'Tipp: Schalten Sie die automatische Sperre aus, damit der Bildschirm während der Vorstellung an bleibt.', textSize: 'Textgröße und Farben', yourDisplay: 'Ihre Anzeige', smaller: 'Kleinerer Text', bigger: 'Größerer Text', darkOnLight: 'Dunkel auf hell', lightOnDark: 'Hell auf dunkel', fontAsChosen: 'Schrift: wie vorgegeben', fontDyslexic: 'Schrift für Legasthenie', fontHyper: 'Gut lesbare Schrift', language: 'Sprache' },
+    it: { reconnecting: 'Riconnessione…', tip: 'Suggerimento: disattiva il blocco automatico per tenere lo schermo acceso durante lo spettacolo.', textSize: 'Dimensione del testo e colori', yourDisplay: 'Il tuo schermo', smaller: 'Testo più piccolo', bigger: 'Testo più grande', darkOnLight: 'Scuro su chiaro', lightOnDark: 'Chiaro su scuro', fontAsChosen: 'Carattere: quello dello spettacolo', fontDyslexic: 'Carattere per la dislessia', fontHyper: 'Carattere ad alta leggibilità', language: 'Lingua' },
+    pt: { reconnecting: 'Reconectando…', tip: 'Dica: desative o bloqueio automático para a tela continuar acesa durante o espetáculo.', textSize: 'Tamanho do texto e cores', yourDisplay: 'Sua tela', smaller: 'Texto menor', bigger: 'Texto maior', darkOnLight: 'Escuro sobre claro', lightOnDark: 'Claro sobre escuro', fontAsChosen: 'Fonte: a do espetáculo', fontDyslexic: 'Fonte para dislexia', fontHyper: 'Fonte de alta legibilidade', language: 'Idioma' },
+  };
+  const tr = (k) => (I18N[(state.lang || 'en').split('-')[0]] || I18N.en)[k] || I18N.en[k];
+  function applyI18n() {
+    document.documentElement.lang = state.lang || 'en';
+    $('offline').textContent = tr('reconnecting');
+    $('tip').textContent = tr('tip');
+    $('gear').setAttribute('aria-label', tr('textSize'));
+    $('ctl').setAttribute('aria-label', tr('yourDisplay'));
+    $('smaller').setAttribute('aria-label', tr('smaller'));
+    $('bigger').setAttribute('aria-label', tr('bigger'));
+    const fs = $('fontsel');
+    fs.setAttribute('aria-label', tr('fontAsChosen').split(':')[0]);
+    fs.options[0].text = tr('fontAsChosen'); fs.options[1].text = tr('fontDyslexic'); fs.options[2].text = tr('fontHyper');
+    $('langbtn').setAttribute('aria-label', tr('language'));
+    $('langmenu').setAttribute('aria-label', tr('language'));
+    paintLocal();
+  }
+
+  // The language menu: choosing a language reloads the page at /?lang=xx, so that address can also be shared.
+  function buildLangMenu() {
+    const langs = state.languages || [];
+    $('langbtn').hidden = langs.length < 2;
+    const menu = $('langmenu');
+    menu.replaceChildren(...langs.map((l) => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.textContent = l.name; b.lang = l.code; b.dir = 'auto';
+      b.setAttribute('role', 'menuitem');
+      if (l.code === state.lang) b.setAttribute('aria-current', 'true');
+      b.addEventListener('click', () => { const u = new URL(location.href); u.searchParams.set('lang', l.code); location.href = u.toString(); });
+      return b;
+    }));
+    if (langs.length < 2) menu.hidden = true;
+  }
+  $('langbtn').addEventListener('click', () => { const open = $('langmenu').hidden; $('langmenu').hidden = !open; $('langbtn').setAttribute('aria-expanded', String(open)); });
   const preloaded = new Set();
   let es = null, lastEvent = 0, backoff = 500, offlineTimer = null, retryTimer = null;
 
@@ -36,7 +79,7 @@
       r.setProperty('--accent', t.accent || t.fg || '#ffffff');
     }
     $('scheme').setAttribute('aria-pressed', String(lightScheme));
-    $('scheme').textContent = lightScheme ? 'Light on dark' : 'Dark on light';
+    $('scheme').textContent = lightScheme ? tr('lightOnDark') : tr('darkOnLight');
   }
   $('gear').addEventListener('click', () => { const open = $('ctl').hidden; $('ctl').hidden = !open; $('gear').setAttribute('aria-expanded', String(open)); });
   $('bigger').addEventListener('click', () => { localStep = Math.min(6, localStep + 1); store.set('oc.step', String(localStep)); paintLocal(); });
@@ -164,8 +207,10 @@
   // ---- event handling ----
   const on = {
     snapshot(d) {
-      Object.assign(state, { mode: d.mode, scrollback: d.scrollback || [], fullscreen: d.fullscreen, speakers: d.speakers || [] });
+      Object.assign(state, { mode: d.mode, scrollback: d.scrollback || [], fullscreen: d.fullscreen, speakers: d.speakers || [], lang: d.lang || 'en', languages: d.languages || [] });
       applyTheme(d.theme || {});
+      applyI18n();
+      buildLangMenu();
       renderAll();
       preload(d.preload);
     },
