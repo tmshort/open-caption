@@ -23,7 +23,7 @@ OPHELIA: My *lord*?
 
 ## Tornare a una versione precedente
 
-A ogni salvataggio viene conservata la versione sostituita (le ultime 50 per ogni lingua). Fai clic su **Versioni precedenti…** sopra l'editor, scegli un'ora e premi **Carica**. Questo mette solo il vecchio testo nell'editor; nulla cambia finché non premi **Salva**, quindi puoi prima guardare. L'esportazione non include le versioni precedenti.
+A ogni salvataggio viene conservata la versione sostituita (le ultime 50 per ogni lingua). Fai clic su **Versioni precedenti…** sopra l'editor, scegli un'ora e premi **Carica**. Questo mette solo il vecchio testo nell'editor; nulla cambia finché non premi **Salva**, quindi puoi prima guardare. **Confronta** mostra, riga per riga, cosa cambierebbe caricando una versione. Una versione a cui dai un nome (nella casella accanto, oppure con **Conserva** per dare un nome a ciò che è salvato adesso) non viene mai dimenticata, per quanti salvataggi seguano. L'esportazione non include le versioni precedenti.
 
 ## Impostazioni dello spettacolo: il titolo e l'aspetto
 

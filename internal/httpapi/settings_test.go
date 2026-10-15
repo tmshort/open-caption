@@ -606,3 +606,30 @@ func TestHelpIsAvailableInEveryLanguage(t *testing.T) {
 		t.Error("English search must not find German words")
 	}
 }
+
+func TestNamingAndKeepingVersionsOverTheAPI(t *testing.T) {
+	_, _, c := serverWith(t, nil)
+	id := createShow(t, c, "Names")
+	putFile(t, c, id, "", titled("Names", "First"))
+	putFile(t, c, id, "", titled("Names", "Second"))
+	_, r := c.do("GET", "/api/admin/shows/"+id+"/showfile/history", nil)
+	v0 := r["versions"].([]any)[0].(map[string]any)["id"].(string)
+	if code, _ := c.do("PUT", "/api/admin/shows/"+id+"/showfile/history/"+v0+"/label", map[string]string{"label": "Dress rehearsal"}); code != 200 {
+		t.Fatalf("label: %d", code)
+	}
+	code, k := c.do("POST", "/api/admin/shows/"+id+"/showfile/history", map[string]string{"label": "Opening night"})
+	if code != 201 || k["label"] != "Opening night" {
+		t.Fatalf("keep: %d %v", code, k)
+	}
+	_, r = c.do("GET", "/api/admin/shows/"+id+"/showfile/history", nil)
+	labels := toJSON(r["versions"])
+	if !strings.Contains(labels, "Dress rehearsal") || !strings.Contains(labels, "Opening night") {
+		t.Errorf("%s", labels)
+	}
+	if code, _ := c.do("POST", "/api/admin/shows/"+id+"/showfile/history", map[string]string{"label": ""}); code != 400 {
+		t.Errorf("empty name: %d", code)
+	}
+	if code, _ := c.do("PUT", "/api/admin/shows/"+id+"/showfile/history/20260101T000000.000Z/label", map[string]string{"label": "x"}); code != 404 {
+		t.Errorf("unknown version: %d", code)
+	}
+}

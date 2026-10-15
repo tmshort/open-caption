@@ -519,5 +519,15 @@ OCI18n.add("it", {
  "Could not read the log.": "Impossibile leggere il registro.",
  "Space": "Spazio",
  "Backspace": "Backspace",
- "Shift+Q": "Maiusc+Q"
+ "Shift+Q": "Maiusc+Q",
+ "The two versions are too different to compare line by line.": "Le due versioni sono troppo diverse per essere confrontate riga per riga.",
+ "Identical to what is in the editor now.": "Identica a ciò che c'è ora nell'editor.",
+ "… {n} unchanged line(s) …": "… {n} riga/righe invariata/e …",
+ "Loading this version would add {added} line(s) and remove {removed} line(s).": "Caricare questa versione aggiungerebbe {added} riga/righe e ne rimuoverebbe {removed}.",
+ "Compare": "Confronta",
+ "Name this version…": "Dai un nome a questa versione…",
+ "Keep the saved version as…": "Conserva la versione salvata come…",
+ "Named versions are never forgotten. Use Keep to name what is saved now (for example “Opening night”), or name any version below. Compare shows what loading it would change.": "Le versioni con nome non vengono mai dimenticate. Usa Conserva per dare un nome a ciò che è salvato adesso (per esempio «Prima serata»), oppure dai un nome a una qualsiasi versione qui sotto. Confronta mostra cosa cambierebbe caricandola.",
+ "Keep": "Conserva",
+ "the name must be 1 to 80 characters on one line": "il nome deve avere da 1 a 80 caratteri su una sola riga"
 });

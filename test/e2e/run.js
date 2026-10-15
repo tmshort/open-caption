@@ -297,6 +297,13 @@ async function main() {
     await arch.evaluate(() => document.querySelector('ul.versions li button').click());
     await arch.waitForFunction(() => document.querySelector('.editor textarea').value.includes('First draft'), { timeout: 8000 }).catch(() => {});
     check('an earlier version can be loaded into the editor', await arch.evaluate(() => document.querySelector('.editor textarea').value.includes('First draft')));
+    await click(arch, 'Earlier versions'); await arch.waitForSelector('dialog[open] ul.versions li button');
+    await arch.evaluate(() => [...document.querySelectorAll('ul.versions li button')].filter((x) => x.textContent === 'Compare').pop().click());
+    await arch.waitForSelector('dialog[open] pre.diff', { timeout: T(8000) }).catch(() => {});
+    check('Compare shows what loading a version would change', await arch.evaluate(() => { const d = document.querySelector('pre.diff'); return !!d && /First draft/.test((d.querySelector('.d-del') || {}).textContent || ''); }));
+    await arch.type('dialog[open] ul.versions input.vname', 'Dress rehearsal'); await arch.keyboard.press('Tab'); await sleep(500);
+    const hist = JSON.stringify((await api(arch, 'GET', '/api/admin/shows/' + lastId + '/showfile/history')).body); check('a version can be given a name', hist.includes('Dress rehearsal'), hist);
+    await arch.evaluate(() => document.getElementById('dlgok').click()); await sleep(300);
     check('loading it changes nothing until Save', (await arch.evaluate(() => document.querySelector('.editor textarea').value)) !== (await api(arch, 'GET', '/api/admin/shows/' + lastId + '/showfile')).body.text);
     await step(arch, 'Shows'); await arch.waitForSelector('.card.show');
     await onCard('Archive'); await sleep(700);

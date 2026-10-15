@@ -201,7 +201,7 @@ Il passo **Aspetto** della configurazione scrive questo blocco per te, e puoi mo
 
 ### Tornare indietro
 
-Ogni salvataggio conserva la versione sostituita (le ultime 50). **Versioni precedenti…** sopra l'editor le elenca; **Carica** ne mette una nell'editor, e **Salva** la rende attuale. Esporta comunque prima dello spettacolo: le versioni precedenti vivono nella cartella dati, non nell'esportazione.
+Ogni salvataggio conserva la versione sostituita (le ultime 50). **Versioni precedenti…** sopra l'editor le elenca; **Carica** ne mette una nell'editor, e **Salva** la rende attuale. **Confronta** mostra riga per riga cosa cambierebbe caricandone una, e una versione a cui dai un nome (o **Conserva** per ciò che è salvato adesso) non viene mai dimenticata. Esporta comunque prima dello spettacolo: le versioni precedenti vivono nella cartella dati, non nell'esportazione.
 
 ### Due persone che modificano
 

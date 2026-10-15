@@ -418,3 +418,55 @@ func TestOnlyTheNewestVersionsAreKept(t *testing.T) {
 		t.Errorf("newest kept version has %d characters", len(txt))
 	}
 }
+
+func TestNamedVersionsAreKeptForGood(t *testing.T) {
+	s := newStore(t)
+	m, _ := s.Create("Named", "v0")
+	s.WriteShowFile(m.ID, "", "v1")
+	hist, _ := s.History(m.ID, "")
+	if len(hist) != 1 {
+		t.Fatalf("%+v", hist)
+	}
+	if err := s.LabelVersion(m.ID, "", hist[0].ID, "  Before the cast change "); err != nil {
+		t.Fatal(err)
+	}
+	if h, _ := s.History(m.ID, ""); h[0].Label != "Before the cast change" {
+		t.Errorf("%+v", h)
+	}
+	// Keep what is saved now under a name, and push far more than MaxHistory ordinary versions through.
+	kept, err := s.KeepVersion(m.ID, "", "Opening night")
+	if err != nil || kept.Label != "Opening night" {
+		t.Fatalf("%v %+v", err, kept)
+	}
+	for i := 0; i < MaxHistory+10; i++ {
+		s.WriteShowFile(m.ID, "", strings.Repeat("x", i+2))
+	}
+	h, _ := s.History(m.ID, "")
+	named := map[string]bool{}
+	for _, v := range h {
+		if v.Label != "" {
+			named[v.Label] = true
+		}
+	}
+	if !named["Before the cast change"] || !named["Opening night"] || len(h) != MaxHistory+2 {
+		t.Errorf("named versions must survive pruning: %v (%d versions)", named, len(h))
+	}
+	if txt, _ := s.ReadHistory(m.ID, "", kept.ID); !strings.HasSuffix(txt, "v1") {
+		t.Errorf("%q", txt)
+	}
+	// Removing the name makes it an ordinary version again; bad names and unknown versions are refused.
+	if err := s.LabelVersion(m.ID, "", kept.ID, ""); err != nil {
+		t.Error(err)
+	}
+	for _, bad := range []string{strings.Repeat("a", MaxLabel+1), "two\nlines"} {
+		if err := s.LabelVersion(m.ID, "", h[0].ID, bad); !errors.Is(err, ErrBadLabel) {
+			t.Errorf("%q: %v", bad, err)
+		}
+	}
+	if _, err := s.KeepVersion(m.ID, "", "  "); !errors.Is(err, ErrBadLabel) {
+		t.Errorf("%v", err)
+	}
+	if err := s.LabelVersion(m.ID, "", "20260101T000000.000Z", "x"); !errors.Is(err, ErrNotFound) {
+		t.Errorf("%v", err)
+	}
+}

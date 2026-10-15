@@ -201,7 +201,7 @@ Der Schritt **Erscheinungsbild** der Einrichtung schreibt diesen Block für Sie,
 
 ### Zurückgehen
 
-Jedes Speichern bewahrt die ersetzte Version auf (die letzten 50). **Frühere Versionen …** über dem Editor listet sie auf; **Laden** legt eine in den Editor, und **Speichern** macht sie aktuell. Exportieren Sie vor der Show trotzdem: Die früheren Versionen liegen im Datenordner, nicht im Export.
+Jedes Speichern bewahrt die ersetzte Version auf (die letzten 50). **Frühere Versionen …** über dem Editor listet sie auf; **Laden** legt eine in den Editor, und **Speichern** macht sie aktuell. **Vergleichen** zeigt Zeile für Zeile, was das Laden einer Version ändern würde, und eine Version, der Sie einen Namen geben (oder **Behalten** für das, was jetzt gespeichert ist), wird nie vergessen. Exportieren Sie vor der Show trotzdem: Die früheren Versionen liegen im Datenordner, nicht im Export.
 
 ### Zwei Personen bearbeiten gleichzeitig
 

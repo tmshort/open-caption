@@ -201,7 +201,7 @@ The **Look** step in Setup writes this block for you, and you can edit it by han
 
 ### Going back
 
-Each save keeps the version it replaced (the last 50). **Earlier versions…** above the editor lists them; **Load** puts one in the editor, and **Save** makes it current. Export before the show anyway: the earlier versions live in the data folder, not in the export.
+Each save keeps the version it replaced (the last 50). **Earlier versions…** above the editor lists them; **Load** puts one in the editor, and **Save** makes it current. **Compare** shows line by line what loading one would change, and a version you give a name to (or **Keep** for what is saved now) is never forgotten. Export before the show anyway: the earlier versions live in the data folder, not in the export.
 
 ### Two people editing
 

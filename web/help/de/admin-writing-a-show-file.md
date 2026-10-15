@@ -23,7 +23,7 @@ OPHELIA: My *lord*?
 
 ## Zu einer früheren Version zurückgehen
 
-Bei jedem Speichern wird die ersetzte Version aufbewahrt (die letzten 50 je Sprache). Klicken Sie über dem Editor auf **Frühere Versionen …**, wählen Sie eine Zeit und klicken Sie auf **Laden**. Das legt nur den alten Text in den Editor; erst mit **Speichern** ändert sich etwas, Sie können also erst einmal nachsehen. Der Export enthält die früheren Versionen nicht.
+Bei jedem Speichern wird die ersetzte Version aufbewahrt (die letzten 50 je Sprache). Klicken Sie über dem Editor auf **Frühere Versionen …**, wählen Sie eine Zeit und klicken Sie auf **Laden**. Das legt nur den alten Text in den Editor; erst mit **Speichern** ändert sich etwas, Sie können also erst einmal nachsehen. **Vergleichen** zeigt Zeile für Zeile, was das Laden einer Version ändern würde. Eine Version, der Sie einen Namen geben (im Feld daneben, oder mit **Behalten**, um zu benennen, was jetzt gespeichert ist), wird nie vergessen, egal wie viele Speicherungen folgen. Der Export enthält die früheren Versionen nicht.
 
 ## Show-Einstellungen: der Titel und das Erscheinungsbild
 

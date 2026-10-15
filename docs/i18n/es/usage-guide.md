@@ -201,7 +201,7 @@ El paso **Aspecto** de Configuración escribe este bloque por usted, y también 
 
 ### Volver atrás
 
-Cada guardado conserva la versión que reemplazó (las últimas 50). **Versiones anteriores…** sobre el editor las enumera; **Cargar** pone una en el editor, y **Guardar** la hace actual. Exporte antes del espectáculo de todos modos: las versiones anteriores viven en la carpeta de datos, no en la exportación.
+Cada guardado conserva la versión que reemplazó (las últimas 50). **Versiones anteriores…** sobre el editor las enumera; **Cargar** pone una en el editor, y **Guardar** la hace actual. **Comparar** muestra línea a línea qué cambiaría al cargar una, y una versión a la que ponga nombre (o **Conservar** para lo que está guardado ahora) nunca se olvida. Exporte antes del espectáculo de todos modos: las versiones anteriores viven en la carpeta de datos, no en la exportación.
 
 ### Dos personas editando
 

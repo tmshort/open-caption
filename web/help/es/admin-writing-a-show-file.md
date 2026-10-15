@@ -23,7 +23,7 @@ OPHELIA: My *lord*?
 
 ## Volver a una versión anterior
 
-Cada vez que guarda, se conserva la versión que reemplazó (las últimas 50 de cada idioma). Pulse **Versiones anteriores…** sobre el editor, elija una hora y pulse **Cargar**. Eso solo pone el texto antiguo en el editor; nada cambia hasta que pulse **Guardar**, así que puede mirar primero. La exportación no incluye las versiones anteriores.
+Cada vez que guarda, se conserva la versión que reemplazó (las últimas 50 de cada idioma). Pulse **Versiones anteriores…** sobre el editor, elija una hora y pulse **Cargar**. Eso solo pone el texto antiguo en el editor; nada cambia hasta que pulse **Guardar**, así que puede mirar primero. **Comparar** muestra, línea a línea, qué cambiaría al cargar una versión. Una versión a la que ponga nombre (en el cuadro junto a ella, o con **Conservar** para dar nombre a lo que está guardado ahora) nunca se olvida, por muchos guardados que sigan. La exportación no incluye las versiones anteriores.
 
 ## Ajustes del espectáculo: el título y el aspecto
 

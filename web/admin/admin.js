@@ -10,6 +10,7 @@
   // ---- helpers ----
   function h(tag, attrs, ...kids) {
     const e = document.createElement(tag);
+    if (tag === 'button' && !(attrs && attrs.type)) e.setAttribute('type', 'button'); // never submit the dialog's form by accident
     for (const [k, v] of Object.entries(attrs || {})) {
       if (v === false || v == null) continue;
       if (k === 'class') e.className = v;
@@ -53,6 +54,25 @@
     });
   }
   const confirmBox = (title, text, ok, danger) => ask(title, h('p', {}, text), ok, { danger });
+  // Line-by-line difference between two lists of lines: [{t: 'same' | 'add' | 'del', s}] (null if they are too big to compare).
+  function lineDiff(a, b) {
+    let p = 0; while (p < a.length && p < b.length && a[p] === b[p]) p++;
+    let q = 0; while (q < a.length - p && q < b.length - p && a[a.length - 1 - q] === b[b.length - 1 - q]) q++;
+    const A = a.slice(p, a.length - q), B = b.slice(p, b.length - q), N = A.length, M = B.length;
+    if ((N + 1) * (M + 1) > 6e6) return null;
+    const w = M + 1, dp = new Uint32Array((N + 1) * w);
+    for (let i = N - 1; i >= 0; i--) for (let j = M - 1; j >= 0; j--) dp[i * w + j] = A[i] === B[j] ? dp[(i + 1) * w + j + 1] + 1 : Math.max(dp[(i + 1) * w + j], dp[i * w + j + 1]);
+    const out = a.slice(0, p).map((s) => ({ t: 'same', s }));
+    let i = 0, j = 0;
+    while (i < N && j < M) {
+      if (A[i] === B[j]) { out.push({ t: 'same', s: A[i] }); i++; j++; }
+      else if (dp[(i + 1) * w + j] >= dp[i * w + j + 1]) out.push({ t: 'del', s: A[i++] });
+      else out.push({ t: 'add', s: B[j++] });
+    }
+    while (i < N) out.push({ t: 'del', s: A[i++] });
+    while (j < M) out.push({ t: 'add', s: B[j++] });
+    return out.concat(a.slice(a.length - q).map((s) => ({ t: 'same', s })));
+  }
   const fmtSize = (n) => (n >= 1 << 20 ? (n / (1 << 20)).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB');
   const curShow = () => A.shows.find((s) => s.id === A.cur && !s.archived) || null;
   const unarchived = () => A.shows.filter((s) => !s.archived);
@@ -443,20 +463,69 @@
     // Every save keeps the version it replaced (the last 50). Choosing one only fills the editor: nothing is
     // changed until Save is pressed, so it goes through the same live-show and conflict checks.
     async function showHistory() {
-      const r = await api('GET', '/api/admin/shows/' + show.id + '/showfile/history' + q);
+      const base = '/api/admin/shows/' + show.id + '/showfile/history';
+      const r = await api('GET', base + q);
       if (!r.ok) return fail(r);
-      const versions = r.data.versions;
+      let versions = r.data.versions;
+      const list = h('ul', { class: 'versions' }), diffBox = h('div', { class: 'diffbox' });
+      const when = (v) => new Date(v.time).toLocaleString(OCI18n.lang);
+      const text = async (v) => { const t = await api('GET', base + '/' + v.id + q); if (!t.ok) { fail(t); return null; } return t.data.text; };
       const load = async (v) => {
-        const t = await api('GET', '/api/admin/shows/' + show.id + '/showfile/history/' + v.id + q);
-        if (!t.ok) return fail(t);
+        const t = await text(v); if (t === null) return;
         $('dlg').close('cancel');
-        ta.value = t.data.text; changed(); toast(__('Loaded the version from {when}. Press Save to keep it.', { when: new Date(v.time).toLocaleString(OCI18n.lang) }));
+        ta.value = t; changed(); toast(__('Loaded the version from {when}. Press Save to keep it.', { when: when(v) }));
       };
-      const body = versions.length
-        ? h('div', {}, h('p', { class: 'hint' }, __('Each time you save, the version it replaced is kept (the last 50). Choosing one puts it in the editor; nothing changes until you press Save.')),
-          h('ul', { class: 'versions' }, ...versions.map((v) => h('li', {}, h('button', { onclick: () => load(v) }, __('Load')), ' ' + new Date(v.time).toLocaleString(OCI18n.lang) + ' · ' + __('{n} lines', { n: v.lines })))))
-        : h('p', {}, __('There are no earlier versions yet. After the next save, the version it replaces will be listed here.'));
-      await ask(A.lang ? __('Earlier versions ({name})', { name: cur.name }) : __('Earlier versions'), body, __('Close'), { noCancel: true });
+      // What loading the version would change in the editor, line by line.
+      const compare = async (v) => {
+        const t = await text(v); if (t === null) return;
+        const d = lineDiff(ta.value.split('\n'), t.split('\n'));
+        if (!d) { diffBox.replaceChildren(h('p', { class: 'hint' }, __('The two versions are too different to compare line by line.'))); return; }
+        const added = d.filter((x) => x.t === 'add').length, removed = d.filter((x) => x.t === 'del').length;
+        if (!added && !removed) { diffBox.replaceChildren(h('p', { class: 'hint' }, __('Identical to what is in the editor now.'))); return; }
+        const rows = [];
+        for (let i = 0; i < d.length;) {
+          if (d[i].t !== 'same') { rows.push(h('div', { class: 'd-' + d[i].t }, (d[i].t === 'add' ? '+ ' : '− ') + d[i].s)); i++; continue; }
+          let j = i; while (j < d.length && d[j].t === 'same') j++;
+          const run = d.slice(i, j), first = i === 0, last = j === d.length;
+          const keepHead = first ? 0 : 2, keepTail = last ? 0 : 2;
+          if (run.length > keepHead + keepTail + 2) {
+            run.slice(0, keepHead).forEach((x) => rows.push(h('div', { class: 'd-same' }, '  ' + x.s)));
+            rows.push(h('div', { class: 'd-skip' }, __('… {n} unchanged line(s) …', { n: run.length - keepHead - keepTail })));
+            run.slice(run.length - keepTail).forEach((x) => rows.push(h('div', { class: 'd-same' }, '  ' + x.s)));
+          } else run.forEach((x) => rows.push(h('div', { class: 'd-same' }, '  ' + x.s)));
+          i = j;
+        }
+        diffBox.replaceChildren(h('p', { class: 'hint', role: 'status' }, __('Loading this version would add {added} line(s) and remove {removed} line(s).', { added, removed })), h('pre', { class: 'diff', tabindex: '0', 'aria-label': __('Compare') }, ...rows));
+      };
+      const paint = () => {
+        list.replaceChildren(...versions.map((v) => {
+          const name = h('input', { type: 'text', maxlength: '80', placeholder: __('Name this version…'), 'aria-label': __('Name this version…'), class: 'vname' });
+          name.value = v.label || '';
+          name.addEventListener('change', async () => {
+            const x = await api('PUT', base + '/' + v.id + '/label' + q, { label: name.value });
+            if (!x.ok) { fail(x); name.value = v.label || ''; return; }
+            v.label = name.value.trim(); toast(__('Saved'));
+          });
+          return h('li', {}, h('button', { onclick: () => load(v) }, __('Load')), ' ', h('button', { onclick: () => compare(v) }, __('Compare')), ' ',
+            h('span', {}, when(v) + ' · ' + __('{n} lines', { n: v.lines })), ' ', name);
+        }));
+      };
+      paint();
+      const keepName = h('input', { type: 'text', maxlength: '80', placeholder: __('Keep the saved version as…'), 'aria-label': __('Keep the saved version as…'), class: 'vname' });
+      const keep = async () => {
+        if (!keepName.value.trim()) { keepName.focus(); return; }
+        const x = await api('POST', base + q, { label: keepName.value });
+        if (!x.ok) return fail(x);
+        versions = [x.data].concat(versions); keepName.value = ''; paint(); toast(__('Saved'));
+      };
+      keepName.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); keep(); } });
+      const body = h('div', {},
+        h('p', { class: 'hint' }, __('Each time you save, the version it replaced is kept (the last 50). Choosing one puts it in the editor; nothing changes until you press Save.')),
+        h('p', { class: 'hint' }, __('Named versions are never forgotten. Use Keep to name what is saved now (for example “Opening night”), or name any version below. Compare shows what loading it would change.')),
+        h('div', { class: 'row' }, keepName, h('button', { onclick: keep }, __('Keep'))),
+        versions.length ? list : h('p', {}, __('There are no earlier versions yet. After the next save, the version it replaces will be listed here.')), diffBox);
+      list.hidden = false;
+      await ask(A.lang ? __('Earlier versions ({name})', { name: cur.name }) : __('Earlier versions'), body, __('Close'), { noCancel: true, wide: true });
     }
     async function refreshLangs() {
       const x = await api('GET', '/api/admin/shows/' + show.id + '/languages');

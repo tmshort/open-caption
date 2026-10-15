@@ -7,6 +7,7 @@ package show
 import (
 	"crypto/rand"
 	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -543,6 +544,98 @@ type Version struct {
 	Time  time.Time `json:"time"`
 	Lines int       `json:"lines"`
 	Bytes int       `json:"bytes"`
+	Label string    `json:"label,omitempty"` // a name given to the version; a named version is never forgotten
+}
+
+// MaxLabel is the longest name a version may be given.
+const MaxLabel = 80
+
+var ErrBadLabel = errors.New("the name must be 1 to 80 characters on one line")
+
+func (s *Store) labelsPath(id string) (string, error) { return s.path(id, "history", "labels.json") }
+
+func (s *Store) readLabels(id string) map[string]string {
+	out := map[string]string{}
+	if p, err := s.labelsPath(id); err == nil {
+		if b, err := os.ReadFile(p); err == nil {
+			json.Unmarshal(b, &out)
+		}
+	}
+	return out
+}
+
+func (s *Store) writeLabels(id string, m map[string]string) error {
+	p, err := s.labelsPath(id)
+	if err != nil {
+		return err
+	}
+	if err := os.MkdirAll(filepath.Dir(p), 0o755); err != nil {
+		return err
+	}
+	b, _ := json.MarshalIndent(m, "", " ")
+	return atomicWrite(p, b, 0o644)
+}
+
+func cleanLabel(s string) (string, error) {
+	s = strings.TrimSpace(s)
+	if s == "" || len([]rune(s)) > MaxLabel || strings.ContainsAny(s, "\r\n") {
+		return "", ErrBadLabel
+	}
+	return s, nil
+}
+
+// LabelVersion names an earlier version of a show file so that it is kept for good (an empty label removes the name).
+func (s *Store) LabelVersion(id, lang, version, label string) error {
+	name, err := s.fileName(id, lang)
+	if err != nil {
+		return err
+	}
+	if _, err := s.ReadHistory(id, lang, version); err != nil {
+		return err
+	}
+	labels := s.readLabels(id)
+	key := name + "." + version
+	if strings.TrimSpace(label) == "" {
+		delete(labels, key)
+	} else {
+		l, err := cleanLabel(label)
+		if err != nil {
+			return fmt.Errorf("%w", ErrBadLabel)
+		}
+		labels[key] = l
+	}
+	return s.writeLabels(id, labels)
+}
+
+// KeepVersion keeps a copy of the show file as it is saved now, under a name (for example "Opening night").
+func (s *Store) KeepVersion(id, lang, label string) (Version, error) {
+	l, err := cleanLabel(label)
+	if err != nil {
+		return Version{}, ErrBadLabel
+	}
+	name, err := s.fileName(id, lang)
+	if err != nil {
+		return Version{}, err
+	}
+	p, err := s.path(id, name)
+	if err != nil {
+		return Version{}, err
+	}
+	cur, err := os.ReadFile(p)
+	if err != nil {
+		return Version{}, ErrNotFound
+	}
+	stamp, err := s.storeVersion(id, name, cur)
+	if err != nil {
+		return Version{}, err
+	}
+	labels := s.readLabels(id)
+	labels[name+"."+stamp] = l
+	if err := s.writeLabels(id, labels); err != nil {
+		return Version{}, err
+	}
+	t, _ := time.Parse(historyStamp, stamp)
+	return Version{ID: stamp, Time: t, Bytes: len(cur), Lines: strings.Count(string(cur), "\n") + 1, Label: l}, nil
 }
 
 // snapshot keeps the file's current text in <show>/history/ before it is replaced, unless it is the same
@@ -552,9 +645,33 @@ func (s *Store) snapshot(id, name, path, newText string) {
 	if err != nil || string(old) == newText || len(strings.TrimSpace(string(old))) == 0 {
 		return
 	}
-	dir, _ := s.path(id, "history")
-	if err := os.MkdirAll(dir, 0o755); err != nil {
+	if _, err := s.storeVersion(id, name, old); err != nil {
 		return
+	}
+	dir, _ := s.path(id, "history")
+	labels := s.readLabels(id)
+	var mine []string
+	ents, _ := os.ReadDir(dir)
+	for _, e := range ents {
+		if strings.HasPrefix(e.Name(), name+".") && stampRe.MatchString(strings.TrimPrefix(e.Name(), name+".")) && labels[e.Name()] == "" {
+			mine = append(mine, e.Name()) // named versions are never forgotten
+		}
+	}
+	sort.Strings(mine)
+	for len(mine) > MaxHistory {
+		os.Remove(filepath.Join(dir, mine[0]))
+		mine = mine[1:]
+	}
+}
+
+// storeVersion writes text into the history under a fresh time stamp and returns the stamp.
+func (s *Store) storeVersion(id, name string, text []byte) (string, error) {
+	dir, err := s.path(id, "history")
+	if err != nil {
+		return "", err
+	}
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		return "", err
 	}
 	now := time.Now().UTC()
 	stamp := now.Format(historyStamp)
@@ -565,21 +682,7 @@ func (s *Store) snapshot(id, name, path, newText string) {
 		now = now.Add(time.Millisecond)
 		stamp = now.Format(historyStamp)
 	}
-	if err := atomicWrite(filepath.Join(dir, name+"."+stamp), old, 0o644); err != nil {
-		return
-	}
-	var mine []string
-	ents, _ := os.ReadDir(dir)
-	for _, e := range ents {
-		if strings.HasPrefix(e.Name(), name+".") && stampRe.MatchString(strings.TrimPrefix(e.Name(), name+".")) {
-			mine = append(mine, e.Name())
-		}
-	}
-	sort.Strings(mine)
-	for len(mine) > MaxHistory {
-		os.Remove(filepath.Join(dir, mine[0]))
-		mine = mine[1:]
-	}
+	return stamp, atomicWrite(filepath.Join(dir, name+"."+stamp), text, 0o644)
 }
 
 // History lists the earlier versions of a language's show file, newest first.
@@ -593,6 +696,7 @@ func (s *Store) History(id, lang string) ([]Version, error) {
 	}
 	dir, _ := s.path(id, "history")
 	ents, _ := os.ReadDir(dir)
+	labels := s.readLabels(id)
 	out := []Version{}
 	for _, e := range ents {
 		stamp := strings.TrimPrefix(e.Name(), name+".")
@@ -604,7 +708,7 @@ func (s *Store) History(id, lang string) ([]Version, error) {
 		if err != nil || err2 != nil {
 			continue
 		}
-		out = append(out, Version{ID: stamp, Time: t, Bytes: len(b), Lines: strings.Count(string(b), "\n") + 1})
+		out = append(out, Version{ID: stamp, Time: t, Bytes: len(b), Lines: strings.Count(string(b), "\n") + 1, Label: labels[name+"."+stamp]})
 	}
 	sort.Slice(out, func(i, j int) bool { return out[i].ID > out[j].ID })
 	return out, nil

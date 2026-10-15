@@ -201,7 +201,7 @@ A etapa **Aparência** da Configuração escreve esse bloco para você, e você 
 
 ### Voltar atrás
 
-Cada salvamento guarda a versão que substituiu (as últimas 50). **Versões anteriores…** acima do editor as lista; **Carregar** coloca uma no editor, e **Salvar** a torna atual. Exporte antes do espetáculo de qualquer jeito: as versões anteriores ficam na pasta de dados, não na exportação.
+Cada salvamento guarda a versão que substituiu (as últimas 50). **Versões anteriores…** acima do editor as lista; **Carregar** coloca uma no editor, e **Salvar** a torna atual. **Comparar** mostra linha a linha o que mudaria ao carregar uma, e uma versão a que você dá um nome (ou **Guardar** para o que está salvo agora) nunca é esquecida. Exporte antes do espetáculo de qualquer jeito: as versões anteriores ficam na pasta de dados, não na exportação.
 
 ### Duas pessoas editando
 

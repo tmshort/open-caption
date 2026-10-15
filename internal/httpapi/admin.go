@@ -194,7 +194,7 @@ func storeErr(w http.ResponseWriter, err error) {
 	switch {
 	case errors.Is(err, show.ErrNotFound):
 		writeErr(w, http.StatusNotFound, "show not found")
-	case errors.Is(err, show.ErrBadID), errors.Is(err, show.ErrBadName), errors.Is(err, show.ErrBadTheme), errors.Is(err, show.ErrBadAsset):
+	case errors.Is(err, show.ErrBadID), errors.Is(err, show.ErrBadName), errors.Is(err, show.ErrBadTheme), errors.Is(err, show.ErrBadAsset), errors.Is(err, show.ErrBadLabel):
 		writeErr(w, http.StatusBadRequest, err.Error())
 	case errors.Is(err, show.ErrTooLarge):
 		writeErr(w, http.StatusRequestEntityTooLarge, err.Error())
@@ -259,6 +259,33 @@ func (s *Server) adminRoutes(mux *http.ServeMux) {
 			return
 		}
 		writeJSON(w, http.StatusOK, map[string]any{"text": text})
+	}))
+	mux.HandleFunc("PUT /api/admin/shows/{id}/showfile/history/{version}/label", adm(func(w http.ResponseWriter, r *http.Request) {
+		var req struct {
+			Label string `json:"label"`
+		}
+		if !decode(w, r, &req) {
+			return
+		}
+		if err := s.store.LabelVersion(r.PathValue("id"), r.URL.Query().Get("lang"), r.PathValue("version"), req.Label); err != nil {
+			storeErr(w, err)
+			return
+		}
+		writeJSON(w, http.StatusOK, map[string]any{"ok": true})
+	}))
+	mux.HandleFunc("POST /api/admin/shows/{id}/showfile/history", adm(func(w http.ResponseWriter, r *http.Request) {
+		var req struct {
+			Label string `json:"label"`
+		}
+		if !decode(w, r, &req) {
+			return
+		}
+		v, err := s.store.KeepVersion(r.PathValue("id"), r.URL.Query().Get("lang"), req.Label)
+		if err != nil {
+			storeErr(w, err)
+			return
+		}
+		writeJSON(w, http.StatusCreated, v)
 	}))
 	mux.HandleFunc("POST /api/admin/shows/{id}/showfile/validate", adm(s.validateShowFile))
 	mux.HandleFunc("GET /api/admin/shows/{id}/languages", adm(s.listLanguages))

@@ -201,7 +201,7 @@ L'étape **Apparence** de la configuration écrit ce bloc pour vous, et vous pou
 
 ### Revenir en arrière
 
-Chaque enregistrement conserve la version qu'il a remplacée (les 50 dernières). **Versions antérieures…** au-dessus de l'éditeur les liste ; **Charger** en place une dans l'éditeur, et **Enregistrer** la rend courante. Exportez quand même avant le spectacle : les versions antérieures vivent dans le dossier de données, pas dans l'exportation.
+Chaque enregistrement conserve la version qu'il a remplacée (les 50 dernières). **Versions antérieures…** au-dessus de l'éditeur les liste ; **Charger** en place une dans l'éditeur, et **Enregistrer** la rend courante. **Comparer** montre ligne à ligne ce que changerait le chargement de l'une d'elles, et une version à laquelle vous donnez un nom (ou **Conserver** pour ce qui est enregistré maintenant) n'est jamais oubliée. Exportez quand même avant le spectacle : les versions antérieures vivent dans le dossier de données, pas dans l'exportation.
 
 ### Deux personnes qui modifient
 

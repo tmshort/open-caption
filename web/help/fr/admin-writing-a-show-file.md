@@ -23,7 +23,7 @@ OPHELIA: My *lord*?
 
 ## Revenir à une version antérieure
 
-À chaque enregistrement, la version remplacée est conservée (les 50 dernières pour chaque langue). Cliquez sur **Versions antérieures…** au-dessus de l'éditeur, choisissez une heure et cliquez sur **Charger**. Cela ne fait que placer l'ancien texte dans l'éditeur ; rien ne change tant que vous ne cliquez pas sur **Enregistrer**, vous pouvez donc regarder d'abord. L'exportation n'inclut pas les versions antérieures.
+À chaque enregistrement, la version remplacée est conservée (les 50 dernières pour chaque langue). Cliquez sur **Versions antérieures…** au-dessus de l'éditeur, choisissez une heure et cliquez sur **Charger**. Cela ne fait que placer l'ancien texte dans l'éditeur ; rien ne change tant que vous ne cliquez pas sur **Enregistrer**, vous pouvez donc regarder d'abord. **Comparer** montre, ligne à ligne, ce que changerait le chargement d'une version. Une version à laquelle vous donnez un nom (dans la zone à côté, ou avec **Conserver** pour nommer ce qui est enregistré maintenant) n'est jamais oubliée, quel que soit le nombre d'enregistrements qui suivent. L'exportation n'inclut pas les versions antérieures.
 
 ## Réglages du spectacle : le titre et l'apparence
 
