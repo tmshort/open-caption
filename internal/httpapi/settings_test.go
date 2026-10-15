@@ -341,3 +341,26 @@ func TestArchivingAShow(t *testing.T) {
 		t.Errorf("unknown show: %d", code)
 	}
 }
+
+func TestEarlierVersionsOfAShowFile(t *testing.T) {
+	_, _, c := serverWith(t, nil)
+	id := createShow(t, c, "Versions")
+	putFile(t, c, id, "", titled("Versions", "First draft"))
+	putFile(t, c, id, "", titled("Versions", "Second draft"))
+	_, r := c.do("GET", "/api/admin/shows/"+id+"/showfile/history", nil)
+	vs := r["versions"].([]any)
+	if len(vs) != 2 {
+		t.Fatalf("%v", r)
+	}
+	newest := vs[0].(map[string]any)["id"].(string)
+	_, v := c.do("GET", "/api/admin/shows/"+id+"/showfile/history/"+newest, nil)
+	if !strings.Contains(v["text"].(string), "First draft") {
+		t.Errorf("%v", v)
+	}
+	if code, _ := c.do("GET", "/api/admin/shows/"+id+"/showfile/history/..%2Fshow.md", nil); code != 404 && code != 400 {
+		t.Errorf("traversal: %d", code)
+	}
+	if code, _ := c.do("GET", "/api/admin/shows/missing-0000/showfile/history", nil); code != 404 {
+		t.Errorf("unknown show: %d", code)
+	}
+}

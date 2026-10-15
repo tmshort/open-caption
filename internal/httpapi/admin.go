@@ -243,6 +243,22 @@ func (s *Server) adminRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("DELETE /api/admin/shows/{id}", adm(s.deleteShow))
 	mux.HandleFunc("GET /api/admin/shows/{id}/showfile", adm(s.getShowFile))
 	mux.HandleFunc("PUT /api/admin/shows/{id}/showfile", adm(s.putShowFile))
+	mux.HandleFunc("GET /api/admin/shows/{id}/showfile/history", adm(func(w http.ResponseWriter, r *http.Request) {
+		v, err := s.store.History(r.PathValue("id"), r.URL.Query().Get("lang"))
+		if err != nil {
+			storeErr(w, err)
+			return
+		}
+		writeJSON(w, http.StatusOK, map[string]any{"versions": v})
+	}))
+	mux.HandleFunc("GET /api/admin/shows/{id}/showfile/history/{version}", adm(func(w http.ResponseWriter, r *http.Request) {
+		text, err := s.store.ReadHistory(r.PathValue("id"), r.URL.Query().Get("lang"), r.PathValue("version"))
+		if err != nil {
+			storeErr(w, err)
+			return
+		}
+		writeJSON(w, http.StatusOK, map[string]any{"text": text})
+	}))
 	mux.HandleFunc("POST /api/admin/shows/{id}/showfile/validate", adm(s.validateShowFile))
 	mux.HandleFunc("GET /api/admin/shows/{id}/languages", adm(s.listLanguages))
 	mux.HandleFunc("POST /api/admin/shows/{id}/languages", adm(s.addLanguage))

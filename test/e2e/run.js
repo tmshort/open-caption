@@ -235,6 +235,17 @@ async function main() {
     check('a show to archive is created', made.status === 201 || made.status === 200, made);
     await arch.reload(); await arch.waitForFunction(() => [...document.querySelectorAll('.card.show')].some((x) => x.textContent.includes('Last year')), { timeout: 15000 });
     const onCard = (label) => arch.evaluate((l) => { const c = [...document.querySelectorAll('.card.show')].find((x) => x.textContent.includes('Last year')); [...c.querySelectorAll('button')].find((b) => b.textContent.startsWith(l)).click(); }, label);
+    // Earlier versions: every save keeps the one it replaced.
+    const lastId = (await api(arch, 'GET', '/api/admin/shows')).body.shows.find((x) => x.name === 'Last year').id;
+    await api(arch, 'PUT', '/api/admin/shows/' + lastId + '/showfile', { text: '[settings]\ntitle: Last year\n[/settings]\nFirst draft' });
+    await api(arch, 'PUT', '/api/admin/shows/' + lastId + '/showfile', { text: '[settings]\ntitle: Last year\n[/settings]\nSecond draft' });
+    await onCard('Work on this show'); await arch.waitForSelector('.editor textarea');
+    await click(arch, 'Earlier versions'); await arch.waitForSelector('ul.versions li button');
+    await arch.evaluate(() => document.querySelector('ul.versions li button').click());
+    await arch.waitForFunction(() => document.querySelector('.editor textarea').value.includes('First draft'), { timeout: 8000 }).catch(() => {});
+    check('an earlier version can be loaded into the editor', await arch.evaluate(() => document.querySelector('.editor textarea').value.includes('First draft')));
+    check('loading it changes nothing until Save', (await arch.evaluate(() => document.querySelector('.editor textarea').value)) !== (await api(arch, 'GET', '/api/admin/shows/' + lastId + '/showfile')).body.text);
+    await step(arch, 'Shows'); await arch.waitForSelector('.card.show');
     await onCard('Archive'); await sleep(700);
     check('an archived show moves to the archive list', (await arch.evaluate(() => document.getElementById('panel').innerText)).includes('Archived shows (1)'));
     check('the archive cannot be activated from the list (it offers Restore)', await arch.evaluate(() => [...document.querySelectorAll('details.archive button')].some((b) => b.textContent === 'Restore')));

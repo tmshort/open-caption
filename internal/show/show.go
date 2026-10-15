@@ -524,7 +524,110 @@ func (s *Store) WriteShowFile(id, lang, text string) error {
 	if err != nil {
 		return err
 	}
+	s.snapshot(id, n, p, text)
 	return atomicWrite(p, []byte(text), 0o644)
+}
+
+// ---- earlier versions of a show file ----
+
+// MaxHistory is how many earlier versions of each show file are kept.
+const MaxHistory = 50
+
+const historyStamp = "20060102T150405.000Z"
+
+var stampRe = regexp.MustCompile(`^\d{8}T\d{6}\.\d{3}Z$`)
+
+// Version is one earlier version of a show file.
+type Version struct {
+	ID    string    `json:"id"`
+	Time  time.Time `json:"time"`
+	Lines int       `json:"lines"`
+	Bytes int       `json:"bytes"`
+}
+
+// snapshot keeps the file's current text in <show>/history/ before it is replaced, unless it is the same
+// as the new text, and forgets the oldest versions beyond MaxHistory. A failure here never blocks a save.
+func (s *Store) snapshot(id, name, path, newText string) {
+	old, err := os.ReadFile(path)
+	if err != nil || string(old) == newText || len(strings.TrimSpace(string(old))) == 0 {
+		return
+	}
+	dir, _ := s.path(id, "history")
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		return
+	}
+	now := time.Now().UTC()
+	stamp := now.Format(historyStamp)
+	for { // two saves in the same millisecond must not share a name
+		if _, err := os.Stat(filepath.Join(dir, name+"."+stamp)); err != nil {
+			break
+		}
+		now = now.Add(time.Millisecond)
+		stamp = now.Format(historyStamp)
+	}
+	if err := atomicWrite(filepath.Join(dir, name+"."+stamp), old, 0o644); err != nil {
+		return
+	}
+	var mine []string
+	ents, _ := os.ReadDir(dir)
+	for _, e := range ents {
+		if strings.HasPrefix(e.Name(), name+".") && stampRe.MatchString(strings.TrimPrefix(e.Name(), name+".")) {
+			mine = append(mine, e.Name())
+		}
+	}
+	sort.Strings(mine)
+	for len(mine) > MaxHistory {
+		os.Remove(filepath.Join(dir, mine[0]))
+		mine = mine[1:]
+	}
+}
+
+// History lists the earlier versions of a language's show file, newest first.
+func (s *Store) History(id, lang string) ([]Version, error) {
+	name, err := s.fileName(id, lang)
+	if err != nil {
+		return nil, err
+	}
+	if _, err := s.Get(id); err != nil {
+		return nil, err
+	}
+	dir, _ := s.path(id, "history")
+	ents, _ := os.ReadDir(dir)
+	out := []Version{}
+	for _, e := range ents {
+		stamp := strings.TrimPrefix(e.Name(), name+".")
+		if !strings.HasPrefix(e.Name(), name+".") || !stampRe.MatchString(stamp) {
+			continue
+		}
+		t, err := time.Parse(historyStamp, stamp)
+		b, err2 := os.ReadFile(filepath.Join(dir, e.Name()))
+		if err != nil || err2 != nil {
+			continue
+		}
+		out = append(out, Version{ID: stamp, Time: t, Bytes: len(b), Lines: strings.Count(string(b), "\n") + 1})
+	}
+	sort.Slice(out, func(i, j int) bool { return out[i].ID > out[j].ID })
+	return out, nil
+}
+
+// ReadHistory returns the text of one earlier version (an id from History).
+func (s *Store) ReadHistory(id, lang, version string) (string, error) {
+	name, err := s.fileName(id, lang)
+	if err != nil {
+		return "", err
+	}
+	if !stampRe.MatchString(version) {
+		return "", ErrNotFound
+	}
+	p, err := s.path(id, "history", name+"."+version)
+	if err != nil {
+		return "", err
+	}
+	b, err := os.ReadFile(p)
+	if err != nil {
+		return "", ErrNotFound
+	}
+	return string(b), nil
 }
 
 // Languages lists the languages a show has show files for, the main language first.

@@ -77,6 +77,7 @@ simultaneous shows, internet-facing deployment.
 - **REQ-052** Show file edits during a live show require confirmation (typing the show name); the cursor is preserved by cue index, with a warning if the cue count changes.
 - **REQ-055** Setup and operator pages can be limited to listed computers (`access` in `config.yaml`); the audience page is always open. Forged cross-site requests to the API are refused.
 - **REQ-056** Passwords can be changed from the Setup page, without a restart.
+- **REQ-059** Every save of a show file keeps the version it replaced (the last 50 per language), and an earlier version can be loaded back into the editor.
 - **REQ-057** Two people editing a show file do not silently overwrite each other.
 - **REQ-058** Logins, the operator's control, the show position and the last few undo steps survive a restart.
 - **REQ-053** The setup UI displays the audience URL and a QR code, plus the list of host IP addresses.

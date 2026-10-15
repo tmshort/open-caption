@@ -381,6 +381,24 @@
       toast(r.data.countChanged ? 'Saved. The number of lines changed, so check the operator’s position.' : 'Saved');
       refreshLangs();
     }
+    // Every save keeps the version it replaced (the last 50). Choosing one only fills the editor: nothing is
+    // changed until Save is pressed, so it goes through the same live-show and conflict checks.
+    async function showHistory() {
+      const r = await api('GET', '/api/admin/shows/' + show.id + '/showfile/history' + q);
+      if (!r.ok) return fail(r);
+      const versions = r.data.versions;
+      const load = async (v) => {
+        const t = await api('GET', '/api/admin/shows/' + show.id + '/showfile/history/' + v.id + q);
+        if (!t.ok) return fail(t);
+        $('dlg').close('cancel');
+        ta.value = t.data.text; changed(); toast('Loaded the version from ' + new Date(v.time).toLocaleString() + '. Press Save to keep it.');
+      };
+      const body = versions.length
+        ? h('div', {}, h('p', { class: 'hint' }, 'Each time you save, the version it replaced is kept (the last ' + 50 + '). Choosing one puts it in the editor; nothing changes until you press Save.'),
+          h('ul', { class: 'versions' }, ...versions.map((v) => h('li', {}, h('button', { onclick: () => load(v) }, 'Load'), ' ' + new Date(v.time).toLocaleString() + ' · ' + v.lines + ' lines'))))
+        : h('p', {}, 'There are no earlier versions yet. After the next save, the version it replaces will be listed here.');
+      await ask('Earlier versions' + (A.lang ? ' (' + cur.name + ')' : ''), body, 'Close', { noCancel: true });
+    }
     async function refreshLangs() {
       const x = await api('GET', '/api/admin/shows/' + show.id + '/languages');
       if (x.ok) { A.langs = x.data.languages; renderTabs(); }
@@ -475,7 +493,7 @@
       h('h2', {}, 'Show file' + (A.lang ? ' — ' + cur.name : '')),
       tabs, translating,
       h('p', { class: 'hint' }, 'This file holds everything about the show except its images: its title and look in a [settings] block, and the lines themselves. Each line is one caption; one press of the spacebar sends one line. You can paste, type, or drop a .txt or .md file. Click a problem to jump to its line.'),
-      h('div', { class: 'row' }, h('label', { class: 'row' }, 'Open a file:', fileInput), h('button', { onclick: () => openHelp('admin-writing-a-show-file') }, 'Show file help'), h('span', { class: 'grow' }), status, saveBtn),
+      h('div', { class: 'row' }, h('label', { class: 'row' }, 'Open a file:', fileInput), h('button', { onclick: () => openHelp('admin-writing-a-show-file') }, 'Show file help'), h('button', { onclick: showHistory, title: 'Each save keeps the version it replaced' }, 'Earlier versions…'), h('span', { class: 'grow' }), status, saveBtn),
       tools,
       h('div', { class: 'editor-grid' }, editor, h('div', {}, h('div', { class: 'card' }, diagTitle, diagList), h('div', { class: 'card' }, h('h3', {}, 'What the operator will step through'), cueList))),
       cheatSheet());

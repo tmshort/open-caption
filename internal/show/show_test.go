@@ -7,6 +7,7 @@ import (
 	"image/png"
 	"strings"
 	"testing"
+	"time"
 )
 
 func testDefaults() Defaults {
@@ -349,5 +350,71 @@ func TestArchiveAndRestoreAreStoredInTheShowFile(t *testing.T) {
 	imp, err := s.ImportFiles(map[string]string{"show.md": read(t, s, m.ID, "")}, " (imported)")
 	if err != nil || imp.Archived {
 		t.Errorf("import: %v %+v", err, imp)
+	}
+}
+
+func TestEverySaveKeepsTheVersionItReplaced(t *testing.T) {
+	s := newStore(t)
+	m, _ := s.Create("History", "one")
+	for _, text := range []string{"two", "two", "three\nlines", "four"} { // the repeated save changes nothing
+		if err := s.WriteShowFile(m.ID, "", text); err != nil {
+			t.Fatal(err)
+		}
+		time.Sleep(2 * time.Millisecond)
+	}
+	v, err := s.History(m.ID, "")
+	if err != nil || len(v) != 3 {
+		t.Fatalf("%v %+v", err, v)
+	}
+	if v[0].ID <= v[1].ID {
+		t.Errorf("newest first: %+v", v)
+	}
+	got := func(i int) string {
+		txt, err := s.ReadHistory(m.ID, "", v[i].ID)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return txt
+	}
+	if got(0) != "three\nlines" || got(1) != "two" || !strings.Contains(got(2), "title: History") || v[0].Lines != 2 {
+		t.Errorf("%q %q %q", got(0), got(1), got(2))
+	}
+	// Translations have their own history, and nothing outside it can be read.
+	s.WriteShowFile(m.ID, "es", "uno")
+	s.WriteShowFile(m.ID, "es", "dos")
+	if es, _ := s.History(m.ID, "es"); len(es) != 1 {
+		t.Errorf("%+v", es)
+	}
+	for _, bad := range []string{"../show.md", "x", "20260101T000000.000Z/../../x"} {
+		if _, err := s.ReadHistory(m.ID, "", bad); !errors.Is(err, ErrNotFound) {
+			t.Errorf("%q: %v", bad, err)
+		}
+	}
+	if _, err := s.History("nope-0000", ""); !errors.Is(err, ErrNotFound) {
+		t.Errorf("%v", err)
+	}
+	// The history is not part of a copy or of the language list.
+	cp, _ := s.Duplicate(m.ID, "")
+	if h, _ := s.History(cp.ID, ""); len(h) != 0 {
+		t.Errorf("a copy starts with a clean history: %+v", h)
+	}
+	if l, _ := s.Languages(m.ID); len(l) != 2 {
+		t.Errorf("%v", l)
+	}
+}
+
+func TestOnlyTheNewestVersionsAreKept(t *testing.T) {
+	s := newStore(t)
+	m, _ := s.Create("Many", "0")
+	for i := 1; i <= MaxHistory+8; i++ {
+		s.WriteShowFile(m.ID, "", strings.Repeat("x", i))
+		time.Sleep(time.Millisecond)
+	}
+	v, _ := s.History(m.ID, "")
+	if len(v) != MaxHistory {
+		t.Fatalf("%d versions", len(v))
+	}
+	if txt, _ := s.ReadHistory(m.ID, "", v[0].ID); len(txt) != MaxHistory+7 {
+		t.Errorf("newest kept version has %d characters", len(txt))
 	}
 }

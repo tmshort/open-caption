@@ -67,6 +67,8 @@ everywhere an operator session is; the reverse is not true.
 | POST | `/api/admin/shows/{id}/unarchive` | Restore an archived show |
 | GET | `/api/admin/shows/{id}/export` | Download the show as a `.zip` (format: doc 06, *Show archive*) |
 | POST | `/api/admin/shows/import` | multipart field `file`: a show `.zip`; creates a new show titled `<title> (imported)` and returns `201 {show, skippedFiles}`; 400 if it is not a zip or has no `show.md` |
+| GET | `/api/admin/shows/{id}/showfile/history` | Earlier versions of a show file (`?lang=`), newest first: `{versions: [{id, time, lines, bytes}]}` |
+| GET | `/api/admin/shows/{id}/showfile/history/{version}` | `{text}` of one earlier version |
 | POST | `/api/admin/shows/{id}/showfile/validate` | Dry-run parse without saving |
 | GET | `/api/admin/shows/{id}/languages` | The show's languages (main first) with cue/error/warning counts, `available` (false when a translation does not match the main show file) and the `structure` problems; plus the `known` language names offered in Setup |
 | POST | `/api/admin/shows/{id}/languages` | `{code, name?, copyFromMain}`: start a translation (409 if it exists) |

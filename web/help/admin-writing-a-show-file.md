@@ -21,6 +21,10 @@ HAMLET: To be, or not to be, **that** is the question.
 OPHELIA: My *lord*?
 ```
 
+## Going back to an earlier version
+
+Every time you save, the version it replaced is kept (the last 50 for each language). Click **Earlier versions…** above the editor, choose a time and press **Load**. That only puts the old text in the editor; nothing changes until you press **Save**, so you can look first. Export does not include the earlier versions.
+
 ## Show settings: the title and the look
 
 Everything about a show other than its pictures is stored in the show file, including its **title** and how the captions **look**. These go in a `[settings]` block, usually at the top, with one `name: value` per line:
