@@ -8,8 +8,8 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
         with:
           go-version: stable
       - run: go vet ./...
@@ -17,8 +17,8 @@ jobs:
   cross-build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
         with:
           go-version: stable
       - run: make dist
@@ -38,16 +38,40 @@ jobs:
       run:
         shell: bash
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
         with:
           go-version: stable
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
-          node-version: 20
+          node-version: 22
       - run: go build -o bin/open-caption${{ runner.os == 'Windows' && '.exe' || '' }} ./cmd/open-caption
       - run: cd test/e2e && npm ci --no-audit --no-fund
       - run: cd test/e2e && node run.js
         env:
           CHROME: ${{ matrix.chrome }}
           OC_SHOTS: ''
+  load:
+    # The venue target (docs/07): 200 connected devices, every caption delivered to all of them, p95 latency under 250 ms.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version: stable
+      - run: make build
+      - name: Run 200 audience devices against the real program
+        run: |
+          for i in $(seq 1 80); do echo "Caption number $i"; done > "$RUNNER_TEMP/big.md"
+          ./bin/open-caption --dev --show-file "$RUNNER_TEMP/big.md" --http-addr :18080 --data "$RUNNER_TEMP/data" --no-browser > "$RUNNER_TEMP/server.log" 2>&1 &
+          for i in $(seq 1 50); do curl -fs http://127.0.0.1:18080/healthz >/dev/null && break; sleep 0.2; done
+          go run ./cmd/loadtest -url http://127.0.0.1:18080 -clients 200 -messages 60 || { cat "$RUNNER_TEMP/server.log"; exit 1; }
+  vulncheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version: stable
+      - run: go install golang.org/x/vuln/cmd/govulncheck@latest
+      - run: govulncheck ./...

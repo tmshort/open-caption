@@ -129,7 +129,7 @@ func main() {
 	}
 	fmt.Printf("clients that received all %d captions: %d/%d (missing deliveries: %d)\n", *messages, complete, ready.Load(), missing)
 	fmt.Printf("latency ms  p50=%.0f  p95=%.0f  p99=%.0f  max=%.0f  (n=%d)\n", pct(.5), pct(.95), pct(.99), pct(1), len(latencies))
-	if complete != int(ready.Load()) || pct(.95) > 250 {
+	if int(ready.Load()) < *clients || complete != int(ready.Load()) || pct(.95) > 250 {
 		fmt.Println("RESULT: FAIL")
 		os.Exit(2)
 	}
