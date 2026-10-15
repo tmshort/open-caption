@@ -226,6 +226,14 @@ async function main() {
     const vid = await nolock.evaluate(() => { const v = document.querySelector('video'); return v ? { playing: !v.paused, muted: v.muted, loop: v.loop, src: v.currentSrc.split('/').pop(), tag: document.documentElement.dataset.awake, ready: v.readyState } : null; });
     check('a hidden looping video is started instead', vid && vid.playing && vid.muted && vid.loop && /^nosleep\.(mp4|webm)$/.test(vid.src) && vid.tag === 'video', vid);
     check('it does not cover or disturb the captions', await nolock.evaluate(() => { const r = document.querySelector('video').getBoundingClientRect(); return r.width <= 2 && getComputedStyle(document.querySelector('video')).pointerEvents === 'none'; }));
+    await nolock.click('#gear'); await nolock.click('#awake');
+    await nolock.waitForFunction(() => document.documentElement.dataset.awake === 'off', { timeout: 4000 }).catch(() => {});
+    check('a device can turn "screen stays on" off', await nolock.evaluate(() => document.querySelector('video').paused && document.getElementById('awake').getAttribute('aria-pressed') === 'false'));
+    await nolock.reload(); await nolock.waitForSelector('#awake'); await sleep(600);
+    check('and the choice is remembered', await nolock.evaluate(() => document.documentElement.dataset.awake === 'off' && !document.querySelector('video')));
+    await nolock.click('#gear'); await nolock.click('#awake');
+    await nolock.waitForFunction(() => document.documentElement.dataset.awake === 'video', { timeout: 6000 }).catch(() => {});
+    check('turning it back on restarts the video', await nolock.evaluate(() => document.documentElement.dataset.awake === 'video' && !document.querySelector('video').paused));
     await nolock.close(); await b2.close();
 
     // ------------------------------------------------------------------ archive
