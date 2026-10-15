@@ -426,7 +426,7 @@ async function main() {
     await opEs.close();
     // The language menu: choosing a language reloads the page in it and is remembered.
     const menu = await uiPage('/admin', 'en'); await signIn(menu, '#steps button');
-    await menu.select('header select.uilang', 'fr'); await menu.waitForFunction(() => document.documentElement.lang === 'fr', { timeout: 8000 }).catch(() => {});
+    await menu.select('header select.uilang', 'fr'); await menu.waitForFunction(() => document.documentElement.lang === 'fr' && document.readyState === 'complete' && window.OCI18n && OCI18n.keys('fr').length > 0, { timeout: T(15000) }).catch(() => {});
     check('the language menu switches the page and remembers the choice', await menu.evaluate(() => document.documentElement.lang === 'fr' && localStorage.getItem('oc.ui.lang') === 'fr'));
     check('an unknown or missing translation falls back to English', await menu.evaluate(() => OCI18n.t('A sentence nobody translated') === 'A sentence nobody translated' && OCI18n.t('Image "a.png" not found. Upload it in the Images step.').includes('introuvable')));
     await menu.evaluate(() => localStorage.removeItem('oc.ui.lang'));
