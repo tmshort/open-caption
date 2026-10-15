@@ -312,3 +312,37 @@ func TestSetValuesAddsMissingKeysAndRefusesToBreakTheFile(t *testing.T) {
 		t.Errorf("%+v", c.Log)
 	}
 }
+
+func TestFileFromANewerVersionStartsWithWarnings(t *testing.T) {
+	c, err := load(t, "config_version: 7\nsparkles:\n  level: 11\nhttp:\n  addr: \":9001\"\n")
+	if err != nil {
+		t.Fatalf("a newer file's unknown settings must not stop the program: %v", err)
+	}
+	if c.HTTP.Addr != ":9001" {
+		t.Errorf("known settings still apply: %+v", c.HTTP)
+	}
+	w := strings.Join(c.Warnings(), "|")
+	if !strings.Contains(w, "unknown setting sparkles") || !strings.Contains(w, "config_version is 7") {
+		t.Errorf("%s", w)
+	}
+	// Real mistakes in a newer file are still errors, and an ordinary file is still strict.
+	if _, err := load(t, "config_version: 7\nsparkles: 1\naudience:\n  max_clients: lots\n"); err == nil || !strings.Contains(err.Error(), "whole number") || strings.Contains(err.Error(), "sparkles") {
+		t.Errorf("%v", err)
+	}
+	if _, err := load(t, "sparkles: 1\n"); err == nil || !strings.Contains(err.Error(), "unknown setting sparkles") {
+		t.Errorf("%v", err)
+	}
+	if c, err := load(t, "config_version: 1\n"); err != nil || len(c.Warnings()) == 0 {
+		t.Errorf("%v %v", err, c.Warnings())
+	}
+}
+
+func TestGeneratedFileSaysWhichVersionWroteIt(t *testing.T) {
+	p := filepath.Join(t.TempDir(), "c.yaml")
+	if _, err := Load(p); err != nil {
+		t.Fatal(err)
+	}
+	if b, _ := os.ReadFile(p); !strings.Contains(string(b), "config_version: 1") {
+		t.Errorf("%s", b)
+	}
+}

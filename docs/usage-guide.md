@@ -135,7 +135,7 @@ In order of reliability:
 
 Useful options: `--data <folder>`, `--http-addr :8080`, `--https-addr :443`, `--no-browser`, `--log-file <file>`, `--log-level debug|info|warn|error`, `--version`.
 
-If `config.yaml` has a mistake (a misspelled setting, a number out of range, a bad address), the program lists every problem with its line or setting name and stops; fix the file and start again.
+If `config.yaml` has a mistake (a misspelled setting, a number out of range, a bad address), the program lists every problem with its line or setting name and stops; fix the file and start again. (A file marked `config_version` newer than the program understands is the exception: unknown settings are ignored with a warning, so you can go back to an older program.)
 
 ## Setting up a show
 

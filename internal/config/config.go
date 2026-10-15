@@ -70,7 +70,13 @@ type Log struct {
 }
 
 // Config is the contents of config.yaml.
+// CurrentVersion is the config_version this program writes and fully understands.
+const CurrentVersion = 1
+
 type Config struct {
+	// ConfigVersion lets a newer program mark its file. A file with a newer version than this program knows
+	// may have settings it does not recognise; those are ignored with a warning instead of stopping it.
+	ConfigVersion    int      `yaml:"config_version"`
 	AdminPassword    string   `yaml:"admin_password"`
 	OperatorPassword string   `yaml:"operator_password"`
 	DataDir          string   `yaml:"data_dir"`
@@ -85,13 +91,16 @@ type Config struct {
 	Path string `yaml:"-"`
 	// Generated is true if Load created the file this run (not serialized).
 	Generated bool `yaml:"-"`
+	// notes are warnings found while loading (not serialized).
+	notes []string `yaml:"-"`
 }
 
 // Default returns the built-in defaults (without passwords).
 func Default() Config {
 	return Config{
-		HTTP:  Listener{Addr: ":80", FallbackAddr: ":8080"},
-		HTTPS: HTTPS{Addr: ":443", FallbackAddr: ":8443", SelfSigned: true},
+		ConfigVersion: CurrentVersion,
+		HTTP:          Listener{Addr: ":80", FallbackAddr: ":8080"},
+		HTTPS:         HTTPS{Addr: ":443", FallbackAddr: ":8443", SelfSigned: true},
 		Defaults: Defaults{Language: "en", LoopItemSeconds: 10,
 			IdleMessage: "Captions will begin shortly", OpenBrowser: true,
 			Look: Look{Background: "#000000", TextColor: "#ffffff", SpeakerNameColor: "#ffffff", Font: "system", TextSizePercent: 100, SpeakerNames: "label"}},
@@ -129,7 +138,24 @@ func Load(path string) (Config, error) {
 	dec := yaml.NewDecoder(bytes.NewReader(b))
 	dec.KnownFields(true) // a misspelled key is an error, not silently ignored
 	if err := dec.Decode(&cfg); err != nil && !errors.Is(err, io.EOF) {
-		return cfg, &ProblemsError{Path: path, Problems: yamlProblems(err)}
+		probs := yamlProblems(err)
+		if cfg.ConfigVersion > CurrentVersion { // written by a newer program: unknown settings are expected
+			var real []string
+			for _, p := range probs {
+				if strings.Contains(p, "unknown setting") {
+					cfg.notes = append(cfg.notes, p+" (ignored: this file was written by a newer version)")
+				} else {
+					real = append(real, p)
+				}
+			}
+			probs = real
+		}
+		if len(probs) > 0 {
+			return cfg, &ProblemsError{Path: path, Problems: probs}
+		}
+	}
+	if cfg.ConfigVersion > CurrentVersion {
+		cfg.notes = append(cfg.notes, fmt.Sprintf("config_version is %d but this program understands %d: update the program if settings seem to be ignored", cfg.ConfigVersion, CurrentVersion))
 	}
 	if probs := cfg.normalize(); len(probs) > 0 {
 		return cfg, &ProblemsError{Path: path, Problems: probs}
@@ -323,7 +349,7 @@ func (c Config) Validate() error {
 
 // Warnings are things that work but are probably not what was meant (for the start-up log).
 func (c Config) Warnings() []string {
-	var w []string
+	w := append([]string(nil), c.notes...)
 	if c.AdminPassword != "" && c.AdminPassword == c.OperatorPassword {
 		w = append(w, "admin_password and operator_password are the same: anyone with the operator password can open Setup")
 	}
