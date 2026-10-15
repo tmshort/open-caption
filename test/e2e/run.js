@@ -316,6 +316,19 @@ async function main() {
     const hist = JSON.stringify((await api(arch, 'GET', '/api/admin/shows/' + lastId + '/showfile/history')).body); check('a version can be given a name', hist.includes('Dress rehearsal'), hist);
     await arch.evaluate(() => document.getElementById('dlgok').click()); await sleep(300);
     check('loading it changes nothing until Save', (await arch.evaluate(() => document.querySelector('.editor textarea').value)) !== (await api(arch, 'GET', '/api/admin/shows/' + lastId + '/showfile')).body.text);
+    // Offline editing: download the plain show file, edit it elsewhere, open it again and save.
+    check('the Show file step offers the show file as a plain download', await arch.evaluate(() => { const l = [...document.querySelectorAll('a')].find((x) => x.textContent === 'Download the show file'); return !!l && /\/showfile\/download$/.test(l.getAttribute('href')) && /\.md$/.test(l.getAttribute('download')); }));
+    const dl = await arch.evaluate(async (id) => { const r = await fetch('/api/admin/shows/' + id + '/showfile/download'); const bytes = new Uint8Array(await r.clone().arrayBuffer()); const t = await r.text(); return { ok: r.ok, disp: r.headers.get('Content-Disposition'), bom: bytes[0] === 0xEF && bytes[1] === 0xBB && bytes[2] === 0xBF, crlf: t.includes('\r\n'), text: t }; }, lastId);
+    check('the download is a plain .md file that Windows editors open correctly', dl.ok && /attachment; filename=".*\.md"/.test(dl.disp) && dl.bom && dl.crlf && dl.text.includes('Second draft'), dl.disp);
+    const offline = path.join(os.tmpdir(), 'oc-offline-' + process.pid + '.txt');
+    fs.writeFileSync(offline, Buffer.from('[settings]\r\ntitle: Last year\r\n[/settings]\r\nCAF\xc9 edited offline\r\n', 'latin1'));
+    await (await arch.$('input[type=file]')).uploadFile(offline);
+    await arch.waitForFunction(() => document.querySelector('.editor textarea').value.includes('edited offline'), { timeout: T(8000) }).catch(() => {});
+    check('a file edited elsewhere (even saved as Windows ANSI) opens in the editor with its accents', await arch.evaluate(() => document.querySelector('.editor textarea').value.includes('CAFÉ edited offline')));
+    await click(arch, 'Save'); await sleep(900);
+    const saved = (await api(arch, 'GET', '/api/admin/shows/' + lastId + '/showfile')).body.text;
+    check('saving makes it the show file', saved.includes('CAFÉ edited offline'), saved);
+    try { fs.unlinkSync(offline); } catch (e) { /* not important */ }
     await step(arch, 'Shows'); await arch.waitForSelector('.card.show');
     await onCard('Archive'); await sleep(700);
     check('an archived show moves to the archive list', (await arch.evaluate(() => document.getElementById('panel').innerText)).includes('Archived shows (1)'));

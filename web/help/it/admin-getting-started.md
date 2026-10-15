@@ -22,11 +22,11 @@ Nel passo Spettacoli, **Archivia** mette da parte uno spettacolo: viene conserva
 - Questo computer deve essere nella stessa rete WiFi dei telefoni e tablet del pubblico. Vedi [Rete e connessione](topic:admin-network).
 - La password amministratore e la password operatore sono in `config.yaml`; sono state anche mostrate nella console al primo avvio del programma. La pagina dell'operatore ha una password propria, così puoi darla a un'altra persona senza concederle l'accesso alla configurazione.
 - La configurazione, la pagina dell'operatore e questo aiuto sono disponibili in inglese, spagnolo, francese, tedesco, italiano e portoghese. Usa il menu della lingua in alto in ogni pagina; la scelta viene ricordata in quel browser.
-- Il tuo lavoro viene salvato su questo computer. Usa **Esporta** nel passo Spettacoli per fare una copia di sicurezza da portare su un altro computer. L'esportazione è uno `.zip` che contiene `show.md` (il file dello spettacolo, con titolo e aspetto), un `show.<lingua>.md` per ogni traduzione e una cartella `assets` con le immagini; **Importa** trasforma uno zip così in un nuovo spettacolo.
+- Il tuo lavoro viene salvato su questo computer. Usa **Esporta** nel passo Spettacoli per fare una copia di sicurezza da portare su un altro computer. L'esportazione è uno `.zip` che contiene `show.md` (il file dello spettacolo, con titolo e aspetto), un `show.<lingua>.md` per ogni traduzione e una cartella `assets` con le immagini; **Importa** trasforma uno zip così in un nuovo spettacolo, e accetta anche un file dello spettacolo di testo semplice (`.md` o `.txt`, con qualsiasi nome) come nuovo spettacolo.
 
 ## Sei nuovo ai file dello spettacolo?
 
-Un file dello spettacolo è solo testo. Ogni riga è un sottotitolo, e una pressione della barra spaziatrice invia una riga. Leggi [Scrivere un file dello spettacolo](topic:admin-writing-a-show-file), oppure crea lo spettacolo di esempio e guarda come è scritto. Un modello scaricabile si trova su [/help/sample-show.md](/help/sample-show.md).
+Un file dello spettacolo è solo testo. Ogni riga è un sottotitolo, e una pressione della barra spaziatrice invia una riga. Per tutto il lavoro, dal copione al file finito (compresa la modifica nel tuo programma e il ritorno del file), leggi [Preparare un file dello spettacolo](topic:admin-preparing-a-show-file). I marcatori sono elencati in [Scrivere un file dello spettacolo](topic:admin-writing-a-show-file). Oppure crea lo spettacolo di esempio e guarda come è scritto. Un modello scaricabile si trova su [/help/sample-show.md](/help/sample-show.md).
 
 ## Pianificare l'attrezzatura
 

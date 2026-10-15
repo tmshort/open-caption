@@ -65,7 +65,6 @@ OCI18n.add("fr", {
  "Delete…": "Supprimer…",
  "Add another show": "Ajouter un autre spectacle",
  "Sample show": "Spectacle d'exemple",
- "Import a show (.zip):": "Importer un spectacle (.zip) :",
  "Archived shows ({n})": "Spectacles archivés ({n})",
  "Archived shows are kept in full but stay out of the way and cannot go on air. Restore one to use it again, or delete it for good.": "Les spectacles archivés sont conservés intégralement mais restent à l'écart et ne peuvent pas passer à l'antenne. Restaurez-en un pour le réutiliser, ou supprimez-le définitivement.",
  "Restore": "Restaurer",
@@ -533,5 +532,11 @@ OCI18n.add("fr", {
  "About this copy": "À propos de cette copie",
  "These are fixed in the settings file. To change them, edit that file and start the program again.": "Ces réglages sont fixés dans le fichier de réglages. Pour les changer, modifiez ce fichier et relancez le programme.",
  "Hide the operator password": "Masquer le mot de passe opérateur",
- "Opens in a new window": "S'ouvre dans une nouvelle fenêtre"
+ "Opens in a new window": "S'ouvre dans une nouvelle fenêtre",
+ "Import a show (a .zip, or a plain .md / .txt show file):": "Importer un spectacle (un .zip, ou un simple fichier texte .md / .txt) :",
+ "Download the show file": "Télécharger le fichier du spectacle",
+ "Edit it in any text editor, then bring it back with Open a file": "Modifiez-le dans n'importe quel éditeur de texte, puis rapportez-le avec Ouvrir un fichier",
+ "Loaded {name}. Check the problems list, then press Save.": "{name} est chargé. Vérifiez la liste des problèmes, puis appuyez sur Enregistrer.",
+ "That is not a text file. Choose a show file (.md or .txt) or an exported show (.zip).": "Ce n'est pas un fichier texte. Choisissez un fichier de spectacle (.md ou .txt) ou un spectacle exporté (.zip).",
+ "That file is empty.": "Ce fichier est vide."
 });

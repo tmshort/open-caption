@@ -22,6 +22,7 @@ browser on a projector) shows the captions live, with no interaction required.
 
 **For whoever sets it up**
 - A guided Setup page: show file editor with problems listed by line, image upload, look, a private rehearsal, then Go Live with a printable QR sign.
+- Edit the show file in any program you like: download it as a plain `.md`, edit it offline, and open it again to save over the show (or import any `.md` / `.txt` file as a new show). A guide for the person preparing the show file is in Help (`web/help/admin-preparing-a-show-file.md`).
 - A show is one plain-text Markdown file (plus images): title, colours, fonts and options live in it, layered over `config.yaml` defaults. Earlier versions are kept, can be named and compared, and shows can be exported, imported, duplicated and archived.
 - Setup, the operator page, Help and all the built-in documentation are available in English, Spanish, French, German, Italian and Portuguese.
 - Built-in help, a recent-log viewer, a support bundle, and a validated `config.yaml` that reports every mistake at once.

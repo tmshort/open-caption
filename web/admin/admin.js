@@ -303,7 +303,7 @@
         h('button', { class: 'quiet', disabled: s.active, title: s.active ? __('The show on air cannot be archived. Activate another show first.') : __('Put this show away; you can restore it later'), onclick: () => archiveShow(s, true) }, __('Archive')),
         h('button', { class: 'danger quiet', onclick: () => deleteShow(s) }, __('Delete…')))));
       p.append(h('h3', {}, __('Add another show')), h('div', { class: 'card row' }, ...newShowForm(), h('button', { onclick: makeSample }, __('Sample show')),
-        h('label', { class: 'row' }, __('Import a show (.zip):'), h('input', { type: 'file', accept: '.zip', 'aria-label': __('Import a show (.zip):'), onchange: importShow }))));
+        h('label', { class: 'row' }, __('Import a show (a .zip, or a plain .md / .txt show file):'), h('input', { type: 'file', accept: '.zip,.md,.txt,text/plain,text/markdown', 'aria-label': __('Import a show (a .zip, or a plain .md / .txt show file):'), onchange: importShow }))));
     }
     if (archived.length) {
       p.append(h('details', { class: 'archive', open: A.showArchive ? '' : null, ontoggle: (e) => { A.showArchive = e.target.open; } },
@@ -549,7 +549,15 @@
     }
     function insertInline(text) { ta.setRangeText(text, ta.selectionStart, ta.selectionEnd, 'end'); ta.focus(); changed(); }
     function loadText(text) { ta.value = text; changed(); }
-    async function readFile(f) { if (f) loadText(await f.text()); }
+    // Read a file the preparer made elsewhere: UTF-8 (with or without a mark), else Windows-1252, which is
+    // what Notepad's old "ANSI" saves.
+    async function readFile(f) {
+      if (!f) return;
+      const buf = await f.arrayBuffer(); let text;
+      try { text = new TextDecoder('utf-8', { fatal: true }).decode(buf); } catch (e) { text = new TextDecoder('windows-1252').decode(buf); }
+      loadText(text.replace(/^\uFEFF/, ''));
+      toast(__('Loaded {name}. Check the problems list, then press Save.', { name: f.name }), 7000);
+    }
 
     ta.addEventListener('input', changed);
     ta.addEventListener('scroll', () => { gutter.scrollTop = ta.scrollTop; });
@@ -633,7 +641,7 @@
       h('h2', {}, A.lang ? __('Show file — {name}', { name: cur.name }) : __('Show file')),
       tabs, translating,
       h('p', { class: 'hint' }, __('This file holds everything about the show except its images: its title and look in a [settings] block, and the lines themselves. Each line is one caption; one press of the spacebar sends one line. You can paste, type, or drop a .txt or .md file. Click a problem to jump to its line.')),
-      h('div', { class: 'row' }, h('label', { class: 'row' }, __('Open a file:'), fileInput), h('button', { onclick: () => openHelp('admin-writing-a-show-file') }, __('Show file help')), h('button', { onclick: showHistory, title: __('Each save keeps the version it replaced') }, __('Earlier versions…')), h('span', { class: 'grow' }), status, saveBtn),
+      h('div', { class: 'row' }, h('label', { class: 'row' }, __('Open a file:'), fileInput), h('a', { href: '/api/admin/shows/' + show.id + '/showfile/download' + q, download: show.id + (A.lang ? '.' + A.lang : '') + '.md', title: __('Edit it in any text editor, then bring it back with Open a file') }, __('Download the show file')), h('button', { onclick: () => openHelp('admin-writing-a-show-file') }, __('Show file help')), h('button', { onclick: showHistory, title: __('Each save keeps the version it replaced') }, __('Earlier versions…')), h('span', { class: 'grow' }), status, saveBtn),
       tools,
       h('div', { class: 'editor-grid' }, editor, h('div', {}, h('div', { class: 'card' }, diagTitle, diagList), h('div', { class: 'card' }, h('h3', {}, __('What the operator will step through')), cueList))),
       cheatSheet());

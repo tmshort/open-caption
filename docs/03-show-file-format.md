@@ -11,7 +11,7 @@ emits only the small set of tags it generates itself.
 
 ## Basic rules
 
-1. UTF-8 text; CRLF or LF; a leading BOM is ignored.
+1. UTF-8 text; CRLF or LF; a leading BOM is ignored. The file may have any name; Setup also reads Windows-1252 and UTF-16 (with a mark) files, converting them. Preparers are pointed to the help topic *Preparing a show file* (`web/help/admin-preparing-a-show-file.md`), which covers the workflow from script to finished file, including editing offline.
 2. **Each non-blank line is one caption cue** — one press of the spacebar.
    Blank lines are ignored (use them freely for readability).
 3. A caption longer than the screen **wraps automatically**. The author decides

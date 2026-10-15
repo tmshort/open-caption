@@ -23,6 +23,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode/utf16"
+	"unicode/utf8"
 
 	"gopkg.in/yaml.v3"
 
@@ -244,6 +246,7 @@ func (s *Server) adminRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("DELETE /api/admin/shows/{id}", adm(s.deleteShow))
 	mux.HandleFunc("GET /api/admin/shows/{id}/showfile", adm(s.getShowFile))
 	mux.HandleFunc("PUT /api/admin/shows/{id}/showfile", adm(s.putShowFile))
+	mux.HandleFunc("GET /api/admin/shows/{id}/showfile/download", adm(s.downloadShowFile))
 	mux.HandleFunc("GET /api/admin/shows/{id}/showfile/history", adm(func(w http.ResponseWriter, r *http.Request) {
 		v, err := s.store.History(r.PathValue("id"), r.URL.Query().Get("lang"))
 		if err != nil {
@@ -536,6 +539,26 @@ func (s *Server) getShowFile(w http.ResponseWriter, r *http.Request) {
 	}
 	a, _ := s.showFileResponse(id, r.URL.Query().Get("lang"), text)
 	writeJSON(w, http.StatusOK, map[string]any{"text": text, "version": fileVersion(text), "analysis": a})
+}
+
+// downloadShowFile sends the show file itself (not a .zip) for editing in the preparer's own editor; the
+// editor's Open a file puts it back. ?lang= picks a translation.
+func (s *Server) downloadShowFile(w http.ResponseWriter, r *http.Request) {
+	id, lang := r.PathValue("id"), r.URL.Query().Get("lang")
+	text, err := s.store.ReadShowFile(id, lang)
+	if err != nil {
+		storeErr(w, err)
+		return
+	}
+	name := id + ".md"
+	if lang != "" {
+		name = id + "." + lang + ".md"
+	}
+	w.Header().Set("Content-Type", "text/markdown; charset=utf-8")
+	w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="%s"`, name))
+	// Many Windows editors (Notepad before Windows 10 1903) need the mark to know a file is UTF-8, and
+	// the parser ignores it, so it is harmless everywhere else.
+	io.WriteString(w, "\ufeff"+strings.ReplaceAll(text, "\n", "\r\n"))
 }
 
 func (s *Server) validateShowFile(w http.ResponseWriter, r *http.Request) {
@@ -920,7 +943,7 @@ func (s *Server) importShow(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, http.StatusRequestEntityTooLarge, "That file is too large.")
 		return
 	}
-	fh, _, err := r.FormFile("file")
+	fh, hdr, err := r.FormFile("file")
 	if err != nil {
 		writeErr(w, http.StatusBadRequest, "choose a show .zip file")
 		return
@@ -929,6 +952,10 @@ func (s *Server) importShow(w http.ResponseWriter, r *http.Request) {
 	data, err := io.ReadAll(io.LimitReader(fh, maxZipBody))
 	if err != nil {
 		writeErr(w, http.StatusBadRequest, "could not read the file")
+		return
+	}
+	if !bytes.HasPrefix(data, []byte("PK")) { // not a .zip: a plain show file, whatever it is called
+		s.importPlainFile(w, hdr.Filename, data)
 		return
 	}
 	zr, err := zip.NewReader(bytes.NewReader(data), int64(len(data)))
@@ -984,6 +1011,75 @@ func (s *Server) importShow(w http.ResponseWriter, r *http.Request) {
 	m, _ = s.store.Get(m.ID)
 	writeJSON(w, http.StatusCreated, map[string]any{"show": s.summary(m), "skippedFiles": skipped})
 }
+
+// importPlainFile makes a new show from one plain text show file (.md or .txt, any name). The title comes
+// from its [settings] block, or else from the file's name. Files saved by older Windows programs in
+// Windows-1252 rather than UTF-8 are converted, so accented letters survive.
+func (s *Server) importPlainFile(w http.ResponseWriter, filename string, data []byte) {
+	if len(data) > show.MaxShowFile {
+		writeErr(w, http.StatusRequestEntityTooLarge, "That file is too large.")
+		return
+	}
+	if bytes.IndexByte(data, 0) >= 0 {
+		writeErr(w, http.StatusBadRequest, "That is not a text file. Choose a show file (.md or .txt) or an exported show (.zip).")
+		return
+	}
+	text := decodeText(data)
+	if strings.TrimSpace(text) == "" {
+		writeErr(w, http.StatusBadRequest, "That file is empty.")
+		return
+	}
+	title := strings.TrimSpace(showfile.ReadSettings(text, false).TitleOr(""))
+	if title == "" {
+		base := path.Base(strings.ReplaceAll(filename, "\\", "/"))
+		title = strings.TrimSpace(strings.TrimSuffix(base, path.Ext(base)))
+		title = strings.TrimSpace(strings.NewReplacer("_", " ").Replace(title))
+		if title == "" || title == "." {
+			title = "Imported show"
+		}
+	}
+	if r := []rune(title); len(r) > 100 {
+		title = string(r[:100])
+	}
+	m, err := s.store.Create(title, text)
+	if err != nil {
+		storeErr(w, err)
+		return
+	}
+	writeJSON(w, http.StatusCreated, map[string]any{"show": s.summary(m), "skippedFiles": 0})
+}
+
+// decodeText turns uploaded bytes into UTF-8: UTF-8 (with or without a byte order mark) as it is, UTF-16
+// with a mark converted, and anything else read as Windows-1252.
+func decodeText(b []byte) string {
+	switch {
+	case bytes.HasPrefix(b, []byte{0xFF, 0xFE}), bytes.HasPrefix(b, []byte{0xFE, 0xFF}):
+		be := b[0] == 0xFE
+		u := make([]uint16, 0, len(b)/2)
+		for i := 2; i+1 < len(b); i += 2 {
+			if be {
+				u = append(u, uint16(b[i])<<8|uint16(b[i+1]))
+			} else {
+				u = append(u, uint16(b[i+1])<<8|uint16(b[i]))
+			}
+		}
+		return string(utf16.Decode(u))
+	case utf8.Valid(b):
+		return strings.TrimPrefix(string(b), "\ufeff")
+	}
+	var sb strings.Builder
+	for _, c := range b {
+		if c >= 0x80 && c <= 0x9F {
+			sb.WriteRune(cp1252[c-0x80])
+		} else {
+			sb.WriteRune(rune(c))
+		}
+	}
+	return sb.String()
+}
+
+// cp1252 holds what Windows-1252 puts at 0x80-0x9F; the rest of that code page matches Unicode.
+var cp1252 = [32]rune{'€', 0x81, '‚', 'ƒ', '„', '…', '†', '‡', 'ˆ', '‰', 'Š', '‹', 'Œ', 0x8D, 'Ž', 0x8F, 0x90, '‘', '’', '“', '”', '•', '–', '—', '˜', '™', 'š', '›', 'œ', 0x9D, 'ž', 'Ÿ'}
 
 // ---- network panel ----
 

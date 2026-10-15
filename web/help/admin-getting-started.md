@@ -22,11 +22,11 @@ On the Show step, **Archive** puts a show away: it is kept in full but listed un
 - This computer must be on the same WiFi network as the audience's phones and tablets. See [Network and joining](topic:admin-network).
 - The admin password and the operator password are in `config.yaml`; they were also printed in the console the first time the program started. The operator page has its own password so you can hand it to someone else without giving them setup access.
 - Setup, the operator page and this Help are available in English, Spanish, French, German, Italian and Portuguese. Use the language menu at the top of each page; the choice is remembered in that browser.
-- Your work is saved on this computer. Use **Export** on the Show step to make a backup you can move to another computer. The export is a `.zip` holding `show.md` (the show file, with its title and look), a `show.<language>.md` for each translation, and an `assets` folder of images; **Import** turns such a zip into a new show.
+- Your work is saved on this computer. Use **Export** on the Show step to make a backup you can move to another computer. The export is a `.zip` holding `show.md` (the show file, with its title and look), a `show.<language>.md` for each translation, and an `assets` folder of images; **Import** turns such a zip into a new show, and also takes a plain show file (`.md` or `.txt`, with any name) as a new show.
 
 ## New to show files?
 
-A show file is just text. Each line is one caption, and one press of the spacebar sends one line. Read [Writing a show file](topic:admin-writing-a-show-file), or create the sample show and look at how it is written. A starter you can download is at [/help/sample-show.md](/help/sample-show.md).
+A show file is just text. Each line is one caption, and one press of the spacebar sends one line. For the whole job, from script to finished file (including editing in your own program and bringing the file back), read [Preparing a show file](topic:admin-preparing-a-show-file). The markings are listed in [Writing a show file](topic:admin-writing-a-show-file). Or create the sample show and look at how it is written. A starter you can download is at [/help/sample-show.md](/help/sample-show.md).
 
 ## Planning the equipment
 

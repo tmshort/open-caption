@@ -65,7 +65,6 @@ OCI18n.add("es", {
  "Delete…": "Eliminar…",
  "Add another show": "Añadir otro espectáculo",
  "Sample show": "Espectáculo de ejemplo",
- "Import a show (.zip):": "Importar un espectáculo (.zip):",
  "Archived shows ({n})": "Espectáculos archivados ({n})",
  "Archived shows are kept in full but stay out of the way and cannot go on air. Restore one to use it again, or delete it for good.": "Los espectáculos archivados se conservan completos pero no estorban y no pueden salir en directo. Restaure uno para volver a usarlo, o elimínelo definitivamente.",
  "Restore": "Restaurar",
@@ -533,5 +532,11 @@ OCI18n.add("es", {
  "About this copy": "Acerca de esta copia",
  "These are fixed in the settings file. To change them, edit that file and start the program again.": "Esto está fijado en el archivo de ajustes. Para cambiarlo, edite ese archivo y arranque de nuevo el programa.",
  "Hide the operator password": "Ocultar la contraseña de operador",
- "Opens in a new window": "Se abre en una ventana nueva"
+ "Opens in a new window": "Se abre en una ventana nueva",
+ "Import a show (a .zip, or a plain .md / .txt show file):": "Importar un espectáculo (un .zip, o un archivo de texto .md / .txt):",
+ "Download the show file": "Descargar el archivo del espectáculo",
+ "Edit it in any text editor, then bring it back with Open a file": "Edítelo en cualquier editor de texto y vuelva a traerlo con Abrir un archivo",
+ "Loaded {name}. Check the problems list, then press Save.": "Se cargó {name}. Revise la lista de problemas y pulse Guardar.",
+ "That is not a text file. Choose a show file (.md or .txt) or an exported show (.zip).": "Eso no es un archivo de texto. Elija un archivo de espectáculo (.md o .txt) o un espectáculo exportado (.zip).",
+ "That file is empty.": "Ese archivo está vacío."
 });

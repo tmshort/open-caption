@@ -22,11 +22,11 @@ Na etapa Espetáculos, **Arquivar** guarda um espetáculo de lado: ele é mantid
 - Este computador precisa estar na mesma rede WiFi dos telefones e tablets do público. Veja [Rede e conexão](topic:admin-network).
 - A senha de administrador e a de operador estão em `config.yaml`; elas também apareceram no console na primeira vez que o programa iniciou. A página do operador tem a sua própria senha, para que você possa entregá-la a outra pessoa sem dar acesso à configuração.
 - A configuração, a página do operador e esta ajuda estão disponíveis em inglês, espanhol, francês, alemão, italiano e português. Use o menu de idioma no alto de cada página; a escolha fica lembrada nesse navegador.
-- Seu trabalho fica salvo neste computador. Use **Exportar** na etapa Espetáculos para fazer uma cópia de segurança que você possa levar a outro computador. A exportação é um `.zip` com `show.md` (o arquivo do espetáculo, com título e aparência), um `show.<idioma>.md` para cada tradução e uma pasta `assets` com as imagens; **Importar** transforma um zip desses em um novo espetáculo.
+- Seu trabalho fica salvo neste computador. Use **Exportar** na etapa Espetáculos para fazer uma cópia de segurança que você possa levar a outro computador. A exportação é um `.zip` com `show.md` (o arquivo do espetáculo, com título e aparência), um `show.<idioma>.md` para cada tradução e uma pasta `assets` com as imagens; **Importar** transforma um zip desses em um novo espetáculo, e também aceita um arquivo de espetáculo de texto simples (`.md` ou `.txt`, com qualquer nome) como novo espetáculo.
 
 ## Novo nos arquivos de espetáculo?
 
-Um arquivo do espetáculo é só texto. Cada linha é uma legenda, e um toque na barra de espaço envia uma linha. Leia [Escrever um arquivo do espetáculo](topic:admin-writing-a-show-file), ou crie o espetáculo de exemplo e veja como ele foi escrito. Um modelo para baixar está em [/help/sample-show.md](/help/sample-show.md).
+Um arquivo do espetáculo é só texto. Cada linha é uma legenda, e um toque na barra de espaço envia uma linha. Para todo o trabalho, do texto ao arquivo pronto (incluindo editar no seu próprio programa e trazer o arquivo de volta), leia [Preparar um arquivo do espetáculo](topic:admin-preparing-a-show-file). As marcações estão listadas em [Escrever um arquivo do espetáculo](topic:admin-writing-a-show-file). Ou crie o espetáculo de exemplo e veja como ele foi escrito. Um modelo para baixar está em [/help/sample-show.md](/help/sample-show.md).
 
 ## Planejar o equipamento
 

@@ -18,7 +18,8 @@ Goal: a first-time volunteer can finish without reading documentation.
 ### Steps
 - **Show**: name; list of existing shows with Rename / Duplicate / Export / **Archive** / Delete (delete asks first). The show on air cannot be archived. Archived shows are listed apart under "Archived shows (n)" with Restore / Export / Delete; they are not offered for the other steps and cannot be activated. The archived state is the `archived: yes` line in the show file's `[settings]`, so it travels with an export (an import is always restored).
 - **Show file**: (a **Help** link here opens the "Writing a show file" topic). **Language tabs** sit above the editor: the main language, each translation, and ＋ Add a language. A ⚠ marks a translation held back for not matching the main show file; translations show the main show file for reference, and structure errors appear in the problem list.
-  - Drag-and-drop file, "Choose file…", or paste into an editor.
+  - Drag-and-drop file, **Open a file** (any `.txt` / `.md`, any name; UTF-8 or Windows-1252), or paste into an editor. Opening a file only fills the editor (and a toast says so): the problems list updates and nothing is stored until Save, which keeps the previous version in history. **Download the show file** saves the current file (for the language tab chosen) as a plain `.md` to edit in any program; this is the offline round trip.
+  - The Show step's **Import a show** takes a `.zip` or a plain `.md` / `.txt` show file and makes a new show.
   - Editor pane (monospace, line numbers) + Diagnostics pane. Clicking a diagnostic jumps to the line.
   - Live preview of the parsed cue list (kinds shown as icons: 💬 caption, 🖼 image, ⛶ fullscreen, 🔁 loop, ⬛ blank, 🧹 clear, 📑 section, 📝 note).
   - A "Show file help" slide-out showing the syntax cheatsheet with copy-able examples (content of doc 03: Markdown subset, directives, loops).

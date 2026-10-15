@@ -566,3 +566,69 @@ func TestChangePasswordsNeedsAConfigFile(t *testing.T) {
 func titled(title, body string) string {
 	return "[settings]\ntitle: " + title + "\n[/settings]\n" + body
 }
+
+// A show file can be taken out as a plain file, edited anywhere, and brought back: as a new show from a
+// plain .md/.txt of any name, or into an existing show through the editor's own save.
+func TestPlainShowFileDownloadAndImport(t *testing.T) {
+	_, ts, c := adminServer(t)
+	_, r := c.do("POST", "/api/admin/shows", map[string]any{"name": "Our Town"})
+	id := r["id"].(string)
+	c.do("PUT", "/api/admin/shows/"+id+"/showfile", map[string]any{"text": "NARRATOR: Hello\nGEORGE: Hi\n"})
+
+	resp, err := c.hc.Get(ts.URL + "/api/admin/shows/" + id + "/showfile/download")
+	if err != nil {
+		t.Fatal(err)
+	}
+	got, _ := io.ReadAll(resp.Body)
+	resp.Body.Close()
+	if !strings.HasPrefix(resp.Header.Get("Content-Disposition"), "attachment") || !strings.HasSuffix(resp.Header.Get("Content-Disposition"), id+`.md"`) ||
+		!strings.Contains(string(got), "NARRATOR: Hello\r\nGEORGE: Hi") || !strings.HasPrefix(string(got), "\ufeff") {
+		t.Errorf("download: %q %q", resp.Header.Get("Content-Disposition"), got)
+	}
+
+	upload := func(name string, data []byte) (int, map[string]any) {
+		var body bytes.Buffer
+		mw := multipart.NewWriter(&body)
+		fw, _ := mw.CreateFormFile("file", name)
+		fw.Write(data)
+		mw.Close()
+		req, _ := http.NewRequest("POST", ts.URL+"/api/admin/shows/import", &body)
+		req.Header.Set("Content-Type", mw.FormDataContentType())
+		resp, err := c.hc.Do(req)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer resp.Body.Close()
+		var out map[string]any
+		json.NewDecoder(resp.Body).Decode(&out)
+		return resp.StatusCode, out
+	}
+	// what we downloaded (BOM, CRLF) comes back as a show, titled from its file name
+	code, out := upload("Act_One draft.txt", got)
+	if code != 201 || out["show"].(map[string]any)["name"] != "Act One draft" {
+		t.Fatalf("plain import: %d %v", code, out)
+	}
+	nid := out["show"].(map[string]any)["id"].(string)
+	_, r = c.do("GET", "/api/admin/shows/"+nid+"/showfile", nil)
+	if txt := r["text"].(string); !strings.Contains(txt, "NARRATOR: Hello") || strings.ContainsAny(txt, "\r\ufeff") {
+		t.Errorf("imported text: %q", txt)
+	}
+	// the title in [settings] wins over the file name
+	code, out = upload("whatever.md", []byte("[settings]\ntitle: Grease\n[/settings]\nDANNY: Hi\n"))
+	if code != 201 || out["show"].(map[string]any)["name"] != "Grease" {
+		t.Errorf("settings title: %d %v", code, out)
+	}
+	// Windows-1252 (Notepad's old "ANSI") keeps its accents
+	code, out = upload("cafe.txt", []byte("CAF\xc9: caf\xe9 \x93hello\x94\n"))
+	nid = out["show"].(map[string]any)["id"].(string)
+	_, r = c.do("GET", "/api/admin/shows/"+nid+"/showfile", nil)
+	if !strings.Contains(r["text"].(string), "CAFÉ: café “hello”") {
+		t.Errorf("1252: %q", r["text"])
+	}
+	if code, _ = upload("empty.txt", []byte("  \n")); code != 400 {
+		t.Errorf("empty: %d", code)
+	}
+	if code, _ = upload("pic.png", []byte("\x89PNG\x00\x00")); code != 400 {
+		t.Errorf("binary: %d", code)
+	}
+}

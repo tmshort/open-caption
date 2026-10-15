@@ -22,11 +22,11 @@ En el paso Espectáculos, **Archivar** guarda un espectáculo aparte: se conserv
 - Este equipo debe estar en la misma red WiFi que los teléfonos y tabletas del público. Consulte [Red y conexión](topic:admin-network).
 - La contraseña de administrador y la de operador están en `config.yaml`; también se mostraron en la consola la primera vez que arrancó el programa. La página del operador tiene su propia contraseña para que pueda dársela a otra persona sin darle acceso a la configuración.
 - Configuración, la página del operador y esta Ayuda están disponibles en inglés, español, francés, alemán, italiano y portugués. Use el menú de idioma de la parte superior de cada página; la elección se recuerda en ese navegador.
-- Su trabajo se guarda en este equipo. Use **Exportar** en el paso Espectáculos para hacer una copia de seguridad que pueda llevar a otro equipo. La exportación es un `.zip` con `show.md` (el archivo del espectáculo, con su título y aspecto), un `show.<idioma>.md` por cada traducción y una carpeta `assets` con las imágenes; **Importar** convierte un zip así en un espectáculo nuevo.
+- Su trabajo se guarda en este equipo. Use **Exportar** en el paso Espectáculos para hacer una copia de seguridad que pueda llevar a otro equipo. La exportación es un `.zip` con `show.md` (el archivo del espectáculo, con su título y aspecto), un `show.<idioma>.md` por cada traducción y una carpeta `assets` con las imágenes; **Importar** convierte un zip así en un espectáculo nuevo, y también acepta un archivo de espectáculo de texto sin formato (`.md` o `.txt`, con cualquier nombre) como espectáculo nuevo.
 
 ## ¿Es nuevo con los archivos del espectáculo?
 
-Un archivo del espectáculo es solo texto. Cada línea es un subtítulo, y una pulsación de la barra espaciadora envía una línea. Lea [Escribir un archivo del espectáculo](topic:admin-writing-a-show-file), o cree el espectáculo de ejemplo y vea cómo está escrito. Hay un archivo de partida que puede descargar en [/help/sample-show.md](/help/sample-show.md).
+Un archivo del espectáculo es solo texto. Cada línea es un subtítulo, y una pulsación de la barra espaciadora envía una línea. Para todo el trabajo, del guion al archivo terminado (incluido editar en su propio programa y traer el archivo de vuelta), lea [Preparar un archivo del espectáculo](topic:admin-preparing-a-show-file). Las marcas están enumeradas en [Escribir un archivo del espectáculo](topic:admin-writing-a-show-file). O cree el espectáculo de ejemplo y vea cómo está escrito. Hay un archivo de partida que puede descargar en [/help/sample-show.md](/help/sample-show.md).
 
 ## Planificar el equipo
 
