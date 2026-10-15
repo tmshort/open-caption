@@ -18,3 +18,5 @@ Se un salto è in attesa di conferma, **Invio** lo conferma invece di inviare la
 I tasti tenuti premuti non si ripetono, e due pressioni a distanza di una frazione di secondo contano come una, quindi un telecomando che rimbalza non salterà una riga.
 
 La pagina ignora tutti questi tasti mentre questa finestra di aiuto è aperta, così leggere l'aiuto non può mai inviare una riga al pubblico.
+
+I tasti sono riconosciuti dal carattere che producono, non dalla loro posizione sulla tastiera, quindi funzionano allo stesso modo su QWERTY, AZERTY, QWERTZ e altri layout. Su un Mac il tasto Backspace si chiama **delete** (⌫), e i pulsanti sullo schermo mostrano gli stessi simboli dei tasti: ␣ per Spazio, ⌫ per Backspace e ⇧ per Maiusc. Su un telefono o tablet senza tastiera, usa i grandi pulsanti in fondo alla pagina.

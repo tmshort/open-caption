@@ -18,3 +18,5 @@ Si un saut attend une confirmation, **Entrée** le confirme au lieu d'envoyer la
 Les touches maintenues enfoncées ne se répètent pas, et deux pressions à une fraction de seconde d'écart comptent pour une seule : une télécommande qui rebondit ne sautera donc pas de ligne.
 
 La page ignore toutes ces touches tant que cette fenêtre d'aide est ouverte, si bien que lire l'aide ne peut jamais envoyer une ligne au public.
+
+Les touches sont reconnues d'après le caractère qu'elles produisent, pas d'après leur place sur le clavier ; elles fonctionnent donc de la même façon en QWERTY, AZERTY, QWERTZ et autres dispositions. Sur un Mac, la touche Retour arrière s'appelle **delete** (⌫), et les boutons à l'écran montrent les mêmes symboles que les touches : ␣ pour Espace, ⌫ pour Retour arrière et ⇧ pour Maj. Sur un téléphone ou une tablette sans clavier, utilisez les gros boutons en bas de la page.

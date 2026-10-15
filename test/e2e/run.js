@@ -404,6 +404,7 @@ async function main() {
     }
     const opEs = await uiPage('/operator', 'es'); await signIn(opEs, '#message'); await sleep(800);
     const opLeaks = await leaksOf(opEs);
+    check('the key hints show the keycap symbols with the translated key names', await opEs.evaluate(() => { const t = (id) => document.querySelector('#' + id + ' small').textContent.replace(/\s+/g, ' ').trim(); return t('next') === '␣ Espacio' && t('back') === '⌫ Retroceso'; }));
     check('the operator page is translated (Spanish)', opLeaks.length === 0 && (await opEs.evaluate(() => document.getElementById('next').innerText)).includes('SIGUIENTE'), opLeaks.slice(0, 8));
     await opEs.close();
     // The language menu: choosing a language reloads the page in it and is remembered.

@@ -18,3 +18,5 @@ Si un salto espera confirmación, **Intro** lo confirma en lugar de enviar la l�
 Las teclas mantenidas pulsadas no se repiten, y dos pulsaciones en una fracción de segundo cuentan como una, así que un pulsador con rebotes no se saltará una línea.
 
 La página ignora todas estas teclas mientras esta ventana de ayuda está abierta, de modo que leer la ayuda nunca puede enviar una línea al público.
+
+Las teclas se reconocen por el carácter que escriben, no por su posición en el teclado, así que funcionan igual en QWERTY, AZERTY, QWERTZ y otras distribuciones. En un Mac la tecla Retroceso se llama **delete** (⌫), y los botones de la pantalla muestran los mismos símbolos que las teclas: ␣ para Espacio, ⌫ para Retroceso y ⇧ para Mayús. En un teléfono o tableta sin teclado, use los botones grandes de la parte inferior de la página.

@@ -18,3 +18,5 @@ If a jump is waiting for confirmation, **Enter** confirms it instead of sending 
 Keys held down do not repeat, and two presses within a fraction of a second count as one, so a bouncing clicker will not skip a line.
 
 The page ignores all of these keys while this help window is open, so reading help can never send a line to the audience.
+
+The keys are matched by the character they type, not by where they sit on the keyboard, so they work the same on QWERTY, AZERTY, QWERTZ and other layouts. On a Mac the Backspace key is labelled **delete** (⌫), and the on-screen buttons show the same symbols as the keys: ␣ for Space, ⌫ for Backspace and ⇧ for Shift. On a phone or tablet without a keyboard, use the large buttons at the bottom of the page.

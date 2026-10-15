@@ -30,6 +30,9 @@ Goal: a first-time volunteer can finish without reading documentation.
 - **Test**: "Rehearsal mode" runs the operator view against an **isolated rehearsal engine** (doc 02) with a preview pane side-by-side. Nothing is sent to real audience devices and the live show is unaffected; position resets afterward.
 - **Go Live**: shows audience URL (large), QR code (printable page for lobby signs), host IPs, current audience count, and a "Start Show" button that activates the show and opens `/operator`.
 
+### Key hints
+The operator page's buttons show their key as a keycap symbol and a name in the page's language: `␣ Space`, `⌫ Backspace`, `⇧ Shift+Q` (Spazio, Retroceso, Mayús+Q …). Keys are matched by the character typed (`event.key`), not by position, so QWERTY, AZERTY and QWERTZ layouts all work; the Mac's *delete* key is Backspace. The help topic *Keyboard* says so in every language.
+
 ### Interface language
 Setup, the operator page and Help each have a language menu (a `<select>` in the header, and on the sign-in form) offering English, Español, Français, Deutsch, Italiano and Português. The first visit follows the browser's language; the choice is kept in the browser (`localStorage oc.ui.lang`) and `?ui=es` overrides it for one page. Changing it reloads the page in the new language (Setup asks first if the show file editor has unsaved changes). It is separate from the audience's language and from the show's languages.
 

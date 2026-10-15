@@ -18,3 +18,5 @@ Se um salto estiver esperando confirmação, o **Enter** o confirma em vez de en
 Teclas mantidas apertadas não se repetem, e dois toques com uma fração de segundo entre eles contam como um, então um controle remoto com ruído não pulará uma linha.
 
 A página ignora todas essas teclas enquanto esta janela de ajuda estiver aberta, de modo que ler a ajuda nunca pode enviar uma linha ao público.
+
+As teclas são reconhecidas pelo caractere que digitam, não pela posição no teclado, então funcionam do mesmo modo em QWERTY, AZERTY, QWERTZ e outras disposições. Num Mac a tecla Backspace se chama **delete** (⌫), e os botões na tela mostram os mesmos símbolos das teclas: ␣ para Espaço, ⌫ para Backspace e ⇧ para Shift. Num telefone ou tablet sem teclado, use os botões grandes na parte de baixo da página.
