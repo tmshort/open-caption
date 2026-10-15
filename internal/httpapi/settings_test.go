@@ -406,3 +406,26 @@ func TestLogLevelCanBeChangedInSetupAndIsKept(t *testing.T) {
 		t.Error("a refused change must not change the level")
 	}
 }
+
+func TestSetupSaysWhenALogLevelFlagOverridesTheSavedOne(t *testing.T) {
+	t.Cleanup(func() { logx.SetLevel(logx.Info) })
+	cfgPath := filepath.Join(t.TempDir(), "config.yaml")
+	os.WriteFile(cfgPath, []byte("admin_password: adminpw\noperator_password: operatorpw\n"), 0o600)
+	s, _, c := serverWith(t, func(cfg *config.Config) { cfg.Path = cfgPath })
+	_, g := c.do("GET", "/api/admin/settings", nil)
+	if g["logLevelPinned"] != "" {
+		t.Errorf("nothing pinned yet: %v", g["logLevelPinned"])
+	}
+	if _, r := c.do("PUT", "/api/admin/settings/log-level", map[string]string{"level": "warn"}); r["note"] != nil {
+		t.Errorf("no note without a flag: %v", r)
+	}
+	s.PinLogLevel("debug")
+	_, g = c.do("GET", "/api/admin/settings", nil)
+	if g["logLevelPinned"] != "debug" {
+		t.Errorf("%v", g["logLevelPinned"])
+	}
+	_, r := c.do("PUT", "/api/admin/settings/log-level", map[string]string{"level": "info"})
+	if note, _ := r["note"].(string); !strings.Contains(note, "--log-level debug") || !strings.Contains(note, "restarted") || r["level"] != "info" {
+		t.Errorf("%v", r)
+	}
+}

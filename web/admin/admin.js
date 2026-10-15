@@ -30,7 +30,7 @@
     return { ok: r.ok, status: r.status, data };
   }
   let toastTimer;
-  function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 3000); }
+  function toast(msg, ms) { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), ms || 3000); }
   function fail(r, fallback) { toast((r.data && r.data.error) || fallback || 'Something went wrong'); }
 
   // A reusable dialog. body: node; resolves true on OK, false on cancel.
@@ -83,7 +83,7 @@
     const logSelect = h('select', { 'aria-label': 'Log detail', onchange: async (e) => {
       const x = await api('PUT', '/api/admin/settings/log-level', { level: e.target.value });
       if (!x.ok) { fail(x); e.target.value = s.logLevel; return; }
-      s.logLevel = x.data.level; toast('Log detail: ' + x.data.level);
+      s.logLevel = x.data.level; toast(x.data.note || ('Log detail: ' + x.data.level), x.data.note ? 9000 : undefined);
     } }, ...[['error', 'Errors only'], ['warn', 'Problems (warnings and errors)'], ['info', 'Normal (events, sign-ins)'], ['debug', 'Debug (every request)']].map(([v, t]) => h('option', { value: v }, t)));
     logSelect.value = s.logLevel;
     const body = h('div', {},
@@ -95,6 +95,7 @@
       !s.adminRestricted && !s.httpsAddr ? h('p', { class: 'check warn' }, 'Anyone on this WiFi can try to sign in to Setup, and passwords travel unencrypted over plain http. To limit it, set access: admin_allow in the settings file (for example [localhost]); see the usage guide.') : null,
       h('h3', {}, 'Log detail'),
       logSelect,
+      s.logLevelPinned ? h('p', { class: 'check warn' }, 'This copy was started with --log-level ' + s.logLevelPinned + ', which overrides the settings file every time it starts. A change made here applies now but lasts only until the program restarts.') : null,
       h('p', { class: 'hint' }, 'How much the program records (in the support bundle and in the log file, if one is kept). Info records sign-ins and events; Debug adds every request, for tracking down a problem. Applies at once' + (s.canChangePasswords ? ' and is kept in the settings file.' : '.')),
       h('h3', {}, 'Change passwords'),
       s.canChangePasswords

@@ -24,6 +24,7 @@ type Server struct {
 	store   *show.Store
 
 	adminAllow, operatorAllow config.AllowList             // which computers may open Setup / the operator page
+	pinnedLevel               string                       // the --log-level / OPEN_CAPTION_LOG_LEVEL value, if one was given
 	logs                      interface{ String() string } // recent log lines for the support bundle (may be nil)
 	started                   time.Time
 
@@ -124,6 +125,10 @@ func (s *Server) closeAll() {
 }
 
 // SetLogSource supplies recent log lines for the support bundle.
+// PinLogLevel records that the log level was given on the command line (or environment) and so overrides
+// config.yaml at every start; Setup says so when the level is changed there.
+func (s *Server) PinLogLevel(level string) { s.pinnedLevel = level }
+
 func (s *Server) SetLogSource(l interface{ String() string }) { s.logs = l }
 
 // captiveAPI answers RFC 8908 clients (DHCP option 114): this network is not a

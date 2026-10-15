@@ -1118,7 +1118,7 @@ func (s *Server) settings(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{
 		"config": s.cfg.Redacted(), "configPath": s.cfg.Path, "dataDir": s.cfg.DataDir,
 		"httpAddr": l.HTTPAddr, "httpsAddr": l.HTTPSAddr, "version": s.version,
-		"canChangePasswords": s.cfg.Path != "", "logLevel": logx.Current().String(),
+		"canChangePasswords": s.cfg.Path != "", "logLevel": logx.Current().String(), "logLevelPinned": s.pinnedLevel,
 		"adminAllow": s.cfg.Access.AdminAllow, "operatorAllow": s.cfg.Access.OperatorAllow,
 		"adminRestricted": s.adminAllow.Restricted(), "operatorRestricted": s.operatorAllow.Restricted(),
 	})
@@ -1147,7 +1147,11 @@ func (s *Server) setLogLevel(w http.ResponseWriter, r *http.Request) {
 	}
 	logx.Infof("log level changed to %s in Setup", lv)
 	logx.SetLevel(lv)
-	writeJSON(w, http.StatusOK, map[string]any{"level": lv.String(), "saved": saved})
+	resp := map[string]any{"level": lv.String(), "saved": saved}
+	if s.pinnedLevel != "" {
+		resp["note"] = "This copy was started with --log-level " + s.pinnedLevel + " (or OPEN_CAPTION_LOG_LEVEL), which overrides the saved setting each time it starts. The new level applies now, and lasts until the program is restarted."
+	}
+	writeJSON(w, http.StatusOK, resp)
 }
 
 // changePasswords sets new admin and/or operator passwords (blank = keep). The new values are written to

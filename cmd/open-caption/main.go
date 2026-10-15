@@ -16,6 +16,7 @@ import (
 	"os/signal"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"sync"
 	"syscall"
 	"time"
@@ -84,8 +85,11 @@ func main() {
 		}
 		logx.Fatalf("config: %v", err)
 	}
-	level := cfg.Log.Level
+	level, overrides := cfg.Log.Level, ""
 	if *logLevel != "" {
+		if !strings.EqualFold(strings.TrimSpace(*logLevel), cfg.Log.Level) {
+			overrides = fmt.Sprintf("--log-level (or OPEN_CAPTION_LOG_LEVEL) %s overrides log.level %s in config.yaml at every start; a change made in Setup lasts only until the program restarts", *logLevel, cfg.Log.Level)
+		}
 		level = *logLevel
 	}
 	lv, err := logx.Parse(level)
@@ -94,6 +98,9 @@ func main() {
 	}
 	logx.SetLevel(lv)
 	cfg.Log.Level = lv.String()
+	if overrides != "" {
+		logx.Warnf("%s", overrides)
+	}
 	if cfg.DataDir == "" {
 		cfg.DataDir = dir
 	}
@@ -119,6 +126,9 @@ func main() {
 	}
 
 	api := httpapi.New(cfg, version)
+	if *logLevel != "" {
+		api.PinLogLevel(strings.ToLower(strings.TrimSpace(*logLevel)))
+	}
 	api.SetLogSource(logs)
 	defer api.Close()
 	rt := api.Runtime()
