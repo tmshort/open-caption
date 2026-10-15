@@ -276,6 +276,7 @@ func (s *Server) adminRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/admin/support-bundle", adm(s.supportBundle))
 	mux.HandleFunc("GET /api/admin/settings", adm(s.settings))
 	mux.HandleFunc("PUT /api/admin/settings/passwords", adm(s.changePasswords))
+	mux.HandleFunc("PUT /api/admin/settings/log-level", adm(s.setLogLevel))
 	mux.HandleFunc("GET /api/admin/settings/operator-password", adm(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-store")
 		s.pwMu.Lock()
@@ -1117,10 +1118,36 @@ func (s *Server) settings(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{
 		"config": s.cfg.Redacted(), "configPath": s.cfg.Path, "dataDir": s.cfg.DataDir,
 		"httpAddr": l.HTTPAddr, "httpsAddr": l.HTTPSAddr, "version": s.version,
-		"canChangePasswords": s.cfg.Path != "",
-		"adminAllow":         s.cfg.Access.AdminAllow, "operatorAllow": s.cfg.Access.OperatorAllow,
+		"canChangePasswords": s.cfg.Path != "", "logLevel": logx.Current().String(),
+		"adminAllow": s.cfg.Access.AdminAllow, "operatorAllow": s.cfg.Access.OperatorAllow,
 		"adminRestricted": s.adminAllow.Restricted(), "operatorRestricted": s.operatorAllow.Restricted(),
 	})
+}
+
+// setLogLevel changes how much is logged, at once, and records it in config.yaml so it is kept at the next start.
+func (s *Server) setLogLevel(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		Level string `json:"level"`
+	}
+	if !decode(w, r, &req) {
+		return
+	}
+	lv, err := logx.Parse(req.Level)
+	if err != nil || strings.TrimSpace(req.Level) == "" {
+		writeErr(w, http.StatusBadRequest, "The log level must be debug, info, warn or error.")
+		return
+	}
+	saved := false
+	if s.cfg.Path != "" {
+		if err := config.SetValues(s.cfg.Path, map[string]string{"log.level": lv.String()}); err != nil {
+			writeErr(w, http.StatusInternalServerError, "Could not save the setting in config.yaml: "+err.Error())
+			return
+		}
+		saved = true
+	}
+	logx.Infof("log level changed to %s in Setup", lv)
+	logx.SetLevel(lv)
+	writeJSON(w, http.StatusOK, map[string]any{"level": lv.String(), "saved": saved})
 }
 
 // changePasswords sets new admin and/or operator passwords (blank = keep). The new values are written to

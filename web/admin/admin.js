@@ -79,6 +79,12 @@
       shown.textContent = x.ok ? 'Operator password: ' + x.data.password : 'Could not read it';
     } }, 'Show the current operator password');
     const row = (k, v) => h('tr', {}, h('td', {}, k), h('td', {}, v || '—'));
+    const logSelect = h('select', { 'aria-label': 'Log detail', onchange: async (e) => {
+      const x = await api('PUT', '/api/admin/settings/log-level', { level: e.target.value });
+      if (!x.ok) { fail(x); e.target.value = s.logLevel; return; }
+      s.logLevel = x.data.level; toast('Log detail: ' + x.data.level);
+    } }, ...[['error', 'Errors only'], ['warn', 'Problems (warnings and errors)'], ['info', 'Normal (events, sign-ins)'], ['debug', 'Debug (every request)']].map(([v, t]) => h('option', { value: v }, t)));
+    logSelect.value = s.logLevel;
     const body = h('div', {},
       h('table', { class: 'cheat' },
         row('Program', 'open-caption ' + s.version), row('Settings file', s.configPath), row('Shows and data', s.dataDir),
@@ -86,6 +92,9 @@
         row('Operator page can be opened from', s.operatorRestricted ? s.operatorAllow.join(', ') : 'any computer on the network'),
         row('Web port (HTTP)', (s.httpAddr || '').replace(/^.*:/, '')), row('Web port (HTTPS)', (s.httpsAddr || '').replace(/^.*:/, ''))),
       !s.adminRestricted && !s.httpsAddr ? h('p', { class: 'check warn' }, 'Anyone on this WiFi can try to sign in to Setup, and passwords travel unencrypted over plain http. To limit it, set access: admin_allow in the settings file (for example [localhost]); see the usage guide.') : null,
+      h('h3', {}, 'Log detail'),
+      logSelect,
+      h('p', { class: 'hint' }, 'How much the program records (in the support bundle and in the log file, if one is kept). Info records sign-ins and events; Debug adds every request, for tracking down a problem. Applies at once' + (s.canChangePasswords ? ' and is kept in the settings file.' : '.')),
       h('h3', {}, 'Change passwords'),
       s.canChangePasswords
         ? h('div', {}, h('p', { class: 'hint' }, 'Leave a box empty to keep that password. At least 6 characters. People signed in with a changed password are signed out; you stay signed in.'),

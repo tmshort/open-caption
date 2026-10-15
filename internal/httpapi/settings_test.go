@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -376,4 +377,32 @@ func TestEarlierVersionsOfAShowFile(t *testing.T) {
 
 func showfileWithArchived(text string) string {
 	return "[settings]\narchived: yes\n[/settings]\n" + text
+}
+
+func TestLogLevelCanBeChangedInSetupAndIsKept(t *testing.T) {
+	t.Cleanup(func() { logx.SetLevel(logx.Info) })
+	cfgPath := filepath.Join(t.TempDir(), "config.yaml")
+	if err := os.WriteFile(cfgPath, []byte("# kept\nadmin_password: adminpw\noperator_password: operatorpw\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	_, _, c := serverWith(t, func(cfg *config.Config) { cfg.Path = cfgPath })
+	_, g := c.do("GET", "/api/admin/settings", nil)
+	if g["logLevel"] != "info" {
+		t.Errorf("%v", g["logLevel"])
+	}
+	code, r := c.do("PUT", "/api/admin/settings/log-level", map[string]string{"level": "debug"})
+	if code != 200 || r["level"] != "debug" || r["saved"] != true || logx.Current() != logx.Debug {
+		t.Fatalf("%d %v", code, r)
+	}
+	if b, _ := os.ReadFile(cfgPath); !strings.Contains(string(b), "# kept") || !strings.Contains(string(b), "level: debug") {
+		t.Errorf("config.yaml:\n%s", b)
+	}
+	for _, bad := range []string{"loud", ""} {
+		if code, _ := c.do("PUT", "/api/admin/settings/log-level", map[string]string{"level": bad}); code != 400 {
+			t.Errorf("%q: %d", bad, code)
+		}
+	}
+	if logx.Current() != logx.Debug {
+		t.Error("a refused change must not change the level")
+	}
 }

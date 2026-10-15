@@ -83,6 +83,7 @@ everywhere an operator session is; the reverse is not true.
 | PUT | `/api/admin/settings/passwords` | `{admin?, operator?}` (min 6 characters, different from each other) written to `config.yaml`, effective at once; signs out others using a changed password |
 | GET | `/api/admin/settings/operator-password` | The current operator password (for handing over) |
 | GET | `/api/admin/network` | Host IPs, ports, audience URL(s); QR PNG at `/api/admin/network/qr.png` |
+| PUT | `/api/admin/settings/log-level` | `{level}`: debug, info, warn or error; applies at once and is written to `log.level` in config.yaml (edited in place). `GET /api/admin/settings` includes `logLevel` |
 | GET | `/api/admin/support-bundle` | Zip: `info.txt`, `config.redacted.yaml`, `log.txt` (last 1000 lines), `shows.txt`. Passwords are never included |
 
 ### Live control API — operator or admin session

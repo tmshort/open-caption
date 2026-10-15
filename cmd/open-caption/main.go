@@ -54,7 +54,7 @@ func main() {
 	logs := logbuf.New(1000)
 	writers := []io.Writer{os.Stderr, logs}
 	if *logFile != "" {
-		f, err := os.OpenFile(*logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o644)
+		f, err := logx.OpenFile(*logFile, logx.DefaultMaxBytes, logx.DefaultKeep) // starts a new file at 5 MB; keeps 3 old ones
 		if err != nil {
 			logx.Fatalf("cannot open --log-file: %v", err)
 		}

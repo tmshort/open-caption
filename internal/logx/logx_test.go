@@ -3,6 +3,8 @@ package logx
 import (
 	"bytes"
 	"log"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -54,5 +56,42 @@ func TestFatalAlwaysWritesAndExits(t *testing.T) {
 	Fatalf("boom")
 	if code != 1 || b.String() != "ERROR boom\n" {
 		t.Errorf("%d %q", code, b.String())
+	}
+}
+
+func TestLogFileRotates(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "oc.log")
+	l, err := OpenFile(path, 100, 2)
+	if err != nil {
+		t.Fatal(err)
+	}
+	line := strings.Repeat("x", 39) + "\n" // 40 bytes
+	for i := 0; i < 12; i++ {
+		l.Write([]byte(line))
+	}
+	l.Close()
+	size := func(p string) int64 {
+		fi, err := os.Stat(p)
+		if err != nil {
+			return -1
+		}
+		return fi.Size()
+	}
+	if size(path) < 0 || size(path) > 100 || size(path+".1") < 0 || size(path+".2") < 0 || size(path+".3") != -1 {
+		t.Errorf("sizes: %d %d %d %d", size(path), size(path+".1"), size(path+".2"), size(path+".3"))
+	}
+	for _, p := range []string{path, path + ".1", path + ".2"} {
+		b, _ := os.ReadFile(p)
+		if len(b)%40 != 0 {
+			t.Errorf("%s holds a split line (%d bytes)", p, len(b))
+		}
+	}
+	// Reopening continues the same file.
+	l2, _ := OpenFile(path, 100, 2)
+	l2.Write([]byte("more\n"))
+	l2.Close()
+	if b, _ := os.ReadFile(path); !strings.HasSuffix(string(b), "more\n") {
+		t.Error("appended")
 	}
 }
