@@ -32,6 +32,7 @@ browser on a projector) shows the captions live, with no interaction required.
 **Under the hood**
 - One Go binary for macOS, Windows and Linux; no database, no internet needed, nothing fetched at runtime.
 - Tested with 200 simultaneous audience devices (latency well under 250 ms), a real-browser end-to-end test on all three systems, and ready-made files to start it at boot (systemd, launchd, Task Scheduler).
+- On the computer that runs it, Setup and the operator page open without a password (turn off with `access.local_auto_login: false`); every other computer signs in. An admin session on the operator page has a **Setup** link back.
 - Passwords, allowed computers (`access` lists) and a cross-site request guard protect Setup and the operator page; it is meant for a private network.
 
 ## Quick start

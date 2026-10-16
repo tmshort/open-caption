@@ -594,5 +594,6 @@ OCI18n.add("es", {
  "Could not save the logo: {0}": "No se pudo guardar el logotipo: {0}",
  "the show is not on air; start it first": "el espectáculo no está en el aire; inícielo primero",
  "Standby screen": "Pantalla de espera",
- "Showing the built-in Open Caption logo until you choose your own.": "Se muestra el logotipo de Open Caption incorporado hasta que elija el suyo."
+ "Showing the built-in Open Caption logo until you choose your own.": "Se muestra el logotipo de Open Caption incorporado hasta que elija el suyo.",
+ "Back to Setup": "Volver a Configuración"
 });

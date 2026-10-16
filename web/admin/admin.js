@@ -224,6 +224,7 @@
   async function boot() {
     const ping = await fetch('/api/admin/ping');
     if (!ping.ok) { showLogin(); return; }
+    try { if ((await ping.json()).auto) $('logout').hidden = true; } catch (e) { /* no sign-out to hide */ } // opened on this computer: no password, so nothing to sign out of
     $('login').hidden = true; $('app').hidden = false;
     await loadShows();
     try { A.cur = localStorage.getItem('oc.cur'); } catch (e) { /* storage unavailable */ }

@@ -189,7 +189,7 @@ func (s *Server) operatorState(w http.ResponseWriter, r *http.Request, rt *Runti
 	p := rt.OperatorPayload()
 	writeJSON(w, http.StatusOK, map[string]any{
 		"payload": p, "cues": cueViews(rt.Engine().Cues()), "me": SID(principal(r).Token),
-		"role": principal(r).Role,
+		"role": principal(r).Role, "auto": principal(r).Auto,
 	})
 }
 

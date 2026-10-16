@@ -42,6 +42,8 @@ is served only to logged-in sessions so the audience never sees operator tooling
 
 **Access and request checks.** Before authentication, every request to the Setup/operator pages, their JavaScript, APIs and login is checked against `access.admin_allow` / `access.operator_allow` (doc 02): `403` from an unlisted computer. State-changing `/api/*` requests (POST/PUT/DELETE) are refused with `403` if `Origin` does not match `Host` or `Sec-Fetch-Site` is `cross-site`/`same-site`. `/static/shared/` (speaker colors, fonts) is public.
 
+**Automatic sign-in on this computer (REQ-067).** With `access.local_auto_login` (default true), an admin/operator API call that has no valid session gets an **admin session and its cookie at once** when the request is `localTrusted`: the TCP peer is a loopback address, `Host` is `localhost`, `127.0.0.1` or `[::1]` (a name that merely resolves to 127.0.0.1, as in DNS rebinding, is refused), none of `X-Forwarded-For`, `X-Forwarded-Host`, `X-Forwarded-Proto`, `Forwarded`, `X-Real-Ip` is present, and `Sec-Fetch-Site` is absent, `none` or `same-origin`. The access lists are checked first. `GET /api/admin/ping` and `GET /api/operator/state` report `role` and `auto` (true for such a session; pages hide Sign out). The login form and `/api/login` are unchanged for every other computer.
+
 Each page shows its own **login form** (HTML form, not HTTP Basic auth, so
 password managers work) and sets an HttpOnly, SameSite=Strict session cookie
 (`Secure` only when served over HTTPS). The admin and operator passwords are

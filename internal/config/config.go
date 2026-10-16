@@ -124,6 +124,7 @@ func Default() Config {
 			IdleMessage: "Captions will begin shortly", OpenBrowser: true,
 			Look: Look{Background: "#000000", TextColor: "#ffffff", SpeakerNameColor: "#ffffff", Font: "system", TextSizePercent: 100, SpeakerNames: "label"}},
 		Audience: Audience{MaxClients: 500, ScrollbackLines: 200},
+		Access:   Access{LocalAutoLogin: true},
 		Log:      Log{Level: "info"},
 		MDNS:     MDNS{Enabled: true, Name: "open-caption"},
 	}

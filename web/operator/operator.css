@@ -14,6 +14,9 @@ button { background: #26262d; border: 1px solid #3a3a44; border-radius: 8px; pad
 button:hover:not(:disabled) { background: #30303a; }
 button:disabled { opacity: .4; cursor: not-allowed; }
 button.primary { background: #2456b3; border-color: #3b6fd1; font-weight: 700; }
+a.quiet { color: var(--dim); text-decoration: none; padding: .3rem .6rem; border-radius: 8px; }
+a.quiet:hover { color: var(--fg); }
+a.quiet[hidden] { display: none; }
 button.quiet { background: transparent; border-color: transparent; color: var(--dim); min-height: 0; padding: .3rem .6rem; }
 button small { display: block; font-size: .65em; opacity: .9; font-weight: 400; }
 :focus { outline: 3px solid var(--accent); outline-offset: 2px; }

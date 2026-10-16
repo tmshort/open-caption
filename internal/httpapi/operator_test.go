@@ -20,6 +20,7 @@ import (
 func testConfig() config.Config {
 	c := config.Default()
 	c.AdminPassword, c.OperatorPassword = "adminpw", "operatorpw"
+	c.Access.LocalAutoLogin = false // the tests use a browser-like client on 127.0.0.1; automatic sign-in has its own tests
 	return c
 }
 

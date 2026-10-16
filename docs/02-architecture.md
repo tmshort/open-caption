@@ -233,6 +233,7 @@ audience:
 access:
   admin_allow: []                  # [] = any computer; e.g. [localhost] or [192.168.1.0/24, private]
   operator_allow: []
+  local_auto_login: true           # a browser on this computer (localhost, 127.0.0.1, [::1]) is signed in as admin with no password; other computers use a password
 ```
 
 ## Where configuration lives (layers)

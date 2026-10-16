@@ -24,7 +24,7 @@ On the Show step, **Archive** puts a show away: it is kept in full but listed un
 ## Before you start
 
 - This computer must be on the same WiFi network as the audience's phones and tablets. See [Network and joining](topic:admin-network).
-- The admin password and the operator password are in `config.yaml`; they were also printed in the console the first time the program started. The operator page has its own password so you can hand it to someone else without giving them setup access.
+- The admin password and the operator password are in `config.yaml`; they were also printed in the console the first time the program started. The operator page has its own password so you can hand it to someone else without giving them setup access. On the computer that runs the program, Setup and the operator page open **without a password** when the address starts with `localhost`, `127.0.0.1` or `[::1]` (the person at that computer is trusted as the admin). Other computers, and any request that has been relayed by a proxy, still sign in with a password. Set `access.local_auto_login: false` in `config.yaml` if other people can log in to this computer.
 - Setup, the operator page and this Help are available in English, Spanish, French, German, Italian and Portuguese. Use the language menu at the top of each page; the choice is remembered in that browser.
 - Your work is saved on this computer. Use **Export** on the Show step to make a backup you can move to another computer. The export is a `.zip` holding `show.md` (the show file, with its title and look), a `show.<language>.md` for each translation, and an `assets` folder of images; **Import** turns such a zip into a new show, and also takes a plain show file (`.md` or `.txt`, with any name) as a new show.
 

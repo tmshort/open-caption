@@ -68,7 +68,7 @@ const stopServer = () => new Promise((r) => { if (!server || server.exitCode !==
 async function main() {
   if (!fs.existsSync(BIN)) throw new Error('build the program first: make build (looked for ' + BIN + ')');
   dataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'oc-e2e-'));
-  fs.writeFileSync(path.join(dataDir, 'config.yaml'), `admin_password: ${ADMIN}\noperator_password: ${OPERATOR}\nmdns:\n  enabled: false\n`);
+  fs.writeFileSync(path.join(dataDir, 'config.yaml'), `admin_password: ${ADMIN}\noperator_password: ${OPERATOR}\nmdns:\n  enabled: false\naccess:\n  local_auto_login: false\n`);
   port = await freePort(); B = 'http://localhost:' + port;
   await startServer();
 
@@ -327,6 +327,15 @@ async function main() {
     await op.keyboard.press('Space'); await sleep(T(900));
     check('START puts it back on air where it was (the pre-show timer is showing again)', await en.evaluate(() => !document.body.classList.contains('mode-standby') && !!document.querySelector('#fs [data-timer]')));
 
+    section('The operator page and Setup');
+    // (the sign-in rate limit is five a minute, so the role is faked in the page's own state request instead of logging in again)
+    for (const [role, linked] of [['operator', false], ['admin', true]]) {
+      const pg = await open();
+      await pg.evaluateOnNewDocument((r) => { const f = window.fetch; window.fetch = (u, o) => f(u, o).then((resp) => (String(u).includes('/api/operator/state') ? resp.json().then((j) => { j.role = r; return new Response(JSON.stringify(j), { status: 200, headers: { 'Content-Type': 'application/json' } }); }) : resp)); }, role);
+      await pg.goto(B + '/operator'); await pg.waitForSelector('#list .cue');
+      check('on the operator page a session with the ' + role + ' role ' + (linked ? 'has a link back to Setup at the top' : 'has no link to Setup'), await pg.evaluate((want) => { const l = document.getElementById('setuplink'); return want ? (!l.hidden && l.getAttribute('href') === '/admin' && l.getBoundingClientRect().top < 120 && l.textContent === 'Setup') : l.hidden; }, linked));
+      await pg.close();
+    }
     section('Settings and security');
     const guard = await open(); await guard.goto(B + '/admin'); await guard.waitForSelector('#pw'); await guard.type('#pw', ADMIN); await guard.keyboard.press('Enter'); await guard.waitForSelector('#steps button');
     await click(guard, 'Settings'); await sleep(600);
@@ -577,6 +586,29 @@ async function main() {
     check('deleting the live show says why it cannot be done', await guard.evaluate(() => { const d = document.getElementById('dlg'); return d.open && /This show is live/.test(d.innerText) && d.querySelector('#dlgcancel').hidden; }));
     await guard.evaluate(() => document.getElementById('dlgok').click()); await sleep(300);
     check('and the show is still there', await guard.evaluate(() => [...document.querySelectorAll('.card.show')].some((x) => /LIVE/.test(x.textContent))));
+
+    // ------------------------------------------------------------------ this computer
+    section('This computer: no password for Setup and the operator page');
+    await stopServer(); await sleep(400);
+    fs.writeFileSync(path.join(dataDir, 'config.yaml'), `admin_password: ${ADMIN}\noperator_password: ${OPERATOR}\nmdns:\n  enabled: false\naccess:\n  local_auto_login: true\n`);
+    await startServer(); await sleep(T(1500));
+    const ctx = await b.createBrowserContext();
+    const lp = await ctx.newPage(); lp.setDefaultTimeout(T(8000)); lp.on('dialog', (d) => d.accept());
+    await lp.goto(B + '/operator'); await lp.waitForSelector('#list .cue', { timeout: T(15000) }).catch(() => {});
+    check('on localhost the operator page opens without a password', await lp.evaluate(() => document.getElementById('login').hidden && !document.getElementById('app').hidden));
+    check('and links back to Setup (it is signed in as admin), with no Sign out', await lp.evaluate(() => !document.getElementById('setuplink').hidden && document.getElementById('logout').hidden));
+    await lp.goto(B + '/admin'); await lp.waitForSelector('#steps button', { timeout: T(15000) }).catch(() => {});
+    check('and Setup opens without a password, with no Sign out', await lp.evaluate(() => document.getElementById('login').hidden && !!document.querySelector('#steps button') && document.getElementById('logout').hidden));
+    await lp.close(); await ctx.close();
+    // the address of this computer on the network is not localhost, so a password is asked for there
+    const lan = require('os').networkInterfaces();
+    const ip = Object.values(lan).flat().find((i) => i && i.family === 'IPv4' && !i.internal);
+    if (ip) {
+      const ctx2 = await b.createBrowserContext(); const lp2 = await ctx2.newPage(); lp2.setDefaultTimeout(T(8000));
+      await lp2.goto('http://' + ip.address + ':' + port + '/admin'); await lp2.waitForSelector('#pw', { visible: true }).catch(() => {});
+      check('reaching the same computer by its network address asks for the password', await lp2.evaluate(() => !document.getElementById('login').hidden));
+      await lp2.close(); await ctx2.close();
+    }
   } finally {
     await b.close();
   }

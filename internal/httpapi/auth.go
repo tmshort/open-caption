@@ -38,6 +38,7 @@ const (
 type session struct {
 	role    string
 	expires time.Time
+	auto    bool // signed in without a password because the browser is on this computer (see localTrusted)
 }
 
 // savedSessions is the on-disk form. Only a hash of each token is stored, and
@@ -50,6 +51,7 @@ type savedSessions struct {
 type savedSession struct {
 	Role    string `json:"role"`
 	Expires int64  `json:"expires"`
+	Auto    bool   `json:"auto,omitempty"`
 }
 
 func tokenKey(token string) string {
@@ -99,7 +101,7 @@ func (a *auth) load() {
 	}
 	for k, s := range sv.Sessions {
 		if exp := time.Unix(s.Expires, 0); time.Now().Before(exp) && (s.Role == RoleAdmin || s.Role == RoleOperator) {
-			a.sessions[k] = session{role: s.Role, expires: exp}
+			a.sessions[k] = session{role: s.Role, expires: exp, auto: s.Auto}
 		}
 	}
 }
@@ -112,7 +114,7 @@ func (a *auth) saveLocked() {
 	sv := savedSessions{Fingerprint: a.fp, Sessions: map[string]savedSession{}}
 	for k, s := range a.sessions {
 		if time.Now().Before(s.expires) {
-			sv.Sessions[k] = savedSession{Role: s.role, Expires: s.expires.Unix()}
+			sv.Sessions[k] = savedSession{Role: s.role, Expires: s.expires.Unix(), Auto: s.auto}
 		}
 	}
 	b, err := json.Marshal(sv)
@@ -163,11 +165,17 @@ func (a *auth) login(role, password string) (token, granted string, ok bool) {
 	default:
 		return "", "", false
 	}
+	token, ok = a.issue(granted, false)
+	return token, granted, ok
+}
+
+// issue creates a session with the given role and returns its token.
+func (a *auth) issue(role string, auto bool) (string, bool) {
 	b := make([]byte, 32)
 	if _, err := rand.Read(b); err != nil {
-		return "", "", false
+		return "", false
 	}
-	token = base64.RawURLEncoding.EncodeToString(b)
+	token := base64.RawURLEncoding.EncodeToString(b)
 	a.mu.Lock()
 	defer a.mu.Unlock()
 	if len(a.sessions) >= maxSessionKeep {
@@ -177,9 +185,9 @@ func (a *auth) login(role, password string) (token, granted string, ok bool) {
 			}
 		}
 	}
-	a.sessions[tokenKey(token)] = session{role: granted, expires: time.Now().Add(sessionTTL)}
+	a.sessions[tokenKey(token)] = session{role: role, expires: time.Now().Add(sessionTTL), auto: auto}
 	a.saveLocked()
-	return token, granted, true
+	return token, true
 }
 
 func (a *auth) lookup(token string) (session, bool) {
@@ -246,6 +254,7 @@ type ctxKey struct{}
 type Principal struct {
 	Token string
 	Role  string
+	Auto  bool // signed in automatically because the browser is on this computer: there is nothing to sign out of
 }
 
 func principal(r *http.Request) Principal {
@@ -324,28 +333,78 @@ func (s *Server) originGuard(next http.Handler) http.Handler {
 	})
 }
 
-// require wraps h so only sessions with at least role may call it.
+// localHosts are the names a browser on this computer uses to reach it.
+var localHosts = map[string]bool{"localhost": true, "127.0.0.1": true, "::1": true}
+
+// proxyHeaders show that a request was relayed by something else (a reverse proxy, a tunnel).
+var proxyHeaders = []string{"X-Forwarded-For", "X-Forwarded-Host", "X-Forwarded-Proto", "Forwarded", "X-Real-Ip"}
+
+// localTrusted reports whether the request comes from a browser on this very computer, in which case Setup and
+// the operator page open without a password (access.local_auto_login). It is deliberately strict, because
+// "the request came from 127.0.0.1" alone is not proof of a person at the keyboard:
+//   - the connection must be from a loopback address;
+//   - the address in the browser's bar (the Host header) must be localhost, 127.0.0.1 or [::1], which defeats
+//     a web page that makes the browser reach this server under its own name (DNS rebinding);
+//   - nothing may have relayed it (a reverse proxy on this computer makes every visitor look local);
+//   - a browser that says the request was started by another website or another port is refused.
+func (s *Server) localTrusted(r *http.Request) bool {
+	if !s.cfg.Access.LocalAutoLogin {
+		return false
+	}
+	if ip := clientAddr(r); !ip.IsValid() || !ip.IsLoopback() {
+		return false
+	}
+	host := r.Host
+	if h, _, err := net.SplitHostPort(host); err == nil {
+		host = h
+	}
+	if !localHosts[strings.ToLower(strings.Trim(host, "[]"))] {
+		return false
+	}
+	for _, h := range proxyHeaders {
+		if r.Header.Get(h) != "" {
+			return false
+		}
+	}
+	switch r.Header.Get("Sec-Fetch-Site") {
+	case "", "same-origin", "none":
+		return true
+	}
+	return false
+}
+
+// require wraps h so only sessions with at least role may call it. A browser on this computer is signed in as
+// admin automatically (localTrusted); everyone else needs a session from /api/login.
 func (s *Server) require(role string, h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !s.allowedFor(role, r) {
 			writeErr(w, http.StatusForbidden, "not available from this computer")
 			return
 		}
-		c, err := r.Cookie(cookieName)
-		if err != nil {
+		var sess session
+		var token string
+		ok := false
+		if c, err := r.Cookie(cookieName); err == nil {
+			sess, ok = s.auth.lookup(c.Value)
+			token = c.Value
+		}
+		if (!ok || (role == RoleAdmin && sess.role != RoleAdmin)) && s.localTrusted(r) {
+			if t, issued := s.auth.issue(RoleAdmin, true); issued {
+				http.SetCookie(w, &http.Cookie{Name: cookieName, Value: t, Path: "/", HttpOnly: true,
+					SameSite: http.SameSiteStrictMode, Secure: r.TLS != nil, MaxAge: int(sessionTTL.Seconds())})
+				logx.Infof("signed in as admin without a password: the browser is on this computer")
+				token, sess, ok = t, session{role: RoleAdmin, auto: true}, true
+			}
+		}
+		if !ok {
 			writeErr(w, http.StatusUnauthorized, "login required")
 			return
 		}
-		sess, ok := s.auth.lookup(c.Value)
-		if !ok || (role == RoleAdmin && sess.role != RoleAdmin) {
-			code := http.StatusUnauthorized
-			if ok {
-				code = http.StatusForbidden
-			}
-			writeErr(w, code, "not allowed")
+		if role == RoleAdmin && sess.role != RoleAdmin {
+			writeErr(w, http.StatusForbidden, "not allowed")
 			return
 		}
-		h(w, r.WithContext(context.WithValue(r.Context(), ctxKey{}, Principal{Token: c.Value, Role: sess.role})))
+		h(w, r.WithContext(context.WithValue(r.Context(), ctxKey{}, Principal{Token: token, Role: sess.role, Auto: sess.auto})))
 	}
 }
 

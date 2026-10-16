@@ -11,6 +11,10 @@ import (
 type Access struct {
 	AdminAllow    []string `yaml:"admin_allow"`
 	OperatorAllow []string `yaml:"operator_allow"`
+	// LocalAutoLogin signs in, as admin and without a password, anyone using Setup or the operator page on the
+	// computer that runs the program (a browser opened at localhost, 127.0.0.1 or [::1]). Other computers
+	// still sign in with a password. Turn it off on a computer that other people can log in to.
+	LocalAutoLogin bool `yaml:"local_auto_login"`
 }
 
 // AllowList is a parsed list of addresses. The zero value allows everyone.

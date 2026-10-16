@@ -236,7 +236,7 @@ func (s *Server) adminRoutes(mux *http.ServeMux) {
 		})
 	}
 	mux.HandleFunc("GET /api/admin/ping", s.require(RoleAdmin, func(w http.ResponseWriter, r *http.Request) {
-		writeJSON(w, http.StatusOK, map[string]any{"ok": true})
+		writeJSON(w, http.StatusOK, map[string]any{"ok": true, "role": principal(r).Role, "auto": principal(r).Auto})
 	}))
 	mux.HandleFunc("GET /api/admin/shows", adm(s.listShows))
 	mux.HandleFunc("POST /api/admin/shows", adm(s.createShow))

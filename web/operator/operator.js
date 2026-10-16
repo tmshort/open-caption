@@ -39,6 +39,8 @@
     $('login').hidden = true;
     $('app').hidden = false;
     S.me = r.data.me;
+    $('setuplink').hidden = r.data.role !== 'admin' || REHEARSAL; // signed in with the admin password: a way back to Setup
+    $('logout').hidden = !!r.data.auto; // on the computer that runs the program there is no password to sign out of
     applyState(r.data.cues, r.data.payload);
     await claim(false);
     openStream();

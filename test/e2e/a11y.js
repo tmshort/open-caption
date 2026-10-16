@@ -23,7 +23,7 @@ async function audit(page, label) {
 }
 (async () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'oc-a11y-'));
-  fs.writeFileSync(path.join(dir, 'config.yaml'), `admin_password: ${PW}\noperator_password: ${PW}2\nmdns:\n  enabled: false\n`);
+  fs.writeFileSync(path.join(dir, 'config.yaml'), `admin_password: ${PW}\noperator_password: ${PW}2\nmdns:\n  enabled: false\naccess:\n  local_auto_login: false\n`);
   const port = await free(), B = 'http://localhost:' + port;
   const server = spawn(BIN, ['--data', dir, '--http-addr', ':' + port, '--no-browser'], { stdio: 'ignore' });
   for (let i = 0; i < 50; i++) { try { if ((await fetch(B + '/healthz')).ok) break; } catch (e) { /* wait */ } await sleep(100); }

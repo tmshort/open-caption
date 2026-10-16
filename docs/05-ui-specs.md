@@ -60,6 +60,8 @@ The Help button opens the help panel and F1 does the same. The Go Live step has 
 
 Layout (desktop): three columns of the show file as a vertical list.
 
+**Header (REQ-067).** A session with the admin role (the admin password, or a browser on this computer) shows a **Setup** link in the header, just before Help, back to `/admin`; a plain operator session and the rehearsal frame do not. On this computer there is no password to sign out of, so **Sign out** is hidden (and the login form never appears).
+
 **Standby and on air (REQ-066).** A loaded show opens in **standby**: the header badge says `STANDBY` (blue; `● LIVE` once on air), a blue banner says `NOT ON AIR — the audience sees the standby screen. Press Space (START) to put the show on air; it carries on from where it is.`, and the **NEXT ▶** button becomes **START ▶** in the same place with the same key (Space and the other advance keys, or a click). Back, Blank, Clear, Message and Stop are disabled and their keys do nothing; search, Restart and Help still work. **Go off air…** (header, disabled in standby) asks first, then returns the audience to the standby screen with the position kept; START resumes. **Restart show…** goes back to the beginning *and* to standby.
 
 ```
