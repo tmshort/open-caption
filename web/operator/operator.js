@@ -181,7 +181,8 @@
         const ul = document.createElement('ul'); ul.className = 'items';
         (c.items || []).forEach((it) => {
           const li = document.createElement('li');
-          li.textContent = (it.kind === 'image' ? ICON.image + ' ' : it.kind === 'blank' ? ICON.blank + ' ' : '') + it.label + (it.seconds ? ' (' + it.seconds + ' s)' : '');
+          const mark = document.createElement('span'); mark.className = 'pl'; mark.setAttribute('aria-hidden', 'true'); li.appendChild(mark); // ▶ while this item is on the audience screens
+          li.appendChild(document.createTextNode((it.kind === 'image' ? ICON.image + ' ' : it.kind === 'blank' ? ICON.blank + ' ' : '') + it.label + (it.seconds ? ' (' + it.seconds + ' s)' : '')));
           ul.appendChild(li);
         });
         body.appendChild(ul);
@@ -206,6 +207,9 @@
       li.classList.toggle('now', i === now);
       li.classList.toggle('next', i === o.nextIndex);
       li.classList.toggle('sel', i === S.sel);
+      // a running loop: a small play triangle beside the item the audience is looking at now
+      const shown = o.loop && o.loop.cue === i ? o.loop.item : -1;
+      li.querySelectorAll('.items li').forEach((it, k) => { it.classList.toggle('playing', k === shown); if (k === shown) it.setAttribute('aria-current', 'true'); else it.removeAttribute('aria-current'); });
     });
     if (scroll) scrollTo(o.nextIndex >= 0 ? o.nextIndex : now);
   }

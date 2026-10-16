@@ -93,3 +93,8 @@ dialog menu { display: flex; gap: .6rem; justify-content: flex-end; padding: 0; 
 @media (max-width: 640px) { footer { display: grid; grid-template-columns: 1fr 1fr; } footer #search { grid-column: 1 / -1; } #next { grid-column: 1 / -1; padding-block: 1.1rem; } }
 @media (prefers-reduced-motion: reduce) { #toast { transition: none; } }
 button small kbd { font: inherit; border: 1px solid currentColor; border-radius: 3px; padding: 0 .25em; margin-right: .2em; }
+/* the item of a running loop that is on the audience screens now */
+.items li { display: flex; gap: .4rem; }
+.items .pl { flex: none; width: 1em; text-align: center; }
+.items li.playing { color: var(--fg); font-weight: 600; }
+.items li.playing .pl::before { content: "▶"; color: var(--ok); }

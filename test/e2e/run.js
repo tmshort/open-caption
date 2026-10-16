@@ -171,6 +171,7 @@ async function main() {
     await op.evaluate(() => fetch('/api/operator/claim', { method: 'POST', body: '{"takeover":true}' }));
     const en = await open({ viewport: { width: 420, height: 760, deviceScaleFactor: 2 } }); await en.goto(B + '/'); await sleep(900);
     const es = await open({ viewport: { width: 420, height: 760, deviceScaleFactor: 2 }, headers: { 'Accept-Language': 'es-MX,es;q=0.9,en;q=0.5' } }); await es.goto(B + '/'); await sleep(900);
+    check('the item of a running loop is marked with a play triangle in the operator list', await op.evaluate(() => { const l = document.querySelectorAll('.items li.playing'); return l.length === 1 && l[0].getAttribute('aria-current') === 'true' && getComputedStyle(l[0].querySelector('.pl'), '::before').content.includes('▶'); }));
     check('a leading loop starts by itself (fullscreen pre-show)', await en.evaluate(() => !document.getElementById('fs').hidden));
     check('English and Spanish devices each get their language', (await en.evaluate(() => document.documentElement.lang)) === 'en' && (await es.evaluate(() => document.documentElement.lang)) === 'es');
     check('the language menu is offered', await es.evaluate(() => !document.getElementById('langbtn').hidden));
