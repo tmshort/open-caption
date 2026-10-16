@@ -558,7 +558,6 @@ OCI18n.add("fr", {
  "Standby message": "Message d'attente",
  "Captions will begin shortly": "Les sous-titres vont bientôt commencer",
  "Current standby logo": "Logo d'attente actuel",
- "No logo yet.": "Pas encore de logo.",
  "Logo removed": "Logo retiré",
  "Remove logo": "Retirer le logo",
  "Choose a logo": "Choisir un logo",
@@ -594,5 +593,6 @@ OCI18n.add("fr", {
  "The logo must be a PNG, JPEG, GIF or WebP image.": "Le logo doit être une image PNG, JPEG, GIF ou WebP.",
  "Could not save the logo: {0}": "Impossible d'enregistrer le logo : {0}",
  "the show is not on air; start it first": "le spectacle n'est pas à l'antenne ; démarrez-le d'abord",
- "Standby screen": "Écran d'attente"
+ "Standby screen": "Écran d'attente",
+ "Showing the built-in Open Caption logo until you choose your own.": "Le logo Open Caption intégré s'affiche jusqu'à ce que vous choisissiez le vôtre."
 });

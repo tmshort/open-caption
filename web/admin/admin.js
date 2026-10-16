@@ -133,9 +133,9 @@
     const sb = s.standby || {};
     const sbMsg = h('input', { type: 'text', maxlength: '200', size: '40', 'aria-label': __('Standby message'), placeholder: __('Captions will begin shortly') }); sbMsg.value = sb.message || '';
     const sbImg = h('img', { class: 'sblogo', alt: __('Current standby logo') });
-    const sbNone = h('span', { class: 'hint' }, __('No logo yet.'));
+    const sbNone = h('span', { class: 'hint' }, __('Showing the built-in Open Caption logo until you choose your own.'));
     const sbRemove = h('button', { type: 'button', onclick: async () => { const x = await api('DELETE', '/api/admin/settings/standby-logo'); if (!x.ok) return fail(x); paintSb(x.data.standby); toast(__('Logo removed')); } }, __('Remove logo'));
-    function paintSb(v) { sbImg.hidden = !v.logo; if (v.logo) sbImg.src = v.logo; sbNone.hidden = !!v.logo; sbRemove.disabled = !v.logo; }
+    function paintSb(v) { sbImg.hidden = !v.logo; if (v.logo) sbImg.src = v.logo; sbNone.hidden = !v.default; sbRemove.disabled = !!v.default; }
     paintSb(sb);
     const sbFile = h('input', { type: 'file', accept: 'image/png,image/jpeg,image/gif,image/webp', 'aria-label': __('Choose a logo'), onchange: async (e) => {
       const f = e.target.files[0]; if (!f) return;

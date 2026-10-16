@@ -18,6 +18,9 @@ import (
 
 const maxStandbyLogo = 2 << 20
 
+// defaultLogo is shown until the venue uploads its own: the same [oc] mark as the favicon (open captioning).
+const defaultLogo = "/static/shared/favicon.svg"
+
 var logoExts = map[string]string{"image/png": ".png", "image/jpeg": ".jpg", "image/gif": ".gif", "image/webp": ".webp"}
 
 // logoPath is the standby logo file, or "" when there is none.
@@ -36,10 +39,10 @@ func (s *Server) logoPath() string {
 
 // standbyView is the standby screen as the audience page gets it.
 func (s *Server) standbyView() StandbyView {
-	v := StandbyView{Message: s.cfg.Standby.Message}
+	v := StandbyView{Message: s.cfg.Standby.Message, Logo: defaultLogo, Default: true}
 	if p := s.logoPath(); p != "" {
 		if st, err := os.Stat(p); err == nil {
-			v.Logo = fmt.Sprintf("/standby-logo?v=%d", st.ModTime().UnixNano())
+			v.Logo, v.Default = fmt.Sprintf("/standby-logo?v=%d", st.ModTime().UnixNano()), false
 		}
 	}
 	return v

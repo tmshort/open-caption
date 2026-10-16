@@ -288,7 +288,7 @@
     const s = state.standby || {}, img = $('standbylogo');
     const src = s.logo || '';
     if (img.getAttribute('src') !== src) { if (src) img.src = src; else img.removeAttribute('src'); }
-    img.hidden = !src;
+    img.hidden = !src; img.className = s.default ? 'default' : '';
     $('standbymsg').textContent = s.message || tr('standby');
   }
 

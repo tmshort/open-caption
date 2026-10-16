@@ -558,7 +558,6 @@ OCI18n.add("pt", {
  "Standby message": "Mensagem de espera",
  "Captions will begin shortly": "As legendas começarão em breve",
  "Current standby logo": "Logotipo de espera atual",
- "No logo yet.": "Ainda não há logotipo.",
  "Logo removed": "Logotipo removido",
  "Remove logo": "Remover o logotipo",
  "Choose a logo": "Escolher um logotipo",
@@ -594,5 +593,6 @@ OCI18n.add("pt", {
  "The logo must be a PNG, JPEG, GIF or WebP image.": "O logotipo deve ser uma imagem PNG, JPEG, GIF ou WebP.",
  "Could not save the logo: {0}": "Não foi possível salvar o logotipo: {0}",
  "the show is not on air; start it first": "o espetáculo não está no ar; inicie-o primeiro",
- "Standby screen": "Tela de espera"
+ "Standby screen": "Tela de espera",
+ "Showing the built-in Open Caption logo until you choose your own.": "O logotipo integrado do Open Caption é mostrado até você escolher o seu."
 });

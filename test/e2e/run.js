@@ -174,6 +174,7 @@ async function main() {
     // Standby: the show is loaded but not on air, so the audience sees the venue's screen and nothing of the show.
     const standbyShown = (pg) => pg.evaluate(() => { const d = document.getElementById('standby'); return document.body.classList.contains('mode-standby') && getComputedStyle(d).display !== 'none' && d.textContent.trim().length > 0 && document.getElementById('fs').hidden && document.querySelectorAll('.cap').length === 0 && getComputedStyle(document.getElementById('captions')).visibility === 'hidden'; });
     check('before the operator starts the show, the audience sees the standby screen', await standbyShown(en));
+    check('with the built-in [oc] logo until the venue sets its own', await en.evaluate(() => { const i = document.getElementById('standbylogo'); return !i.hidden && /favicon\.svg/.test(i.getAttribute('src')) && i.naturalWidth > 0; }));
     check('in every language (the built-in words are translated)', await es.evaluate(() => /Los subtítulos comenzarán en breve/.test(document.getElementById('standby').textContent)));
     check('and the operator page says it is not on air, with START where NEXT will be', await op.evaluate(() => /STANDBY/.test(document.getElementById('live').textContent) && /START/.test(document.getElementById('next').textContent) && document.getElementById('offair').disabled && /NOT ON AIR/.test(document.getElementById('banner').textContent) && document.getElementById('stop').disabled));
     await op.keyboard.press('Backspace'); await op.keyboard.press('b'); await sleep(400);

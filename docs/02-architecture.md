@@ -81,7 +81,7 @@ existed carry on as they were, on air).
 
 **The standby screen** is venue-level, not part of any show file (a show file can't be read when no show is loaded):
 the optional message is `standby.message` in `config.yaml` (empty means the built-in "Captions will begin shortly"
-in each viewer's language) and the optional logo is a PNG, JPEG, GIF or WebP of up to 2 MB kept in the data folder
+in each viewer's language) and the logo is the built-in **[oc]** mark (open captioning, the same art as the favicon, served from `/static/shared/favicon.svg`) until the venue uploads its own PNG, JPEG, GIF or WebP of up to 2 MB, kept in the data folder
 (`standby-logo.<ext>`), both set in Setup → Settings → Standby screen and served publicly at `/standby-logo`. It is
 shown whenever the audience mode is `standby`, including before any show has been loaded.
 

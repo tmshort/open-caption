@@ -58,6 +58,7 @@ type AudItem struct {
 type StandbyView struct {
 	Message string `json:"message,omitempty"`
 	Logo    string `json:"logo,omitempty"` // URL of the logo image
+	Default bool   `json:"default,omitempty"` // the built-in Open Caption logo, because none was uploaded
 }
 
 // LangInfo names a language a show is available in.

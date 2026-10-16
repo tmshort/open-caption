@@ -178,8 +178,8 @@ func TestStandbyScreenIsTheVenuesOwn(t *testing.T) {
 	if code, _ := c.do("DELETE", "/api/admin/settings/standby-logo", nil); code != 200 {
 		t.Error("delete")
 	}
-	if got := audienceState(t, s)["standby"].(map[string]any)["logo"]; got != nil {
-		t.Errorf("logo should be gone: %v", got)
+	if st := audienceState(t, s)["standby"].(map[string]any); st["logo"] != defaultLogo || st["default"] != true {
+		t.Errorf("the built-in logo comes back: %v", st)
 	}
 	if resp, _ := http.Get(ts.URL + "/standby-logo"); resp.StatusCode != 404 {
 		t.Errorf("no logo: %d", resp.StatusCode)

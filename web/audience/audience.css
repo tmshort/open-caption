@@ -85,6 +85,7 @@ body.mode-standby #standby { display: flex; }
 #standby p { margin: 0; opacity: .9; }
 #standby img { max-width: 70%; max-height: 45vh; object-fit: contain; margin-bottom: 4vmin; }
 #standby img[hidden] { display: none; }
+#standby img.default { width: 30vmin; min-width: 96px; max-width: 220px; height: auto; }
 body.mode-standby #fs { display: none; }
 
 /* Fullscreen takeover: image or text, covering everything. */
