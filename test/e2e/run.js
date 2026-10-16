@@ -328,12 +328,18 @@ async function main() {
     check('START puts it back on air where it was (the pre-show timer is showing again)', await en.evaluate(() => !document.body.classList.contains('mode-standby') && !!document.querySelector('#fs [data-timer]')));
 
     section('The operator page and Setup');
+    // The right side of the header is in the same order on both pages (devices, language, the page's own actions, the other page, Help, Sign out, connection).
+    const headerOrder = (pg, sels) => pg.evaluate((sels) => { const pts = sels.map((q) => { const e = document.querySelector(q); if (!e || e.hidden || !e.offsetWidth) return null; const r = e.getBoundingClientRect(); return [Math.round(r.top / 40), r.left]; }); const seen = pts.filter(Boolean); return { ok: seen.every((x, i) => i === 0 || x[0] > seen[i - 1][0] || (x[0] === seen[i - 1][0] && x[1] > seen[i - 1][1])), pts: pts.map((x, i) => (x ? sels[i] : '(' + sels[i] + ' hidden)')) }; }, sels);
+    {
+      const oh = await headerOrder(op, ['#viewers', 'header select.uilang', '#offair', '#reset', '#setuplink', '#helpbtn', '#logout', '#dot']);
+      check('operator header, right side: devices, language, Go off air, Restart, Setup page, Help, Sign out, connection', oh.ok && oh.pts.filter((x) => x.includes('hidden')).length === 0, oh);
+    }
     // (the sign-in rate limit is five a minute, so the role is faked in the page's own state request instead of logging in again)
     for (const [role, linked] of [['operator', false], ['admin', true]]) {
       const pg = await open();
       await pg.evaluateOnNewDocument((r) => { const f = window.fetch; window.fetch = (u, o) => f(u, o).then((resp) => (String(u).includes('/api/operator/state') ? resp.json().then((j) => { j.role = r; return new Response(JSON.stringify(j), { status: 200, headers: { 'Content-Type': 'application/json' } }); }) : resp)); }, role);
       await pg.goto(B + '/operator'); await pg.waitForSelector('#list .cue');
-      check('on the operator page a session with the ' + role + ' role ' + (linked ? 'has a link back to Setup at the top' : 'has no link to Setup'), await pg.evaluate((want) => { const l = document.getElementById('setuplink'); return want ? (!l.hidden && l.getAttribute('href') === '/admin' && l.getBoundingClientRect().top < 120 && l.textContent === 'Setup') : l.hidden; }, linked));
+      check('on the operator page a session with the ' + role + ' role ' + (linked ? 'has a link back to Setup at the top' : 'has no link to Setup'), await pg.evaluate((want) => { const l = document.getElementById('setuplink'); return want ? (!l.hidden && l.getAttribute('href') === '/admin' && l.getBoundingClientRect().top < 120 && l.textContent === 'Setup page') : l.hidden; }, linked));
       await pg.close();
     }
     section('Settings and security');
@@ -406,6 +412,11 @@ async function main() {
     const arch = await open();
     await arch.goto(B + '/admin#show'); await arch.waitForSelector('#steps button');
     const made = await api(arch, 'POST', '/api/admin/shows', { name: 'Last year' });
+    {
+      const ah = await headerOrder(arch, ['#viewers', 'header select.uilang', '#settingsbtn', 'header a[href="/operator"]', '#helpbtn', '#logout', '#dot']);
+      check('Setup header, right side: devices, language, Settings, Operator page, Help, Sign out, connection', ah.ok && ah.pts.filter((x) => x.includes('hidden')).length === 0, ah);
+      check('and the Setup page shows the server is answering (green dot)', await arch.evaluate(() => document.getElementById('dot').classList.contains('on')));
+    }
     check('a show to archive is created', made.status === 201 || made.status === 200, made);
     await arch.reload(); await arch.waitForFunction(() => [...document.querySelectorAll('.card.show')].some((x) => x.textContent.includes('Last year')), { timeout: 15000 });
     const onCard = (label) => arch.evaluate((l) => { const c = [...document.querySelectorAll('.card.show')].find((x) => x.textContent.includes('Last year')); [...c.querySelectorAll('button')].find((b) => b.textContent.startsWith(l)).click(); }, label);

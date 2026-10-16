@@ -595,5 +595,6 @@ OCI18n.add("it", {
  "the show is not on air; start it first": "lo spettacolo non è in onda; avvialo prima",
  "Standby screen": "Schermata di attesa",
  "Showing the built-in Open Caption logo until you choose your own.": "Viene mostrato il logo Open Caption integrato finché non ne scegli uno tuo.",
- "Back to Setup": "Torna alla configurazione"
+ "Back to Setup": "Torna alla configurazione",
+ "Setup page": "Pagina di configurazione"
 });

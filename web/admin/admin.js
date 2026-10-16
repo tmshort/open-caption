@@ -245,6 +245,7 @@
   function openOpStream() {
     const es = new EventSource('/api/operator/stream');
     es.addEventListener('opstate', (e) => {
+      $('dot').classList.add('on'); // the server is answering
       const p = JSON.parse(e.data);
       const wasLive = A.live;
       A.live = p.op.live; A.audience = p.audience; A.activeId = p.show.id;
@@ -253,7 +254,7 @@
       if (A.step === 'golive') { const v = document.getElementById('audcount'); if (v) v.textContent = String(p.audience); }
       if (wasLive !== A.live && (A.step === 'show' || A.step === 'golive')) loadShows().then(() => A.step === 'show' && render());
     });
-    es.onerror = () => { es.close(); setTimeout(openOpStream, 2000); };
+    es.onerror = () => { $('dot').classList.remove('on'); es.close(); setTimeout(openOpStream, 2000); };
   }
 
   // ---- shell ----

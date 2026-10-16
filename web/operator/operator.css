@@ -103,3 +103,5 @@ button small kbd { font: inherit; border: 1px solid currentColor; border-radius:
 .items .pl { flex: none; width: 1em; text-align: center; }
 .items li.playing { color: var(--fg); font-weight: 600; }
 .items li.playing .pl::before { content: "▶"; color: var(--ok); }
+/* the right-hand group moves to the next line as a whole when the header is too narrow, never one item at a time */
+.rhs { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: .7rem; margin-left: auto; }

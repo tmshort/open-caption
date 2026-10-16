@@ -372,7 +372,7 @@
   document.addEventListener('keyup', (e) => { if (e.key === ' ' && !/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)) e.preventDefault(); });
 
   OCI18n.apply();
-  $('helpbtn').parentNode.insertBefore(OCI18n.picker(), $('helpbtn'));
+  $('offair').parentNode.insertBefore(OCI18n.picker(), $('offair')); // after the audience count, before the actions
   $('login').insertBefore(OCI18n.picker(), $('login').firstChild);
 
   boot();
