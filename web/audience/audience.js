@@ -388,7 +388,7 @@
     es.onerror = () => {
       setOnline(false);
       // Some browsers give up on the stream; reconnect ourselves, with jitter.
-      es.close();
+      if (es) es.close();
       retryTimer = setTimeout(connect, backoff + Math.random() * 300);
       backoff = Math.min(backoff * 2, 5000);
     };
@@ -400,6 +400,10 @@
       });
     });
   }
+
+  // Do not hold a connection once the page is left (a page kept in the back/forward cache would keep its stream open).
+  window.addEventListener('pagehide', () => { clearTimeout(retryTimer); if (es) { es.close(); es = null; } });
+  window.addEventListener('pageshow', (e) => { if (e.persisted) connect(); });
 
   // Watchdog: the server pings every 15 s. Silence means a dead connection (sleeping device, NAT timeout).
   setInterval(() => { if (Date.now() - lastEvent > 40000) connect(); }, 5000);

@@ -63,6 +63,7 @@
 
   // ---- live updates ----
   function openStream() {
+    if (S.parked) return; // the page is on its way out (or in the back/forward cache): it must not hold a connection
     if (S.es) S.es.close();
     const es = new EventSource(API + '/stream');
     S.es = es;
@@ -72,6 +73,11 @@
     es.onerror = () => { $('dot').classList.remove('on'); es.close(); setTimeout(openStream, 1000 + Math.random() * 500); };
   }
   setInterval(() => { if (S.es && Date.now() - S.lastEvent > 40000) openStream(); }, 5000);
+  // A browser keeps only six connections to one address, and every open page holds a live stream. A page that has been
+  // navigated away from can stay alive in the back/forward cache with its stream open, so moving back and forth between
+  // Setup and this page used up all six and made the next page hang. Give the stream up as soon as the page is left.
+  window.addEventListener('pagehide', () => { S.parked = true; if (S.es) { S.es.close(); S.es = null; } $('dot').classList.remove('on'); });
+  window.addEventListener('pageshow', (e) => { if (e.persisted) { S.parked = false; boot(); } }); // restored from the cache: start afresh
 
   async function setPayload(p) {
     const needCues = S.cuesVer !== p.cuesVer;

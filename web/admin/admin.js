@@ -243,7 +243,10 @@
 
   // live status via the operator stream (admins may use it)
   function openOpStream() {
+    if (A.parked) return; // leaving the page: never hold a connection (see the pagehide handler below)
+    if (A.es) A.es.close();
     const es = new EventSource('/api/operator/stream');
+    A.es = es;
     es.addEventListener('opstate', (e) => {
       $('dot').classList.add('on'); // the server is answering
       const p = JSON.parse(e.data);
@@ -254,8 +257,14 @@
       if (A.step === 'golive') { const v = document.getElementById('audcount'); if (v) v.textContent = String(p.audience); }
       if (wasLive !== A.live && (A.step === 'show' || A.step === 'golive')) loadShows().then(() => A.step === 'show' && render());
     });
-    es.onerror = () => { $('dot').classList.remove('on'); es.close(); setTimeout(openOpStream, 2000); };
+    es.onerror = () => { $('dot').classList.remove('on'); es.close(); if (A.es === es) setTimeout(openOpStream, 2000); };
   }
+
+  // A browser keeps only six connections to one address and every open page holds a stream; a page left through a link
+  // can stay alive in the back/forward cache with its stream open, so going back and forth between Setup and the
+  // operator page used up all six and the next page hung. Give the stream up as soon as the page is left.
+  window.addEventListener('pagehide', () => { A.parked = true; if (A.es) { A.es.close(); A.es = null; } $('dot').classList.remove('on'); });
+  window.addEventListener('pageshow', (e) => { if (e.persisted) { A.parked = false; openOpStream(); loadShows().then(() => render()); } });
 
   // ---- shell ----
   function go(step) { A.step = step; location.hash = step; render(); }

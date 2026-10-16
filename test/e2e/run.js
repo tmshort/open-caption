@@ -342,6 +342,22 @@ async function main() {
       check('on the operator page a session with the ' + role + ' role ' + (linked ? 'has a link back to Setup at the top' : 'has no link to Setup'), await pg.evaluate((want) => { const l = document.getElementById('setuplink'); return want ? (!l.hidden && l.getAttribute('href') === '/admin' && l.getBoundingClientRect().top < 120 && l.textContent === 'Setup page') : l.hidden; }, linked));
       await pg.close();
     }
+    // Moving back and forth between Setup and the operator page must not hang: a browser keeps six connections to one
+    // address, and a page that was left used to keep its live stream open until all six were taken.
+    {
+      const nav = await open(); nav.setDefaultNavigationTimeout(T(8000));
+      await nav.goto(B + '/operator'); await nav.waitForSelector('#list .cue');
+      let stuck = 0, done = 0;
+      for (let i = 0; i < 16 && stuck < 2; i++) {
+        const toOp = i % 2 === 1;
+        try {
+          await Promise.all([nav.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: T(8000) }), nav.evaluate((sel) => document.querySelector(sel).click(), toOp ? 'header a[href="/operator"]' : '#setuplink')]);
+          await nav.waitForSelector(toOp ? '#list .cue' : '#steps button', { timeout: T(8000) }); done++;
+        } catch (e) { stuck++; await nav.goto(B + (toOp ? '/admin' : '/operator')).catch(() => {}); }
+      }
+      check('moving quickly back and forth between the operator page and Setup never hangs', stuck === 0 && done === 16, { stuck, done });
+      await nav.close();
+    }
     section('Settings and security');
     const guard = await open(); await guard.goto(B + '/admin'); await guard.waitForSelector('#pw'); await guard.type('#pw', ADMIN); await guard.keyboard.press('Enter'); await guard.waitForSelector('#steps button');
     await click(guard, 'Settings'); await sleep(600);
