@@ -343,11 +343,16 @@ type showSummary struct {
 	show.Meta
 	Active bool `json:"active"`
 	Live   bool `json:"live"`
+	Fresh  bool `json:"fresh"` // the active show is in standby with nothing sent: restarting it would change nothing
 }
 
 func (s *Server) summary(m show.Meta) showSummary {
 	active := s.rt.ShowID() == m.ID
-	return showSummary{Meta: m, Active: active, Live: active && s.rt.Engine().Operator().Live}
+	var op live.OperatorState
+	if active {
+		op = s.rt.Engine().Operator()
+	}
+	return showSummary{Meta: m, Active: active, Live: active && op.Live, Fresh: active && op.AtStart}
 }
 
 func (s *Server) listShows(w http.ResponseWriter, r *http.Request) {

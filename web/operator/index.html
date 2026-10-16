@@ -30,7 +30,7 @@
     <button id="takeover" hidden>Take over</button>
     <!-- right side, in the same order as Setup's: devices, language (added by script), the page's own actions, the other page, Help, Sign out, connection -->
     <div class="rhs">
-    <span id="viewers" class="pill" title="Audience devices connected">👥 0</span>
+    <button id="viewers" class="pill" title="Show which devices are connected">👥 0</button>
     <button id="offair" class="quiet" title="Take the show off the audience's screens. They see the standby screen; the show stays where it is">Go off air…</button>
     <button id="reset" class="quiet">Restart show…</button>
     <a id="setuplink" class="quiet" href="/admin" title="Back to Setup" hidden>Setup</a>
@@ -75,6 +75,13 @@
     <menu><button value="cancel" formnovalidate>Cancel</button><button id="msgsend" value="send" class="primary">Send</button></menu>
   </form>
 </dialog>
+<dialog id="clientsdlg">
+  <form method="dialog">
+    <h2>Connected devices</h2>
+    <div id="clientsbody"></div>
+    <menu><button value="close" class="primary">Close</button></menu>
+  </form>
+</dialog>
 <dialog id="offdlg">
   <form method="dialog">
     <h2>Go off air?</h2>
@@ -89,6 +96,7 @@
     <menu><button value="cancel">Cancel</button><button id="resetgo" value="go" class="primary">Restart</button></menu>
   </form>
 </dialog>
+<script src="/static/shared/clients.js"></script>
 <script src="/static/operator/operator.js"></script>
 </body>
 </html>

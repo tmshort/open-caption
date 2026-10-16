@@ -64,6 +64,9 @@ func TestShowWaitsInStandbyUntilTheOperatorStartsIt(t *testing.T) {
 		if x.(map[string]any)["live"] == true {
 			t.Errorf("standby is not live: %v", x)
 		}
+		if x.(map[string]any)["fresh"] != true {
+			t.Errorf("a show in standby with nothing sent has nothing to restart: %v", x)
+		}
 	}
 	// the operator cannot send lines yet
 	if code, _ := c.do("POST", "/api/operator/next", nil); code != 409 {
@@ -77,8 +80,8 @@ func TestShowWaitsInStandbyUntilTheOperatorStartsIt(t *testing.T) {
 		t.Errorf("the pre-show should be on: %v", m)
 	}
 	_, list = c.do("GET", "/api/admin/shows", nil)
-	if live := list["shows"].([]any)[0].(map[string]any)["live"]; live != true {
-		t.Errorf("on air is live: %v", live)
+	if sh := list["shows"].([]any)[0].(map[string]any); sh["live"] != true || sh["fresh"] == true {
+		t.Errorf("on air is live and can be restarted: %v", sh)
 	}
 	if code, _ := c.do("DELETE", "/api/admin/shows/"+id, nil); code != 409 {
 		t.Errorf("a show on air cannot be deleted: %d", code)

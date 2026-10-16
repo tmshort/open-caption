@@ -235,12 +235,8 @@
     $('show').textContent = (REHEARSAL ? __('REHEARSAL') + ' — ' : '') + (p.show.name || p.show.id || __('No show loaded'));
     const live = $('live'); live.textContent = o.live ? '● ' + __('LIVE') : o.standby ? __('STANDBY') : __('NOT LIVE'); live.classList.toggle('on', o.live); live.classList.toggle('standby', !!o.standby);
     const langs = p.languages || [];
-    let txt = '👥 ' + p.audience;
-    if (langs.length > 1) { // how many devices are reading each language
-      txt += ' (' + langs.map((l) => l.code + ' ' + ((p.audienceByLang || {})[l.code] || 0)).join(' · ') + ')';
-    }
-    $('viewers').textContent = txt;
-    $('viewers').title = langs.length > 1 ? __('Audience devices by language: {list}. You are following {name}.', { list: langs.map((l) => l.name + ' ' + ((p.audienceByLang || {})[l.code] || 0)).join(', '), name: langs[0].name }) : __('Audience devices connected');
+    $('viewers').textContent = OCClients.label(p); // languages nobody is using are left out
+    $('viewers').title = OCClients.title(p.audience);
     const mine = isController();
     document.body.classList.toggle('viewonly', !mine);
     $('ctrl').textContent = mine ? __('You are in control') : (p.controller ? __('Another operator is in control') : __('Nobody is in control'));
@@ -250,6 +246,7 @@
     // Standby: the show is not on air. NEXT becomes START (same place, same key), the rest wait.
     document.body.classList.toggle('standby', !!o.standby);
     $('offair').disabled = !!o.standby;
+    $('reset').disabled = !!o.atStart; // just started or just restarted: nothing to restart
     ['back', 'blank', 'clear', 'message'].forEach((id) => { $(id).disabled = !!o.standby; }); // (a disabled control is exempt from the contrast rule, and says what it is)
     $('next').firstChild.textContent = o.standby ? __('START ▶') : __('NEXT ▶');
     $('next').title = o.standby ? __('Put the show on air (Space)') : __('Next (Space)');
@@ -329,6 +326,15 @@
   $('offair').addEventListener('click', () => $('offdlg').showModal());
   $('offdlg').addEventListener('close', () => { if ($('offdlg').returnValue === 'go') send('offair'); });
   $('reset').addEventListener('click', () => $('resetdlg').showModal());
+  // The audience count opens the list of connected devices (device, address, language), kept up to date while it is open.
+  $('viewers').addEventListener('click', async () => {
+    let timer = 0;
+    const fill = async () => { const r = await api('GET', API + '/clients'); if (r.ok) $('clientsbody').replaceChildren(OCClients.table(r.data.clients)); };
+    await fill();
+    timer = setInterval(fill, 3000);
+    $('clientsdlg').addEventListener('close', () => clearInterval(timer), { once: true });
+    $('clientsdlg').showModal();
+  });
   $('resetdlg').addEventListener('close', () => { if ($('resetdlg').returnValue === 'go') send('reset'); });
 
   // ---- help ----
@@ -367,7 +373,7 @@
       case 'c': case 'C': if (!e.shiftKey && !quick) send('clear'); break;
       case 'Q': if (!quick) send('stop'); break;
       case '/': $('search').focus(); break;
-      case 'Home': $('resetdlg').showModal(); break;
+      case 'Home': if (!op().atStart) $('resetdlg').showModal(); break;
       case 'Escape': clearSel(); break;
       case '?': case 'F1': openHelp(); break;
       default: handled = false;

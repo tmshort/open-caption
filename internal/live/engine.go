@@ -110,6 +110,7 @@ type OperatorState struct {
 	Total     int         `json:"total"`
 	Live      bool        `json:"live"`    // on air (with Standby): the audience is being shown the show
 	Standby   bool        `json:"standby"` // not on air: the audience sees the venue's standby screen
+	AtStart   bool        `json:"atStart"` // in standby with nothing sent yet (just started up, or just restarted): there is nothing to restart
 	Mode      string      `json:"mode"`    // audience mode: idle | captions | blank
 	LastAt    int64       `json:"lastAt"`  // unix ms of the operator's last action (0 = none yet)
 	Loop      *LoopStatus `json:"loop"`
@@ -235,6 +236,7 @@ func (e *Engine) Operator() OperatorState {
 func (e *Engine) operatorLocked() OperatorState {
 	o := OperatorState{Seq: e.st.Seq, Rev: e.rev, Cursor: e.cursor, NextIndex: e.visibleFrom(e.cursor),
 		Total: len(e.cues), Live: e.liveLocked(), Standby: e.standby, Mode: e.st.Mode, LastAt: e.lastAt}
+	o.AtStart = e.standby && len(e.history) == 0 && e.cursor == e.initialCursor() && len(e.st.Scrollback) == 0
 	if e.loop != nil {
 		o.Loop = &LoopStatus{Cue: e.loop.cue, Item: e.loop.item, Deadline: e.loop.deadline}
 	}

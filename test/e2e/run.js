@@ -180,8 +180,10 @@ async function main() {
     check('in standby the highlighted next line is the pre-show loop that START will run', await op.evaluate(() => { const n = document.querySelector('#list .cue.next'); return !!n && n.classList.contains('k-loop') && !n.classList.contains('sent') && !document.querySelector('#list .cue.now'); }));
     await op.keyboard.press('Backspace'); await op.keyboard.press('b'); await sleep(400);
     check('nothing but START does anything in standby', await standbyShown(en));
+    check('Restart show… is disabled while the show is at the start in standby', await op.evaluate(() => document.getElementById('reset').disabled));
     await op.keyboard.press('Space'); await sleep(T(900)); // START: the pre-show loop begins
     check('START puts the show on air (LIVE), and the pre-show appears', await op.evaluate(() => /LIVE/.test(document.getElementById('live').textContent) && !document.getElementById('offair').disabled && /NEXT/.test(document.getElementById('next').textContent)));
+    check('and Restart show… works once the show is on air', await op.evaluate(() => !document.getElementById('reset').disabled));
     check('the item of a running loop is marked with a play triangle in the operator list', await op.evaluate(() => { const l = document.querySelectorAll('.items li.playing'); return l.length === 1 && l[0].getAttribute('aria-current') === 'true' && getComputedStyle(l[0].querySelector('.pl'), '::before').content.includes('▶'); }));
     check('the pre-show loop is on the audience screens after START (fullscreen)', await en.evaluate(() => !document.getElementById('fs').hidden));
     check('English and Spanish devices each get their language', (await en.evaluate(() => document.documentElement.lang)) === 'en' && (await es.evaluate(() => document.documentElement.lang)) === 'es');
@@ -348,6 +350,15 @@ async function main() {
     const headerOrder = (pg, sels) => pg.evaluate((sels) => { const pts = sels.map((q) => { const e = document.querySelector(q); if (!e || e.hidden || !e.offsetWidth) return null; const r = e.getBoundingClientRect(); return [Math.round(r.top / 40), r.left]; }); const seen = pts.filter(Boolean); return { ok: seen.every((x, i) => i === 0 || x[0] > seen[i - 1][0] || (x[0] === seen[i - 1][0] && x[1] > seen[i - 1][1])), pts: pts.map((x, i) => (x ? sels[i] : '(' + sels[i] + ' hidden)')) }; }, sels);
     const headerLook = (pg) => pg.evaluate(() => { const g = (q) => { const e = document.querySelector(q); if (!e || !e.offsetWidth) return null; const c = getComputedStyle(e); return [c.fontSize, c.fontFamily, c.fontWeight, Math.round(e.getBoundingClientRect().height)].join('|'); }; const h = document.querySelector('header'); return { header: getComputedStyle(h).fontSize + '|' + getComputedStyle(h).paddingTop + '|' + Math.round(h.getBoundingClientRect().height), title: g('header h1, header #show').split('|').slice(0, 3).join('|'), pill: g('#viewers'), help: g('#helpbtn'), lang: g('header select.uilang'), dot: g('#dot').split('|')[3] }; });
     const opLook = await headerLook(op);
+    const liveRed = (pg) => pg.evaluate(() => { const e = document.createElement('span'); e.className = 'pill live'; document.querySelector('header').appendChild(e); const c = getComputedStyle(e).backgroundColor; e.remove(); return c; });
+    const opRed = await liveRed(op);
+    const countText = (pg) => pg.evaluate(() => [OCClients.label({ audience: 3, languages: [{ code: 'en' }, { code: 'es' }], audienceByLang: { en: 3 } }), OCClients.label({ audience: 0, languages: [{ code: 'en' }, { code: 'es' }], audienceByLang: {} }), OCClients.label({ audience: 5, languages: [{ code: 'en' }, { code: 'es' }], audienceByLang: { en: 3, es: 2 } }), OCClients.label({ audience: 2, languages: [{ code: 'en' }], audienceByLang: { en: 2 } })]);
+    check('the audience count leaves out a language nobody is using', JSON.stringify(await countText(op)) === JSON.stringify(['👥 3 (en 3)', '👥 0', '👥 5 (en 3 · es 2)', '👥 2']));
+    check('the count in the operator header shows no language with 0', !/ 0\b/.test(await op.evaluate(() => document.getElementById('viewers').textContent.replace(/^👥 0$/, ''))));
+    // the count opens the list of connected devices: device, address, language
+    await op.evaluate(() => document.getElementById('viewers').click()); await sleep(700);
+    check('clicking the count on the operator page lists the connected devices (device, address, language)', await op.evaluate(() => { const d = document.getElementById('clientsdlg'); const rows = [...d.querySelectorAll('table.clients tr')].slice(1).map((r) => [...r.children].map((c) => c.textContent)); const head = [...d.querySelectorAll('table.clients th')].map((x) => x.textContent).join('|'); return d.open && head === 'Device|IP address|Language' && rows.length >= 1 && rows.every((r) => /^(Phone|Tablet|Computer|Projector screen|Unknown device)/.test(r[0]) && /^[0-9a-f.:]+$/i.test(r[1]) && r[2].length > 0) && rows.some((r) => r[2] === 'English') && rows.length === Number((document.getElementById('viewers').textContent.match(/\d+/) || [0])[0]); }));
+    await op.evaluate(() => document.querySelector('#clientsdlg button').click()); await sleep(300);
     {
       const oh = await headerOrder(op, ['#viewers', 'header select.uilang', '#offair', '#reset', '#setuplink', '#helpbtn', '#logout', '#dot']);
       check('operator header, right side: devices, language, Go off air, Restart, Setup, Help, Sign out, connection', oh.ok && oh.pts.filter((x) => x.includes('hidden')).length === 0, oh);
@@ -467,9 +478,15 @@ async function main() {
       const ah = await headerOrder(arch, ['#viewers', 'header select.uilang', '#settingsbtn', 'header a[href="/operator"]', '#helpbtn', '#logout', '#dot']);
       check('Setup header, right side: devices, language, Settings, Run, Help, Sign out, connection', ah.ok && ah.pts.filter((x) => x.includes('hidden')).length === 0, ah);
       const adLook = await headerLook(arch);
+      check('the LIVE pill is the same red on Setup and the operator page', (await liveRed(arch)) === opRed && opRed === 'rgb(179, 38, 30)', { setup: await liveRed(arch), operator: opRed });
+      check('the audience count leaves out a language nobody is using (Setup too)', JSON.stringify(await countText(arch)) === JSON.stringify(['👥 3 (en 3)', '👥 0', '👥 5 (en 3 · es 2)', '👥 2']));
+      await arch.evaluate(() => document.getElementById('viewers').click()); await arch.waitForSelector('dialog[open] table.clients', { timeout: T(5000) }).catch(() => {});
+      check('clicking the count on Setup lists the connected devices too', await arch.evaluate(() => { const d = document.getElementById('dlg'); const rows = [...d.querySelectorAll('table.clients tr')].slice(1); return d.open && /Connected devices/.test(d.innerText) && rows.length >= 2; }));
+      await arch.evaluate(() => document.getElementById('dlgok').click()); await sleep(300);
       check('the two headers use the same type, spacing and control sizes', JSON.stringify(adLook) === JSON.stringify(opLook), { operator: opLook, setup: adLook });
       check('and the Setup page shows the server is answering (green dot)', await arch.evaluate(() => document.getElementById('dot').classList.contains('on')));
     }
+    check('Duplicate… is named for the dialog it opens', await arch.evaluate(() => [...document.querySelectorAll('.card.show button')].some((b) => b.textContent === 'Duplicate…') && ![...document.querySelectorAll('.card.show button')].some((b) => b.textContent === 'Duplicate')));
     check('a show to archive is created', made.status === 201 || made.status === 200, made);
     await arch.reload(); await arch.waitForFunction(() => [...document.querySelectorAll('.card.show')].some((x) => x.textContent.includes('Last year')), { timeout: 15000 });
     const onCard = (label) => arch.evaluate((l) => { const c = [...document.querySelectorAll('.card.show')].find((x) => x.textContent.includes('Last year')); [...c.querySelectorAll('button')].find((b) => b.textContent.startsWith(l)).click(); }, label);

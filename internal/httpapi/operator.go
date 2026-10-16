@@ -116,6 +116,7 @@ func (s *Server) operatorAPI(mux *http.ServeMux, prefix, role string, resolve re
 	}
 	mux.HandleFunc("GET "+prefix+"state", guard(s.operatorState))
 	mux.HandleFunc("GET "+prefix+"stream", guard(s.operatorStream))
+	mux.HandleFunc("GET "+prefix+"clients", guard(s.listClients))
 	mux.HandleFunc("POST "+prefix+"claim", guard(func(w http.ResponseWriter, r *http.Request, rt *Runtime) {
 		var req struct{ Takeover bool }
 		json.NewDecoder(http.MaxBytesReader(w, r.Body, maxCmdBody)).Decode(&req)

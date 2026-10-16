@@ -26,9 +26,9 @@
   <header>
     <h1>Open Caption <span>Setup</span></h1>
     <span id="working" class="pill" title="The show you are working on"></span>
-    <span id="live" class="pill live" hidden>● SHOW IS LIVE</span>
+    <span id="live" class="pill live" hidden></span>
     <div class="rhs">
-    <span id="viewers" class="pill" title="Audience devices connected">👥 0</span>
+    <button id="viewers" class="pill" title="Show which devices are connected">👥 0</button>
     <button id="settingsbtn" class="quiet">Settings</button>
     <a class="quiet" href="/operator" title="Open the operator page">Run</a>
     <button id="helpbtn" class="quiet">Help</button>
@@ -58,6 +58,7 @@
 </dialog>
 <div id="toast" role="status"></div>
 <script src="/static/shared/speakers.js"></script>
+<script src="/static/shared/clients.js"></script>
 <script src="/static/admin/admin.js"></script>
 </body>
 </html>

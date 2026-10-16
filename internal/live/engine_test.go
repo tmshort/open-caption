@@ -687,3 +687,30 @@ func TestResetReturnsToStandbyAndStandbySurvivesARestart(t *testing.T) {
 		t.Errorf("on air stays on air: %+v", o)
 	}
 }
+
+// There is nothing to restart in standby before anything was sent (a fresh show, or one just restarted).
+func TestAtStartMeansNothingToRestart(t *testing.T) {
+	e, _ := newStandby(t, "[loop: 5s]\nWelcome\n[/loop]\nHello\nWorld\n")
+	if !e.Operator().AtStart {
+		t.Error("a freshly loaded show is at the start")
+	}
+	e.Start(-1)
+	if e.Operator().AtStart {
+		t.Error("on air is not standby")
+	}
+	e.Next(-1)
+	e.OffAir(-1)
+	if o := e.Operator(); !o.Standby || o.AtStart {
+		t.Errorf("off air with lines sent can be restarted: %+v", o)
+	}
+	e.Reset(-1)
+	if !e.Operator().AtStart {
+		t.Error("just restarted: back at the start")
+	}
+	// started and taken straight off air with nothing sent: still nothing to restart
+	e.Start(-1)
+	e.OffAir(-1)
+	if !e.Operator().AtStart {
+		t.Error("nothing was sent, so nothing to restart")
+	}
+}

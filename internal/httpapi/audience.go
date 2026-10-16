@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/tmshort/open-caption/internal/hub"
 	"github.com/tmshort/open-caption/internal/live"
 	"github.com/tmshort/open-caption/web"
 )
@@ -80,7 +81,7 @@ func (s *Server) serveEvents(w http.ResponseWriter, r *http.Request, rt *Runtime
 	rc := http.NewResponseController(w)
 	lang := rt.Negotiate(r.URL.Query().Get("lang"), r.Header.Get("Accept-Language"))
 	hb := rt.HubFor(lang)
-	cl := hb.Subscribe()
+	cl := hb.SubscribeInfo(hub.ClientInfo{IP: clientIP(r), UserAgent: r.UserAgent(), Projector: r.URL.Query().Get("display") == "projector"})
 	if cl == nil {
 		logx.Warnf("refusing a viewer: the limit of %d connected devices is reached (audience.max_clients)", s.cfg.Audience.MaxClients)
 		w.Header().Set("Retry-After", "2")

@@ -4,7 +4,9 @@ package hub
 
 import (
 	"fmt"
+	"sort"
 	"sync"
+	"time"
 )
 
 // Frame is one SSE message. Seq is 0 for frames that carry no sequence number
@@ -28,7 +30,16 @@ const bufSize = 64
 // too slow or the hub was closed; the handler should then end the response
 // so the browser reconnects and receives a fresh snapshot.
 type Client struct {
-	C chan Frame
+	C    chan Frame
+	info ClientInfo
+}
+
+// ClientInfo says who a subscriber is, for the list of connected devices.
+type ClientInfo struct {
+	IP        string    `json:"ip"`
+	UserAgent string    `json:"-"`
+	Projector bool      `json:"projector,omitempty"` // opened as a projector / shared screen (?display=projector)
+	Since     time.Time `json:"since"`
 }
 
 // Hub tracks subscribers.
@@ -47,13 +58,19 @@ type Hub struct {
 func New(max int) *Hub { return &Hub{clients: map[*Client]struct{}{}, max: max} }
 
 // Subscribe registers a client, or returns nil if the hub is full.
-func (h *Hub) Subscribe() *Client {
+func (h *Hub) Subscribe() *Client { return h.SubscribeInfo(ClientInfo{}) }
+
+// SubscribeInfo is Subscribe for a client that can say who it is.
+func (h *Hub) SubscribeInfo(info ClientInfo) *Client {
+	if info.Since.IsZero() {
+		info.Since = time.Now()
+	}
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	if h.max > 0 && len(h.clients) >= h.max {
 		return nil
 	}
-	c := &Client{C: make(chan Frame, bufSize)}
+	c := &Client{C: make(chan Frame, bufSize), info: info}
 	h.clients[c] = struct{}{}
 	h.changed()
 	return c
@@ -92,6 +109,18 @@ func (h *Hub) Broadcast(f Frame) {
 			h.changed()
 		}
 	}
+}
+
+// Clients lists who is connected, oldest first.
+func (h *Hub) Clients() []ClientInfo {
+	h.mu.Lock()
+	out := make([]ClientInfo, 0, len(h.clients))
+	for c := range h.clients {
+		out = append(out, c.info)
+	}
+	h.mu.Unlock()
+	sort.Slice(out, func(i, j int) bool { return out[i].Since.Before(out[j].Since) })
+	return out
 }
 
 // Count returns the number of connected clients.

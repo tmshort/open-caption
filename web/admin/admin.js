@@ -256,12 +256,12 @@
     es.addEventListener('opstate', (e) => {
       $('dot').classList.add('on'); // the server is answering
       const p = JSON.parse(e.data);
-      const wasLive = A.live;
-      A.live = p.op.live; A.audience = p.audience; A.activeId = p.show.id;
-      $('viewers').textContent = '👥 ' + p.audience;
-      $('live').hidden = !p.op.live;
+      const wasLive = A.live, wasStart = A.atStart;
+      A.atStart = p.op.atStart; A.live = p.op.live; A.audience = p.audience; A.activeId = p.show.id;
+      $('viewers').textContent = OCClients.label(p); $('viewers').title = OCClients.title(p.audience);
+      $('live').hidden = !p.op.live; $('live').textContent = '● ' + __('LIVE');
       if (A.step === 'golive') { const v = document.getElementById('audcount'); if (v) v.textContent = String(p.audience); }
-      if (wasLive !== A.live && (A.step === 'show' || A.step === 'golive')) loadShows().then(() => A.step === 'show' && render());
+      if ((wasLive !== A.live || wasStart !== A.atStart) && (A.step === 'show' || A.step === 'golive')) loadShows().then(() => (A.step === 'show' || A.step === 'golive') && render());
     });
     es.onerror = () => { $('dot').classList.remove('on'); es.close(); if (A.es === es) setTimeout(openOpStream, 2000); };
   }
@@ -271,6 +271,16 @@
   // operator page used up all six and the next page hung. Give the stream up as soon as the page is left.
   window.addEventListener('pagehide', () => { A.parked = true; if (A.es) { A.es.close(); A.es = null; } $('dot').classList.remove('on'); });
   window.addEventListener('pageshow', (e) => { if (e.persisted) { A.parked = false; openOpStream(); loadShows().then(() => render()); } });
+
+  // The audience count opens the list of connected devices (device, address, language), kept up to date while it is open.
+  $('viewers').addEventListener('click', async () => {
+    const box = h('div', {});
+    const fill = async () => { const r = await api('GET', '/api/operator/clients'); if (r.ok) box.replaceChildren(OCClients.table(r.data.clients)); };
+    await fill();
+    const timer = setInterval(fill, 3000);
+    await ask(__('Connected devices'), box, __('Close'), { noCancel: true, wide: true });
+    clearInterval(timer);
+  });
 
   // ---- shell ----
   function go(step) { A.step = step; location.hash = step; render(); }
@@ -336,7 +346,7 @@
           h('div', { class: 'hint' }, __('Updated {when}', { when: new Date(s.updated).toLocaleString(OCI18n.lang) }))),
         h('button', { class: A.cur === s.id ? '' : 'primary', onclick: () => { setCur(s.id); go('showfile'); } }, A.cur === s.id ? __('Continue with this show') : __('Work on this show')),
         h('button', { class: 'quiet', onclick: () => renameShow(s) }, __('Rename…')),
-        h('button', { class: 'quiet', onclick: () => duplicateShow(s) }, __('Duplicate')),
+        h('button', { class: 'quiet', onclick: () => duplicateShow(s) }, __('Duplicate…')),
         h('a', { class: 'quiet', href: '/api/admin/shows/' + s.id + '/export', download: s.id + '.zip' }, __('Export')),
         h('button', { class: 'quiet', disabled: s.active, title: s.active ? __('The show on air cannot be archived. Activate another show first.') : __('Put this show away; you can restore it later'), onclick: () => archiveShow(s, true) }, __('Archive')),
         h('button', { class: 'danger quiet', title: s.live ? __('This show is live. Restart it from the operator page, or activate another show first.') : null, onclick: () => deleteShow(s) }, __('Delete…')))));
@@ -878,7 +888,7 @@
         : h('button', { class: 'primary big', onclick: () => loadShow(show), disabled: !a.cues.length }, __('Open the operator page')),
       h('span', { class: 'hint' }, isActive ? (onAir ? __('This show is on air now.') : __('This show is loaded and waiting in standby.'))
         : __('Opening it loads it in standby: the audience keeps seeing the standby screen until the operator presses START.')),
-      isActive ? h('button', { class: 'quiet', onclick: () => restartShow(show) }, __('Restart the show')) : null);
+      isActive ? h('button', { class: 'quiet', disabled: !!((A.shows || []).find((x) => x.id === show.id) || {}).fresh, title: ((A.shows || []).find((x) => x.id === show.id) || {}).fresh ? __('The show is at the start and in standby, so there is nothing to restart') : null, onclick: () => restartShow(show) }, __('Restart the show')) : null);
     const checks = h('div', { class: 'card ready' }, checklist, startBox);
     const urls = net.data.urls.filter((u) => u.public);
     let chosen = (urls.find((u) => u.kind === 'http' && !u.name) || urls.find((u) => u.kind === 'http') || urls[0] || net.data.urls[0] || {}).url; // the numeric address is the safest to print

@@ -108,6 +108,7 @@ everywhere an operator session is; the reverse is not true.
 | POST | `/api/operator/clear` | | Ad-hoc clear |
 | POST | `/api/operator/message` | `{text}` | Ad-hoc one-off fullscreen/caption text |
 | POST | `/api/operator/reset` | | Return to the start **and to standby** (confirm in UI) |
+| GET | `/api/operator/clients` | | Who is connected to the audience page: `{clients: [{ip, kind, os, browser, lang, langName, since}], total}`. `kind` is `phone`, `tablet`, `computer`, `projector` (opened with `?display=projector`) or `other`, guessed from the browser's `User-Agent`; `os` and `browser` are brand names (`iPhone`, `Safari`). Setup uses it too; a rehearsal has its own at `/api/admin/rehearsal/clients` |
 | POST | `/api/operator/onair` | `{rev}` | START: put the show on air (from standby: the pre-show loop begins, or the show's idle message appears). A no-op when already on air |
 | POST | `/api/operator/offair` | `{rev}` | Go off air: the audience sees the standby screen again; the position, lines and undo history are kept; START resumes. A no-op in standby |
 
