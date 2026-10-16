@@ -245,6 +245,16 @@ async function main() {
     check('a new line scrolls into view smoothly rather than jumping', hi > lo && seen.some((v) => v > lo + 1 && v < hi - 1), seen.slice(0, 40).join(','));
     check('and the reader is still following the live captions', await en.evaluate(() => document.getElementById('live').hidden));
     await shot(en, '04-audience-english');
+    // With only a few lines on screen (they sit at the bottom), the older lines slide up instead of jumping.
+    const fid = (await api(op, 'POST', '/api/admin/shows', { name: 'Few lines' })).body.id;
+    await api(op, 'PUT', `/api/admin/shows/${fid}/showfile`, { text: 'One\nTwo\nThree\nFour' });
+    await api(op, 'POST', `/api/admin/shows/${fid}/activate`, { force: true }); await sleep(T(800));
+    await nextN(2); await sleep(T(700));
+    await en.evaluate(() => { const first = document.querySelector('#captions .cap'); window.__seen = []; const f = () => { window.__seen.push(Math.round(first.getBoundingClientRect().top)); window.__raf = requestAnimationFrame(f); }; f(); });
+    await nextN(1); await sleep(T(900));
+    const few = await en.evaluate(() => { cancelAnimationFrame(window.__raf); return window.__seen; });
+    const f0 = few[0], f1 = few[few.length - 1];
+    check('with few lines on screen, the older ones slide up instead of jumping', f1 < f0 && few.some((v) => v < f0 - 1 && v > f1 + 1), few.slice(0, 40).join(','));
 
     // ------------------------------------------------------------------ settings & security
     section('Settings and security');

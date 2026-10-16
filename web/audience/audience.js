@@ -189,6 +189,17 @@
     glide = requestAnimationFrame(step);
   }
   ['wheel', 'touchstart', 'keydown'].forEach((ev) => $('captions').addEventListener(ev, stopGlide, { passive: true }));
+  // When the lines do not fill the screen they sit at the bottom, so a new line moves every older one up
+  // by its own height in a single step. Put the older lines back where they were and let them slide
+  // up (FLIP: measure, move back, release), in step with the glide above.
+  function slideUp(d) {
+    if (!(d > 1)) return;
+    const box = $('captions'), kids = Array.prototype.slice.call(box.children, 0, -1); // not the new line, which fades in itself
+    kids.forEach((k) => { k.style.transition = 'none'; k.style.transform = 'translateY(' + d + 'px)'; });
+    void box.offsetHeight; // commit the starting positions
+    kids.forEach((k) => { k.style.transition = 'transform .32s cubic-bezier(.215,.61,.355,1)'; k.style.transform = ''; });
+    setTimeout(() => kids.forEach((k) => { k.style.transition = ''; }), 400);
+  }
   function goLive() { pinned = true; unread = 0; toBottom(true); paintLive(); }
   $('live').addEventListener('click', goLive);
   $('captions').addEventListener('scroll', () => {
@@ -274,6 +285,7 @@
       document.body.classList.remove('mode-idle', 'mode-blank');
       document.body.classList.add('mode-captions');
       const box = $('captions');
+      const prev = box.lastElementChild, wasAt = prev ? prev.getBoundingClientRect().top : 0;
       box.appendChild(captionEl(d.item));
       while (box.children.length > 200) {
         const before = box.scrollHeight;
@@ -282,7 +294,8 @@
       }
       fade();
       renderFullscreen();
-      if (pinned) toBottom(true); else { unread++; paintLive(); }
+      const moved = prev && prev.parentNode === box && pinned && !reduceMotion() ? wasAt - prev.getBoundingClientRect().top : 0;
+      if (pinned) { toBottom(true); slideUp(moved); } else { unread++; paintLive(); }
     },
     clear() {
       state.mode = 'captions';
