@@ -30,7 +30,7 @@ La liste de l'opérateur montre une boucle comme une seule entrée qui se dépli
 
 ## Un minuteur de compte à rebours
 
-Donnez un **minuteur** à une boucle et les écrans du public peuvent afficher le temps qui reste, décompté en direct (« Retour dans 14:32 »). Écrivez `timer` dans les options de la boucle, puis placez `{timer}` dans un texte de cette boucle à l'endroit où le temps doit apparaître.
+Donnez un **minuteur** à une boucle et les écrans du public peuvent afficher le temps qui reste, décompté en direct (« Retour dans 15 min »). Écrivez `timer` dans les options de la boucle, puis placez `{timer}` dans un texte de cette boucle à l'endroit où le temps doit apparaître.
 
 ```showfile
 [loop: timer 15 minutes]
@@ -54,7 +54,7 @@ The show begins in {timer}
 [/loop]
 ```
 
-- Le temps restant est affiché en minutes et secondes (`14:32`), avec les heures s'il y en a plus d'une. À zéro, il reste à `0:00` ; la boucle continue jusqu'à ce que l'opérateur passe à la suite.
+- Le temps restant est affiché en minutes, arrondi à la hausse et sans secondes (`15 min`), avec les heures s'il y en a plus d'une (`1 h 5 min`), dans la langue de l'appareil. À zéro, il reste à `0 min` ; la boucle continue jusqu'à ce que l'opérateur passe à la suite.
 - Seuls les éléments dont le texte contient `{timer}` l'affichent : vous pouvez donc alterner un message et le décompte.
 - Un téléphone dont l'horloge est fausse affiche quand même le bon temps restant, car c'est l'horloge du programme qui est utilisée.
 - Enregistrer le fichier du spectacle pendant un entracte ne relance pas le décompte, pas plus que le redémarrage du programme.

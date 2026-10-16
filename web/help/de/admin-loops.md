@@ -30,7 +30,7 @@ Die Liste des Operators zeigt eine Schleife als einen Eintrag, der sich aufklapp
 
 ## Ein Countdown-Timer
 
-Geben Sie einer Schleife einen **Timer**, dann können die Bildschirme des Publikums anzeigen, wie viel Zeit noch bleibt, live heruntergezählt („Weiter in 14:32“). Schreiben Sie `timer` in die Optionen der Schleife und setzen Sie `{timer}` in einen beliebigen Text dieser Schleife, wo die Zeit erscheinen soll.
+Geben Sie einer Schleife einen **Timer**, dann können die Bildschirme des Publikums anzeigen, wie viel Zeit noch bleibt, live heruntergezählt („Weiter in 15 min“). Schreiben Sie `timer` in die Optionen der Schleife und setzen Sie `{timer}` in einen beliebigen Text dieser Schleife, wo die Zeit erscheinen soll.
 
 ```showfile
 [loop: timer 15 minutes]
@@ -54,7 +54,7 @@ The show begins in {timer}
 [/loop]
 ```
 
-- Die verbleibende Zeit wird in Minuten und Sekunden angezeigt (`14:32`), mit Stunden, wenn es mehr als eine gibt. Bei null bleibt sie bei `0:00`; die Schleife läuft weiter, bis der Bediener fortfährt.
+- Die verbleibende Zeit wird in Minuten angezeigt, aufgerundet und ohne Sekunden (`15 Min.`), mit Stunden, wenn es mehr als eine gibt (`1 Std. 5 Min.`), in der Sprache des Geräts. Bei null bleibt sie bei `0 Min.`; die Schleife läuft weiter, bis der Bediener fortfährt.
 - Nur Elemente, deren Text `{timer}` enthält, zeigen ihn, Sie können also eine Mitteilung und den Countdown abwechseln.
 - Ein Telefon mit falsch gehender Uhr zeigt trotzdem die richtige Restzeit, weil die Uhr des Programms verwendet wird.
 - Das Speichern der Show-Datei während einer Pause startet den Countdown nicht neu, ebenso wenig ein Neustart des Programms.

@@ -88,12 +88,13 @@
     renderMarkers(true);
   }
 
-  // The loop's countdown, shown to the operator too ("⏱ 12:30 left"), so they know when to start the next line.
+  // The loop's countdown, shown to the operator too ("⏱ 13 min left"), so they know when to start the next line.
   function paintBannerTimer() {
     const t = $('bannertimer');
     if (!t || !S.timerEnds) return;
-    const s = Math.max(0, Math.ceil((S.timerEnds - Date.now()) / 1000)), h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
-    t.textContent = '⏱ ' + __('{time} left on the timer', { time: (h ? h + ':' + (m < 10 ? '0' : '') + m : m) + ':' + (sec < 10 ? '0' : '') + sec });
+    const total = Math.max(0, Math.ceil((S.timerEnds - Date.now()) / 60000)), h = Math.floor(total / 60), m = total % 60;
+    const unit = (n, u) => { try { return new Intl.NumberFormat(OCI18n.lang, { style: 'unit', unit: u, unitDisplay: 'short' }).format(n); } catch (e) { return n + (u === 'hour' ? ' h' : ' min'); } };
+    t.textContent = '⏱ ' + __('{time} left on the timer', { time: h ? unit(h, 'hour') + (m ? ' ' + unit(m, 'minute') : '') : unit(total, 'minute') });
   }
   setInterval(paintBannerTimer, 500);
 

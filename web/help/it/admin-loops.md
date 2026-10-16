@@ -30,7 +30,7 @@ L'elenco dell'operatore mostra un ciclo come una sola voce che si espande per el
 
 ## Un timer con conto alla rovescia
 
-Dai un **timer** a un ciclo e gli schermi del pubblico possono mostrare quanto tempo manca, contando alla rovescia in diretta («Si riprende tra 14:32»). Scrivi `timer` nelle opzioni del ciclo, poi metti `{timer}` in un testo di quel ciclo dove deve comparire il tempo.
+Dai un **timer** a un ciclo e gli schermi del pubblico possono mostrare quanto tempo manca, contando alla rovescia in diretta («Si riprende tra 15 min»). Scrivi `timer` nelle opzioni del ciclo, poi metti `{timer}` in un testo di quel ciclo dove deve comparire il tempo.
 
 ```showfile
 [loop: timer 15 minutes]
@@ -54,7 +54,7 @@ The show begins in {timer}
 [/loop]
 ```
 
-- Il tempo rimasto è mostrato in minuti e secondi (`14:32`), con le ore quando sono più di una. A zero resta a `0:00`; il ciclo continua finché l'operatore non va avanti.
+- Il tempo rimasto è mostrato in minuti, arrotondato per eccesso e senza secondi (`15 min`), con le ore quando sono più di una (`1 h 5 min`), nella lingua del dispositivo. A zero resta a `0 min`; il ciclo continua finché l'operatore non va avanti.
 - Mostrano il timer solo gli elementi il cui testo contiene `{timer}`, quindi puoi alternare un messaggio e il conto alla rovescia.
 - Un telefono con l'orologio sbagliato mostra comunque il tempo giusto, perché si usa l'orologio del programma.
 - Salvare il file dello spettacolo durante un intervallo non fa ripartire il conto alla rovescia, e nemmeno riavviare il programma.

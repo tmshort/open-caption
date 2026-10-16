@@ -220,13 +220,19 @@
     }
   }
 
-  // ---- countdown ("Back in 14:32") ----
+  // ---- countdown ("Back in 15 min") ----
   // The server sends the moment the countdown ends and, with the snapshot, its own clock; a phone whose clock
   // is minutes out still shows the right time left. One timer ticks while a countdown is on screen.
   let clockSkew = 0, timerTick = 0; // server time minus this device's time, in ms
+  // Whole minutes, rounded up: nobody needs the seconds, and a figure that changes once a minute is calm to read.
+  // The unit comes from the browser in the device's language ("15 min", "1 h 5 min"); an old browser gets "15 min".
+  function unit(n, u) {
+    try { return new Intl.NumberFormat(state.lang || document.documentElement.lang || 'en', { style: 'unit', unit: u, unitDisplay: 'short' }).format(n); }
+    catch (e) { return n + (u === 'hour' ? ' h' : ' min'); }
+  }
   function fmtLeft(ms) {
-    const s = Math.max(0, Math.ceil(ms / 1000)), h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
-    return (h ? h + ':' + (m < 10 ? '0' : '') + m : m) + ':' + (sec < 10 ? '0' : '') + sec;
+    const total = Math.max(0, Math.ceil(ms / 60000)), h = Math.floor(total / 60), m = total % 60;
+    return h ? unit(h, 'hour') + (m ? ' ' + unit(m, 'minute') : '') : unit(total, 'minute');
   }
   function paintTimers() {
     const els = document.querySelectorAll('#fs [data-timer]');

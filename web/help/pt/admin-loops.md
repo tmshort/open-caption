@@ -30,7 +30,7 @@ A lista do operador mostra um laço como uma única entrada que se expande para 
 
 ## Um temporizador de contagem regressiva
 
-Dê um **temporizador** a um laço e as telas do público podem mostrar quanto tempo falta, contando ao vivo («Voltamos em 14:32»). Escreva `timer` nas opções do laço e ponha `{timer}` em qualquer texto desse laço onde o tempo deva aparecer.
+Dê um **temporizador** a um laço e as telas do público podem mostrar quanto tempo falta, contando ao vivo («Voltamos em 15 min»). Escreva `timer` nas opções do laço e ponha `{timer}` em qualquer texto desse laço onde o tempo deva aparecer.
 
 ```showfile
 [loop: timer 15 minutes]
@@ -54,7 +54,7 @@ The show begins in {timer}
 [/loop]
 ```
 
-- O tempo restante é mostrado em minutos e segundos (`14:32`), com horas quando houver mais de uma. Em zero fica em `0:00`; o laço continua até o operador seguir adiante.
+- O tempo restante é mostrado em minutos, arredondado para cima e sem segundos (`15 min`), com horas quando houver mais de uma (`1 h 5 min`), no idioma do dispositivo. Em zero fica em `0 min`; o laço continua até o operador seguir adiante.
 - Só os itens cujo texto contém `{timer}` o mostram, então você pode alternar uma mensagem com a contagem.
 - Um telefone com o relógio errado mostra mesmo assim o tempo certo, porque se usa o relógio do programa.
 - Salvar o arquivo do espetáculo durante um intervalo não reinicia a contagem, nem reiniciar o programa.

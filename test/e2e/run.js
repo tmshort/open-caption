@@ -269,19 +269,26 @@ async function main() {
     await api(op, 'PUT', `/api/admin/shows/${tid}/showfile`, { text: '[loop: timer 15 minutes]\n**INTERMISSION**\nBack in {timer}\n[/loop]\nWelcome back' });
     await api(op, 'POST', `/api/admin/shows/${tid}/activate`, { force: true });
     const timerText = () => en.evaluate(() => { const t = document.querySelector('#fs [data-timer]'); return t ? t.textContent : null; });
-    await en.waitForFunction(() => { const t = document.querySelector('#fs [data-timer]'); return t && /\d:\d\d/.test(t.textContent); }, { timeout: T(25000) }).catch(() => {});
-    const t1 = await timerText(); await sleep(T(2300)); const t2 = await timerText();
-    const secs = (x) => { const p = (x || '0:0').split(':').map(Number); return p.length === 3 ? p[0] * 3600 + p[1] * 60 + p[2] : p[0] * 60 + p[1]; };
-    check('the intermission timer shows the time left (about 15 minutes)', secs(t1) > 14 * 60 && secs(t1) <= 15 * 60, t1);
-    check('and counts down live', secs(t1) - secs(t2) >= 1 && secs(t1) - secs(t2) <= 5, [t1, t2]);
+    await en.waitForFunction(() => { const t = document.querySelector('#fs [data-timer]'); return t && /\d/.test(t.textContent); }, { timeout: T(25000) }).catch(() => {});
+    const t1 = await timerText();
+    const mins = (x) => { const m = /(\d+)\s*(?:h|hr)\b\s*(?:(\d+))?/.exec(x || ''); return m ? Number(m[1]) * 60 + Number(m[2] || 0) : Number((/(\d+)/.exec(x || '') || [0, -1])[1]); };
+    check('the intermission timer shows the time left in whole minutes (15 min)', /^\d+ ?min/i.test(t1 || '') && mins(t1) === 15, t1);
+    check('and has no seconds', !/\d:\d\d/.test(t1 || ''), t1);
     check('the operator sees the countdown too', await op.evaluate(() => /left on the timer/.test((document.getElementById('banner') || {}).textContent || '')));
     // a device whose clock is wrong still shows the right time (the server's clock is used)
     await en.evaluate(() => { const real = Date.now; Date.now = () => real() + 3600e3; }); await sleep(T(900));
     // (the page measured the difference at its snapshot, so reload with the fake clock in place)
     await en.evaluateOnNewDocument(() => { const real = Date.now; Date.now = () => real() + 3600e3; });
-    await en.reload(); await en.waitForFunction(() => { const t = document.querySelector('#fs [data-timer]'); return t && /\d:\d\d/.test(t.textContent); }, { timeout: T(15000) }).catch(() => {});
+    await en.reload(); await en.waitForFunction(() => { const t = document.querySelector('#fs [data-timer]'); return t && /\d/.test(t.textContent); }, { timeout: T(15000) }).catch(() => {});
     const t3 = await timerText();
-    check('a device with its clock an hour wrong shows the right time left', secs(t3) > 12 * 60 && secs(t3) <= 15 * 60, t3);
+    check('a device with its clock an hour wrong shows the right time left', mins(t3) >= 14 && mins(t3) <= 15, t3);
+    // it counts down: a very short timer (0.05 minutes, 3 seconds) reaches 0 min
+    await api(op, 'PUT', `/api/admin/shows/${tid}/showfile`, { text: '[loop: timer 0.05 minutes]\nBack in {timer}\n[/loop]\nWelcome back' });
+    await api(op, 'POST', `/api/admin/shows/${tid}/activate`, { force: true });
+    await en.waitForFunction(() => { const t = document.querySelector('#fs [data-timer]'); return t && /^1 ?min/i.test(t.textContent.trim()); }, { timeout: T(15000) }).catch(() => {});
+    const first = await timerText();
+    await en.waitForFunction(() => { const t = document.querySelector('#fs [data-timer]'); return t && /^0 ?min/i.test(t.textContent.trim()); }, { timeout: T(15000) }).catch(() => {});
+    check('the figure counts down to 0 min', /^1 ?min/i.test(first || '') && /^0 ?min/i.test((await timerText()) || ''), [first, await timerText()]);
 
     section('Settings and security');
     const guard = await open(); await guard.goto(B + '/admin'); await guard.waitForSelector('#pw'); await guard.type('#pw', ADMIN); await guard.keyboard.press('Enter'); await guard.waitForSelector('#steps button');

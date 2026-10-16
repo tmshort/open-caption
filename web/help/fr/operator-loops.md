@@ -7,6 +7,6 @@ Une boucle est un ensemble d'images et de textes en plein écran qui se répète
 - **Espace** termine la boucle et envoie la ligne qui la suit.
 - **Maj+Q** arrête la boucle et laisse l'écran vide. Appuyez sur **Espace** pour continuer.
 - **Retour arrière**, une fois la boucle terminée ou arrêtée, la ramène en la redémarrant depuis son premier élément.
-- Si la boucle a un **minuteur** (un décompte comme 15 minutes pour l'entracte, ou une heure comme 7:30pm pour l'avant-spectacle), le bandeau vert affiche aussi le temps restant, décompté en direct (`⏱ Il reste 12:30 au minuteur`). Le public le voit là où le texte de la boucle affiche le décompte. Un minuteur en minutes démarre avec la boucle : **Retour arrière** dans la boucle le relance avec la durée complète.
+- Si la boucle a un **minuteur** (un décompte comme 15 minutes pour l'entracte, ou une heure comme 7:30pm pour l'avant-spectacle), le bandeau vert affiche aussi le temps restant, décompté en direct (`⏱ Il reste 13 min au minuteur`). Le public le voit là où le texte de la boucle affiche le décompte. Un minuteur en minutes démarre avec la boucle : **Retour arrière** dans la boucle le relance avec la durée complète.
 
 Les écrans de tout le monde changent ensemble, y compris le projecteur, parce que c'est le serveur qui gère le minuteur.

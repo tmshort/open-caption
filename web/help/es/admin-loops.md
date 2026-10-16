@@ -30,7 +30,7 @@ La lista del operador muestra un bucle como una sola entrada que se despliega pa
 
 ## Un temporizador de cuenta atrás
 
-Dé un **temporizador** a un bucle y las pantallas del público pueden mostrar cuánto tiempo queda, contando hacia atrás en directo («Volvemos en 14:32»). Escriba `timer` en las opciones del bucle y ponga `{timer}` en cualquier texto de ese bucle donde deba aparecer el tiempo.
+Dé un **temporizador** a un bucle y las pantallas del público pueden mostrar cuánto tiempo queda, contando hacia atrás en directo («Volvemos en 15 min»). Escriba `timer` en las opciones del bucle y ponga `{timer}` en cualquier texto de ese bucle donde deba aparecer el tiempo.
 
 ```showfile
 [loop: timer 15 minutes]
@@ -54,7 +54,7 @@ The show begins in {timer}
 [/loop]
 ```
 
-- El tiempo que queda se muestra en minutos y segundos (`14:32`), con horas cuando hay más de una. En cero se queda en `0:00`; el bucle sigue hasta que el operador continúe.
+- El tiempo que queda se muestra en minutos, redondeado hacia arriba y sin segundos (`15 min`), con horas cuando hay más de una (`1 h 5 min`), en el idioma del dispositivo. En cero se queda en `0 min`; el bucle sigue hasta que el operador continúe.
 - Solo muestran el temporizador los elementos cuyo texto contiene `{timer}`, así que puede alternar un mensaje con la cuenta atrás.
 - Un teléfono con el reloj mal puesto muestra igualmente el tiempo correcto, porque se usa el reloj del programa.
 - Guardar el archivo del espectáculo durante un descanso no reinicia la cuenta atrás, ni tampoco reiniciar el programa.

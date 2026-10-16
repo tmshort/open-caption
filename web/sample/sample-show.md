@@ -117,7 +117,7 @@ MARGARET: ~ Milk and sugar ~ || EDWIN: ~ Lemon, thank you ~
 
      TIMER: "timer 15 minutes" starts a 15 minute countdown at the moment the loop
      starts (and again if the operator backs into it). Wherever the text says {timer}
-     every screen shows the time left, counting down live: "Back in 14:32".
+     every screen shows the time left, counting down live: "Back in 15 min".
      For a pre-show, give a time of day instead, like [loop: timer 7:30pm]; the
      countdown then runs until that time today. -->
 [loop: 12s, timer 15 minutes]

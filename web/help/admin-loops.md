@@ -30,7 +30,7 @@ The operator's list shows a loop as one entry that expands to list its items. Se
 
 ## A countdown timer
 
-Give a loop a **timer** and the audience screens can show how much time is left, counting down live ("Back in 14:32"). Write `timer` in the loop's options, then put `{timer}` in any text of that loop where the time should appear.
+Give a loop a **timer** and the audience screens can show how much time is left, counting down live ("Back in 15 min"). Write `timer` in the loop's options, then put `{timer}` in any text of that loop where the time should appear.
 
 ```showfile
 [loop: timer 15 minutes]
@@ -54,7 +54,7 @@ The show begins in {timer}
 [/loop]
 ```
 
-- The time left is shown as minutes and seconds (`14:32`), with hours when there are more than one. At zero it stays at `0:00`; the loop carries on until the operator moves on.
+- The time left is shown in minutes, rounded up and without seconds (`15 min`), with hours when there are more than one (`1 hr 5 min`), in the language of the device. At zero it stays at `0 min`; the loop carries on until the operator moves on.
 - Only the items whose text contains `{timer}` show it, so you can alternate a message with the countdown.
 - A phone whose own clock is wrong still shows the right time left, because the program's clock is used.
 - Saving the show file during an intermission does not restart the countdown, and neither does restarting the program.
