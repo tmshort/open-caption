@@ -357,7 +357,6 @@ OCI18n.add("de", {
  "Search show file": "In der Show-Datei suchen",
  "Undo the last thing sent (Backspace)": "Zuletzt Gesendetes rückgängig machen (Rücktaste)",
  "Next (Space)": "Weiter (Leertaste)",
- "Stop loop (Shift+Q)": "Schleife stoppen (Umschalt+Q)",
  "Hide everything on the audience screens. The captions come back when you unblank (B)": "Blendet alles auf den Publikumsbildschirmen aus. Die Untertitel kommen zurück, wenn Sie einblenden (B)",
  "Erase the captions from the audience screens, so the next line starts on an empty screen (C). Back undoes it": "Löscht die Untertitel von den Publikumsbildschirmen, damit die nächste Zeile auf einem leeren Bildschirm beginnt (C). Zurück macht es rückgängig",
  "Send a one-off message": "Eine einmalige Nachricht senden",
@@ -547,5 +546,6 @@ OCI18n.add("de", {
  "Upload {name}": "{name} hochladen",
  "Choose one or more pictures from this computer": "Wählen Sie ein oder mehrere Bilder von diesem Computer",
  "Choose the picture for {name} from this computer": "Wählen Sie das Bild für {name} von diesem Computer",
- "Use these colors": "Diese Farben verwenden"
+ "Use these colors": "Diese Farben verwenden",
+ "Stop the repeating pre-show or intermission loop (Shift+Q). Only available while a loop is playing": "Beendet die Schleife vor der Show oder in der Pause (Umschalt+Q). Nur verfügbar, während eine Schleife läuft"
 });

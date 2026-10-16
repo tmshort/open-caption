@@ -224,7 +224,7 @@
     $('ctrl').textContent = mine ? __('You are in control') : (p.controller ? __('Another operator is in control') : __('Nobody is in control'));
     $('takeover').hidden = mine;
     $('takeover').textContent = p.controller ? __('Take over') : __('Take control');
-    $('stop').hidden = !o.loop;
+    $('stop').disabled = !o.loop; // always in place, so the buttons never move while the show runs
     renderLastSent();
     $('blank').firstChild.textContent = o.mode === 'blank' ? __('Unblank') : __('Blank');
     const b = $('banner');

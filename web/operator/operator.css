@@ -20,7 +20,7 @@ button small { display: block; font-size: .65em; opacity: .9; font-weight: 400; 
 :focus:not(:focus-visible) { outline: none; }
 :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
-header { display: flex; align-items: center; gap: .9rem; padding: .5rem .9rem; background: var(--panel); border-bottom: 1px solid #2a2a31; flex-wrap: wrap; }
+header { display: flex; align-items: center; gap: .7rem; padding: .5rem .9rem; background: var(--panel); border-bottom: 1px solid #2a2a31; flex-wrap: wrap; }
 header .grow { flex: 1; }
 .badge { padding: .1rem .5rem; border-radius: 99px; background: #333; font-size: .75rem; font-weight: 700; letter-spacing: .05em; }
 .badge.on { background: #b3261e; }
@@ -32,7 +32,6 @@ header .grow { flex: 1; }
 
 #stage { flex: 1; min-height: 0; display: flex; flex-direction: column; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-select.uilang { min-height: 28px; }
 #list { list-style: none; margin: 0; padding: 0 0 40vh; overflow-y: auto; flex: 1; min-height: 0; }
 .cue { display: flex; gap: .7rem; padding: .55rem .9rem; border-left: 6px solid transparent; cursor: pointer; border-bottom: 1px solid #17171b; }
 .cue .gut { width: 1.4rem; flex: none; color: var(--dim); text-align: center; }
@@ -61,7 +60,21 @@ select.uilang { min-height: 28px; }
 footer { display: flex; gap: .6rem; padding: .6rem .9rem calc(.6rem + env(safe-area-inset-bottom)); background: var(--panel); border-top: 1px solid #2a2a31; flex-wrap: wrap; align-items: stretch; }
 #lastsent { color: var(--dim); font-size: .85rem; }
 #lastsent.stale { color: var(--accent); }
-footer select { background: #0f0f12; border: 1px solid #444; border-radius: 6px; padding: .5rem; max-width: 12rem; }
+select { font: inherit; color: inherit; background: #0f0f12; border: 1px solid #444; border-radius: 6px; padding: .5rem .6rem; }
+footer select { max-width: 12rem; }
+/* the language menu looks like the one on the Setup page: same shape, same height */
+header select.uilang { font-size: 16px; min-height: 2.4rem; padding: .45rem .6rem; background: #0f0f12; border: 1px solid #3a3a44; }
+/* Fixed widths: the buttons in the footer stay where they are whatever their label says (Blank / Unblank) or whether a loop is playing */
+footer button { flex: none; }
+#back { min-width: 7.5rem; } #stop { min-width: 8.5rem; } #blank { min-width: 5.5rem; } #clear { min-width: 4.5rem; }
+footer button { padding-inline: .7rem; }
+/* One row of buttons on a laptop or tablet. The header keeps wrapping: its notes ("You are in control") matter more than a single row. */
+@media (min-width: 900px) {
+  footer { flex-wrap: nowrap; }
+  footer #search { flex: 1 1 5rem; min-width: 5rem; }
+  footer select { max-width: 9.5rem; }
+}
+}
 footer #search { flex: 1 1 10rem; min-width: 8rem; }
 #next { min-width: 11rem; font-size: 1.25rem; }
 #help { position: fixed; top: 0; right: 0; bottom: 0; width: min(30rem, 100%); background: var(--panel); border-left: 1px solid #444; z-index: 20; display: flex; flex-direction: column; box-shadow: -8px 0 24px #0008; }

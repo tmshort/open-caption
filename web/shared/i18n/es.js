@@ -357,7 +357,6 @@ OCI18n.add("es", {
  "Search show file": "Buscar en el archivo del espectáculo",
  "Undo the last thing sent (Backspace)": "Deshacer lo último enviado (Retroceso)",
  "Next (Space)": "Siguiente (Espacio)",
- "Stop loop (Shift+Q)": "Parar bucle (Mayús+Q)",
  "Hide everything on the audience screens. The captions come back when you unblank (B)": "Oculta todo en las pantallas del público. Los subtítulos vuelven al quitar el blanco (B)",
  "Erase the captions from the audience screens, so the next line starts on an empty screen (C). Back undoes it": "Borra los subtítulos de las pantallas del público, para que la línea siguiente empiece en una pantalla vacía (C). Atrás lo deshace",
  "Send a one-off message": "Enviar un mensaje puntual",
@@ -547,5 +546,6 @@ OCI18n.add("es", {
  "Upload {name}": "Subir {name}",
  "Choose one or more pictures from this computer": "Elija una o más imágenes de este equipo",
  "Choose the picture for {name} from this computer": "Elija la imagen para {name} de este equipo",
- "Use these colors": "Usar estos colores"
+ "Use these colors": "Usar estos colores",
+ "Stop the repeating pre-show or intermission loop (Shift+Q). Only available while a loop is playing": "Detiene el bucle de antes del espectáculo o del descanso (Mayús+Q). Solo disponible mientras se reproduce un bucle"
 });

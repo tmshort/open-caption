@@ -357,7 +357,6 @@ OCI18n.add("pt", {
  "Search show file": "Buscar no arquivo do espetáculo",
  "Undo the last thing sent (Backspace)": "Desfazer o último envio (Backspace)",
  "Next (Space)": "Próximo (Espaço)",
- "Stop loop (Shift+Q)": "Parar laço (Shift+Q)",
  "Hide everything on the audience screens. The captions come back when you unblank (B)": "Esconde tudo nas telas do público. As legendas voltam quando você desfaz o branco (B)",
  "Erase the captions from the audience screens, so the next line starts on an empty screen (C). Back undoes it": "Apaga as legendas das telas do público, para a próxima linha começar numa tela vazia (C). Voltar desfaz",
  "Send a one-off message": "Enviar uma mensagem avulsa",
@@ -547,5 +546,6 @@ OCI18n.add("pt", {
  "Upload {name}": "Enviar {name}",
  "Choose one or more pictures from this computer": "Escolha uma ou mais imagens deste computador",
  "Choose the picture for {name} from this computer": "Escolha a imagem para {name} deste computador",
- "Use these colors": "Usar estas cores"
+ "Use these colors": "Usar estas cores",
+ "Stop the repeating pre-show or intermission loop (Shift+Q). Only available while a loop is playing": "Para o laço de antes do espetáculo ou do intervalo (Shift+Q). Disponível só enquanto um laço está tocando"
 });

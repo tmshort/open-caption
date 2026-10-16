@@ -175,7 +175,14 @@ async function main() {
     check('English and Spanish devices each get their language', (await en.evaluate(() => document.documentElement.lang)) === 'en' && (await es.evaluate(() => document.documentElement.lang)) === 'es');
     check('the language menu is offered', await es.evaluate(() => !document.getElementById('langbtn').hidden));
     check('page labels are translated (Spanish)', (await es.evaluate(() => document.getElementById('gear').getAttribute('aria-label'))) === 'Tamaño del texto y colores');
+    const opButtons = () => op.evaluate(() => ['back', 'next', 'blank', 'clear', 'message'].map((id) => { const r = document.getElementById(id).getBoundingClientRect(); return Math.round(r.left) + ',' + Math.round(r.top); }).join(' '));
+    const inLoop = { stop: await op.evaluate(() => { const b = document.getElementById('stop'); return !b.hidden && !b.disabled; }), at: await opButtons() };
+    check('during a loop the STOP loop button is available', inLoop.stop);
     for (let i = 0; i < 6; i++) { await op.keyboard.press('Space'); await sleep(250); }
+    const afterLoop = { stop: await op.evaluate(() => { const b = document.getElementById('stop'); return b.offsetWidth > 0 && b.disabled; }), at: await opButtons() };
+    check('outside a loop it stays in place, disabled', afterLoop.stop);
+    check('so Back, Next and the other buttons never move', inLoop.at === afterLoop.at, [inLoop.at, afterLoop.at]);
+    check('the operator language menu is styled like the Setup one', await op.evaluate(() => { const c = getComputedStyle(document.querySelector('header select.uilang')); return c.backgroundColor !== 'rgb(255, 255, 255)' && parseFloat(c.borderTopLeftRadius) >= 6; }));
     const caps = (pg) => pg.evaluate(() => [...document.querySelectorAll('.cap')].map((c) => c.textContent.replace(/\s+/g, ' ').trim()));
     const enCaps = await caps(en), esCaps = await caps(es);
     check('one press shows the same lines in both languages', enCaps.length === esCaps.length && enCaps.length >= 3, [enCaps.length, esCaps.length]);
