@@ -170,3 +170,5 @@ label.tick input { flex: none; margin-top: .3rem; }
 .startbox { flex: 0 1 18rem; display: flex; flex-direction: column; gap: .6rem; align-items: stretch; margin-left: auto; text-align: center; }
 .startbox button.big { font-size: 1.25rem; padding: .8rem 1.2rem; white-space: normal; }
 .startbox .hint { margin: 0; }
+.qrrow { margin-top: 1rem; gap: 1.2rem; }
+.card .urlbig + .row { margin-top: .5rem; }

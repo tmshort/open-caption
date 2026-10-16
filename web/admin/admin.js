@@ -839,7 +839,7 @@
       h('div', { class: 'card' }, h('h3', {}, __('Tell the audience this address')), big,
         h('div', { class: 'row' }, h('button', { onclick: async () => { try { await navigator.clipboard.writeText(chosen); toast(__('Copied')); } catch (e) { toast(__('Select the address and copy it')); } } }, __('Copy address')),
           h('a', { class: 'btn', href: '/admin?print=qr&url=' + encodeURIComponent(chosen || ''), target: '_blank', rel: 'noopener' }, __('Print a QR sign for the lobby'))),
-        h('div', { class: 'row' }, qrBox, list),
+        h('div', { class: 'row qrrow' }, qrBox, list),
         ...(net.data.warnings || []).map((w) => h('div', { class: 'check warn' }, w)),
         h('p', { class: 'hint' }, __('Audience devices must be on the same WiFi as this computer. Devices connected right now: '), h('b', { id: 'audcount' }, String(A.audience)))),
       h('p', { class: 'hint' }, __('Something not working? '), h('a', { href: '#', onclick: (e) => { e.preventDefault(); openHelp('admin-troubleshooting'); } }, __('Troubleshooting help')), ' · ', h('a', { href: '/api/admin/support-bundle', download: 'support-bundle.zip' }, __('Download a support bundle')), ' · ', h('a', { href: '#', onclick: (e) => { e.preventDefault(); showLog(); } }, __('Recent log…'))));
