@@ -161,7 +161,6 @@ OCI18n.add("it", {
  "Remove {name}…": "Rimuovi {name}…",
  "Show file — {name}": "File dello spettacolo — {name}",
  "This file holds everything about the show except its images: its title and look in a [settings] block, and the lines themselves. Each line is one caption; one press of the spacebar sends one line. You can paste, type, or drop a .txt or .md file. Click a problem to jump to its line.": "Questo file contiene tutto sullo spettacolo tranne le immagini: titolo e aspetto in un blocco [settings], e le righe stesse. Ogni riga è un sottotitolo; una pressione della barra spaziatrice invia una riga. Puoi incollare, scrivere o trascinare un file .txt o .md. Fai clic su un problema per saltare alla sua riga.",
- "Show file help": "Aiuto sul file dello spettacolo",
  "Each save keeps the version it replaced": "Ogni salvataggio conserva la versione sostituita",
  "Earlier versions…": "Versioni precedenti…",
  "What the operator will step through": "Ciò che l'operatore scorrerà",

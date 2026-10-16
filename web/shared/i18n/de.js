@@ -161,7 +161,6 @@ OCI18n.add("de", {
  "Remove {name}…": "{name} entfernen …",
  "Show file — {name}": "Show-Datei — {name}",
  "This file holds everything about the show except its images: its title and look in a [settings] block, and the lines themselves. Each line is one caption; one press of the spacebar sends one line. You can paste, type, or drop a .txt or .md file. Click a problem to jump to its line.": "Diese Datei enthält alles zur Show außer den Bildern: Titel und Erscheinungsbild in einem [settings]-Block und die Zeilen selbst. Jede Zeile ist ein Untertitel; ein Druck auf die Leertaste sendet eine Zeile. Sie können eine .txt- oder .md-Datei einfügen, tippen oder hineinziehen. Klicken Sie auf ein Problem, um zu seiner Zeile zu springen.",
- "Show file help": "Hilfe zur Show-Datei",
  "Each save keeps the version it replaced": "Jedes Speichern bewahrt die ersetzte Version auf",
  "Earlier versions…": "Frühere Versionen …",
  "What the operator will step through": "Was der Operator durchgehen wird",

@@ -161,7 +161,6 @@ OCI18n.add("fr", {
  "Remove {name}…": "Retirer {name}…",
  "Show file — {name}": "Fichier du spectacle — {name}",
  "This file holds everything about the show except its images: its title and look in a [settings] block, and the lines themselves. Each line is one caption; one press of the spacebar sends one line. You can paste, type, or drop a .txt or .md file. Click a problem to jump to its line.": "Ce fichier contient tout ce qui concerne le spectacle sauf ses images : son titre et son apparence dans un bloc [settings], et les lignes elles-mêmes. Chaque ligne est un sous-titre ; une pression sur la barre d'espace envoie une ligne. Vous pouvez coller, saisir ou déposer un fichier .txt ou .md. Cliquez sur un problème pour aller à sa ligne.",
- "Show file help": "Aide sur le fichier du spectacle",
  "Each save keeps the version it replaced": "Chaque enregistrement conserve la version qu'il remplace",
  "Earlier versions…": "Versions antérieures…",
  "What the operator will step through": "Ce que l'opérateur va parcourir",

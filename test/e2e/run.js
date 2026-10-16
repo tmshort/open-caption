@@ -477,6 +477,7 @@ async function main() {
     await step(arch, 'Go Live'); await sleep(T(900));
     check('Go Live offers Open the operator page (the show waits in standby), not Start show', await arch.evaluate(() => { const t = document.getElementById('panel').innerText; return /Open the operator page/.test(t) && !/Start show/.test(t) && /standby/.test(t); }));
     await step(arch, 'Show file'); await sleep(T(600));
+    check('the Show file step has no second Help button (the header Help opens the same topic)', await arch.evaluate(() => ![...document.querySelectorAll('#panel button')].some((b) => /help/i.test(b.textContent))));
     // The editor grows with the window (no maximum width), and has a minimum.
     {
       const edW = () => arch.evaluate(() => { const e = document.querySelector('.editor'), r = e.getBoundingClientRect(); return { w: Math.round(r.width), h: Math.round(r.height), vw: innerWidth, scroll: document.documentElement.scrollWidth }; });
