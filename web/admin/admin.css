@@ -195,12 +195,13 @@ dialog form { display: flex; flex-direction: column; max-height: calc(100vh - 4.
 dialog form > h2 { flex: none; margin-top: 0; }
 #dlgbody { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding-right: .3rem; }
 dialog menu { flex: none; }
-/* Settings: a tab row that stays at the top of the scrolling part, and a body of fixed height so the window does not change size between tabs */
-#dlg.tabbed #dlgbody { height: 32rem; }
+/* Settings: a tab row that stays at the top of the scrolling part; the panels overlap in one grid cell so the window is as tall as the tallest tab */
 .tabs { display: flex; gap: .2rem; position: sticky; top: 0; z-index: 1; margin: 0 0 .9rem; background: var(--panel); border-bottom: 1px solid var(--line); overflow-x: auto; }
 .tabs button { flex: none; min-height: 2.6rem; padding: .5rem .95rem; background: none; border: none; border-bottom: 3px solid transparent; border-radius: 0; color: var(--dim); font: inherit; cursor: pointer; }
 .tabs button:hover { color: var(--fg); }
 .tabs button[aria-selected=true] { color: var(--fg); border-bottom-color: var(--accent); font-weight: 600; }
-.tabpanel[hidden] { display: none; }
+.tabpanels { display: grid; }
+.tabpanels > .tabpanel { grid-area: 1 / 1; min-width: 0; }
+.tabpanel.inactive { visibility: hidden; pointer-events: none; }
 .tabpanel > .setsec:first-child { margin-top: 0; padding-top: 0; border-top: none; }
 .tabpanel > .check { margin: 0 0 1rem; }

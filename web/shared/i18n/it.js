@@ -597,6 +597,6 @@ OCI18n.add("it", {
  "(for a projector or shared screen: big text, no buttons; open it on the computer the projector is plugged into)": "(per un proiettore o uno schermo condiviso: testo grande, senza pulsanti; aprila sul computer a cui è collegato il proiettore)",
  "Audience screen": "Schermo del pubblico",
  "Security": "Sicurezza",
- "This copy": "Questa copia",
- "Settings sections": "Sezioni delle impostazioni"
+ "Settings sections": "Sezioni delle impostazioni",
+ "About": "Informazioni"
 });

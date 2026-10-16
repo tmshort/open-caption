@@ -92,6 +92,31 @@
   document.addEventListener('keydown', (e) => { if (e.key === 'F1') { e.preventDefault(); openHelp(); } });
 
   // ---- settings: passwords and where things are ----
+  // The local network name (open-caption.local): shown on the Run step, beside the addresses it adds to. m is the status from the
+  // server; applied() runs after a change, so the page can show the new address.
+  function mdnsControls(m, applied) {
+    m = m || {};
+    const mdnsOn = h('input', { type: 'checkbox', 'aria-label': __('Announce this computer by name') }); mdnsOn.checked = !!m.enabled;
+    const mdnsName = h('input', { type: 'text', class: 'netname', maxlength: '63', size: '16', 'aria-label': __('Name'), autocapitalize: 'none', spellcheck: 'false' }); mdnsName.value = m.requested || 'open-caption';
+    const mdnsMsg = h('div', { class: 'hint', role: 'status' });
+    const showMdns = (x) => {
+      mdnsMsg.className = x.error ? 'check warn' : x.renamed ? 'check warn' : 'hint';
+      mdnsMsg.textContent = !x.enabled ? __('Not announced.') : x.error ? __('Could not announce this name: {error}', { error: x.error })
+        : x.renamed ? __('Another computer on this network already uses {name}.local, so this one is http://{host}/', { name: x.requested, host: x.host })
+        : x.active ? __('Devices on this network can open http://{host}/', { host: x.host }) : __('Starting…');
+    };
+    showMdns(m);
+    async function applyMdns() {
+      mdnsMsg.className = 'hint'; mdnsMsg.textContent = __('Checking that nobody else uses the name…');
+      const x = await api('PUT', '/api/admin/settings/mdns', { enabled: mdnsOn.checked, name: mdnsName.value });
+      if (!x.ok) { mdnsMsg.className = 'check warn'; mdnsMsg.textContent = __((x.data && x.data.error) || 'Could not change the name'); return; }
+      showMdns(x.data.mdns); if (x.data.mdns.active) mdnsName.value = x.data.mdns.requested;
+      if (applied) applied(x.data.mdns);
+    }
+    return h('div', { class: 'netnamebox' }, h('h3', {}, __('Network name')),
+      h('p', { class: 'hint' }, __('Devices can open this computer by name instead of a number. It needs no router settings, but some guest WiFi networks block it, so keep the numeric address and QR code as the main way in.')),
+      h('div', { class: 'row' }, mdnsOn, __(' Announce as '), mdnsName, __('.local '), h('button', { type: 'button', onclick: applyMdns }, __('Apply'))), mdnsMsg);
+  }
   async function openSettings() {
     const r = await api('GET', '/api/admin/settings'); if (!r.ok) return fail(r);
     const s = r.data;
@@ -113,23 +138,6 @@
       toast(__('Passwords changed'));
     } }, __('Change passwords'));
     const row = (k, v) => h('tr', {}, h('td', {}, __(k)), h('td', {}, v ? __(v) : '—'));
-    const m = s.mdns || {};
-    const mdnsOn = h('input', { type: 'checkbox', 'aria-label': __('Announce this computer by name') }); mdnsOn.checked = !!m.enabled;
-    const mdnsName = h('input', { type: 'text', class: 'netname', maxlength: '63', size: '16', 'aria-label': __('Name'), autocapitalize: 'none', spellcheck: 'false' }); mdnsName.value = m.requested || 'open-caption';
-    const mdnsMsg = h('div', { class: 'hint', role: 'status' });
-    const showMdns = (x) => {
-      mdnsMsg.className = x.error ? 'check warn' : x.renamed ? 'check warn' : 'hint';
-      mdnsMsg.textContent = !x.enabled ? __('Not announced.') : x.error ? __('Could not announce this name: {error}', { error: x.error })
-        : x.renamed ? __('Another computer on this network already uses {name}.local, so this one is http://{host}/', { name: x.requested, host: x.host })
-        : x.active ? __('Devices on this network can open http://{host}/', { host: x.host }) : __('Starting…');
-    };
-    showMdns(m);
-    async function applyMdns() {
-      mdnsMsg.className = 'hint'; mdnsMsg.textContent = __('Checking that nobody else uses the name…');
-      const x = await api('PUT', '/api/admin/settings/mdns', { enabled: mdnsOn.checked, name: mdnsName.value });
-      if (!x.ok) { mdnsMsg.className = 'check warn'; mdnsMsg.textContent = __((x.data && x.data.error) || 'Could not change the name'); return; }
-      showMdns(x.data.mdns); if (x.data.mdns.active) mdnsName.value = x.data.mdns.requested;
-    }
     // The standby screen: the venue's own logo and message, shown while no show is on air.
     const sb = s.standby || {};
     const sbMsg = h('input', { type: 'text', maxlength: '200', size: '40', 'aria-label': __('Standby message'), placeholder: __('Captions will begin shortly') }); sbMsg.value = sb.message || '';
@@ -160,10 +168,7 @@
           h('p', { class: 'hint' }, __('What the audience sees while no show is on air: before the operator presses START, after Go off air, and when no show is loaded. It belongs to the venue, not to a show.')),
           h('div', { class: 'row' }, sbImg, sbNone), h('div', { class: 'row' }, h('label', { class: 'row' }, __('Logo (PNG, JPEG, GIF or WebP, up to 2 MB): '), sbFile), sbRemove),
           h('label', { class: 'field' }, h('span', {}, __('Message (optional; empty uses “Captions will begin shortly” in each viewer’s language)')), sbMsg), h('div', { class: 'row' }, sbSave)),
-        sec('Network name',
-          h('p', { class: 'hint' }, __('Devices can open this computer by name instead of a number. It needs no router settings, but some guest WiFi networks block it, so keep the numeric address and QR code as the main way in.')),
-          h('div', { class: 'row' }, mdnsOn, __(' Announce as '), mdnsName, __('.local '), h('button', { type: 'button', onclick: applyMdns }, __('Apply'))), mdnsMsg),
-      ]],
+        ]],
       ['sec', 'Security', [
           !s.adminRestricted && !s.httpsAddr ? h('p', { class: 'check warn' }, __('Anyone on this WiFi can try to sign in to Setup, and passwords travel unencrypted over plain http. To limit it, set access: admin_allow in the settings file (for example [localhost]); see the usage guide.')) : null,
         sec('Change passwords',
@@ -174,7 +179,7 @@
                 h('div', { class: 'row' }, changePw, reveal), shown)
             : h('p', { class: 'hint' }, __('This copy was started without a settings file, so passwords cannot be changed here.'))),
       ]],
-      ['cop', 'This copy', [
+      ['abt', 'About', [
         sec('About this copy',
           h('table', { class: 'cheat' },
             row('Program', 'open-caption ' + s.version), row('Settings file', s.configPath), row('Shows and data', s.dataDir),
@@ -188,17 +193,19 @@
           h('p', { class: 'hint' }, s.canChangePasswords ? __('How much the program records (in the support bundle and in the log file, if one is kept). Info records sign-ins and events; Debug adds every request, for tracking down a problem. Applies at once and is kept in the settings file.') : __('How much the program records (in the support bundle and in the log file, if one is kept). Info records sign-ins and events; Debug adds every request, for tracking down a problem. Applies at once.'))),
       ]]];
     const tabs = h('div', { class: 'tabs', role: 'tablist', 'aria-label': __('Settings sections') });
-    const panels = tabDefs.map(([id, label, kids]) => h('div', { class: 'tabpanel', role: 'tabpanel', id: 'setpanel-' + id, 'aria-labelledby': 'settab-' + id, hidden: '' }, ...kids));
+    const panels = tabDefs.map(([id, label, kids]) => h('div', { class: 'tabpanel inactive', role: 'tabpanel', id: 'setpanel-' + id, 'aria-labelledby': 'settab-' + id }, ...kids));
     const tabBtns = tabDefs.map(([id, label], i) => h('button', { type: 'button', role: 'tab', id: 'settab-' + id, 'aria-controls': 'setpanel-' + id, onclick: () => pick(i, false),
       onkeydown: (e) => { const n = tabDefs.length, k = e.key; const to = k === 'ArrowRight' ? (i + 1) % n : k === 'ArrowLeft' ? (i + n - 1) % n : k === 'Home' ? 0 : k === 'End' ? n - 1 : -1; if (to >= 0) { e.preventDefault(); pick(to, true); } } }, __(label)));
     function pick(i, focus) {
-      tabBtns.forEach((b, k) => { b.setAttribute('aria-selected', k === i ? 'true' : 'false'); b.tabIndex = k === i ? 0 : -1; panels[k].hidden = k !== i; });
+      tabBtns.forEach((b, k) => { b.setAttribute('aria-selected', k === i ? 'true' : 'false'); b.tabIndex = k === i ? 0 : -1; panels[k].classList.toggle('inactive', k !== i); });
       if (focus) tabBtns[i].focus();
       $('dlgbody').scrollTop = 0;
       try { localStorage.setItem('oc.settings.tab', tabDefs[i][0]); } catch (e) { /* storage unavailable */ }
     }
     tabs.append(...tabBtns);
-    const body = h('div', { class: 'settingsbody' }, tabs, ...panels);
+    // All the panels share one grid cell (the unselected ones are only invisible), so the window is as tall as the tallest tab and
+    // never changes size when you switch: the About tab fits without scrolling wherever the screen allows.
+    const body = h('div', { class: 'settingsbody' }, tabs, h('div', { class: 'tabpanels' }, ...panels));
     let first = 0;
     try { const last = localStorage.getItem('oc.settings.tab'); const k = tabDefs.findIndex((t) => t[0] === last); if (k >= 0) first = k; } catch (e) { /* storage unavailable */ }
     pick(first, false);
@@ -915,6 +922,7 @@
         h('div', { class: 'row' }, h('button', { onclick: async () => { try { await navigator.clipboard.writeText(chosen); toast(__('Copied')); } catch (e) { toast(__('Select the address and copy it')); } } }, __('Copy address')),
           h('a', { class: 'btn', href: '/admin?print=qr&url=' + encodeURIComponent(chosen || ''), target: '_blank', rel: 'noopener' }, __('Print a QR sign for the lobby'))),
         h('div', { class: 'row qrrow' }, qrBox, list),
+        mdnsControls(net.data.mdns, () => render()), // the name adds an address to the list above, so show it
         ...(net.data.warnings || []).map((w) => h('div', { class: 'check warn' }, w)),
         h('p', { class: 'hint' }, __('Audience devices must be on the same WiFi as this computer. Devices connected right now: '), h('b', { id: 'audcount' }, String(A.audience)))),
       h('p', { class: 'hint' }, __('Something not working? '), h('a', { href: '#', onclick: (e) => { e.preventDefault(); openHelp('admin-troubleshooting'); } }, __('Troubleshooting help')), ' · ', h('a', { href: '/api/admin/support-bundle', download: 'support-bundle.zip' }, __('Download a support bundle')), ' · ', h('a', { href: '#', onclick: (e) => { e.preventDefault(); showLog(); } }, __('Recent log…'))));

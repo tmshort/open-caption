@@ -380,14 +380,19 @@ async function main() {
     const guard = await open(); await guard.goto(B + '/admin'); await guard.waitForSelector('#pw'); await guard.type('#pw', ADMIN); await guard.keyboard.press('Enter'); await guard.waitForSelector('#steps button');
     await click(guard, 'Settings'); await sleep(600);
     const tab = async (id) => { await guard.evaluate((i) => document.getElementById('settab-' + i).click(), id); await sleep(150); };
-    check('Settings has three tabs, with Close in view', await guard.evaluate(() => { const t = [...document.querySelectorAll('#dlg [role=tab]')].map((x) => x.textContent); const c = document.getElementById('dlgok').getBoundingClientRect(); return t.join('|') === 'Audience screen|Security|This copy' && c.bottom <= innerHeight && c.top >= 0; }));
-    await tab('cop');
-    await guard.focus('#settab-cop'); await guard.keyboard.press('ArrowLeft'); await sleep(150);
-    check('the arrow keys move between the tabs (and the selected tab says so)', await guard.evaluate(() => document.activeElement.id === 'settab-sec' && document.activeElement.getAttribute('aria-selected') === 'true' && document.getElementById('setpanel-sec').hidden === false && document.getElementById('setpanel-cop').hidden === true));
-    await tab('cop');
+    check('Settings has three tabs, with Close in view', await guard.evaluate(() => { const t = [...document.querySelectorAll('#dlg [role=tab]')].map((x) => x.textContent); const c = document.getElementById('dlgok').getBoundingClientRect(); return t.join('|') === 'Audience screen|Security|About' && c.bottom <= innerHeight && c.top >= 0; }));
+    await tab('abt');
+    {
+      const sizes = [];
+      for (const id of ['aud', 'sec', 'abt']) { await tab(id); sizes.push(await guard.evaluate(() => { const b = document.getElementById('dlgbody'); return { dlg: Math.round(document.getElementById('dlg').getBoundingClientRect().height), scrolls: b.scrollHeight > b.clientHeight + 1 }; })); }
+      check('the Settings window is as tall as its tallest tab, so no tab scrolls and it never changes size', sizes.every((z) => !z.scrolls) && sizes.every((z) => z.dlg === sizes[0].dlg), sizes);
+    }
+    await guard.focus('#settab-abt'); await guard.keyboard.press('ArrowLeft'); await sleep(150);
+    check('the arrow keys move between the tabs (and the selected tab says so)', await guard.evaluate(() => document.activeElement.id === 'settab-sec' && document.activeElement.getAttribute('aria-selected') === 'true' && document.getElementById('setpanel-sec').classList.contains('inactive') === false && document.getElementById('setpanel-abt').classList.contains('inactive')));
+    await tab('abt');
     check('Settings tells you Setup is open to the whole network', (await guard.evaluate(() => document.getElementById('dlg').innerText)).includes('any computer on the network'));
     await tab('aud');
-    check('Settings offers the network name setting', await guard.evaluate(() => /Network name/.test(document.getElementById('dlg').innerText) && !document.querySelector('#dlg input[aria-label="Announce this computer by name"]').checked));
+    check('Settings no longer has the network name (it moved to the Run step)', await guard.evaluate(() => !/Network name/.test(document.getElementById('dlg').innerText) && !document.querySelector('#dlg input[aria-label="Announce this computer by name"]')));
     check('Settings has a Standby screen section with a message and a logo', await guard.evaluate(() => { const d = document.getElementById('dlg').innerText; return /Standby screen/.test(d) && !!document.querySelector('#dlg input[aria-label="Standby message"]') && !!document.querySelector('#dlg input[type=file]'); }));
     await guard.type('#dlg input[aria-label="Standby message"]', 'Welcome to the Little Theatre');
     await guard.evaluate(() => [...document.querySelectorAll('#dlg button')].find((x) => x.textContent === 'Save message').click()); await sleep(600);
@@ -398,7 +403,7 @@ async function main() {
     const sbs = (await api(guard, 'GET', '/api/admin/settings')).body.standby;
     check('the standby message and logo are saved (venue-level)', sbs.message === 'Welcome to the Little Theatre' && /^\/standby-logo\?v=/.test(sbs.logo || ''), sbs);
     check('and the logo is public, for the audience page', await guard.evaluate(async (u) => { const r = await fetch(u, { credentials: 'omit' }); return r.ok && /image\/png/.test(r.headers.get('Content-Type')); }, sbs.logo));
-    await tab('cop');
+    await tab('abt');
     check('Settings offers the log detail setting', await guard.evaluate(() => !!document.querySelector('#dlg select[aria-label="Log detail"]')));
     check('the Settings window has no Recent log button (it is on the Run step)', await guard.evaluate(() => !document.getElementById('dlgextra') || document.getElementById('dlgextra').hidden));
     check('and its only footer button just closes it', await guard.evaluate(() => document.getElementById('dlgok').textContent.trim() === 'Close' && document.getElementById('dlgcancel').hidden));
@@ -410,6 +415,7 @@ async function main() {
     check('and Hide hides it again', await guard.evaluate(() => !/Operator password: /.test(document.getElementById('dlg').innerText)));
     await guard.evaluate(() => document.getElementById('dlgok').click()); await sleep(300);
     await step(guard, 'Run'); await sleep(900);
+    check('the Run step has the network name setting, beside the addresses', await guard.evaluate(() => { const b = document.querySelector('.netnamebox'); return !!b && /Network name/.test(b.innerText) && !!b.querySelector('input[aria-label="Announce this computer by name"]') && !!b.querySelector('input.netname') && /Not announced/.test(b.innerText) && !!document.querySelector('.urls') && b.closest('.card') === document.querySelector('.urls').closest('.card'); }));
     check('on the Run step each address is a link that opens a new window', await guard.evaluate(() => { const l = [...document.querySelectorAll('.urls label a')]; return l.length > 0 && l.every((x) => x.target === '_blank' && /noopener/.test(x.rel) && /^https?:\/\//.test(x.href)); }));
     await guard.evaluate(() => [...document.querySelectorAll('a')].find((x) => x.textContent.includes('Recent log')).click()); await guard.waitForFunction(() => { const p = document.querySelector('pre.logview'); return p && p.textContent.includes('signed in'); }, { timeout: 8000 }).catch(() => {});
     check('the recent log can be read in Setup', await guard.evaluate(() => /INFO .*signed in/.test(document.querySelector('pre.logview').textContent)));
