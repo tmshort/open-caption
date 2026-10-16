@@ -251,6 +251,17 @@ async function main() {
     const seen = await en.evaluate(() => { cancelAnimationFrame(window.__raf); return window.__seen; });
     const lo = seen[0], hi = seen[seen.length - 1];
     check('a new line scrolls into view smoothly rather than jumping', hi > lo && seen.some((v) => v > lo + 1 && v < hi - 1), seen.slice(0, 40).join(','));
+    // The new line starts out of sight below the bottom edge, and comes up with the others (not popping on).
+    const arrival = async (label) => {
+      await en.evaluate(() => { const c = document.getElementById('captions'); window.__arr = []; const f = () => { const caps = c.querySelectorAll('.cap'), last = caps[caps.length - 1], r = c.getBoundingClientRect(); window.__arr.push({ n: caps.length, top: last ? last.getBoundingClientRect().top : 0, edge: r.bottom - parseFloat(getComputedStyle(c).paddingBottom) }); window.__raf2 = requestAnimationFrame(f); }; f(); });
+      await nextN(1); await sleep(T(900));
+      const arr = await en.evaluate(() => { cancelAnimationFrame(window.__raf2); return window.__arr; });
+      const k = arr.findIndex((x, i) => i > 0 && x.n > arr[0].n); // the first frame with the new line
+      const first = arr[k], last = arr[arr.length - 1];
+      check(label + ': the new line starts below the visible edge', k > 0 && first.top >= first.edge - 2 && (await en.evaluate(() => /inset/.test(getComputedStyle(document.getElementById('captions')).clipPath))), first);
+      check(label + ': and comes up with the rest', k > 0 && last.top < first.top - 5 && arr.slice(k).some((x) => x.top < first.top - 1 && x.top > last.top + 1), arr.slice(k, k + 12).map((x) => Math.round(x.top)).join(','));
+    };
+    await arrival('with a full screen');
     check('and the reader is still following the live captions', await en.evaluate(() => document.getElementById('live').hidden));
     await shot(en, '04-audience-english');
     // With only a few lines on screen (they sit at the bottom), the older lines slide up instead of jumping.
@@ -263,6 +274,7 @@ async function main() {
     const few = await en.evaluate(() => { cancelAnimationFrame(window.__raf); return window.__seen; });
     const f0 = few[0], f1 = few[few.length - 1];
     check('with few lines on screen, the older ones slide up instead of jumping', f1 < f0 && few.some((v) => v < f0 - 1 && v > f1 + 1), few.slice(0, 40).join(','));
+    await arrival('with few lines');
 
     // ------------------------------------------------------------------ settings & security
     // An intermission timer: the loop's {timer} counts down live on the audience screen, from the moment the loop starts.

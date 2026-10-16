@@ -189,16 +189,24 @@
     glide = requestAnimationFrame(step);
   }
   ['wheel', 'touchstart', 'keydown'].forEach((ev) => $('captions').addEventListener(ev, stopGlide, { passive: true }));
-  // When the lines do not fill the screen they sit at the bottom, so a new line moves every older one up
-  // by its own height in a single step. Put the older lines back where they were and let them slide
-  // up (FLIP: measure, move back, release), in step with the glide above.
-  function slideUp(d) {
-    if (!(d > 1)) return;
-    const box = $('captions'), kids = Array.prototype.slice.call(box.children, 0, -1); // not the new line, which fades in itself
-    kids.forEach((k) => { k.style.transition = 'none'; k.style.transform = 'translateY(' + d + 'px)'; });
+  // A new line comes up from below the bottom edge, and everything above it moves up together, as if the whole
+  // column were scrolling. With a screenful of text the glide above does that. When the lines do not yet fill the
+  // screen they sit at the bottom and a new line would simply appear, with the older ones jumping up by its
+  // height; so put every line back where it was, with the new one just below the edge (the CSS clips the
+  // column there), and release them all (FLIP: measure, move back, release).
+  function slideIn(d, fresh) {
+    const box = $('captions');
+    if (box.scrollHeight - box.clientHeight > 1) return; // a full screen scrolls instead (toBottom)
+    const kids = Array.prototype.slice.call(box.children);
+    const edge = box.getBoundingClientRect().bottom - parseFloat(getComputedStyle(box).paddingBottom);
+    const start = (k) => (k === fresh ? Math.max(d, edge - k.getBoundingClientRect().top) : d); // the new line starts below the edge
+    const from = kids.map(start);
+    if (!from.some((v) => v > 1)) return;
+    box.classList.add('sliding'); // a moved-down line must not make the column scrollable for a moment
+    kids.forEach((k, i) => { k.style.transition = 'none'; k.style.transform = 'translateY(' + from[i] + 'px)'; });
     void box.offsetHeight; // commit the starting positions
     kids.forEach((k) => { k.style.transition = 'transform .32s cubic-bezier(.215,.61,.355,1)'; k.style.transform = ''; });
-    setTimeout(() => kids.forEach((k) => { k.style.transition = ''; }), 400);
+    setTimeout(() => { kids.forEach((k) => { k.style.transition = ''; }); box.classList.remove('sliding'); }, 400);
   }
   function goLive() { pinned = true; unread = 0; toBottom(true); paintLive(); }
   $('live').addEventListener('click', goLive);
@@ -325,7 +333,7 @@
       fade();
       renderFullscreen();
       const moved = prev && prev.parentNode === box && pinned && !reduceMotion() ? wasAt - prev.getBoundingClientRect().top : 0;
-      if (pinned) { toBottom(true); slideUp(moved); } else { unread++; paintLive(); }
+      if (pinned) { toBottom(true); if (!reduceMotion()) slideIn(moved, box.lastElementChild); } else { unread++; paintLive(); }
     },
     clear() {
       state.mode = 'captions';

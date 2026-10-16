@@ -43,7 +43,7 @@ body.dys #fs { line-height: 1.35; }
   font-size: calc(var(--scale) * clamp(1.5rem, 3.4vmin + 1.6vw, 4.5rem));
   line-height: 1.3;
 }
-.cap { margin: 0 0 .55em; overflow-wrap: anywhere; animation: rise .25s ease-out; }
+.cap { margin: 0 0 .55em; overflow-wrap: anywhere; }
 .cap .spk { display: block; font-size: .55em; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); opacity: .9; }
 .cap.stage { font-style: italic; }
 /* Voices sung or spoken at the same time: side by side when there is room, stacked on a phone. */
@@ -54,9 +54,12 @@ body.dys #fs { line-height: 1.35; }
 /* Sung lyrics: between musical notes (added by the server), in italics and a little looser. */
 .cap.sung { font-style: italic; letter-spacing: .01em; }
 .cap strong { font-weight: 800; }
-@keyframes rise { from { opacity: 0; transform: translateY(.4em); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .cap, #fs > * { animation: none !important; } }
 
+/* The column ends at its bottom padding: a line that has not yet scrolled up is out of sight below that edge, so new text
+   comes up from below rather than appearing. (-webkit- for Safari before 13.1.) */
+#captions { -webkit-clip-path: inset(0 0 5vmin 0); clip-path: inset(0 0 5vmin 0); }
+#captions.sliding { overflow-y: hidden; }
 #captions > :first-child { margin-top: auto; } /* keeps short content at the bottom while still letting long content scroll */
 #captions:focus { outline: none; }
 #captions:focus-visible { outline: 3px solid var(--accent); outline-offset: -3px; }
