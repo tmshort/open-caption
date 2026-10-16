@@ -553,5 +553,6 @@ OCI18n.add("es", {
  "Timer {0} is not a number of minutes (like 15) or a time of day (like 7:30pm). The loop has no timer.": "El temporizador {0} no es un número de minutos (como 15) ni una hora del día (como 19:30). El bucle no tiene temporizador.",
  "This loop has a timer, but no text in it contains {timer}, so the countdown is never shown.": "Este bucle tiene un temporizador, pero ningún texto contiene {timer}, así que la cuenta atrás nunca se muestra.",
  "{timer} needs a timer on its loop, for example [loop: timer 15]. It is shown as typed.": "{timer} necesita un temporizador en su bucle, por ejemplo [loop: timer 15]. Se muestra tal como está escrito.",
- "The [loop] in cue {0} has a different timer from the {1} show file. Every language must count down the same way.": "El [loop] de la señal {0} tiene un temporizador distinto del archivo del espectáculo {1}. Todos los idiomas deben contar hacia atrás igual."
+ "The [loop] in cue {0} has a different timer from the {1} show file. Every language must count down the same way.": "El [loop] de la señal {0} tiene un temporizador distinto del archivo del espectáculo {1}. Todos los idiomas deben contar hacia atrás igual.",
+ "Can't delete this show": "No se puede eliminar este espectáculo"
 });

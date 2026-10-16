@@ -553,5 +553,6 @@ OCI18n.add("it", {
  "Timer {0} is not a number of minutes (like 15) or a time of day (like 7:30pm). The loop has no timer.": "Il timer {0} non è un numero di minuti (come 15) né un'ora del giorno (come 19:30). Il ciclo non ha un timer.",
  "This loop has a timer, but no text in it contains {timer}, so the countdown is never shown.": "Questo ciclo ha un timer, ma nessun testo contiene {timer}, quindi il conto alla rovescia non viene mai mostrato.",
  "{timer} needs a timer on its loop, for example [loop: timer 15]. It is shown as typed.": "{timer} richiede un timer sul suo ciclo, per esempio [loop: timer 15]. Viene mostrato così com'è.",
- "The [loop] in cue {0} has a different timer from the {1} show file. Every language must count down the same way.": "Il [loop] della cue {0} ha un timer diverso dal file dello spettacolo {1}. Tutte le lingue devono contare alla rovescia allo stesso modo."
+ "The [loop] in cue {0} has a different timer from the {1} show file. Every language must count down the same way.": "Il [loop] della cue {0} ha un timer diverso dal file dello spettacolo {1}. Tutte le lingue devono contare alla rovescia allo stesso modo.",
+ "Can't delete this show": "Impossibile eliminare questo spettacolo"
 });

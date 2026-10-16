@@ -302,7 +302,7 @@
         h('button', { class: 'quiet', onclick: () => duplicateShow(s) }, __('Duplicate')),
         h('a', { class: 'quiet', href: '/api/admin/shows/' + s.id + '/export', download: s.id + '.zip' }, __('Export')),
         h('button', { class: 'quiet', disabled: s.active, title: s.active ? __('The show on air cannot be archived. Activate another show first.') : __('Put this show away; you can restore it later'), onclick: () => archiveShow(s, true) }, __('Archive')),
-        h('button', { class: 'danger quiet', onclick: () => deleteShow(s) }, __('Delete…')))));
+        h('button', { class: 'danger quiet', title: s.live ? __('This show is live. Restart it from the operator page, or activate another show first.') : null, onclick: () => deleteShow(s) }, __('Delete…')))));
       p.append(h('h3', {}, __('Add another show')), h('div', { class: 'card row' }, ...newShowForm(), h('button', { onclick: makeSample }, __('Sample show')), ...importButton()));
     }
     if (archived.length) {
@@ -313,7 +313,7 @@
           h('div', { class: 'name' }, s.name, h('div', { class: 'hint' }, __('Updated {when}', { when: new Date(s.updated).toLocaleString(OCI18n.lang) }))),
           h('button', { class: 'primary', onclick: () => archiveShow(s, false) }, __('Restore')),
           h('a', { class: 'quiet', href: '/api/admin/shows/' + s.id + '/export', download: s.id + '.zip' }, __('Export')),
-          h('button', { class: 'danger quiet', onclick: () => deleteShow(s) }, __('Delete…'))))));
+          h('button', { class: 'danger quiet', title: s.live ? __('This show is live. Restart it from the operator page, or activate another show first.') : null, onclick: () => deleteShow(s) }, __('Delete…'))))));
     }
   }
   // Every file chooser in Setup is a button like any other: it opens the browser's chooser through a hidden
@@ -376,11 +376,14 @@
     toast(on ? __('“{name}” archived', { name: s.name }) : __('“{name}” restored', { name: s.name }));
     render();
   }
+  // A refusal is shown in a window that has to be dismissed: a toast is easy to miss, and "nothing happened" looks like a bug.
+  function refuseDelete(why) { return ask(__("Can't delete this show"), h('p', {}, why), __('OK'), { noCancel: true }); }
   async function deleteShow(s) {
+    if (s.live) return refuseDelete(__('This show is live. Restart it from the operator page, or activate another show first.'));
     const ok = await confirmBox(__('Delete “{name}”?', { name: s.name }), s.archived ? __('This archived show, its show file and its images will be permanently deleted. Export it first if you may want it back.') : __('Its show file and images will be permanently deleted. Export it first if you may want it back. (Archive keeps a show without deleting it.)'), __('Delete'), true);
     if (!ok) return;
     const r = await api('DELETE', '/api/admin/shows/' + s.id);
-    if (!r.ok) return fail(r);
+    if (!r.ok) return refuseDelete(__((r.data && r.data.error) || 'Something went wrong'));
     if (A.cur === s.id) setCur(null);
     await loadShows(); if (!A.cur && unarchived()[0]) setCur(unarchived()[0].id);
     render();

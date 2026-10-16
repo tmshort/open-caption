@@ -553,5 +553,6 @@ OCI18n.add("fr", {
  "Timer {0} is not a number of minutes (like 15) or a time of day (like 7:30pm). The loop has no timer.": "Le minuteur {0} n'est ni un nombre de minutes (comme 15) ni une heure (comme 19:30). La boucle n'a pas de minuteur.",
  "This loop has a timer, but no text in it contains {timer}, so the countdown is never shown.": "Cette boucle a un minuteur, mais aucun texte ne contient {timer} : le compte à rebours n'est donc jamais affiché.",
  "{timer} needs a timer on its loop, for example [loop: timer 15]. It is shown as typed.": "{timer} nécessite un minuteur sur sa boucle, par exemple [loop: timer 15]. Il est affiché tel quel.",
- "The [loop] in cue {0} has a different timer from the {1} show file. Every language must count down the same way.": "Le [loop] de la cue {0} a un minuteur différent de celui du fichier de spectacle {1}. Toutes les langues doivent décompter de la même façon."
+ "The [loop] in cue {0} has a different timer from the {1} show file. Every language must count down the same way.": "Le [loop] de la cue {0} a un minuteur différent de celui du fichier de spectacle {1}. Toutes les langues doivent décompter de la même façon.",
+ "Can't delete this show": "Impossible de supprimer ce spectacle"
 });

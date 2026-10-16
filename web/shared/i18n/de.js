@@ -553,5 +553,6 @@ OCI18n.add("de", {
  "Timer {0} is not a number of minutes (like 15) or a time of day (like 7:30pm). The loop has no timer.": "Der Timer {0} ist weder eine Minutenzahl (wie 15) noch eine Uhrzeit (wie 19:30). Die Schleife hat keinen Timer.",
  "This loop has a timer, but no text in it contains {timer}, so the countdown is never shown.": "Diese Schleife hat einen Timer, aber kein Text darin enthält {timer}, daher wird der Countdown nie angezeigt.",
  "{timer} needs a timer on its loop, for example [loop: timer 15]. It is shown as typed.": "{timer} braucht einen Timer an seiner Schleife, zum Beispiel [loop: timer 15]. Es wird wie geschrieben angezeigt.",
- "The [loop] in cue {0} has a different timer from the {1} show file. Every language must count down the same way.": "Die [loop] in Cue {0} hat einen anderen Timer als die Show-Datei {1}. Alle Sprachen müssen gleich herunterzählen."
+ "The [loop] in cue {0} has a different timer from the {1} show file. Every language must count down the same way.": "Die [loop] in Cue {0} hat einen anderen Timer als die Show-Datei {1}. Alle Sprachen müssen gleich herunterzählen.",
+ "Can't delete this show": "Diese Show kann nicht gelöscht werden"
 });

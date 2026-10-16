@@ -511,6 +511,14 @@ async function main() {
     check('Space works after a restart without signing in again', (await cursor()) === before2 + 1);
     await op.keyboard.press('Backspace'); await sleep(500);
     check('Backspace still undoes a line sent before the restart', (await cursor()) === before2);
+    await op.keyboard.press('Space'); await sleep(500); // the show is live again
+    // Deleting the show that is live is refused, in a window that cannot be missed.
+    await guard.goto(B + '/admin#show'); await guard.reload(); await guard.waitForSelector('.card.show'); await sleep(500);
+    await guard.evaluate(() => { const c = [...document.querySelectorAll('.card.show')].find((x) => /LIVE/.test(x.textContent)); [...c.querySelectorAll('button')].find((b) => b.textContent.startsWith('Delete')).click(); });
+    await guard.waitForFunction(() => document.getElementById('dlg').open, { timeout: T(5000) }).catch(() => {});
+    check('deleting the live show says why it cannot be done', await guard.evaluate(() => { const d = document.getElementById('dlg'); return d.open && /This show is live/.test(d.innerText) && d.querySelector('#dlgcancel').hidden; }));
+    await guard.evaluate(() => document.getElementById('dlgok').click()); await sleep(300);
+    check('and the show is still there', await guard.evaluate(() => [...document.querySelectorAll('.card.show')].some((x) => /LIVE/.test(x.textContent))));
   } finally {
     await b.close();
   }

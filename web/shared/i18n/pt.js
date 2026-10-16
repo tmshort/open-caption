@@ -553,5 +553,6 @@ OCI18n.add("pt", {
  "Timer {0} is not a number of minutes (like 15) or a time of day (like 7:30pm). The loop has no timer.": "O temporizador {0} não é um número de minutos (como 15) nem uma hora do dia (como 19:30). O laço não tem temporizador.",
  "This loop has a timer, but no text in it contains {timer}, so the countdown is never shown.": "Este laço tem um temporizador, mas nenhum texto contém {timer}, então a contagem regressiva nunca é mostrada.",
  "{timer} needs a timer on its loop, for example [loop: timer 15]. It is shown as typed.": "{timer} precisa de um temporizador no seu laço, por exemplo [loop: timer 15]. Ele é mostrado como foi escrito.",
- "The [loop] in cue {0} has a different timer from the {1} show file. Every language must count down the same way.": "O [loop] da cue {0} tem um temporizador diferente do arquivo do espetáculo {1}. Todos os idiomas devem contar do mesmo jeito."
+ "The [loop] in cue {0} has a different timer from the {1} show file. Every language must count down the same way.": "O [loop] da cue {0} tem um temporizador diferente do arquivo do espetáculo {1}. Todos os idiomas devem contar do mesmo jeito.",
+ "Can't delete this show": "Não é possível excluir este espetáculo"
 });
