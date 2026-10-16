@@ -551,3 +551,136 @@ func (e *Engine) loopItemFor(i int) showfile.Item {
 	defer e.mu.Unlock()
 	return *e.loopItem(e.loop.cue, i)
 }
+
+// ---- standby: the show is loaded but not on air ----
+
+func newStandby(t *testing.T, src string) (*Engine, *rec) {
+	t.Helper()
+	r := &rec{}
+	e := New(parse(src), Config{DefaultLoopSeconds: 60, Standby: true}, r.sink)
+	t.Cleanup(e.Close)
+	return e, r
+}
+
+func TestStandbyShowsNothingUntilStart(t *testing.T) {
+	e, r := newStandby(t, "[loop: 5s]\nWelcome\n[/loop]\nHello\nWorld\n")
+	st := e.Snapshot()
+	if st.Mode != ModeStandby || st.Fullscreen != nil || len(st.Scrollback) != 0 {
+		t.Fatalf("snapshot in standby: %+v", st)
+	}
+	o := e.Operator()
+	if o.Live || !o.Standby || o.Loop != nil {
+		t.Fatalf("operator state: %+v", o)
+	}
+	for name, fn := range map[string]func() error{
+		"next":  func() error { _, err := e.Next(-1); return err },
+		"back":  func() error { _, err := e.Back(-1); return err },
+		"jump":  func() error { _, err := e.Jump(2, -1); return err },
+		"blank": func() error { _, err := e.SetBlank(true, -1); return err },
+		"clear": func() error { _, err := e.Clear(-1); return err },
+		"msg":   func() error { _, err := e.Message("hi", -1); return err },
+	} {
+		if err := fn(); err != ErrStandby {
+			t.Errorf("%s in standby: %v", name, err)
+		}
+	}
+	if len(r.types()) != 0 {
+		t.Errorf("nothing may be sent to the audience in standby: %v", r.types())
+	}
+	// Start: on air, the pre-show loop begins, and the first Next sends the first line.
+	o, err := e.Start(-1)
+	if err != nil || !o.Live || o.Standby || o.Loop == nil {
+		t.Fatalf("start: %+v %v", o, err)
+	}
+	if st := e.Snapshot(); st.Mode != ModeCaptions || st.Fullscreen == nil || !strings.Contains(st.Fullscreen.Text, "Welcome") {
+		t.Errorf("on air: %+v", st)
+	}
+	if o, _ = e.Next(-1); o.Cursor != 2 {
+		t.Errorf("next: %+v", o)
+	}
+	if st := e.Snapshot(); len(st.Scrollback) != 1 || st.Scrollback[0].Text != "Hello" {
+		t.Errorf("scrollback: %+v", st.Scrollback)
+	}
+}
+
+func TestStandbyWithoutALeadingLoop(t *testing.T) {
+	e, _ := newStandby(t, "Hello\nWorld\n")
+	if st := e.Snapshot(); st.Mode != ModeStandby {
+		t.Fatalf("%+v", st)
+	}
+	e.Start(-1)
+	if st := e.Snapshot(); st.Mode != ModeIdle { // the show's own message, until the first line
+		t.Errorf("on air before the first line: %+v", st)
+	}
+	if o := e.Operator(); !o.Live || o.Cursor != 0 {
+		t.Errorf("%+v", o)
+	}
+}
+
+func TestOffAirKeepsThePositionAndResumes(t *testing.T) {
+	e, r := newStandby(t, "Hello\n[loop: 5s]\nINTERMISSION\n[/loop]\nWorld\n")
+	e.Start(-1)
+	e.Next(-1)
+	e.Next(-1) // into the loop
+	if o := e.Operator(); o.Loop == nil {
+		t.Fatalf("loop should be running: %+v", o)
+	}
+	before := len(r.types())
+	o, err := e.OffAir(-1)
+	if err != nil || o.Live || !o.Standby || o.Loop != nil || o.Cursor != 2 {
+		t.Fatalf("off air: %+v %v", o, err)
+	}
+	if st := e.Snapshot(); st.Mode != ModeStandby || len(st.Scrollback) != 0 || st.Fullscreen != nil {
+		t.Errorf("the audience must see nothing: %+v", st)
+	}
+	if got := r.types()[before:]; len(got) != 1 || got[0] != EvSnapshot {
+		t.Errorf("events off air: %v", got)
+	}
+	if _, err := e.Next(-1); err != ErrStandby {
+		t.Errorf("next off air: %v", err)
+	}
+	o, _ = e.Start(-1)
+	if !o.Live || o.Cursor != 2 || o.Loop == nil {
+		t.Errorf("back on air, loop running again: %+v", o)
+	}
+	if st := e.Snapshot(); len(st.Scrollback) != 1 || st.Scrollback[0].Text != "Hello" {
+		t.Errorf("the lines are still there: %+v", st.Scrollback)
+	}
+	// Going off air twice, or starting twice, changes nothing.
+	e.Start(-1)
+	e.OffAir(-1)
+	if o, _ = e.OffAir(-1); !o.Standby {
+		t.Error("still off air")
+	}
+}
+
+func TestResetReturnsToStandbyAndStandbySurvivesARestart(t *testing.T) {
+	src := "[loop: 5s]\nWelcome\n[/loop]\nHello\n"
+	e, _ := newStandby(t, src)
+	e.Start(-1)
+	e.Next(-1)
+	if o, _ := e.Reset(-1); !o.Standby || o.Live || o.Cursor != 1 {
+		t.Errorf("reset: %+v", o)
+	}
+	if st := e.Snapshot(); st.Mode != ModeStandby || len(st.Scrollback) != 0 {
+		t.Errorf("%+v", st)
+	}
+	p := e.Export()
+	e2, _ := newStandby(t, src)
+	e2.Restore(p)
+	if o := e2.Operator(); !o.Standby {
+		t.Errorf("a show in standby stays in standby after a restart: %+v", o)
+	}
+	e2.Start(-1)
+	if o := e2.Operator(); o.Loop == nil {
+		t.Errorf("and its pre-show still starts: %+v", o)
+	}
+	// on air stays on air
+	e2.Next(-1)
+	p = e2.Export()
+	e3, _ := newStandby(t, src)
+	e3.Restore(p)
+	if o := e3.Operator(); o.Standby || !o.Live {
+		t.Errorf("on air stays on air: %+v", o)
+	}
+}

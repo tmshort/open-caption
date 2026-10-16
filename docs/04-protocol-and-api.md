@@ -78,7 +78,7 @@ everywhere an operator session is; the reverse is not true.
 | DELETE | `/api/admin/shows/{id}/languages/{lang}` | Remove a translation (not the main language; not while live) |
 | POST | `/api/admin/shows/{id}/assets` | multipart image upload: png/jpg/gif/webp only (SVG rejected); 10 MB limit; stored as-is (no server-side scaling); response includes a `large: true` flag above 1 MB |
 | GET/DELETE | `/api/admin/shows/{id}/assets/{file}` | |
-| POST | `/api/admin/shows/{id}/activate` | Make active (blocked if live unless `force`; 409 if the show is archived) |
+| POST | `/api/admin/shows/{id}/activate` | `{force?, start?}`: load the show **in standby** (blocked if a show is on air unless `force`; 409 if the show is archived). `start: true` also puts it on air at once (automation and tests; Setup never does) |
 | POST | `/api/admin/rehearsal/start` | Create an isolated rehearsal engine for this session (doc 02) |
 | POST | `/api/admin/rehearsal/{next,back,stop,jump,blank,clear,reset}` | Same bodies/semantics as `/api/operator/*`, applied to the rehearsal engine only |
 | GET | `/api/admin/rehearsal/events` | SSE of the rehearsal's audience-view events (drives the preview pane) |
@@ -105,7 +105,9 @@ everywhere an operator session is; the reverse is not true.
 | POST | `/api/operator/blank` | `{on:bool}` | Ad-hoc blank toggle |
 | POST | `/api/operator/clear` | | Ad-hoc clear |
 | POST | `/api/operator/message` | `{text}` | Ad-hoc one-off fullscreen/caption text |
-| POST | `/api/operator/reset` | | Return to start (confirm in UI) |
+| POST | `/api/operator/reset` | | Return to the start **and to standby** (confirm in UI) |
+| POST | `/api/operator/onair` | `{rev}` | START: put the show on air (from standby: the pre-show loop begins, or the show's idle message appears). A no-op when already on air |
+| POST | `/api/operator/offair` | `{rev}` | Go off air: the audience sees the standby screen again; the position, lines and undo history are kept; START resumes. A no-op in standby |
 
 Request bodies are JSON; `rev` is optional (omitted = no staleness check). `jump` takes `index`, `blank` takes `on`, `message` takes `text` (1–500 chars).
 
@@ -169,7 +171,8 @@ the server's retained buffer, the server sends a `snapshot`. Clients treat a
   "ts": 1760649900000,           // the server's clock when this snapshot was made; a page uses ts - Date.now() to correct its own clock for deadlines
   "lang": "en",
   "languages": [{"code": "en", "name": "English"}, {"code": "es", "name": "Español"}],
-  "mode": "captions",            // idle | captions | blank
+  "mode": "captions",            // standby | idle | captions | blank; "standby": nothing of the show is sent (no scrollback, no fullscreen) and `standby` below is set
+  "standby": { "message": "Welcome", "logo": "/standby-logo?v=1760649900" },   // only while mode is "standby"; both optional
   "scrollback": [ /* CaptionItem[] */ ],
   "fullscreen": null,            // or Item
   "preload": ["/assets/odd-couple/curtain.jpg"],

@@ -22,7 +22,7 @@ Legendas, `[clear]`, seções, notas e outros laços não podem ficar dentro de 
 
 ## Quando um laço começa e termina
 
-- Se a **primeira coisa** do arquivo do espetáculo for um laço, ele começa sozinho assim que o espetáculo é iniciado, e o público vê a pré-exibição enquanto procura seus lugares.
+- Se a **primeira coisa** do arquivo do espetáculo for um laço, ele começa quando o operador coloca o espetáculo no ar (**INICIAR**), de modo que o público vê a pré-apresentação enquanto as pessoas procuram seus lugares.
 - Qualquer outro laço (por exemplo no intervalo) começa quando o operador aperta a barra de espaço sobre ele.
 - A barra de espaço encerra o laço e envia a próxima linha. **Shift+Q** para o laço e deixa a tela em branco. **Voltar** retorna ao laço e o reinicia a partir do primeiro item.
 

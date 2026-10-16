@@ -129,6 +129,21 @@
       if (!x.ok) { mdnsMsg.className = 'check warn'; mdnsMsg.textContent = __((x.data && x.data.error) || 'Could not change the name'); return; }
       showMdns(x.data.mdns); if (x.data.mdns.active) mdnsName.value = x.data.mdns.requested;
     }
+    // The standby screen: the venue's own logo and message, shown while no show is on air.
+    const sb = s.standby || {};
+    const sbMsg = h('input', { type: 'text', maxlength: '200', size: '40', 'aria-label': __('Standby message'), placeholder: __('Captions will begin shortly') }); sbMsg.value = sb.message || '';
+    const sbImg = h('img', { class: 'sblogo', alt: __('Current standby logo') });
+    const sbNone = h('span', { class: 'hint' }, __('No logo yet.'));
+    const sbRemove = h('button', { type: 'button', onclick: async () => { const x = await api('DELETE', '/api/admin/settings/standby-logo'); if (!x.ok) return fail(x); paintSb(x.data.standby); toast(__('Logo removed')); } }, __('Remove logo'));
+    function paintSb(v) { sbImg.hidden = !v.logo; if (v.logo) sbImg.src = v.logo; sbNone.hidden = !!v.logo; sbRemove.disabled = !v.logo; }
+    paintSb(sb);
+    const sbFile = h('input', { type: 'file', accept: 'image/png,image/jpeg,image/gif,image/webp', 'aria-label': __('Choose a logo'), onchange: async (e) => {
+      const f = e.target.files[0]; if (!f) return;
+      const fd = new FormData(); fd.append('file', f);
+      const x = await api('POST', '/api/admin/settings/standby-logo', undefined, fd); e.target.value = '';
+      if (!x.ok) return fail(x); paintSb(x.data.standby); toast(__('Logo saved'));
+    } });
+    const sbSave = h('button', { type: 'button', onclick: async () => { const x = await api('PUT', '/api/admin/settings/standby', { message: sbMsg.value }); if (!x.ok) return fail(x); toast(__('Message saved')); } }, __('Save message'));
     const logSelect = h('select', { 'aria-label': __('Log detail'), onchange: async (e) => {
       const x = await api('PUT', '/api/admin/settings/log-level', { level: e.target.value });
       if (!x.ok) { fail(x); e.target.value = s.logLevel; return; }
@@ -148,6 +163,10 @@
       sec('Network name',
         h('p', { class: 'hint' }, __('Devices can open this computer by name instead of a number. It needs no router settings, but some guest WiFi networks block it, so keep the numeric address and QR code as the main way in.')),
         h('div', { class: 'row' }, mdnsOn, __(' Announce as '), mdnsName, __('.local '), h('button', { type: 'button', onclick: applyMdns }, __('Apply'))), mdnsMsg),
+      sec('Standby screen',
+        h('p', { class: 'hint' }, __('What the audience sees while no show is on air: before the operator presses START, after Go off air, and when no show is loaded. It belongs to the venue, not to a show.')),
+        h('div', { class: 'row' }, sbImg, sbNone), h('div', { class: 'row' }, h('label', { class: 'row' }, __('Logo (PNG, JPEG, GIF or WebP, up to 2 MB): '), sbFile), sbRemove),
+        h('label', { class: 'field' }, h('span', {}, __('Message (optional; empty uses “Captions will begin shortly” in each viewer’s language)')), sbMsg), h('div', { class: 'row' }, sbSave)),
       sec('Log detail',
         logSelect,
         s.logLevelPinned ? h('p', { class: 'check warn' }, __('This copy was started with --log-level {level}, which overrides the settings file every time it starts. A change made here applies now but lasts only until the program restarts.', { level: s.logLevelPinned })) : null,
@@ -820,7 +839,7 @@
   // ---- step 6: go live ----
   async function stepGoLive(p) {
     const show = curShow(); if (!show) return go('show');
-    const [net, sc, lg] = await Promise.all([api('GET', '/api/admin/network'), api('GET', '/api/admin/shows/' + show.id + '/showfile'), api('GET', '/api/admin/shows/' + show.id + '/languages')]);
+    const [net, sc, lg] = await Promise.all([api('GET', '/api/admin/network'), api('GET', '/api/admin/shows/' + show.id + '/showfile'), api('GET', '/api/admin/shows/' + show.id + '/languages'), loadShows()]);
     if (!net.ok || !sc.ok || !lg.ok) return fail(!net.ok ? net : !sc.ok ? sc : lg);
     const langs = lg.data.languages;
     A.analysis = sc.data.analysis; A.net = net.data;
@@ -833,10 +852,15 @@
       langs.length > 1 ? h('div', { class: 'check' }, __('Languages: {list}', { list: langs.filter((l) => l.available).map((l) => l.name).join(', ') })) : null,
       ...langs.filter((l) => !l.available).map((l) => h('div', { class: 'check bad' }, __('{name} will NOT be shown to the audience until it matches the main show file: {why}', { name: l.name, why: __((l.structure[0] || {}).message || '') }))));
     // The Start show button sits beside the checklist, where it is seen without scrolling.
+    // Opening the operator page loads the show in standby: the audience keeps seeing the venue's standby screen until
+    // the operator presses START there. So there is nothing here that puts a show in front of the audience.
+    const onAir = !!((A.shows || []).find((x) => x.id === show.id) || {}).live;
     const startBox = h('div', { class: 'startbox' },
-      h('button', { class: 'primary big', onclick: () => startShow(show), disabled: !a.cues.length }, isActive ? __('Restart the show and open the operator page') : __('Start show')),
-      h('span', { class: 'hint' }, isActive ? __('This show is active.') : __('Starting makes this the show audiences see.')),
-      isActive ? h('a', { class: 'btn', href: '/operator' }, __('Open the operator page without restarting')) : null);
+      isActive ? h('a', { class: 'btn primary big', href: '/operator' }, __('Open the operator page'))
+        : h('button', { class: 'primary big', onclick: () => loadShow(show), disabled: !a.cues.length }, __('Open the operator page')),
+      h('span', { class: 'hint' }, isActive ? (onAir ? __('This show is on air now.') : __('This show is loaded and waiting in standby.'))
+        : __('Opening it loads it in standby: the audience keeps seeing the standby screen until the operator presses START.')),
+      isActive ? h('button', { class: 'quiet', onclick: () => restartShow(show) }, __('Restart the show')) : null);
     const checks = h('div', { class: 'card ready' }, checklist, startBox);
     const urls = net.data.urls.filter((u) => u.public);
     let chosen = (urls.find((u) => u.kind === 'http' && !u.name) || urls.find((u) => u.kind === 'http') || urls[0] || net.data.urls[0] || {}).url; // the numeric address is the safest to print
@@ -853,15 +877,23 @@
         h('p', { class: 'hint' }, __('Audience devices must be on the same WiFi as this computer. Devices connected right now: '), h('b', { id: 'audcount' }, String(A.audience)))),
       h('p', { class: 'hint' }, __('Something not working? '), h('a', { href: '#', onclick: (e) => { e.preventDefault(); openHelp('admin-troubleshooting'); } }, __('Troubleshooting help')), ' · ', h('a', { href: '/api/admin/support-bundle', download: 'support-bundle.zip' }, __('Download a support bundle')), ' · ', h('a', { href: '#', onclick: (e) => { e.preventDefault(); showLog(); } }, __('Recent log…'))));
   }
-  async function startShow(show) {
+  // Load a show into standby and go to the operator page. Another show that is on air is only replaced after asking.
+  async function loadShow(show) {
     let r = await api('POST', '/api/admin/shows/' + show.id + '/activate', {});
     if (r.status === 409 && r.data.live) {
-      if (!await confirmBox(__('A show is live'), __('Starting this show restarts it from the beginning and clears all audience screens. Continue?'), __('Restart the show'), true)) return;
+      if (!await confirmBox(__('A show is on air'), __('Another show is on air right now. Loading this one takes it off the air and replaces it. Continue?'), __('Load this show'), true)) return;
       r = await api('POST', '/api/admin/shows/' + show.id + '/activate', { force: true });
     }
     if (!r.ok) return fail(r);
     A.activeId = show.id; refreshNav();
     location.href = '/operator';
+  }
+  // Take the loaded show back to its beginning, in standby.
+  async function restartShow(show) {
+    if (((A.shows || []).find((x) => x.id === show.id) || {}).live && !await confirmBox(__('Restart the show?'), __('The show goes back to the beginning and the audience sees the standby screen.'), __('Restart'), true)) return;
+    const r = await api('POST', '/api/admin/shows/' + show.id + '/activate', { force: true });
+    if (!r.ok) return fail(r);
+    toast(__('The show is back in standby')); render();
   }
 
   // ---- printable QR sign ----

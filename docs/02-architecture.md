@@ -63,9 +63,27 @@
   - `theme`, `lang`, `seq`
 - **OperatorState** (operator-only): `cursor` (index of the next cue), `history` stack for undo, loop status, controller id, audience count.
 
-**Live** means: the active show's engine has applied at least one cue (or a loop is
-running) since it was activated or last reset. Activating a show or `reset` returns it
-to its initial state (not live). REQ-052's guard rails and the activate-`force` rule use this definition.
+**On air, standby, off air (REQ-066).** A show that is loaded (activated) waits in **standby**: the audience is
+told `mode: "standby"` and sees the *venue's* standby screen (a logo and a message, see below), never anything of
+the show, so Setup, rehearsal and editing are never in front of the audience. The operator's **START** (`onair`)
+puts the show on air; **Go off air** (`offair`) takes it off again **without losing its place** (the lines,
+cursor and undo history are kept underneath, and START puts it back as it was; a loop that was running restarts
+from its first item). `reset` (Restart show) and activating a show return it to the beginning **and to standby**.
+While in standby every command that changes what the audience sees (next, back, stop, jump, blank, clear,
+message) is refused with 409 `the show is not on air`; only START, Restart and editing work.
+
+**Live** means **on air**: the engine is not in standby. REQ-052's guard rails (type the show name to confirm edits,
+no delete or archive, the activate-`force` rule) apply only then, so a show in standby can be edited, deleted or
+replaced freely. (Engines created without `Config.Standby`, used by `--dev` and the engine's unit tests, are on air at
+once and mean by Live that a cue has been sent, as before.) The standby flag and the loop to resume are saved in
+`live.json`; a restart keeps a show in standby in standby and a show on air on air (files from before this
+existed carry on as they were, on air).
+
+**The standby screen** is venue-level, not part of any show file (a show file can't be read when no show is loaded):
+the optional message is `standby.message` in `config.yaml` (empty means the built-in "Captions will begin shortly"
+in each viewer's language) and the optional logo is a PNG, JPEG, GIF or WebP of up to 2 MB kept in the data folder
+(`standby-logo.<ext>`), both set in Setup → Settings → Standby screen and served publicly at `/standby-logo`. It is
+shown whenever the audience mode is `standby`, including before any show has been loaded.
 
 **Revision (`rev`)**: `LiveState.seq` increases on *every* audience-visible change,
 including each loop item change. Operator commands therefore use a separate counter,
@@ -90,8 +108,10 @@ Applying **any** audience-visible cue other than `loop` itself (caption, clear, 
   NEXT sends the cue after the loop and thereby ends it.
 - **STOP** (only meaningful while a loop runs): stop the loop timer, set `blank`.
   Cursor is unchanged.
-- **Auto-start:** when a show is activated or reset, if the first audience-visible cue is a
-  `loop` it is applied immediately (pre-show). Otherwise state is `idle` (idle message shown).
+- **Pre-show:** if the first audience-visible cue is a `loop`, it starts when the show **goes on air** (START): the
+  show is in standby until then, so nothing is shown at activation or reset. Without a leading loop, START shows the
+  show's own idle message (`mode: idle`) until the first line. (Without `Config.Standby`, as in `--dev`, the loop
+  starts at activation.)
 - **Ad-hoc operator commands** (blank toggle, clear, one-off message) change audience state without moving the cursor; they are pushed on the history stack like cues, so Back undoes them.
 - **Undo (Back)** restores the previous LiveState snapshot from the history stack
   (bounded, e.g. 100); a loop that was running at that point restarts from item 0. This is how the operator restarts a loop: Back after STOP, or after NEXT ended it, "backs into" it.
@@ -193,6 +213,8 @@ https:
 mdns:
   enabled: true                    # announce <name>.local on the local network
   name: open-caption
+standby:
+  message: ""                      # shown while no show is on air; empty = "Captions will begin shortly" in the viewer's language (the logo is set in Setup)
 defaults:                          # used when a show file does not say otherwise (a show file's [settings] override these)
   language: en
   loop_item_seconds: 10

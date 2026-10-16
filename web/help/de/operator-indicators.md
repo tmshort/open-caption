@@ -3,7 +3,8 @@
 | Was Sie sehen | Was es bedeutet |
 |---------------|-----------------|
 | Grüner Punkt oben rechts | Mit dem Server verbunden. Rot bedeutet, dass die Verbindung abgebrochen ist; die Seite verbindet sich von selbst neu |
-| **● LIVE** | Die Show hat begonnen (mindestens eine Zeile wurde gesendet) |
+| **● LIVE** | Die Show ist auf Sendung: das Publikum sieht sie |
+| **STANDBY** und ein blaues Banner **NICHT AUF SENDUNG** | Das Publikum sieht den Standby-Bildschirm des Hauses und nichts von der Show. Die **Leertaste** (**START**) bringt sie auf Sendung |
 | Personensymbol und eine Zahl | Wie viele Publikumsgeräte verbunden sind. Bei mehreren Sprachen folgt auf die Zahl eine Zählung je Sprache, etwa `(en 60 · es 23)` |
 | **Sie haben die Steuerung** | Ihre Tasten steuern die Show |
 | **Ein anderer Operator hat die Steuerung** | Sie können zusehen, aber nichts senden. **Übernehmen** nimmt sie ihm ab |

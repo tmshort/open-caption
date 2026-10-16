@@ -3,7 +3,8 @@
 | Lo que ve | Qué significa |
 |-----------|---------------|
 | Punto verde arriba a la derecha | Conectado al servidor. Rojo significa que la conexión se cortó; la página se reconecta sola |
-| **● EN VIVO** | El espectáculo ha empezado (se ha enviado al menos una línea) |
+| **● EN VIVO** | El espectáculo está en el aire: el público lo ve |
+| **EN ESPERA** y un cartel azul **FUERA DEL AIRE** | El público ve la pantalla de espera del local y nada del espectáculo. **Espacio** (**INICIAR**) lo pone en el aire |
 | Icono de personas y un número | Cuántos dispositivos del público están conectados. Con varios idiomas, el número va seguido de una cuenta por idioma, como `(en 60 · es 23)` |
 | **Usted tiene el control** | Sus teclas controlan el espectáculo |
 | **Otro operador tiene el control** | Puede mirar pero no enviar. **Asumir el control** se lo quita |

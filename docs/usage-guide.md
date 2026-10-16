@@ -146,7 +146,9 @@ Open the setup page and follow the six steps along the top. The **Help** button 
 3. **Images.** Upload the pictures the show file uses (PNG, JPG, GIF or WebP, ideally under 1 MB each).
 4. **Look.** Choose colors, font and text size. The defaults (white on black, large) are best for most people. Two readability fonts are built in: a dyslexia-friendly one (OpenDyslexic) and a high-legibility one (Atkinson Hyperlegible, designed for low vision). Individual audience members can also pick either for their own device from the small **Aa** control.
 5. **Test.** Run a private rehearsal: you press Space as the operator would, and see the audience screen next to it. Nothing reaches the audience.
-6. **Go Live.** Check the readiness list, print the QR sign, and press **Start show**.
+6. **Go Live.** Check the readiness list, print the QR sign, and press **Open the operator page**.
+
+Opening the operator page loads the show in **standby**: the audience sees the venue's standby screen (a logo and a message, set once under **Settings → Standby screen**) and nothing of the show, so you can prepare, rehearse and check the operator page quietly. When you are ready, press **Space** (the button says **START**) on the operator page to put the show on air. **Go off air…** takes it off again without losing its place.
 
 ### Writing the show file
 
@@ -181,7 +183,7 @@ EDWIN: Whistling all day long
 - **Speaker names** in capitals followed by a colon are shown above the line.
 - **Stage directions** in `(parentheses)` are shown in italics.
 - **Lyrics** between `♪` notes, in italics: start a line with `~`, or wrap the song in `[song]`…`[/song]`. For two singers at the same time (a duet or counterpoint), put their lines between `[together]` and `[/together]`, or join them with ` || ` on one line; both show at once on one press of Space. The editor's **♪**, **♫** and **🎵 Song** buttons insert these. See the *Musicals* help topic.
-- **Loops** (pre-show and intermission) repeat pictures and text until the operator moves on. A loop at the very start of the show file starts by itself.
+- **Loops** (pre-show and intermission) repeat pictures and text until the operator moves on. A loop at the very start of the show file starts when the operator puts the show on air (START).
 - **Notes** `[note: …]` and bookmarks `[section: …]` are for the operator only.
 - The **Writing a show file** help topic lists everything, with examples, and the editor's *Show file cheat sheet* summarizes it.
 
@@ -222,7 +224,7 @@ You can edit and re-save a show file while a show is live (for example to fix a 
 ### Before the audience arrives
 
 1. Start the server and open the **Operator page**; sign in. It should say **You are in control**.
-2. In Setup → Go Live press **Start show** (once; this resets the show to the beginning). A pre-show loop, if the show file has one, begins on every screen.
+2. In Setup → Go Live press **Open the operator page**. The show is loaded in standby: the audience sees the venue's standby screen. When you are ready, press **Space** (START) on the operator page to put the show on air. A pre-show loop, if the show file has one, begins on every screen then.
 3. Open the audience address on your own phone and, if you have one, on the projector. Check the viewer count on the operator page goes up.
 4. Put the QR sign where people can see it.
 
@@ -238,7 +240,7 @@ You can edit and re-save a show file while a show is live (for example to fix a 
 
 ### When the show ends
 
-Press `Ctrl+C` in the program's window (or stop the service). The position is saved. To run the show again from the beginning, use **Restart show…** on the operator page, or press **Start show** in Setup.
+Press `Ctrl+C` in the program's window (or stop the service). The position is saved. To run the show again from the beginning, use **Restart show…** on the operator page, or **Restart the show** in Setup → Go Live. Either returns the show to standby.
 
 ## Day-of checklist
 
@@ -254,7 +256,7 @@ Press `Ctrl+C` in the program's window (or stop the service). The position is sa
 - [ ] A phone on the audience WiFi can open the address and shows "Captions will begin shortly".
 - [ ] Setup → Test: do a quick rehearsal; operator keys work.
 - [ ] Projector browser (if used) open on `…/?display=projector`, full screen.
-- [ ] Press **Start show**. Pre-show loop (if any) is on every screen.
+- [ ] Press **START** on the operator page. The pre-show loop (if any) is on every screen.
 - [ ] Operator sitting where they can see the stage; clicker or keyboard tested.
 - [ ] QR sign placed; a volunteer knows the WiFi name and address for people who ask.
 

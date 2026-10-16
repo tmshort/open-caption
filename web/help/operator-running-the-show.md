@@ -27,7 +27,7 @@ A show file can do the same with the `[blank]` and `[clear]` commands; they appe
 
 - Sign in to the operator page. You will see "You are in control". If it says another operator is in control, use **Take over** only if you are meant to be the operator.
 - Check the viewer count (the people icon). It shows how many devices are connected.
-- If the show file starts with a pre-show loop, it is already running on the audience screens.
+- A loaded show waits in **standby**: the audience sees the venue's standby screen (a logo and a message) and nothing of the show, and this page says **NOT ON AIR**. Press **Space** (the button says **START**) to put the show on air. If the show file starts with a pre-show loop, it begins then.
 
 ## During the show
 
@@ -40,5 +40,6 @@ A show file can do the same with the `[blank]` and `[clear]` commands; they appe
 - **Go to section…** (beside the search box) lists the show file's bookmarks; picking one selects it, and you confirm the jump.
 - To skip ahead or go back, click a line, then confirm "Jump here". You can also search with `/`.
 - A one-off announcement such as "The show will resume shortly" can be sent with **Message…**. Press **Back** to remove it.
+- **Go off air…** (top right) takes the show off the audience's screens: they see the standby screen again, and the show keeps its place. **START** puts it back on air exactly where it was.
 
 See [the keyboard](topic:operator-keyboard) and [If something goes wrong](topic:operator-if-something-goes-wrong).

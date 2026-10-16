@@ -7,7 +7,11 @@ Preparar un espectáculo lleva seis pasos. La fila de botones de la parte superi
 3. **Imágenes** — suba las imágenes que use el archivo del espectáculo.
 4. **Aspecto** — elija los colores y el tamaño del texto.
 5. **Prueba** — ensaye en privado antes de que haya nadie en la sala.
-6. **En vivo** — comparta la dirección con el público e inicie el espectáculo.
+6. **En vivo** — comparta la dirección con el público y abra la página del operador, donde se inicia el espectáculo.
+
+## En espera y en el aire
+
+Al abrir la página del operador, el espectáculo se carga **en espera**: el público ve la pantalla de espera del local (un logotipo y un mensaje, que se fijan una sola vez en **Ajustes → Pantalla de espera**) y nada del espectáculo. El operador pulsa **Espacio** (el botón dice **INICIAR**) para poner el espectáculo en el aire, y **Sacar del aire…** lo retira de nuevo sin perder su lugar. La preparación, el ensayo y la edición nunca están delante del público mientras el espectáculo está en espera, y un espectáculo en espera se puede eliminar.
 
 ## Dónde se guarda todo
 

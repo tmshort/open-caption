@@ -22,7 +22,7 @@ Los subtítulos, `[clear]`, las secciones, las notas y otros bucles no pueden ir
 
 ## Cuándo empieza y termina un bucle
 
-- Si lo **primero** del archivo del espectáculo es un bucle, empieza solo en cuanto se inicia el espectáculo, de modo que el público ve la previa mientras busca su asiento.
+- Si lo **primero** del archivo del espectáculo es un bucle, empieza cuando el operador pone el espectáculo en el aire (**INICIAR**), así que el público ve la previa mientras la gente busca su asiento.
 - Cualquier otro bucle (por ejemplo en el descanso) empieza cuando el operador pulsa la barra espaciadora sobre él.
 - La barra espaciadora termina el bucle y envía la línea siguiente. **Mayús+Q** detiene el bucle y deja la pantalla en blanco. **Atrás** vuelve al bucle y lo reinicia desde el primer elemento.
 

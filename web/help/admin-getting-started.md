@@ -7,7 +7,11 @@ Setting up a show takes six steps. The row of buttons across the top of the page
 3. **Images** — upload any pictures the show file uses.
 4. **Look** — choose colors and text size.
 5. **Test** — rehearse privately before anyone is in the room.
-6. **Go Live** — share the address with the audience and start the show.
+6. **Go Live** — share the address with the audience and open the operator page, where the operator starts the show.
+
+## Standby and going on air
+
+Opening the operator page loads the show in **standby**: the audience sees the venue's standby screen (a logo and a message, set once under **Settings → Standby screen**) and nothing of the show. The operator presses **Space** (the button says **START**) to put the show on air, and **Go off air…** takes it off again without losing its place. Setup, rehearsal and editing are never in front of the audience while the show is in standby, and a show in standby can be deleted.
 
 ## Where things are stored
 

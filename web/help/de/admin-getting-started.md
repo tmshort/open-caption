@@ -7,7 +7,11 @@ Eine Show einzurichten dauert sechs Schritte. Die Schaltflächenreihe oben auf d
 3. **Bilder** — laden Sie die Bilder hoch, die die Show-Datei verwendet.
 4. **Erscheinungsbild** — wählen Sie Farben und Textgröße.
 5. **Test** — proben Sie privat, bevor jemand im Saal ist.
-6. **Live** — teilen Sie die Adresse mit dem Publikum und starten Sie die Show.
+6. **Live** — teilen Sie die Adresse mit dem Publikum und öffnen Sie die Bedienerseite, von der aus die Show gestartet wird.
+
+## Standby und auf Sendung gehen
+
+Das Öffnen der Bedienerseite lädt die Show im **Standby**: Das Publikum sieht den Standby-Bildschirm des Hauses (ein Logo und eine Meldung, einmal unter **Einstellungen → Standby-Bildschirm** festgelegt) und nichts von der Show. Der Bediener drückt die **Leertaste** (die Schaltfläche heißt **START**), um die Show auf Sendung zu bringen, und **Aus der Sendung nehmen …** nimmt sie wieder heraus, ohne ihren Platz zu verlieren. Einrichtung, Probe und Bearbeitung sind nie vor dem Publikum, solange die Show im Standby ist, und eine Show im Standby kann gelöscht werden.
 
 ## Wo alles gespeichert wird
 

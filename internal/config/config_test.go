@@ -378,3 +378,19 @@ func TestSetValuesWritesBooleansAsBooleans(t *testing.T) {
 		t.Errorf("%s", b)
 	}
 }
+
+func TestStandbyMessage(t *testing.T) {
+	c, err := load(t, "standby:\n  message: \"  Welcome to the Little Theatre  \"\n")
+	if err != nil || c.Standby.Message != "Welcome to the Little Theatre" {
+		t.Fatalf("%q %v", c.Standby.Message, err)
+	}
+	if c, err = load(t, ""); err != nil || c.Standby.Message != "" {
+		t.Errorf("the default is empty (the page uses its own words): %q %v", c.Standby.Message, err)
+	}
+	if _, err = load(t, "standby:\n  message: \""+strings.Repeat("x", 201)+"\"\n"); err == nil || !strings.Contains(err.Error(), "standby.message") {
+		t.Errorf("too long: %v", err)
+	}
+	if _, err = load(t, "standby:\n  message: \"two\\nlines\"\n"); err == nil || !strings.Contains(err.Error(), "standby.message") {
+		t.Errorf("two lines: %v", err)
+	}
+}

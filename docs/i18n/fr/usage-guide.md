@@ -146,7 +146,9 @@ Ouvrez la page de configuration et suivez les six étapes en haut. Le bouton **A
 3. **Images.** Téléversez les images utilisées par le fichier du spectacle (PNG, JPG, GIF ou WebP, idéalement de moins de 1 Mo chacune).
 4. **Apparence.** Choisissez les couleurs, la police et la taille du texte. Les valeurs par défaut (blanc sur noir, grand) sont les meilleures pour la plupart des gens. Deux polices de lisibilité sont intégrées : une adaptée à la dyslexie (OpenDyslexic) et une de haute lisibilité (Atkinson Hyperlegible, conçue pour la basse vision). Chaque spectateur peut aussi choisir l'une ou l'autre pour son propre appareil avec le petit contrôle **Aa**.
 5. **Test.** Faites une répétition privée : vous appuyez sur Espace comme le ferait l'opérateur, et voyez l'écran du public à côté. Rien n'atteint le public.
-6. **En direct.** Vérifiez la liste de préparation, imprimez l'affiche QR et cliquez sur **Lancer le spectacle**.
+6. **En direct.** Vérifiez la liste de préparation, imprimez l'affichette QR et appuyez sur **Ouvrir la page de l'opérateur**.
+
+Ouvrir la page de l'opérateur charge le spectacle **en attente** : le public voit l'écran d'attente du lieu (un logo et un message, réglés une seule fois sous **Réglages → Écran d'attente**) et rien du spectacle ; vous pouvez donc préparer, répéter et vérifier la page de l'opérateur tranquillement. Quand vous êtes prêt, appuyez sur **Espace** (le bouton indique **DÉMARRER**) sur la page de l'opérateur pour mettre le spectacle à l'antenne. **Couper l'antenne…** le retire de nouveau sans perdre sa place.
 
 ### Écrire le fichier du spectacle
 
@@ -181,7 +183,7 @@ EDWIN: Whistling all day long
 - Les **noms de personnage** en majuscules suivis de deux-points s'affichent au-dessus de la ligne.
 - Les **indications de scène** entre `(parenthèses)` s'affichent en italique.
 - Les **paroles** entre des notes `♪`, en italique : commencez une ligne par `~`, ou entourez la chanson de `[song]`…`[/song]`. Pour deux chanteurs en même temps (un duo ou un contrepoint), placez leurs lignes entre `[together]` et `[/together]`, ou joignez-les avec ` || ` sur une seule ligne ; les deux s'affichent en même temps d'une seule pression sur Espace. Les boutons **♪**, **♫** et **🎵 Chanson** de l'éditeur les insèrent. Voir la rubrique d'aide *Comédies musicales*.
-- Les **boucles** (avant-spectacle et entracte) répètent images et texte jusqu'à ce que l'opérateur passe à la suite. Une boucle tout au début du fichier du spectacle démarre toute seule.
+- Les **boucles** (avant-spectacle et entracte) répètent des images et du texte jusqu'à ce que l'opérateur passe à la suite. Une boucle tout au début du fichier du spectacle démarre quand l'opérateur met le spectacle à l'antenne (DÉMARRER).
 - Les **notes** `[note: …]` et les signets `[section: …]` ne sont que pour l'opérateur.
 - La rubrique d'aide **Écrire un fichier du spectacle** liste tout, avec des exemples, et l'*aide-mémoire du fichier du spectacle* de l'éditeur le résume.
 
@@ -222,7 +224,7 @@ Vous pouvez modifier et réenregistrer un fichier de spectacle pendant qu'un spe
 ### Avant l'arrivée du public
 
 1. Démarrez le serveur et ouvrez la **page de l'opérateur** ; connectez-vous. Elle doit dire **Vous avez la main**.
-2. Dans Configuration → En direct, cliquez sur **Lancer le spectacle** (une seule fois ; cela remet le spectacle au début). Une boucle d'avant-spectacle, si le fichier du spectacle en a une, démarre sur tous les écrans.
+2. Dans Configuration → En direct, appuyez sur **Ouvrir la page de l'opérateur**. Le spectacle est chargé en attente : le public voit l'écran d'attente du lieu. Quand vous êtes prêt, appuyez sur **Espace** (DÉMARRER) sur la page de l'opérateur pour le mettre à l'antenne. Une boucle d'avant-spectacle, si le fichier du spectacle en a une, commence alors sur tous les écrans.
 3. Ouvrez l'adresse du public sur votre propre téléphone et, si vous en avez un, sur le projecteur. Vérifiez que le nombre de spectateurs augmente sur la page de l'opérateur.
 4. Placez l'affiche QR là où les gens peuvent la voir.
 
@@ -238,7 +240,7 @@ Vous pouvez modifier et réenregistrer un fichier de spectacle pendant qu'un spe
 
 ### Quand le spectacle se termine
 
-Appuyez sur `Ctrl+C` dans la fenêtre du programme (ou arrêtez le service). La position est enregistrée. Pour rejouer le spectacle depuis le début, utilisez **Redémarrer le spectacle…** sur la page de l'opérateur, ou cliquez sur **Lancer le spectacle** dans la configuration.
+Appuyez sur `Ctrl+C` dans la fenêtre du programme (ou arrêtez le service). La position est enregistrée. Pour relancer le spectacle depuis le début, utilisez **Redémarrer le spectacle…** sur la page de l'opérateur, ou **Redémarrer le spectacle** dans Configuration → En direct. Les deux le remettent en attente.
 
 ## Liste de vérification du jour J
 
@@ -254,7 +256,7 @@ Appuyez sur `Ctrl+C` dans la fenêtre du programme (ou arrêtez le service). La 
 - [ ] Un téléphone sur le WiFi du public peut ouvrir l'adresse et affiche « Les sous-titres vont bientôt commencer ».
 - [ ] Configuration → Test : faites une courte répétition ; les touches de l'opérateur fonctionnent.
 - [ ] Navigateur du projecteur (s'il y en a un) ouvert sur `…/?display=projector`, en plein écran.
-- [ ] Cliquez sur **Lancer le spectacle**. La boucle d'avant-spectacle (s'il y en a une) est sur tous les écrans.
+- [ ] Appuyez sur **DÉMARRER** sur la page de l'opérateur. La boucle d'avant-spectacle (s'il y en a une) est sur tous les écrans.
 - [ ] L'opérateur est assis là où il voit la scène ; télécommande ou clavier testé.
 - [ ] Affiche QR en place ; un bénévole connaît le nom du WiFi et l'adresse pour ceux qui demandent.
 

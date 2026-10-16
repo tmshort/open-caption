@@ -22,7 +22,7 @@ Sottotitoli, `[clear]`, sezioni, note e altri cicli non possono stare dentro un 
 
 ## Quando un ciclo parte e si ferma
 
-- Se la **prima cosa** nel file dello spettacolo è un ciclo, parte da solo non appena lo spettacolo viene avviato, così il pubblico vede il pre-spettacolo mentre cerca il posto.
+- Se la **prima cosa** nel file dello spettacolo è un ciclo, parte quando l'operatore mette lo spettacolo in onda (**AVVIA**), così il pubblico vede il pre-spettacolo mentre la gente cerca il posto.
 - Qualsiasi altro ciclo (per esempio nell'intervallo) parte quando l'operatore preme la barra spaziatrice su di esso.
 - La barra spaziatrice termina il ciclo e invia la riga successiva. **Maiusc+Q** ferma il ciclo e lascia lo schermo vuoto. **Indietro** torna al ciclo e lo riavvia dal primo elemento.
 

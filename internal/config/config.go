@@ -71,6 +71,16 @@ type MDNS struct {
 	Name    string `yaml:"name"` // one label; ".local" is added
 }
 
+// Standby is what the audience sees while no show is on air: before the operator starts one, after one goes
+// off air, and when no show is loaded. It belongs to the venue, not to a show. (The logo is a file in the data
+// folder, set in Setup.)
+type Standby struct {
+	Message string `yaml:"message"` // optional; empty means the built-in "captions will begin shortly" in the viewer's language
+}
+
+// MaxStandbyMessage is the longest standby message, in characters.
+const MaxStandbyMessage = 200
+
 // Log controls how much the program writes to its log.
 type Log struct {
 	Level string `yaml:"level"` // debug | info | warn | error
@@ -94,6 +104,7 @@ type Config struct {
 	Access           Access   `yaml:"access"`
 	Log              Log      `yaml:"log"`
 	MDNS             MDNS     `yaml:"mdns"`
+	Standby          Standby  `yaml:"standby"`
 
 	// Path is where the config was loaded from or generated (not serialized).
 	Path string `yaml:"-"`
@@ -440,6 +451,10 @@ func (c *Config) normalize() []string {
 		add("mdns.name", "%v", err)
 	} else {
 		c.MDNS.Name = n
+	}
+	c.Standby.Message = strings.TrimSpace(c.Standby.Message)
+	if len([]rune(c.Standby.Message)) > MaxStandbyMessage || strings.ContainsAny(c.Standby.Message, "\r\n") {
+		add("standby.message", "use one line of at most %d characters", MaxStandbyMessage)
 	}
 	if _, err := logx.Parse(c.Log.Level); err != nil {
 		add("log.level", "%v", err)

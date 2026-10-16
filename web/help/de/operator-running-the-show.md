@@ -27,7 +27,7 @@ Eine Show-Datei kann dasselbe mit den Befehlen `[blank]` und `[clear]` tun; in I
 
 - Melden Sie sich auf der Operator-Seite an. Sie sehen „Sie haben die Steuerung“. Steht dort, dass ein anderer Operator die Steuerung hat, nutzen Sie **Übernehmen** nur, wenn Sie der Operator sein sollen.
 - Prüfen Sie die Zuschauerzahl (das Personensymbol). Sie zeigt, wie viele Geräte verbunden sind.
-- Beginnt die Show-Datei mit einer Schleife vor der Show, läuft sie schon auf den Publikumsbildschirmen.
+- Eine geladene Show wartet im **Standby**: Das Publikum sieht den Standby-Bildschirm des Hauses (ein Logo und eine Meldung) und nichts von der Show, und diese Seite zeigt **NICHT AUF SENDUNG**. Drücken Sie die **Leertaste** (die Schaltfläche heißt **START**), um die Show auf Sendung zu bringen. Beginnt die Show-Datei mit einer Schleife vor der Show, startet sie dann.
 
 ## Während der Show
 
@@ -40,5 +40,6 @@ Eine Show-Datei kann dasselbe mit den Befehlen `[blank]` und `[clear]` tun; in I
 - **Zum Abschnitt …** (neben dem Suchfeld) listet die Lesezeichen der Show-Datei auf; die Auswahl markiert eines, und Sie bestätigen den Sprung.
 - Um vor- oder zurückzuspringen, klicken Sie eine Zeile an und bestätigen dann „Hierher springen“. Sie können auch mit `/` suchen.
 - Eine einmalige Durchsage wie „Die Show geht gleich weiter“ lässt sich mit **Nachricht …** senden. Mit **Zurück** entfernen Sie sie.
+- **Aus der Sendung nehmen …** (oben rechts) nimmt die Show von den Bildschirmen des Publikums: Es sieht wieder den Standby-Bildschirm, und die Show behält ihren Platz. **START** bringt sie genau dort wieder auf Sendung.
 
 Siehe [die Tastatur](topic:operator-keyboard) und [Wenn etwas schiefgeht](topic:operator-if-something-goes-wrong).

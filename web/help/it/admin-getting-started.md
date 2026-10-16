@@ -7,7 +7,11 @@ Preparare uno spettacolo richiede sei passi. La fila di pulsanti in alto nella p
 3. **Immagini** — carica le immagini usate dal file dello spettacolo.
 4. **Aspetto** — scegli i colori e la dimensione del testo.
 5. **Prova** — fai una prova in privato prima che ci sia qualcuno in sala.
-6. **In diretta** — condividi l'indirizzo con il pubblico e avvia lo spettacolo.
+6. **In diretta** — condividi l'indirizzo con il pubblico e apri la pagina dell'operatore, da cui si avvia lo spettacolo.
+
+## Attesa e messa in onda
+
+Aprire la pagina dell'operatore carica lo spettacolo **in attesa**: il pubblico vede la schermata di attesa della sala (un logo e un messaggio, impostati una sola volta in **Impostazioni → Schermata di attesa**) e nulla dello spettacolo. L'operatore preme **Spazio** (il pulsante dice **AVVIA**) per mettere lo spettacolo in onda, e **Togli dall'onda…** lo ritira senza perdere il punto. Preparazione, prova e modifica non sono mai davanti al pubblico mentre lo spettacolo è in attesa, e uno spettacolo in attesa può essere eliminato.
 
 ## Dove viene conservato tutto
 

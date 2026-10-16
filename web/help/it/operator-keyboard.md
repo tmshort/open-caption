@@ -4,13 +4,13 @@ Questi tasti funzionano quando non stai scrivendo in una casella e nessuna fines
 
 | Tasto | Azione |
 |-------|--------|
-| `Spazio`, `Freccia destra`, `Pag giù`, `Invio` | **Avanti:** invia la riga successiva; avvia un ciclo che è il prossimo; termina un ciclo in corso e invia la riga che lo segue |
+| `Spazio`, `Freccia destra`, `Pag giù`, `Invio` | **Avanti:** invia la riga successiva; avvia un ciclo che è il prossimo; termina un ciclo in corso e invia la riga che lo segue. In attesa è **AVVIA**: mette lo spettacolo in onda |
 | `Backspace`, `Freccia sinistra`, `Pag su` | **Indietro:** annulla l'ultima azione. Tornare in un ciclo lo riavvia |
 | `Maiusc+Q` | **Stop:** ferma un ciclo in corso e lascia lo schermo vuoto |
 | `B` | **Schermo vuoto** o riattiva: nasconde tutto, e riporta gli stessi sottotitoli quando riattivi |
 | `C` | **Cancella**: cancella i sottotitoli, così la riga successiva inizia su uno schermo vuoto |
 | `/` | Cerca nel file dello spettacolo |
-| `Home` | Riavvia lo spettacolo (chiede prima conferma) |
+| `Home` | Riavvia lo spettacolo: torna all'inizio e all'attesa (chiede prima conferma) |
 | `Esc` | Annulla un salto o chiude una finestra |
 
 Se un salto è in attesa di conferma, **Invio** lo conferma invece di inviare la riga successiva.

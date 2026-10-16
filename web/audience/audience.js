@@ -11,12 +11,12 @@
 
   // The page's own labels, in the languages we have translations for (others show English).
   const I18N = {
-    en: { keepOn: "Screen stays on", keepOff: "Screen may sleep", reconnecting: 'Reconnecting…', tip: 'Tip: turn off Auto-Lock in your device settings so the screen stays on during the show.', textSize: 'Text size and colors', yourDisplay: 'Your display', smaller: 'Smaller text', bigger: 'Larger text', darkOnLight: 'Dark on light', lightOnDark: 'Light on dark', fontAsChosen: 'Font: as chosen', fontDyslexic: 'Dyslexia-friendly font', fontHyper: 'High-legibility font', language: 'Language', backToLive: 'Back to live' },
-    es: { keepOn: "La pantalla sigue encendida", keepOff: "La pantalla puede apagarse", reconnecting: 'Reconectando…', tip: 'Consejo: desactiva el bloqueo automático para que la pantalla siga encendida durante la función.', textSize: 'Tamaño del texto y colores', yourDisplay: 'Tu pantalla', smaller: 'Texto más pequeño', bigger: 'Texto más grande', darkOnLight: 'Oscuro sobre claro', lightOnDark: 'Claro sobre oscuro', fontAsChosen: 'Fuente: la del espectáculo', fontDyslexic: 'Fuente para dislexia', fontHyper: 'Fuente de alta legibilidad', language: 'Idioma', backToLive: 'Volver al directo' },
-    fr: { keepOn: "L'écran reste allumé", keepOff: "L'écran peut se mettre en veille", reconnecting: 'Reconnexion…', tip: "Astuce : désactivez le verrouillage automatique pour que l'écran reste allumé pendant le spectacle.", textSize: 'Taille du texte et couleurs', yourDisplay: 'Votre affichage', smaller: 'Texte plus petit', bigger: 'Texte plus grand', darkOnLight: 'Sombre sur clair', lightOnDark: 'Clair sur sombre', fontAsChosen: 'Police : celle du spectacle', fontDyslexic: 'Police pour la dyslexie', fontHyper: 'Police très lisible', language: 'Langue', backToLive: 'Retour au direct' },
-    de: { keepOn: "Bildschirm bleibt an", keepOff: "Bildschirm darf sich ausschalten", reconnecting: 'Verbindung wird wiederhergestellt …', tip: 'Tipp: Schalten Sie die automatische Sperre aus, damit der Bildschirm während der Vorstellung an bleibt.', textSize: 'Textgröße und Farben', yourDisplay: 'Ihre Anzeige', smaller: 'Kleinerer Text', bigger: 'Größerer Text', darkOnLight: 'Dunkel auf hell', lightOnDark: 'Hell auf dunkel', fontAsChosen: 'Schrift: wie vorgegeben', fontDyslexic: 'Schrift für Legasthenie', fontHyper: 'Gut lesbare Schrift', language: 'Sprache', backToLive: 'Zurück zum Live-Text' },
-    it: { keepOn: "Lo schermo resta acceso", keepOff: "Lo schermo può spegnersi", reconnecting: 'Riconnessione…', tip: 'Suggerimento: disattiva il blocco automatico per tenere lo schermo acceso durante lo spettacolo.', textSize: 'Dimensione del testo e colori', yourDisplay: 'Il tuo schermo', smaller: 'Testo più piccolo', bigger: 'Testo più grande', darkOnLight: 'Scuro su chiaro', lightOnDark: 'Chiaro su scuro', fontAsChosen: 'Carattere: quello dello spettacolo', fontDyslexic: 'Carattere per la dislessia', fontHyper: 'Carattere ad alta leggibilità', language: 'Lingua', backToLive: 'Torna al live' },
-    pt: { keepOn: "A tela fica acesa", keepOff: "A tela pode apagar", reconnecting: 'Reconectando…', tip: 'Dica: desative o bloqueio automático para a tela continuar acesa durante o espetáculo.', textSize: 'Tamanho do texto e cores', yourDisplay: 'Sua tela', smaller: 'Texto menor', bigger: 'Texto maior', darkOnLight: 'Escuro sobre claro', lightOnDark: 'Claro sobre escuro', fontAsChosen: 'Fonte: a do espetáculo', fontDyslexic: 'Fonte para dislexia', fontHyper: 'Fonte de alta legibilidade', language: 'Idioma', backToLive: 'Voltar ao vivo' },
+    en: { keepOn: "Screen stays on", keepOff: "Screen may sleep", reconnecting: 'Reconnecting…', tip: 'Tip: turn off Auto-Lock in your device settings so the screen stays on during the show.', textSize: 'Text size and colors', yourDisplay: 'Your display', smaller: 'Smaller text', bigger: 'Larger text', darkOnLight: 'Dark on light', lightOnDark: 'Light on dark', fontAsChosen: 'Font: as chosen', fontDyslexic: 'Dyslexia-friendly font', fontHyper: 'High-legibility font', language: 'Language', backToLive: 'Back to live', standby: 'Captions will begin shortly' },
+    es: { keepOn: "La pantalla sigue encendida", keepOff: "La pantalla puede apagarse", reconnecting: 'Reconectando…', tip: 'Consejo: desactiva el bloqueo automático para que la pantalla siga encendida durante la función.', textSize: 'Tamaño del texto y colores', yourDisplay: 'Tu pantalla', smaller: 'Texto más pequeño', bigger: 'Texto más grande', darkOnLight: 'Oscuro sobre claro', lightOnDark: 'Claro sobre oscuro', fontAsChosen: 'Fuente: la del espectáculo', fontDyslexic: 'Fuente para dislexia', fontHyper: 'Fuente de alta legibilidad', language: 'Idioma', backToLive: 'Volver al directo', standby: 'Los subtítulos comenzarán en breve' },
+    fr: { keepOn: "L'écran reste allumé", keepOff: "L'écran peut se mettre en veille", reconnecting: 'Reconnexion…', tip: "Astuce : désactivez le verrouillage automatique pour que l'écran reste allumé pendant le spectacle.", textSize: 'Taille du texte et couleurs', yourDisplay: 'Votre affichage', smaller: 'Texte plus petit', bigger: 'Texte plus grand', darkOnLight: 'Sombre sur clair', lightOnDark: 'Clair sur sombre', fontAsChosen: 'Police : celle du spectacle', fontDyslexic: 'Police pour la dyslexie', fontHyper: 'Police très lisible', language: 'Langue', backToLive: 'Retour au direct', standby: 'Les sous-titres vont bientôt commencer' },
+    de: { keepOn: "Bildschirm bleibt an", keepOff: "Bildschirm darf sich ausschalten", reconnecting: 'Verbindung wird wiederhergestellt …', tip: 'Tipp: Schalten Sie die automatische Sperre aus, damit der Bildschirm während der Vorstellung an bleibt.', textSize: 'Textgröße und Farben', yourDisplay: 'Ihre Anzeige', smaller: 'Kleinerer Text', bigger: 'Größerer Text', darkOnLight: 'Dunkel auf hell', lightOnDark: 'Hell auf dunkel', fontAsChosen: 'Schrift: wie vorgegeben', fontDyslexic: 'Schrift für Legasthenie', fontHyper: 'Gut lesbare Schrift', language: 'Sprache', backToLive: 'Zurück zum Live-Text', standby: 'Die Untertitel beginnen gleich' },
+    it: { keepOn: "Lo schermo resta acceso", keepOff: "Lo schermo può spegnersi", reconnecting: 'Riconnessione…', tip: 'Suggerimento: disattiva il blocco automatico per tenere lo schermo acceso durante lo spettacolo.', textSize: 'Dimensione del testo e colori', yourDisplay: 'Il tuo schermo', smaller: 'Testo più piccolo', bigger: 'Testo più grande', darkOnLight: 'Scuro su chiaro', lightOnDark: 'Chiaro su scuro', fontAsChosen: 'Carattere: quello dello spettacolo', fontDyslexic: 'Carattere per la dislessia', fontHyper: 'Carattere ad alta leggibilità', language: 'Lingua', backToLive: 'Torna al live', standby: 'I sottotitoli inizieranno a breve' },
+    pt: { keepOn: "A tela fica acesa", keepOff: "A tela pode apagar", reconnecting: 'Reconectando…', tip: 'Dica: desative o bloqueio automático para a tela continuar acesa durante o espetáculo.', textSize: 'Tamanho do texto e cores', yourDisplay: 'Sua tela', smaller: 'Texto menor', bigger: 'Texto maior', darkOnLight: 'Escuro sobre claro', lightOnDark: 'Claro sobre escuro', fontAsChosen: 'Fonte: a do espetáculo', fontDyslexic: 'Fonte para dislexia', fontHyper: 'Fonte de alta legibilidade', language: 'Idioma', backToLive: 'Voltar ao vivo', standby: 'As legendas começarão em breve' },
   };
   const tr = (k) => (I18N[(state.lang || 'en').split('-')[0]] || I18N.en)[k] || I18N.en[k];
   function applyI18n() {
@@ -283,10 +283,20 @@
     } // kind "blank": empty overlay
   }
 
+  // The venue's standby screen: its logo and message, or the built-in words in the viewer's language.
+  function renderStandby() {
+    const s = state.standby || {}, img = $('standbylogo');
+    const src = s.logo || '';
+    if (img.getAttribute('src') !== src) { if (src) img.src = src; else img.removeAttribute('src'); }
+    img.hidden = !src;
+    $('standbymsg').textContent = s.message || tr('standby');
+  }
+
   function renderAll() {
-    document.body.classList.remove('mode-idle', 'mode-captions', 'mode-blank');
+    document.body.classList.remove('mode-idle', 'mode-captions', 'mode-blank', 'mode-standby');
     document.body.classList.add('mode-' + state.mode);
     const box = $('captions');
+    renderStandby();
     const top = box.scrollTop;
     box.replaceChildren(...state.scrollback.map(captionEl));
     fade();
@@ -309,7 +319,7 @@
   const on = {
     snapshot(d) {
       if (d.ts) clockSkew = d.ts - Date.now();
-      Object.assign(state, { mode: d.mode, scrollback: d.scrollback || [], fullscreen: d.fullscreen, speakers: d.speakers || [], lang: d.lang || 'en', languages: d.languages || [] });
+      Object.assign(state, { mode: d.mode, scrollback: d.scrollback || [], fullscreen: d.fullscreen, speakers: d.speakers || [], lang: d.lang || 'en', languages: d.languages || [], standby: d.standby || null });
       applyTheme(d.theme || {});
       applyI18n();
       buildLangMenu();
@@ -320,7 +330,7 @@
       state.mode = 'captions';
       state.fullscreen = null;
       state.scrollback.push(d.item);
-      document.body.classList.remove('mode-idle', 'mode-blank');
+      document.body.classList.remove('mode-idle', 'mode-blank', 'mode-standby');
       document.body.classList.add('mode-captions');
       const box = $('captions');
       const prev = box.lastElementChild, wasAt = prev ? prev.getBoundingClientRect().top : 0;
@@ -351,7 +361,7 @@
       state.mode = state.mode === 'idle' ? 'captions' : state.mode;
       state.fullscreen = d.item;
       renderFullscreen();
-      document.body.classList.remove('mode-idle');
+      document.body.classList.remove('mode-idle', 'mode-standby');
       document.body.classList.add('mode-' + state.mode);
     },
     preload(d) { preload(d.urls); },

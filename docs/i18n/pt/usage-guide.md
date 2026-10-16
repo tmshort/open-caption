@@ -146,7 +146,9 @@ Abra a página de configuração e siga as seis etapas no alto. O botão **Ajuda
 3. **Imagens.** Envie as imagens que o arquivo do espetáculo usa (PNG, JPG, GIF ou WebP, de preferência com menos de 1 MB cada).
 4. **Aparência.** Escolha cores, fonte e tamanho do texto. Os padrões (branco sobre preto, grande) são os melhores para a maioria das pessoas. Duas fontes de legibilidade vêm embutidas: uma amigável para dislexia (OpenDyslexic) e uma de alta legibilidade (Atkinson Hyperlegible, projetada para baixa visão). Cada espectador também pode escolher qualquer uma para o próprio dispositivo no pequeno controle **Aa**.
 5. **Teste.** Faça um ensaio particular: você aperta Espaço como o operador faria, e vê a tela do público ao lado. Nada chega ao público.
-6. **Ao vivo.** Confira a lista de preparação, imprima o cartaz QR e clique em **Iniciar espetáculo**.
+6. **Ao vivo.** Confira a lista de preparação, imprima o cartaz com o QR e pressione **Abrir a página do operador**.
+
+Abrir a página do operador carrega o espetáculo **em espera**: o público vê a tela de espera do local (um logotipo e uma mensagem, definidos uma só vez em **Configurações → Tela de espera**) e nada do espetáculo, então você pode preparar, ensaiar e conferir a página do operador com calma. Quando estiver pronto, pressione **Espaço** (o botão diz **INICIAR**) na página do operador para colocar o espetáculo no ar. **Tirar do ar…** o retira de novo sem perder o lugar.
 
 ### Escrever o arquivo do espetáculo
 
@@ -181,7 +183,7 @@ EDWIN: Whistling all day long
 - Os **nomes dos personagens** em maiúsculas seguidos de dois-pontos aparecem acima da linha.
 - As **indicações de cena** entre `(parênteses)` aparecem em itálico.
 - As **letras de música** entre notas `♪`, em itálico: comece uma linha com `~`, ou envolva a música em `[song]`…`[/song]`. Para dois cantores ao mesmo tempo (um dueto ou contraponto), ponha as linhas deles entre `[together]` e `[/together]`, ou una-as com ` || ` numa linha; as duas aparecem juntas com um toque em Espaço. Os botões **♪**, **♫** e **🎵 Música** do editor as inserem. Veja o tópico de ajuda *Musicais*.
-- Os **laços** (pré-espetáculo e intervalo) repetem imagens e texto até o operador seguir adiante. Um laço logo no início do arquivo do espetáculo começa sozinho.
+- Os **laços** (pré-espetáculo e intervalo) repetem imagens e texto até o operador seguir adiante. Um laço bem no início do arquivo do espetáculo começa quando o operador coloca o espetáculo no ar (INICIAR).
 - As **notas** `[note: …]` e os marcadores `[section: …]` são só para o operador.
 - O tópico de ajuda **Escrever um arquivo do espetáculo** lista tudo, com exemplos, e a *cola do arquivo do espetáculo* do editor o resume.
 
@@ -222,7 +224,7 @@ Você pode editar e salvar de novo um arquivo do espetáculo com o espetáculo a
 ### Antes de o público chegar
 
 1. Inicie o servidor e abra a **página do operador**; entre. Ela deve dizer **Você tem o controle**.
-2. Em Configuração → Ao vivo clique em **Iniciar espetáculo** (uma vez; isso reinicia o espetáculo do começo). Um laço de pré-espetáculo, se o arquivo do espetáculo tiver um, começa em todas as telas.
+2. Em Configuração → Ao vivo, pressione **Abrir a página do operador**. O espetáculo é carregado em espera: o público vê a tela de espera do local. Quando estiver pronto, pressione **Espaço** (INICIAR) na página do operador para colocá-lo no ar. Um laço de pré-espetáculo, se o arquivo do espetáculo tiver um, começa então em todas as telas.
 3. Abra o endereço do público no seu próprio telefone e, se tiver um, no projetor. Confira que a contagem de espectadores na página do operador sobe.
 4. Ponha o cartaz QR onde as pessoas possam vê-lo.
 
@@ -238,7 +240,7 @@ Você pode editar e salvar de novo um arquivo do espetáculo com o espetáculo a
 
 ### Quando o espetáculo termina
 
-Aperte `Ctrl+C` na janela do programa (ou pare o serviço). A posição é salva. Para refazer o espetáculo desde o começo, use **Reiniciar espetáculo…** na página do operador, ou clique em **Iniciar espetáculo** na Configuração.
+Pressione `Ctrl+C` na janela do programa (ou pare o serviço). A posição é salva. Para refazer o espetáculo desde o início, use **Reiniciar espetáculo…** na página do operador, ou **Reiniciar o espetáculo** em Configuração → Ao vivo. Ambos o devolvem à espera.
 
 ## Lista de verificação do dia
 
@@ -254,7 +256,7 @@ Aperte `Ctrl+C` na janela do programa (ou pare o serviço). A posição é salva
 - [ ] Um telefone no WiFi do público consegue abrir o endereço e mostra «As legendas começarão em breve».
 - [ ] Configuração → Teste: faça um ensaio rápido; as teclas do operador funcionam.
 - [ ] Navegador do projetor (se usado) aberto em `…/?display=projector`, em tela cheia.
-- [ ] Clique em **Iniciar espetáculo**. O laço de pré-espetáculo (se houver) está em todas as telas.
+- [ ] Pressione **INICIAR** na página do operador. O laço de pré-espetáculo (se houver) aparece em todas as telas.
 - [ ] O operador sentado onde veja o palco; controle remoto ou teclado testado.
 - [ ] Cartaz QR colocado; um voluntário sabe o nome do WiFi e o endereço para quem perguntar.
 

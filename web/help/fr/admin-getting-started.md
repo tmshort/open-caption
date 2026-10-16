@@ -7,7 +7,11 @@ Préparer un spectacle demande six étapes. La rangée de boutons en haut de la 
 3. **Images** — téléversez les images utilisées par le fichier du spectacle.
 4. **Apparence** — choisissez les couleurs et la taille du texte.
 5. **Test** — répétez en privé avant que personne ne soit dans la salle.
-6. **En direct** — partagez l'adresse avec le public et lancez le spectacle.
+6. **En direct** — partagez l'adresse avec le public et ouvrez la page de l'opérateur, d'où le spectacle est lancé.
+
+## Attente et passage à l'antenne
+
+Ouvrir la page de l'opérateur charge le spectacle **en attente** : le public voit l'écran d'attente du lieu (un logo et un message, réglés une seule fois sous **Réglages → Écran d'attente**) et rien du spectacle. L'opérateur appuie sur **Espace** (le bouton indique **DÉMARRER**) pour mettre le spectacle à l'antenne, et **Couper l'antenne…** le retire sans perdre sa place. La préparation, la répétition et la modification ne sont jamais devant le public tant que le spectacle est en attente, et un spectacle en attente peut être supprimé.
 
 ## Où tout est rangé
 

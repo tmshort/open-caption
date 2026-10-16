@@ -3,7 +3,8 @@
 | Cosa vedi | Cosa significa |
 |-----------|----------------|
 | Punto verde in alto a destra | Connesso al server. Rosso significa che la connessione è caduta; la pagina si ricollega da sola |
-| **● IN DIRETTA** | Lo spettacolo è iniziato (è stata inviata almeno una riga) |
+| **● IN DIRETTA** | Lo spettacolo è in onda: il pubblico lo vede |
+| **IN ATTESA** e un banner blu **NON IN ONDA** | Il pubblico vede la schermata di attesa della sala e nulla dello spettacolo. **Spazio** (**AVVIA**) lo mette in onda |
 | Icona di persone e un numero | Quanti dispositivi del pubblico sono connessi. Con più lingue il numero è seguito da un conteggio per lingua, come `(en 60 · es 23)` |
 | **Hai il controllo** | I tuoi tasti controllano lo spettacolo |
 | **Un altro operatore ha il controllo** | Puoi guardare ma non inviare. **Subentra** glielo toglie |

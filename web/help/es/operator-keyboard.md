@@ -4,13 +4,13 @@ Estas teclas funcionan siempre que no esté escribiendo en un cuadro y no haya n
 
 | Tecla | Acción |
 |-------|--------|
-| `Espacio`, `Flecha derecha`, `Av Pág`, `Intro` | **Siguiente:** envía la línea siguiente; inicia un bucle que es el siguiente; termina un bucle en marcha y envía la línea que le sigue |
+| `Espacio`, `Flecha derecha`, `Av Pág`, `Intro` | **Siguiente:** envía la línea siguiente; inicia un bucle que es el siguiente; termina un bucle en marcha y envía la línea que le sigue. En espera es **INICIAR**: pone el espectáculo en el aire |
 | `Retroceso`, `Flecha izquierda`, `Re Pág` | **Atrás:** deshace la última acción. Volver a un bucle lo reinicia |
 | `Mayús+Q` | **Parar:** detiene un bucle en marcha y deja la pantalla en blanco |
 | `B` | **En blanco** o quitar el blanco: oculta todo, y devuelve los mismos subtítulos al quitar el blanco |
 | `C` | **Borrar**: borra los subtítulos, para que la línea siguiente empiece en una pantalla vacía |
 | `/` | Buscar en el archivo del espectáculo |
-| `Inicio` | Reiniciar el espectáculo (pregunta antes) |
+| `Inicio` | Reiniciar el espectáculo: vuelve al principio y a la espera (pregunta antes) |
 | `Esc` | Cancelar un salto o cerrar una ventana |
 
 Si un salto espera confirmación, **Intro** lo confirma en lugar de enviar la línea siguiente.

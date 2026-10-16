@@ -30,6 +30,7 @@
     <button id="takeover" hidden>Take over</button>
     <span class="grow"></span>
     <button id="helpbtn" class="quiet" title="Help (?)">Help</button>
+    <button id="offair" class="quiet" title="Take the show off the audience's screens. They see the standby screen; the show stays where it is">Go off air…</button>
     <button id="reset" class="quiet">Restart show…</button>
     <button id="logout" class="quiet">Sign out</button>
     <i id="dot" title="Connection"></i>
@@ -70,10 +71,17 @@
     <menu><button value="cancel" formnovalidate>Cancel</button><button id="msgsend" value="send" class="primary">Send</button></menu>
   </form>
 </dialog>
+<dialog id="offdlg">
+  <form method="dialog">
+    <h2>Go off air?</h2>
+    <p>The audience will see the standby screen. The show stays exactly where it is; START puts it back on air.</p>
+    <menu><button value="cancel">Cancel</button><button id="offgo" value="go" class="primary">Go off air</button></menu>
+  </form>
+</dialog>
 <dialog id="resetdlg">
   <form method="dialog">
     <h2>Restart the show?</h2>
-    <p>The audience screens will clear and the show returns to the beginning.</p>
+    <p>The audience will see the standby screen and the show returns to the beginning.</p>
     <menu><button value="cancel">Cancel</button><button id="resetgo" value="go" class="primary">Restart</button></menu>
   </form>
 </dialog>

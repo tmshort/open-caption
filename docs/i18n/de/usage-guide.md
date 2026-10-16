@@ -146,7 +146,9 @@ Hat `config.yaml` einen Fehler (eine falsch geschriebene Einstellung, eine Zahl 
 3. **Bilder.** Laden Sie die Bilder hoch, die die Show-Datei verwendet (PNG, JPG, GIF oder WebP, idealerweise unter 1 MB je Bild).
 4. **Erscheinungsbild.** Wählen Sie Farben, Schrift und Textgröße. Die Voreinstellungen (weiß auf schwarz, groß) sind für die meisten am besten. Zwei Lesbarkeitsschriften sind eingebaut: eine legasthenie-freundliche (OpenDyslexic) und eine mit hoher Lesbarkeit (Atkinson Hyperlegible, für Sehbehinderung entworfen). Einzelne Zuschauer können über das kleine Steuerelement **Aa** auch für ihr eigenes Gerät eine der beiden wählen.
 5. **Test.** Machen Sie eine private Probe: Sie drücken die Leertaste wie der Operator und sehen daneben den Bildschirm des Publikums. Nichts erreicht das Publikum.
-6. **Live.** Prüfen Sie die Bereitschaftsliste, drucken Sie das QR-Schild und klicken Sie auf **Show starten**.
+6. **Live.** Prüfen Sie die Bereitschaftsliste, drucken Sie das QR-Schild und drücken Sie **Die Bedienerseite öffnen**.
+
+Das Öffnen der Bedienerseite lädt die Show im **Standby**: Das Publikum sieht den Standby-Bildschirm des Hauses (ein Logo und eine Meldung, einmal unter **Einstellungen → Standby-Bildschirm** festgelegt) und nichts von der Show, sodass Sie in Ruhe vorbereiten, proben und die Bedienerseite prüfen können. Wenn Sie bereit sind, drücken Sie auf der Bedienerseite die **Leertaste** (die Schaltfläche heißt **START**), um die Show auf Sendung zu bringen. **Aus der Sendung nehmen …** nimmt sie wieder heraus, ohne ihren Platz zu verlieren.
 
 ### Die Show-Datei schreiben
 
@@ -181,7 +183,7 @@ EDWIN: Whistling all day long
 - **Sprechernamen** in Großbuchstaben mit Doppelpunkt werden über der Zeile gezeigt.
 - **Bühnenanweisungen** in `(Klammern)` werden kursiv gezeigt.
 - **Liedtexte** zwischen `♪`-Noten, kursiv: Beginnen Sie eine Zeile mit `~` oder fassen Sie das Lied in `[song]`…`[/song]`. Für zwei Singende gleichzeitig (ein Duett oder Kontrapunkt) setzen Sie ihre Zeilen zwischen `[together]` und `[/together]` oder verbinden Sie sie mit ` || ` in einer Zeile; beide erscheinen mit einem Druck auf die Leertaste zugleich. Die Schaltflächen **♪**, **♫** und **🎵 Lied** des Editors fügen diese ein. Siehe das Hilfethema *Musicals*.
-- **Schleifen** (vor der Show und Pause) wiederholen Bilder und Text, bis der Operator weitergeht. Eine Schleife ganz am Anfang der Show-Datei startet von selbst.
+- **Schleifen** (vor der Show und Pause) wiederholen Bilder und Text, bis der Bediener weitermacht. Eine Schleife ganz am Anfang der Show-Datei startet, wenn der Bediener die Show auf Sendung bringt (START).
 - **Notizen** `[note: …]` und Lesezeichen `[section: …]` sind nur für den Operator.
 - Das Hilfethema **Eine Show-Datei schreiben** listet alles mit Beispielen auf, und der *Spickzettel zur Show-Datei* des Editors fasst es zusammen.
 
@@ -222,7 +224,7 @@ Sie können eine Show-Datei bearbeiten und erneut speichern, während eine Show 
 ### Bevor das Publikum kommt
 
 1. Starten Sie den Server und öffnen Sie die **Operator-Seite**; melden Sie sich an. Dort sollte **Sie haben die Steuerung** stehen.
-2. Klicken Sie in Einrichtung → Live auf **Show starten** (einmal; das setzt die Show an den Anfang zurück). Eine Schleife vor der Show, falls die Show-Datei eine hat, beginnt auf jedem Bildschirm.
+2. Drücken Sie in Einrichtung → Live auf **Die Bedienerseite öffnen**. Die Show wird im Standby geladen: Das Publikum sieht den Standby-Bildschirm des Hauses. Wenn Sie bereit sind, drücken Sie auf der Bedienerseite die **Leertaste** (START), um sie auf Sendung zu bringen. Eine Schleife vor der Show, falls die Show-Datei eine hat, beginnt dann auf jedem Bildschirm.
 3. Öffnen Sie die Publikumsadresse auf Ihrem eigenen Telefon und, falls vorhanden, am Projektor. Prüfen Sie, dass die Zuschauerzahl auf der Operator-Seite steigt.
 4. Stellen Sie das QR-Schild dort auf, wo die Leute es sehen.
 
@@ -238,7 +240,7 @@ Sie können eine Show-Datei bearbeiten und erneut speichern, während eine Show 
 
 ### Wenn die Show endet
 
-Drücken Sie `Strg+C` im Fenster des Programms (oder beenden Sie den Dienst). Die Position wird gespeichert. Um die Show von vorn zu fahren, verwenden Sie **Show neu starten …** auf der Operator-Seite oder klicken Sie in der Einrichtung auf **Show starten**.
+Drücken Sie `Strg+C` im Fenster des Programms (oder beenden Sie den Dienst). Die Position wird gespeichert. Um die Show wieder von vorn laufen zu lassen, verwenden Sie **Show neu starten …** auf der Bedienerseite oder **Show neu starten** in Einrichtung → Live. Beides bringt die Show zurück in den Standby.
 
 ## Checkliste für den Vorstellungstag
 
@@ -254,7 +256,7 @@ Drücken Sie `Strg+C` im Fenster des Programms (oder beenden Sie den Dienst). Di
 - [ ] Ein Telefon im Publikums-WLAN kann die Adresse öffnen und zeigt „Die Untertitel beginnen in Kürze“.
 - [ ] Einrichtung → Test: Machen Sie eine kurze Probe; die Tasten des Operators funktionieren.
 - [ ] Projektor-Browser (falls verwendet) auf `…/?display=projector` geöffnet, im Vollbild.
-- [ ] Klicken Sie auf **Show starten**. Die Schleife vor der Show (falls vorhanden) läuft auf jedem Bildschirm.
+- [ ] Drücken Sie auf der Bedienerseite **START**. Die Schleife vor der Show (falls vorhanden) läuft auf jedem Bildschirm.
 - [ ] Der Operator sitzt dort, wo er die Bühne sieht; Klicker oder Tastatur getestet.
 - [ ] QR-Schild aufgestellt; eine freiwillige Person kennt WLAN-Namen und Adresse für Leute, die fragen.
 

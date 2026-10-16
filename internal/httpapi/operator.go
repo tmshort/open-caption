@@ -144,6 +144,8 @@ func (s *Server) operatorAPI(mux *http.ServeMux, prefix, role string, resolve re
 	command("blank", func(e *live.Engine, b cmdBody) (live.OperatorState, error) { return e.SetBlank(b.On, b.rev()) })
 	command("clear", func(e *live.Engine, b cmdBody) (live.OperatorState, error) { return e.Clear(b.rev()) })
 	command("reset", func(e *live.Engine, b cmdBody) (live.OperatorState, error) { return e.Reset(b.rev()) })
+	command("onair", func(e *live.Engine, b cmdBody) (live.OperatorState, error) { return e.Start(b.rev()) })
+	command("offair", func(e *live.Engine, b cmdBody) (live.OperatorState, error) { return e.OffAir(b.rev()) })
 	command("message", func(e *live.Engine, b cmdBody) (live.OperatorState, error) {
 		if len(b.Text) == 0 || len(b.Text) > 500 {
 			return e.Operator(), errBadRequest
@@ -216,6 +218,8 @@ func runCommand(w http.ResponseWriter, r *http.Request, rt *Runtime, fn func(*li
 		resp["notice"] = "Nothing to undo"
 	case errors.Is(err, live.ErrNoLoop):
 		resp["notice"] = "No loop is running"
+	case errors.Is(err, live.ErrStandby):
+		code, resp["error"] = http.StatusConflict, "the show is not on air; start it first"
 	case errors.Is(err, live.ErrBadCue), errors.Is(err, errBadRequest):
 		code, resp["error"] = http.StatusBadRequest, err.Error()
 	default:

@@ -67,13 +67,25 @@ body.projector #captions { overflow: hidden; } /* a shared screen is never scrol
 body.reading .cap { opacity: 1 !important; } /* while re-reading, no line is dimmed */
 #live { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 7; min-height: 2.9rem; padding: 0 1.4rem; border: 2px solid var(--fg); border-radius: 99px; background: var(--bg); color: var(--fg); font: 700 1.05rem var(--font); cursor: pointer; box-shadow: 0 2px 14px #000a; }
 #live[hidden] { display: none; }
-body.mode-blank #captions, body.mode-idle #captions { visibility: hidden; }
+body.mode-blank #captions, body.mode-idle #captions, body.mode-standby #captions { visibility: hidden; }
 
 #idle {
   position: fixed; top: 0; right: 0; bottom: 0; left: 0; display: none; align-items: center; justify-content: center; text-align: center;
   padding: 6vmin; font-size: calc(var(--scale) * 2rem); font-size: calc(var(--scale) * clamp(1.4rem, 3vmin + 1.2vw, 3.5rem)); opacity: .85;
 }
 body.mode-idle:not(.has-fs) #idle { display: flex; }
+
+/* Standby: nothing of a show is on air. The venue's own screen (an optional logo and message); no show is needed for it. */
+#standby {
+  position: fixed; top: 0; right: 0; bottom: 0; left: 0; display: none; align-items: center; justify-content: center; flex-direction: column; text-align: center;
+  padding: 6vmin; z-index: 6; background: var(--bg);
+  font-size: calc(var(--scale) * 2rem); font-size: calc(var(--scale) * clamp(1.4rem, 3vmin + 1.2vw, 3.5rem));
+}
+body.mode-standby #standby { display: flex; }
+#standby p { margin: 0; opacity: .9; }
+#standby img { max-width: 70%; max-height: 45vh; object-fit: contain; margin-bottom: 4vmin; }
+#standby img[hidden] { display: none; }
+body.mode-standby #fs { display: none; }
 
 /* Fullscreen takeover: image or text, covering everything. */
 #fs {

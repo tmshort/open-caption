@@ -130,6 +130,9 @@ func main() {
 		api.PinLogLevel(strings.ToLower(strings.TrimSpace(*logLevel)))
 	}
 	api.SetLogSource(logs)
+	if !*dev {
+		api.EnableStandby() // a show waits in standby until the operator starts it; --dev goes on air at once
+	}
 	defer api.Close()
 	rt := api.Runtime()
 	rt.EnablePersistence(filepath.Join(cfg.DataDir, "live.json"))

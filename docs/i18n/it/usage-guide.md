@@ -146,7 +146,9 @@ Apri la pagina di configurazione e segui i sei passi in alto. Il pulsante **Aiut
 3. **Immagini.** Carica le immagini che il file dello spettacolo usa (PNG, JPG, GIF o WebP, idealmente sotto 1 MB ciascuna).
 4. **Aspetto.** Scegli colori, carattere e dimensione del testo. I valori predefiniti (bianco su nero, grande) vanno meglio per la maggior parte delle persone. Sono incorporati due caratteri per la leggibilità: uno adatto alla dislessia (OpenDyslexic) e uno ad alta leggibilità (Atkinson Hyperlegible, progettato per l'ipovisione). Anche i singoli spettatori possono scegliere l'uno o l'altro per il proprio dispositivo dal piccolo controllo **Aa**.
 5. **Prova.** Fai una prova privata: premi Spazio come farebbe l'operatore, e vedi accanto lo schermo del pubblico. Nulla raggiunge il pubblico.
-6. **In diretta.** Controlla la lista di preparazione, stampa il cartello QR e premi **Avvia lo spettacolo**.
+6. **In diretta.** Controlla l'elenco di preparazione, stampa il cartello QR e premi **Apri la pagina dell'operatore**.
+
+Aprire la pagina dell'operatore carica lo spettacolo **in attesa**: il pubblico vede la schermata di attesa della sala (un logo e un messaggio, impostati una sola volta in **Impostazioni → Schermata di attesa**) e nulla dello spettacolo, così puoi preparare, provare e controllare la pagina dell'operatore con calma. Quando sei pronto, premi **Spazio** (il pulsante dice **AVVIA**) nella pagina dell'operatore per mettere lo spettacolo in onda. **Togli dall'onda…** lo ritira di nuovo senza perdere il punto.
 
 ### Scrivere il file dello spettacolo
 
@@ -181,7 +183,7 @@ EDWIN: Whistling all day long
 - I **nomi dei personaggi** in maiuscolo seguiti da due punti vengono mostrati sopra la riga.
 - Le **indicazioni di scena** tra `(parentesi)` vengono mostrate in corsivo.
 - I **testi delle canzoni** tra note `♪`, in corsivo: inizia una riga con `~`, oppure racchiudi la canzone in `[song]`…`[/song]`. Per due cantanti insieme (un duetto o contrappunto), metti le loro righe tra `[together]` e `[/together]`, oppure uniscile con ` || ` su una riga; entrambe compaiono insieme con una pressione di Spazio. I pulsanti **♪**, **♫** e **🎵 Canzone** dell'editor li inseriscono. Vedi l'argomento di aiuto *Musical*.
-- I **cicli** (pre-spettacolo e intervallo) ripetono immagini e testo finché l'operatore non va avanti. Un ciclo proprio all'inizio del file dello spettacolo parte da solo.
+- I **cicli** (pre-spettacolo e intervallo) ripetono immagini e testo finché l'operatore non va avanti. Un ciclo proprio all'inizio del file dello spettacolo parte quando l'operatore mette lo spettacolo in onda (AVVIA).
 - Le **note** `[note: …]` e i segnalibri `[section: …]` sono solo per l'operatore.
 - L'argomento di aiuto **Scrivere un file dello spettacolo** elenca tutto, con esempi, e il *promemoria del file dello spettacolo* dell'editor lo riassume.
 
@@ -222,7 +224,7 @@ Puoi modificare e risalvare un file dello spettacolo mentre uno spettacolo è in
 ### Prima che arrivi il pubblico
 
 1. Avvia il server e apri la **pagina dell'operatore**; accedi. Dovrebbe dire **Hai il controllo**.
-2. In Configurazione → In diretta premi **Avvia lo spettacolo** (una volta; riporta lo spettacolo all'inizio). Un ciclo di pre-spettacolo, se il file dello spettacolo ne ha uno, parte su ogni schermo.
+2. In Configurazione → In diretta premi **Apri la pagina dell'operatore**. Lo spettacolo viene caricato in attesa: il pubblico vede la schermata di attesa della sala. Quando sei pronto, premi **Spazio** (AVVIA) nella pagina dell'operatore per metterlo in onda. Un ciclo di pre-spettacolo, se il file dello spettacolo ne ha uno, parte allora su ogni schermo.
 3. Apri l'indirizzo del pubblico sul tuo telefono e, se ne hai uno, sul proiettore. Controlla che il conteggio degli spettatori sulla pagina dell'operatore salga.
 4. Metti il cartello QR dove la gente lo veda.
 
@@ -238,7 +240,7 @@ Puoi modificare e risalvare un file dello spettacolo mentre uno spettacolo è in
 
 ### Quando lo spettacolo finisce
 
-Premi `Ctrl+C` nella finestra del programma (o ferma il servizio). La posizione viene salvata. Per rifare lo spettacolo dall'inizio, usa **Riavvia lo spettacolo…** sulla pagina dell'operatore, oppure premi **Avvia lo spettacolo** nella configurazione.
+Premi `Ctrl+C` nella finestra del programma (o ferma il servizio). La posizione viene salvata. Per rifare lo spettacolo dall'inizio, usa **Riavvia lo spettacolo…** nella pagina dell'operatore, oppure **Riavvia lo spettacolo** in Configurazione → In diretta. Entrambi lo riportano in attesa.
 
 ## Lista di controllo del giorno dello spettacolo
 
@@ -254,7 +256,7 @@ Premi `Ctrl+C` nella finestra del programma (o ferma il servizio). La posizione 
 - [ ] Un telefono sul WiFi del pubblico può aprire l'indirizzo e mostra «I sottotitoli inizieranno a breve».
 - [ ] Configurazione → Prova: fai una prova rapida; i tasti dell'operatore funzionano.
 - [ ] Browser del proiettore (se usato) aperto su `…/?display=projector`, a schermo intero.
-- [ ] Premi **Avvia lo spettacolo**. Il ciclo di pre-spettacolo (se c'è) è su ogni schermo.
+- [ ] Premi **AVVIA** nella pagina dell'operatore. Il ciclo di pre-spettacolo (se c'è) è su ogni schermo.
 - [ ] L'operatore seduto dove può vedere il palco; telecomando o tastiera provati.
 - [ ] Cartello QR sistemato; un volontario conosce il nome del WiFi e l'indirizzo per chi chiede.
 

@@ -31,6 +31,7 @@ import (
 	qrcode "github.com/skip2/go-qrcode"
 
 	"github.com/tmshort/open-caption/internal/config"
+	"github.com/tmshort/open-caption/internal/live"
 	"github.com/tmshort/open-caption/internal/netinfo"
 	"github.com/tmshort/open-caption/internal/show"
 	"github.com/tmshort/open-caption/internal/showfile"
@@ -309,6 +310,9 @@ func (s *Server) adminRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("PUT /api/admin/settings/passwords", adm(s.changePasswords))
 	mux.HandleFunc("PUT /api/admin/settings/log-level", adm(s.setLogLevel))
 	mux.HandleFunc("PUT /api/admin/settings/mdns", adm(s.setMDNS))
+	mux.HandleFunc("PUT /api/admin/settings/standby", adm(s.setStandby))
+	mux.HandleFunc("POST /api/admin/settings/standby-logo", adm(s.setStandbyLogo))
+	mux.HandleFunc("DELETE /api/admin/settings/standby-logo", adm(s.deleteStandbyLogo))
 	mux.HandleFunc("GET /api/admin/log", adm(s.recentLog))
 	mux.HandleFunc("GET /api/admin/settings/operator-password", adm(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-store")
@@ -874,6 +878,7 @@ func (s *Server) deleteAsset(w http.ResponseWriter, r *http.Request) {
 func (s *Server) activateShow(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		Force bool `json:"force"`
+		Start bool `json:"start"` // also put it on air at once (for automation; Setup loads it into standby)
 	}
 	json.NewDecoder(http.MaxBytesReader(w, r.Body, 1024)).Decode(&req)
 	id := r.PathValue("id")
@@ -892,6 +897,9 @@ func (s *Server) activateShow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.rt.SetShowLangs(id, l.meta.Name, l.assets, l.primary, l.others, themeToRuntime(l.meta.Theme))
+	if req.Start {
+		s.rt.Do(func(e *live.Engine) (live.OperatorState, error) { return e.Start(-1) })
+	}
 	s.rt.Flush()
 	logx.Infof("show %q activated (%d language(s))", l.meta.Name, 1+len(l.others))
 	skipped := []string{}
@@ -1238,6 +1246,10 @@ func (s *Server) startRehearsal(w http.ResponseWriter, r *http.Request) {
 	cfg := s.cfg
 	cfg.Audience.MaxClients = 8
 	rt := NewRuntime(cfg)
+	if s.standby {
+		rt.UseStandby()
+	}
+	rt.SetStandbyScreen(s.standbyView())
 	rt.SetAssetBase("/api/admin/shows/" + url.PathEscape(req.ShowID) + "/assets/")
 	rt.SetShowLangs(req.ShowID, l.meta.Name, l.assets, l.primary, l.others, themeToRuntime(l.meta.Theme))
 	rt.Claim(tok, true)
@@ -1255,7 +1267,7 @@ func (s *Server) settings(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{
 		"config": s.cfg.Redacted(), "configPath": s.cfg.Path, "dataDir": s.cfg.DataDir,
 		"httpAddr": l.HTTPAddr, "httpsAddr": l.HTTPSAddr, "version": s.version,
-		"canChangePasswords": s.cfg.Path != "", "logLevel": logx.Current().String(), "logLevelPinned": s.pinnedLevel, "mdns": s.MDNSStatus(),
+		"canChangePasswords": s.cfg.Path != "", "standby": s.standbyView(), "logLevel": logx.Current().String(), "logLevelPinned": s.pinnedLevel, "mdns": s.MDNSStatus(),
 		"adminAllow": s.cfg.Access.AdminAllow, "operatorAllow": s.cfg.Access.OperatorAllow,
 		"adminRestricted": s.adminAllow.Restricted(), "operatorRestricted": s.operatorAllow.Restricted(),
 	})

@@ -146,7 +146,9 @@ Abra la página de configuración y siga los seis pasos de la parte superior. El
 3. **Imágenes.** Suba las imágenes que usa el archivo del espectáculo (PNG, JPG, GIF o WebP, idealmente de menos de 1 MB cada una).
 4. **Aspecto.** Elija colores, fuente y tamaño del texto. Los valores por defecto (blanco sobre negro, grande) son los mejores para la mayoría. Hay dos fuentes de legibilidad integradas: una apta para dislexia (OpenDyslexic) y una de alta legibilidad (Atkinson Hyperlegible, diseñada para baja visión). Cada miembro del público también puede elegir cualquiera para su propio dispositivo con el pequeño control **Aa**.
 5. **Prueba.** Haga un ensayo privado: usted pulsa Espacio como lo haría el operador, y ve la pantalla del público al lado. Nada llega al público.
-6. **En vivo.** Revise la lista de preparación, imprima el cartel QR y pulse **Iniciar espectáculo**.
+6. **En vivo.** Revise la lista de preparación, imprima el cartel QR y pulse **Abrir la página del operador**.
+
+Al abrir la página del operador, el espectáculo se carga **en espera**: el público ve la pantalla de espera del local (un logotipo y un mensaje, que se fijan una sola vez en **Ajustes → Pantalla de espera**) y nada del espectáculo, así que puede preparar, ensayar y revisar la página del operador con tranquilidad. Cuando esté listo, pulse **Espacio** (el botón dice **INICIAR**) en la página del operador para poner el espectáculo en el aire. **Sacar del aire…** lo retira de nuevo sin perder su lugar.
 
 ### Escribir el archivo del espectáculo
 
@@ -181,7 +183,7 @@ EDWIN: Whistling all day long
 - Los **nombres de personaje** en mayúsculas seguidos de dos puntos se muestran sobre la línea.
 - Las **acotaciones** entre `(paréntesis)` se muestran en cursiva.
 - Las **letras** entre notas `♪`, en cursiva: empiece una línea con `~`, o envuelva la canción en `[song]`…`[/song]`. Para dos cantantes a la vez (un dúo o contrapunto), ponga sus líneas entre `[together]` y `[/together]`, o únalas con ` || ` en una línea; ambas se muestran a la vez con una pulsación de Espacio. Los botones **♪**, **♫** y **🎵 Canción** del editor los insertan. Consulte el tema de ayuda *Musicales*.
-- Los **bucles** (previa y descanso) repiten imágenes y texto hasta que el operador continúa. Un bucle justo al principio del archivo del espectáculo arranca solo.
+- Los **bucles** (previa y descanso) repiten imágenes y texto hasta que el operador continúa. Un bucle justo al principio del archivo del espectáculo arranca cuando el operador pone el espectáculo en el aire (INICIAR).
 - Las **notas** `[note: …]` y los marcadores `[section: …]` son solo para el operador.
 - El tema de ayuda **Escribir un archivo del espectáculo** lo enumera todo, con ejemplos, y la *chuleta del archivo del espectáculo* del editor lo resume.
 
@@ -222,7 +224,7 @@ Puede editar y volver a guardar un archivo del espectáculo con el espectáculo 
 ### Antes de que llegue el público
 
 1. Arranque el servidor y abra la **página del operador**; inicie sesión. Debería decir **Usted tiene el control**.
-2. En Configuración → En vivo pulse **Iniciar espectáculo** (una vez; esto reinicia el espectáculo desde el principio). Un bucle de previa, si el archivo del espectáculo lo tiene, empieza en todas las pantallas.
+2. En Configuración → En vivo pulse **Abrir la página del operador**. El espectáculo se carga en espera: el público ve la pantalla de espera del local. Cuando esté listo, pulse **Espacio** (INICIAR) en la página del operador para ponerlo en el aire. Un bucle de previa, si el archivo del espectáculo lo tiene, empieza entonces en todas las pantallas.
 3. Abra la dirección del público en su propio teléfono y, si tiene uno, en el proyector. Compruebe que el recuento de espectadores sube en la página del operador.
 4. Ponga el cartel QR donde la gente lo vea.
 
@@ -238,7 +240,7 @@ Puede editar y volver a guardar un archivo del espectáculo con el espectáculo 
 
 ### Cuando termina el espectáculo
 
-Pulse `Ctrl+C` en la ventana del programa (o detenga el servicio). La posición se guarda. Para volver a dirigir el espectáculo desde el principio, use **Reiniciar espectáculo…** en la página del operador, o pulse **Iniciar espectáculo** en Configuración.
+Pulse `Ctrl+C` en la ventana del programa (o detenga el servicio). La posición se guarda. Para volver a dirigir el espectáculo desde el principio, use **Reiniciar espectáculo…** en la página del operador, o **Reiniciar el espectáculo** en Configuración → En vivo. Ambos lo devuelven a la espera.
 
 ## Lista de comprobación del día
 
@@ -254,7 +256,7 @@ Pulse `Ctrl+C` en la ventana del programa (o detenga el servicio). La posición 
 - [ ] Un teléfono en la WiFi del público puede abrir la dirección y muestra «Los subtítulos comenzarán en breve».
 - [ ] Configuración → Prueba: haga un ensayo rápido; las teclas del operador funcionan.
 - [ ] Navegador del proyector (si se usa) abierto en `…/?display=projector`, a pantalla completa.
-- [ ] Pulse **Iniciar espectáculo**. El bucle de previa (si lo hay) está en todas las pantallas.
+- [ ] Pulse **INICIAR** en la página del operador. El bucle de previa (si lo hay) está en todas las pantallas.
 - [ ] El operador sentado donde pueda ver el escenario; pulsador o teclado probado.
 - [ ] Cartel QR colocado; una persona voluntaria sabe el nombre de la WiFi y la dirección para quien pregunte.
 

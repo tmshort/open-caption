@@ -2,7 +2,7 @@
 
 Eine Schleife ist eine Folge von Vollbild-Bildern und -Texten, die sich wiederholt und vor der Show und in der Pause verwendet wird. In Ihrer Liste erscheint sie als `SCHLEIFE — 4 Elemente`; klicken Sie darauf, um zu sehen, was sie enthält.
 
-- Eine Schleife ganz am Anfang der Show-Datei **läuft schon**, wenn Sie die Seite öffnen. Der erste Druck auf die **Leertaste** beendet sie und sendet die erste Zeile.
+- Eine Schleife ganz am Anfang der Show-Datei ist **die Zeit vor der Show**: Sie beginnt, wenn die Show auf Sendung geht (**Leertaste** bei START), und der nächste Druck auf die **Leertaste** beendet sie und sendet die erste Zeile.
 - Eine Schleife weiter hinten in der Show-Datei (zum Beispiel die Pause) startet, wenn Sie darauf die **Leertaste** drücken. Solange sie läuft, meldet ein grünes Banner **SCHLEIFE LÄUFT**.
 - Die **Leertaste** beendet die Schleife und sendet die Zeile danach.
 - **Umschalt+Q** stoppt die Schleife und lässt den Bildschirm leer. Drücken Sie die **Leertaste**, um fortzufahren.

@@ -7,7 +7,11 @@ Preparar um espetáculo leva seis etapas. A fileira de botões no alto da págin
 3. **Imagens** — envie as imagens que o arquivo do espetáculo usa.
 4. **Aparência** — escolha as cores e o tamanho do texto.
 5. **Teste** — ensaie em particular antes de haver alguém na sala.
-6. **Ao vivo** — compartilhe o endereço com o público e inicie o espetáculo.
+6. **Ao vivo** — compartilhe o endereço com o público e abra a página do operador, de onde o espetáculo é iniciado.
+
+## Espera e entrada no ar
+
+Abrir a página do operador carrega o espetáculo **em espera**: o público vê a tela de espera do local (um logotipo e uma mensagem, definidos uma só vez em **Configurações → Tela de espera**) e nada do espetáculo. O operador pressiona **Espaço** (o botão diz **INICIAR**) para colocar o espetáculo no ar, e **Tirar do ar…** o retira de novo sem perder o lugar. Preparação, ensaio e edição nunca ficam diante do público enquanto o espetáculo está em espera, e um espetáculo em espera pode ser excluído.
 
 ## Onde fica tudo guardado
 

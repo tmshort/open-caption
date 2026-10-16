@@ -82,6 +82,7 @@ func TestInterruptShutsDownCleanly(t *testing.T) {
 	show := post("/api/admin/shows", map[string]any{"sample": true})
 	post("/api/admin/shows/"+fmt.Sprint(show["id"])+"/activate", map[string]any{"force": true})
 	post("/api/operator/claim", map[string]bool{"takeover": true})
+	post("/api/operator/onair", map[string]any{}) // a show waits in standby until it is started
 	for i := 0; i < 3; i++ {
 		post("/api/operator/next", map[string]any{})
 	}

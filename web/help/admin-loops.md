@@ -22,7 +22,7 @@ Captions, `[clear]`, sections, notes and other loops cannot go inside a loop.
 
 ## When a loop starts and stops
 
-- If the **first thing** in the show file is a loop, it starts by itself as soon as the show is started, so the audience sees the pre-show while people find their seats.
+- If the **first thing** in the show file is a loop, it starts when the operator puts the show on air (**START**), so the audience sees the pre-show while people find their seats.
 - Any other loop (for example at intermission) starts when the operator presses the spacebar on it.
 - The spacebar ends the loop and sends the next line. **Shift+Q** stops the loop and leaves the screen blank. **Back** returns to the loop and restarts it from the first item.
 

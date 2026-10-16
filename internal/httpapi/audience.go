@@ -31,6 +31,7 @@ func init() {
 func (s *Server) audienceRoutes(mux *http.ServeMux) {
 	sub, _ := fs.Sub(web.Audience, "audience")
 	static := http.StripPrefix("/static/audience/", http.FileServer(http.FS(sub)))
+	mux.HandleFunc("GET /standby-logo", s.standbyLogo)
 	mux.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Security-Policy", audienceCSP)
 		w.Header().Set("X-Content-Type-Options", "nosniff")

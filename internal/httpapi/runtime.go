@@ -53,6 +53,13 @@ type AudItem struct {
 	Deadline int64 `json:"deadline,omitempty"`
 }
 
+// StandbyView is what the standby screen shows: the venue's message and logo (both optional; with no message
+// the page uses its built-in words in the viewer's language).
+type StandbyView struct {
+	Message string `json:"message,omitempty"`
+	Logo    string `json:"logo,omitempty"` // URL of the logo image
+}
+
 // LangInfo names a language a show is available in.
 type LangInfo struct {
 	Code string `json:"code"`
@@ -77,6 +84,7 @@ type AudState struct {
 	Preload    []string           `json:"preload"`
 	Speakers   []string           `json:"speakers"` // order of first appearance; the position picks a character's color
 	Theme      Theme              `json:"theme"`
+	Standby    *StandbyView       `json:"standby,omitempty"` // only while the show is not on air (mode "standby")
 }
 
 const preloadMax = 8
@@ -110,6 +118,9 @@ type Runtime struct {
 	langs     map[string]*langRT  // languages of the active show
 	hubs      map[string]*hub.Hub // one per language code; kept across shows so connected devices stay put
 
+	standbyMode bool        // shows start in standby (see live.Config.Standby)
+	standby     StandbyView // the venue's standby screen
+
 	ctrlMu   sync.Mutex
 	ctrl     string // session token of the controlling operator
 	ctrlSeen time.Time
@@ -134,6 +145,33 @@ func NewRuntime(cfg config.Config) *Runtime {
 	rt.wg.Add(1)
 	go rt.opLoop()
 	return rt
+}
+
+// UseStandby makes every show start in standby: nothing of it reaches the audience until the operator starts
+// it. Call it before a show is loaded; it also puts the (empty) current show into standby.
+func (rt *Runtime) UseStandby() {
+	rt.mu.Lock()
+	rt.standbyMode = true
+	id, name, dir, theme := rt.showID, rt.showName, rt.assetsDir, rt.theme
+	rt.mu.Unlock()
+	if id == "" {
+		rt.SetShow("", name, dir, nil, theme)
+	}
+}
+
+// SetStandbyScreen sets the venue's standby screen and shows the change to devices that are looking at it.
+func (rt *Runtime) SetStandbyScreen(v StandbyView) {
+	rt.mu.Lock()
+	rt.standby = v
+	hubs := make(map[string]*hub.Hub, len(rt.hubs))
+	for c, h := range rt.hubs {
+		hubs[c] = h
+	}
+	l := rt.langs[rt.primary]
+	rt.mu.Unlock()
+	if l != nil && l.engine.Snapshot().Mode == live.ModeStandby {
+		rt.pushToAll(hubs)
+	}
 }
 
 // Close stops background goroutines and the engines, flushing live state.
@@ -238,7 +276,7 @@ func (rt *Runtime) newEngine(gen int, code string, cues []showfile.Cue, startSeq
 
 // engineConfigLocked is the engine configuration from the show's settings, falling back to config.yaml.
 func (rt *Runtime) engineConfigLocked(startSeq int64) live.Config {
-	c := live.Config{DefaultLoopSeconds: rt.cfg.Defaults.LoopItemSeconds, ScrollbackMax: rt.cfg.Audience.ScrollbackLines, StartSeq: startSeq}
+	c := live.Config{DefaultLoopSeconds: rt.cfg.Defaults.LoopItemSeconds, ScrollbackMax: rt.cfg.Audience.ScrollbackLines, StartSeq: startSeq, Standby: rt.standbyMode}
 	if rt.theme.LoopSeconds > 0 {
 		c.DefaultLoopSeconds = rt.theme.LoopSeconds
 	}
@@ -444,7 +482,15 @@ func (rt *Runtime) audState(lang string, st live.State, preload []string) AudSta
 	}
 	return AudState{Seq: st.Seq, TS: time.Now().UnixMilli(), Lang: lang, Languages: rt.languagesLocked(), Mode: st.Mode,
 		Scrollback: st.Scrollback, Fullscreen: rt.item(st.Fullscreen), Preload: preload,
-		Speakers: rt.langs[lang].speakers, Theme: rt.themeForLocked(lang)}
+		Speakers: rt.langs[lang].speakers, Theme: rt.themeForLocked(lang), Standby: rt.standbyForLocked(st.Mode)}
+}
+
+func (rt *Runtime) standbyForLocked(mode string) *StandbyView {
+	if mode != live.ModeStandby {
+		return nil
+	}
+	v := rt.standby
+	return &v
 }
 
 // themeForLocked is the theme with the pre-show message in the viewer's language.
@@ -480,7 +526,7 @@ func (rt *Runtime) onEvent(gen int, lang string, ev live.Event) {
 				st.Scrollback = []live.CaptionItem{}
 			}
 			payload = AudState{Seq: st.Seq, TS: ts, Lang: lang, Languages: rt.languagesLocked(), Mode: st.Mode, Scrollback: st.Scrollback,
-				Fullscreen: rt.item(st.Fullscreen), Preload: l.lastPreload, Speakers: l.speakers, Theme: rt.themeForLocked(lang)}
+				Fullscreen: rt.item(st.Fullscreen), Preload: l.lastPreload, Speakers: l.speakers, Theme: rt.themeForLocked(lang), Standby: rt.standbyForLocked(st.Mode)}
 		default:
 			payload = map[string]any{"seq": ev.Seq, "ts": ts}
 		}

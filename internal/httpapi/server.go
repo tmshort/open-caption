@@ -25,6 +25,7 @@ type Server struct {
 
 	adminAllow, operatorAllow config.AllowList // which computers may open Setup / the operator page
 	mdns                      *mdnsManager     // the local network name (open-caption.local)
+	standby                   bool             // shows start in standby (production); off for --dev
 	pinnedLevel               string           // the --log-level / OPEN_CAPTION_LOG_LEVEL value, if one was given
 	logs                      interface {
 		String() string
@@ -57,9 +58,17 @@ func New(cfg config.Config, version string) *Server {
 			s.store = st
 		}
 	}
+	s.applyStandby()
 	s.done.Add(1)
 	go s.janitor()
 	return s
+}
+
+// EnableStandby makes shows start in standby: nothing of a show reaches the audience until the operator
+// starts it, and Live means on air. (--dev keeps the older start-at-once behavior.)
+func (s *Server) EnableStandby() {
+	s.standby = true
+	s.rt.UseStandby()
 }
 
 // janitor drops rehearsals whose login has expired or been revoked, and forgets expired logins.

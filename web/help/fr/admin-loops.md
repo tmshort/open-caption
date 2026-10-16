@@ -22,7 +22,7 @@ Les sous-titres, `[clear]`, les sections, les notes et les autres boucles ne peu
 
 ## Quand une boucle démarre et s'arrête
 
-- Si la **première chose** du fichier du spectacle est une boucle, elle démarre toute seule dès que le spectacle est lancé : le public voit l'avant-spectacle pendant qu'il s'installe.
+- Si la **première chose** du fichier du spectacle est une boucle, elle démarre quand l'opérateur met le spectacle à l'antenne (**DÉMARRER**) : le public voit donc l'avant-spectacle pendant que les gens cherchent leur place.
 - Toute autre boucle (par exemple à l'entracte) démarre quand l'opérateur appuie sur la barre d'espace dessus.
 - La barre d'espace termine la boucle et envoie la ligne suivante. **Maj+Q** arrête la boucle et laisse l'écran vide. **Retour** revient à la boucle et la redémarre au premier élément.
 

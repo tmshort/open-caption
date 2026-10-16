@@ -17,6 +17,9 @@ const (
 	ModeIdle     = "idle"
 	ModeCaptions = "captions"
 	ModeBlank    = "blank"
+	// ModeStandby is what the audience is told while the show is not on air (before Start, or after Go off
+	// air): the venue's standby screen. The engine's own mode, lines and loop are kept underneath, unseen.
+	ModeStandby = "standby"
 )
 
 // Event types sent to audience clients (docs/04-protocol-and-api.md).
@@ -32,6 +35,7 @@ var (
 	ErrStale   = errors.New("stale revision")
 	ErrEnd     = errors.New("end of show file")
 	ErrNoLoop  = errors.New("no loop is running")
+	ErrStandby = errors.New("the show is not on air")
 	ErrNoUndo  = errors.New("nothing to undo")
 	ErrBadCue  = errors.New("cue index out of range")
 	historyMax = 100
@@ -80,6 +84,23 @@ type LoopStatus struct {
 	Deadline int64 `json:"deadline,omitempty"` // unix ms the loop's timer reaches zero (0: the loop has no timer)
 }
 
+// view is the state the audience may see: nothing of the show while it is not on air.
+func (e *Engine) view() State {
+	s := e.st.clone()
+	if e.standby {
+		s.Mode, s.Scrollback, s.Fullscreen = ModeStandby, []CaptionItem{}, nil
+	}
+	return s
+}
+
+// liveLocked is whether the show is on air. (Without Standby, the older rule: something has been sent.)
+func (e *Engine) liveLocked() bool {
+	if e.cfg.Standby {
+		return !e.standby
+	}
+	return e.touched
+}
+
 // OperatorState is what the operator UI needs besides the cue list.
 type OperatorState struct {
 	Seq       int64       `json:"seq"`
@@ -87,9 +108,10 @@ type OperatorState struct {
 	Cursor    int         `json:"cursor"`    // index of the next cue (may be operator-only)
 	NextIndex int         `json:"nextIndex"` // next audience-visible cue, -1 at the end
 	Total     int         `json:"total"`
-	Live      bool        `json:"live"`
-	Mode      string      `json:"mode"`   // audience mode: idle | captions | blank
-	LastAt    int64       `json:"lastAt"` // unix ms of the operator's last action (0 = none yet)
+	Live      bool        `json:"live"`    // on air (with Standby): the audience is being shown the show
+	Standby   bool        `json:"standby"` // not on air: the audience sees the venue's standby screen
+	Mode      string      `json:"mode"`    // audience mode: idle | captions | blank
+	LastAt    int64       `json:"lastAt"`  // unix ms of the operator's last action (0 = none yet)
 	Loop      *LoopStatus `json:"loop"`
 }
 
@@ -97,6 +119,10 @@ type OperatorState struct {
 type Config struct {
 	DefaultLoopSeconds float64
 	ScrollbackMax      int
+	// Standby makes a show start (and Reset return to) a standby state: nothing of the show reaches the
+	// audience until Start, which is also what Live means. Without it the show is on air at once, and Live
+	// means that a cue has been sent (kept for the tests and --dev).
+	Standby bool
 	// Now is the clock (the computer's local time); tests replace it. Nil means time.Now.
 	Now func() time.Time
 	// StartSeq is the sequence number the first event follows. A replacement
@@ -133,8 +159,11 @@ type Engine struct {
 	gen     int
 	history []snapshot
 	loop    *loopRun
-	touched bool  // a cue has been applied since activation/reset
-	lastAt  int64 // unix ms of the last operator action (0 = none yet)
+	touched bool // a cue has been applied since activation/reset (without Config.Standby)
+	// standby: the show is not on air. resumeLoop is the loop that restarts when it goes on air (-1: none).
+	standby    bool
+	resumeLoop int
+	lastAt     int64 // unix ms of the last operator action (0 = none yet)
 }
 
 // New creates an engine in its initial state (auto-starting a leading loop).
@@ -185,7 +214,7 @@ func (e *Engine) emit(typ string, data any) {
 	e.sink(Event{Seq: e.st.Seq, Type: typ, Data: data})
 }
 
-func (e *Engine) emitSnapshot() { e.emit(EvSnapshot, e.st.clone()) }
+func (e *Engine) emitSnapshot() { e.emit(EvSnapshot, e.view()) }
 
 // --- queries ---
 
@@ -193,7 +222,7 @@ func (e *Engine) emitSnapshot() { e.emit(EvSnapshot, e.st.clone()) }
 func (e *Engine) Snapshot() State {
 	e.mu.Lock()
 	defer e.mu.Unlock()
-	return e.st.clone()
+	return e.view()
 }
 
 // Operator returns the operator-facing state.
@@ -205,7 +234,7 @@ func (e *Engine) Operator() OperatorState {
 
 func (e *Engine) operatorLocked() OperatorState {
 	o := OperatorState{Seq: e.st.Seq, Rev: e.rev, Cursor: e.cursor, NextIndex: e.visibleFrom(e.cursor),
-		Total: len(e.cues), Live: e.touched, Mode: e.st.Mode, LastAt: e.lastAt}
+		Total: len(e.cues), Live: e.liveLocked(), Standby: e.standby, Mode: e.st.Mode, LastAt: e.lastAt}
 	if e.loop != nil {
 		o.Loop = &LoopStatus{Cue: e.loop.cue, Item: e.loop.item, Deadline: e.loop.deadline}
 	}
@@ -225,7 +254,7 @@ func (e *Engine) Cues() []showfile.Cue {
 func (e *Engine) Next(rev int64) (OperatorState, error) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
-	if err := e.checkLocked(rev); err != nil {
+	if err := e.checkOnAirLocked(rev); err != nil {
 		return e.operatorLocked(), err
 	}
 	idx := e.visibleFrom(e.cursor)
@@ -245,7 +274,7 @@ func (e *Engine) Next(rev int64) (OperatorState, error) {
 func (e *Engine) Back(rev int64) (OperatorState, error) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
-	if err := e.checkLocked(rev); err != nil {
+	if err := e.checkOnAirLocked(rev); err != nil {
 		return e.operatorLocked(), err
 	}
 	n := len(e.history)
@@ -272,7 +301,7 @@ func (e *Engine) Back(rev int64) (OperatorState, error) {
 func (e *Engine) Stop(rev int64) (OperatorState, error) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
-	if err := e.checkLocked(rev); err != nil {
+	if err := e.checkOnAirLocked(rev); err != nil {
 		return e.operatorLocked(), err
 	}
 	if e.loop == nil {
@@ -291,7 +320,7 @@ func (e *Engine) Stop(rev int64) (OperatorState, error) {
 func (e *Engine) Jump(index int, rev int64) (OperatorState, error) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
-	if err := e.checkLocked(rev); err != nil {
+	if err := e.checkOnAirLocked(rev); err != nil {
 		return e.operatorLocked(), err
 	}
 	if index < 0 || index > len(e.cues) {
@@ -316,7 +345,7 @@ func (e *Engine) Jump(index int, rev int64) (OperatorState, error) {
 func (e *Engine) SetBlank(on bool, rev int64) (OperatorState, error) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
-	if err := e.checkLocked(rev); err != nil {
+	if err := e.checkOnAirLocked(rev); err != nil {
 		return e.operatorLocked(), err
 	}
 	if on == (e.st.Mode == ModeBlank) {
@@ -339,7 +368,7 @@ func (e *Engine) SetBlank(on bool, rev int64) (OperatorState, error) {
 func (e *Engine) Clear(rev int64) (OperatorState, error) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
-	if err := e.checkLocked(rev); err != nil {
+	if err := e.checkOnAirLocked(rev); err != nil {
 		return e.operatorLocked(), err
 	}
 	e.pushLocked()
@@ -353,7 +382,7 @@ func (e *Engine) Clear(rev int64) (OperatorState, error) {
 func (e *Engine) Message(text string, rev int64) (OperatorState, error) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
-	if err := e.checkLocked(rev); err != nil {
+	if err := e.checkOnAirLocked(rev); err != nil {
 		return e.operatorLocked(), err
 	}
 	h, p := showfile.RenderInline(text)
@@ -364,7 +393,50 @@ func (e *Engine) Message(text string, rev int64) (OperatorState, error) {
 	return e.operatorLocked(), nil
 }
 
-// Reset returns to the initial state (not live), auto-starting a leading loop.
+// Start puts the show on air: the audience stops seeing the standby screen. A pre-show loop (or the loop that
+// was running when the show went off air) starts again from its first item.
+func (e *Engine) Start(rev int64) (OperatorState, error) {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	if err := e.checkLocked(rev); err != nil {
+		return e.operatorLocked(), err
+	}
+	if !e.standby {
+		return e.operatorLocked(), nil
+	}
+	e.standby = false
+	if e.resumeLoop >= 0 && e.resumeLoop < len(e.cues) {
+		e.beginLoopLocked(e.resumeLoop, false)
+	}
+	e.resumeLoop = -1
+	e.bumpLocked()
+	e.emitSnapshot()
+	return e.operatorLocked(), nil
+}
+
+// OffAir takes the show off the audience's screens (they see the standby screen) without losing the
+// position: Start puts it back as it was. A running loop is stopped and starts again from its first item.
+func (e *Engine) OffAir(rev int64) (OperatorState, error) {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	if err := e.checkLocked(rev); err != nil {
+		return e.operatorLocked(), err
+	}
+	if e.standby {
+		return e.operatorLocked(), nil
+	}
+	e.resumeLoop = -1
+	if e.loop != nil {
+		e.resumeLoop = e.loop.cue
+	}
+	e.stopLoopLocked()
+	e.standby = true
+	e.bumpLocked()
+	e.emitSnapshot()
+	return e.operatorLocked(), nil
+}
+
+// Reset returns to the initial state (not live; in standby, back to standby), auto-starting a leading loop otherwise.
 func (e *Engine) Reset(rev int64) (OperatorState, error) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
@@ -393,6 +465,9 @@ func (e *Engine) ReplaceCues(cues []showfile.Cue) (countChanged bool) {
 	}
 	e.cues = cues
 	e.history = nil
+	if e.standby && (e.resumeLoop < 0 || e.resumeLoop >= len(cues) || cues[e.resumeLoop].Kind != showfile.KindLoop) {
+		e.resumeLoop = -1 // the loop that would have started is gone
+	}
 	if e.cursor > len(cues) {
 		e.cursor = len(cues)
 	}
@@ -427,6 +502,17 @@ func (e *Engine) checkLocked(rev int64) error {
 	return nil
 }
 
+// checkOnAirLocked is checkLocked for the commands that change what the audience sees: they need the show on air.
+func (e *Engine) checkOnAirLocked(rev int64) error {
+	if err := e.checkLocked(rev); err != nil {
+		return err
+	}
+	if e.standby {
+		return ErrStandby
+	}
+	return nil
+}
+
 // --- internals ---
 
 func (e *Engine) visibleFrom(i int) int {
@@ -456,8 +542,13 @@ func (e *Engine) initialLocked() {
 	seq := e.st.Seq
 	e.st, e.cursor, e.touched = st, cursor, false
 	e.st.Seq = seq
+	e.standby, e.resumeLoop = e.cfg.Standby, -1
 	if loopCue >= 0 {
-		e.beginLoopLocked(loopCue, false)
+		if e.standby {
+			e.resumeLoop = loopCue // the pre-show starts when the show goes on air, not before
+		} else {
+			e.beginLoopLocked(loopCue, false)
+		}
 	}
 }
 
@@ -628,7 +719,11 @@ type Persisted struct {
 	// LoopDeadline keeps a minutes countdown running across a restart of the program.
 	LoopDeadline int64 `json:"loopDeadline,omitempty"`
 	Touched      bool  `json:"touched"`
-	LastAt       int64 `json:"lastAt,omitempty"`
+	// Standby: the show was not on air; ResumeLoop is the loop that restarts when it goes on air.
+	// (Saved files from before standby existed have neither: the show carries on as it was, on air.)
+	Standby    bool  `json:"standby,omitempty"`
+	ResumeLoop int   `json:"resumeLoop,omitempty"`
+	LastAt     int64 `json:"lastAt,omitempty"`
 	// History holds the most recent undo steps so Back still works after a restart.
 	History []HistoryEntry `json:"history,omitempty"`
 }
@@ -649,7 +744,7 @@ func (e *Engine) Export() Persisted {
 	defer e.mu.Unlock()
 	p := Persisted{Cursor: e.cursor, Rev: e.rev, NextID: e.nextID, Seq: e.st.Seq, Mode: e.st.Mode,
 		Scrollback: append([]CaptionItem(nil), e.st.Scrollback...), Fullscreen: e.st.Fullscreen,
-		LoopCue: -1, Touched: e.touched, LastAt: e.lastAt}
+		LoopCue: -1, Touched: e.touched, LastAt: e.lastAt, Standby: e.standby, ResumeLoop: e.resumeLoop}
 	from := max(0, len(e.history)-persistedHistory)
 	for _, h := range e.history[from:] {
 		p.History = append(p.History, HistoryEntry{State: h.st.clone(), Cursor: h.cursor, LoopCue: h.loopCue})
@@ -676,6 +771,10 @@ func (e *Engine) Restore(p Persisted) {
 		p.Cursor = len(e.cues)
 	}
 	e.cursor, e.rev, e.nextID, e.touched = p.Cursor, p.Rev, p.NextID, p.Touched
+	e.standby, e.resumeLoop = p.Standby && e.cfg.Standby, -1
+	if e.standby {
+		e.resumeLoop = p.ResumeLoop
+	}
 	e.st = State{Seq: p.Seq + 1, Mode: p.Mode, Scrollback: append([]CaptionItem{}, p.Scrollback...), Fullscreen: p.Fullscreen}
 	if e.st.Mode == "" {
 		e.st.Mode = ModeIdle

@@ -81,7 +81,7 @@ for (const code of LANGS) {
   const d = load(code);
   if (!d) { fail(code + ': no dictionary (web/shared/i18n/' + code + '.js)'); continue; }
   const missing = [...required.keys()].filter((k) => !(k in d));
-  if (missing.length) fail(code + ': ' + missing.length + ' untranslated, for example ' + JSON.stringify(missing.slice(0, 3)) + ' (' + required.get(missing[0]) + ')');
+  if (missing.length) fail(code + ': ' + missing.length + ' untranslated, for example ' + JSON.stringify(missing.slice(0, process.argv.includes('--all') ? 999 : 3)) + ' (' + required.get(missing[0]) + ')');
   for (const [k, v] of Object.entries(d)) {
     if (typeof v !== 'string' || !v.trim()) fail(code + ': empty translation for ' + JSON.stringify(k));
     else if (slots(k) !== slots(v)) fail(code + ': placeholders differ for ' + JSON.stringify(k) + ' -> ' + JSON.stringify(v));

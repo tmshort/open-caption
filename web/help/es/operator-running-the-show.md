@@ -27,7 +27,7 @@ Un archivo del espectáculo puede hacer lo mismo con los comandos `[blank]` y `[
 
 - Inicie sesión en la página del operador. Verá «Usted tiene el control». Si dice que otro operador tiene el control, use **Asumir el control** solo si le corresponde ser el operador.
 - Compruebe el recuento de espectadores (el icono de personas). Muestra cuántos dispositivos están conectados.
-- Si el archivo del espectáculo empieza con un bucle de previa, ya está en marcha en las pantallas del público.
+- Un espectáculo cargado queda en **espera**: el público ve la pantalla de espera del local (un logotipo y un mensaje) y nada del espectáculo, y esta página dice **FUERA DEL AIRE**. Pulse **Espacio** (el botón dice **INICIAR**) para poner el espectáculo en el aire. Si el archivo del espectáculo empieza con un bucle de previa, empieza entonces.
 
 ## Durante el espectáculo
 
@@ -40,5 +40,6 @@ Un archivo del espectáculo puede hacer lo mismo con los comandos `[blank]` y `[
 - **Ir a la sección…** (junto al cuadro de búsqueda) enumera los marcadores del archivo del espectáculo; al elegir uno se selecciona, y usted confirma el salto.
 - Para avanzar o retroceder, haga clic en una línea y luego confirme «Saltar aquí». También puede buscar con `/`.
 - Un aviso puntual como «El espectáculo se reanudará en breve» se puede enviar con **Mensaje…**. Pulse **Atrás** para quitarlo.
+- **Sacar del aire…** (arriba a la derecha) quita el espectáculo de las pantallas del público: vuelven a ver la pantalla de espera y el espectáculo conserva su lugar. **INICIAR** lo vuelve a poner en el aire exactamente donde estaba.
 
 Consulte [el teclado](topic:operator-keyboard) y [Si algo sale mal](topic:operator-if-something-goes-wrong).

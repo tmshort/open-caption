@@ -171,8 +171,17 @@ async function main() {
     await op.evaluate(() => fetch('/api/operator/claim', { method: 'POST', body: '{"takeover":true}' }));
     const en = await open({ viewport: { width: 420, height: 760, deviceScaleFactor: 2 } }); await en.goto(B + '/'); await sleep(900);
     const es = await open({ viewport: { width: 420, height: 760, deviceScaleFactor: 2 }, headers: { 'Accept-Language': 'es-MX,es;q=0.9,en;q=0.5' } }); await es.goto(B + '/'); await sleep(900);
+    // Standby: the show is loaded but not on air, so the audience sees the venue's screen and nothing of the show.
+    const standbyShown = (pg) => pg.evaluate(() => { const d = document.getElementById('standby'); return document.body.classList.contains('mode-standby') && getComputedStyle(d).display !== 'none' && d.textContent.trim().length > 0 && document.getElementById('fs').hidden && document.querySelectorAll('.cap').length === 0 && getComputedStyle(document.getElementById('captions')).visibility === 'hidden'; });
+    check('before the operator starts the show, the audience sees the standby screen', await standbyShown(en));
+    check('in every language (the built-in words are translated)', await es.evaluate(() => /Los subtítulos comenzarán en breve/.test(document.getElementById('standby').textContent)));
+    check('and the operator page says it is not on air, with START where NEXT will be', await op.evaluate(() => /STANDBY/.test(document.getElementById('live').textContent) && /START/.test(document.getElementById('next').textContent) && document.getElementById('offair').disabled && /NOT ON AIR/.test(document.getElementById('banner').textContent) && document.getElementById('stop').disabled));
+    await op.keyboard.press('Backspace'); await op.keyboard.press('b'); await sleep(400);
+    check('nothing but START does anything in standby', await standbyShown(en));
+    await op.keyboard.press('Space'); await sleep(T(900)); // START: the pre-show loop begins
+    check('START puts the show on air (LIVE), and the pre-show appears', await op.evaluate(() => /LIVE/.test(document.getElementById('live').textContent) && !document.getElementById('offair').disabled && /NEXT/.test(document.getElementById('next').textContent)));
     check('the item of a running loop is marked with a play triangle in the operator list', await op.evaluate(() => { const l = document.querySelectorAll('.items li.playing'); return l.length === 1 && l[0].getAttribute('aria-current') === 'true' && getComputedStyle(l[0].querySelector('.pl'), '::before').content.includes('▶'); }));
-    check('a leading loop starts by itself (fullscreen pre-show)', await en.evaluate(() => !document.getElementById('fs').hidden));
+    check('the pre-show loop is on the audience screens after START (fullscreen)', await en.evaluate(() => !document.getElementById('fs').hidden));
     check('English and Spanish devices each get their language', (await en.evaluate(() => document.documentElement.lang)) === 'en' && (await es.evaluate(() => document.documentElement.lang)) === 'es');
     check('the language menu is offered', await es.evaluate(() => !document.getElementById('langbtn').hidden));
     check('page labels are translated (Spanish)', (await es.evaluate(() => document.getElementById('gear').getAttribute('aria-label'))) === 'Tamaño del texto y colores');
@@ -230,7 +239,7 @@ async function main() {
     const long = Array.from({ length: 40 }, (_, i) => `Line ${i + 1}: the quick brown fox jumps over the lazy dog`).join('\n');
     const sid = (await api(op, 'POST', '/api/admin/shows', { name: 'Scroll test' })).body.id;
     await api(op, 'PUT', `/api/admin/shows/${sid}/showfile`, { text: long });
-    await api(op, 'POST', `/api/admin/shows/${sid}/activate`, { force: true }); // the first show is live
+    await api(op, 'POST', `/api/admin/shows/${sid}/activate`, { force: true, start: true }); // the first show is live
     await sleep(600);
     const nextN = (n) => op.evaluate(async (n) => { for (let i = 0; i < n; i++) await fetch('/api/operator/next', { method: 'POST', body: '{}' }); }, n);
     await nextN(25); await sleep(500);
@@ -267,7 +276,7 @@ async function main() {
     // With only a few lines on screen (they sit at the bottom), the older lines slide up instead of jumping.
     const fid = (await api(op, 'POST', '/api/admin/shows', { name: 'Few lines' })).body.id;
     await api(op, 'PUT', `/api/admin/shows/${fid}/showfile`, { text: 'One\nTwo\nThree\nFour' });
-    await api(op, 'POST', `/api/admin/shows/${fid}/activate`, { force: true }); await sleep(T(800));
+    await api(op, 'POST', `/api/admin/shows/${fid}/activate`, { force: true, start: true }); await sleep(T(800));
     await nextN(2); await sleep(T(700));
     await en.evaluate(() => { const first = document.querySelector('#captions .cap'); window.__seen = []; const f = () => { window.__seen.push(Math.round(first.getBoundingClientRect().top)); window.__raf = requestAnimationFrame(f); }; f(); });
     await nextN(1); await sleep(T(900));
@@ -280,7 +289,7 @@ async function main() {
     // An intermission timer: the loop's {timer} counts down live on the audience screen, from the moment the loop starts.
     const tid = (await api(op, 'POST', '/api/admin/shows', { name: 'Timer test' })).body.id;
     await api(op, 'PUT', `/api/admin/shows/${tid}/showfile`, { text: '[loop: timer 15 minutes]\n**INTERMISSION**\nBack in {timer}\n[/loop]\nWelcome back' });
-    await api(op, 'POST', `/api/admin/shows/${tid}/activate`, { force: true });
+    await api(op, 'POST', `/api/admin/shows/${tid}/activate`, { force: true, start: true });
     const timerText = () => en.evaluate(() => { const t = document.querySelector('#fs [data-timer]'); return t ? t.textContent : null; });
     await en.waitForFunction(() => { const t = document.querySelector('#fs [data-timer]'); return t && /\d/.test(t.textContent); }, { timeout: T(25000) }).catch(() => {});
     const t1 = await timerText();
@@ -296,18 +305,40 @@ async function main() {
     const t3 = await timerText();
     check('a device with its clock an hour wrong shows the right time left', mins(t3) >= 14 && mins(t3) <= 15, t3);
     // it counts down: a very short timer (0.05 minutes, 3 seconds) reaches 0 min
-    await api(op, 'PUT', `/api/admin/shows/${tid}/showfile`, { text: '[loop: timer 0.05 minutes]\nBack in {timer}\n[/loop]\nWelcome back' });
-    await api(op, 'POST', `/api/admin/shows/${tid}/activate`, { force: true });
+    await api(op, 'PUT', `/api/admin/shows/${tid}/showfile`, { text: '[loop: timer 0.05 minutes]\nBack in {timer}\n[/loop]\nWelcome back', confirm: 'Untitled show' });
+    await api(op, 'POST', `/api/admin/shows/${tid}/activate`, { force: true, start: true });
     await en.waitForFunction(() => { const t = document.querySelector('#fs [data-timer]'); return t && /^1 ?min/i.test(t.textContent.trim()); }, { timeout: T(15000) }).catch(() => {});
     const first = await timerText();
     await en.waitForFunction(() => { const t = document.querySelector('#fs [data-timer]'); return t && /^0 ?min/i.test(t.textContent.trim()); }, { timeout: T(15000) }).catch(() => {});
     check('the figure counts down to 0 min', /^1 ?min/i.test(first || '') && /^0 ?min/i.test((await timerText()) || ''), [first, await timerText()]);
+
+    // Going off air: the audience gets the standby screen at once, the show keeps its place, START puts it back.
+    await op.bringToFront(); // a page in the background does not get its dialog's close event
+    await op.evaluate(() => document.getElementById('offair').click());
+    await op.waitForFunction(() => document.getElementById('offdlg').open, { timeout: T(5000) }).catch(() => {});
+    check('Go off air asks first, and says what happens', await op.evaluate(() => /standby screen/.test(document.getElementById('offdlg').innerText)));
+    await op.evaluate(() => document.getElementById('offgo').click()); await sleep(T(900));
+    check('off air: the audience sees the standby screen again, nothing of the show', await standbyShown(en));
+    check('and the operator page shows STANDBY with START', await op.evaluate(() => /STANDBY/.test(document.getElementById('live').textContent) && /START/.test(document.getElementById('next').textContent)));
+    check('the show can be deleted while off air (it is not live)', await (async () => { const sh = (await api(op, 'GET', '/api/admin/shows')).body.shows.find((x) => x.active); return sh && sh.live === false; })());
+    await op.keyboard.press('Space'); await sleep(T(900));
+    check('START puts it back on air where it was (the pre-show timer is showing again)', await en.evaluate(() => !document.body.classList.contains('mode-standby') && !!document.querySelector('#fs [data-timer]')));
 
     section('Settings and security');
     const guard = await open(); await guard.goto(B + '/admin'); await guard.waitForSelector('#pw'); await guard.type('#pw', ADMIN); await guard.keyboard.press('Enter'); await guard.waitForSelector('#steps button');
     await click(guard, 'Settings'); await sleep(600);
     check('Settings tells you Setup is open to the whole network', (await guard.evaluate(() => document.getElementById('dlg').innerText)).includes('any computer on the network'));
     check('Settings offers the network name setting', await guard.evaluate(() => /Network name/.test(document.getElementById('dlg').innerText) && !document.querySelector('#dlg input[aria-label="Announce this computer by name"]').checked));
+    check('Settings has a Standby screen section with a message and a logo', await guard.evaluate(() => { const d = document.getElementById('dlg').innerText; return /Standby screen/.test(d) && !!document.querySelector('#dlg input[aria-label="Standby message"]') && !!document.querySelector('#dlg input[type=file]'); }));
+    await guard.type('#dlg input[aria-label="Standby message"]', 'Welcome to the Little Theatre');
+    await guard.evaluate(() => [...document.querySelectorAll('#dlg button')].find((x) => x.textContent === 'Save message').click()); await sleep(600);
+    const png = path.join(os.tmpdir(), 'oc-logo-' + process.pid + '.png');
+    fs.writeFileSync(png, Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64'));
+    await (await guard.$('#dlg input[type=file]')).uploadFile(png); await sleep(900);
+    try { fs.unlinkSync(png); } catch (e) { /* not important */ }
+    const sbs = (await api(guard, 'GET', '/api/admin/settings')).body.standby;
+    check('the standby message and logo are saved (venue-level)', sbs.message === 'Welcome to the Little Theatre' && /^\/standby-logo\?v=/.test(sbs.logo || ''), sbs);
+    check('and the logo is public, for the audience page', await guard.evaluate(async (u) => { const r = await fetch(u, { credentials: 'omit' }); return r.ok && /image\/png/.test(r.headers.get('Content-Type')); }, sbs.logo));
     check('Settings offers the log detail setting', await guard.evaluate(() => !!document.querySelector('#dlg select[aria-label="Log detail"]')));
     check('the Settings window has no Recent log button (it is on Go Live)', await guard.evaluate(() => !document.getElementById('dlgextra') || document.getElementById('dlgextra').hidden));
     check('and its only footer button just closes it', await guard.evaluate(() => document.getElementById('dlgok').textContent.trim() === 'Close' && document.getElementById('dlgcancel').hidden));
@@ -383,6 +414,10 @@ async function main() {
     const hist = JSON.stringify((await api(arch, 'GET', '/api/admin/shows/' + lastId + '/showfile/history')).body); check('a version can be given a name', hist.includes('Dress rehearsal'), hist);
     await arch.evaluate(() => document.getElementById('dlgok').click()); await sleep(300);
     check('loading it changes nothing until Save', (await arch.evaluate(() => document.querySelector('.editor textarea').value)) !== (await api(arch, 'GET', '/api/admin/shows/' + lastId + '/showfile')).body.text);
+    // Go Live no longer puts a show in front of the audience: it opens the operator page, with the show in standby.
+    await step(arch, 'Go Live'); await sleep(T(900));
+    check('Go Live offers Open the operator page (the show waits in standby), not Start show', await arch.evaluate(() => { const t = document.getElementById('panel').innerText; return /Open the operator page/.test(t) && !/Start show/.test(t) && /standby/.test(t); }));
+    await step(arch, 'Show file'); await sleep(T(600));
     // Offline editing: download the plain show file, edit it elsewhere, open it again and save.
     check('the Show file step offers the show file as a plain download', await arch.evaluate(() => { const l = [...document.querySelectorAll('a')].find((x) => x.textContent === 'Download the show file'); return !!l && /\/showfile\/download$/.test(l.getAttribute('href')) && /\.md$/.test(l.getAttribute('download')); }));
     const dl = await arch.evaluate(async (id) => { const r = await fetch('/api/admin/shows/' + id + '/showfile/download'); const bytes = new Uint8Array(await r.clone().arrayBuffer()); const t = await r.text(); return { ok: r.ok, disp: r.headers.get('Content-Disposition'), bom: bytes[0] === 0xEF && bytes[1] === 0xBB && bytes[2] === 0xBF, crlf: t.includes('\r\n'), text: t }; }, lastId);

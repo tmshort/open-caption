@@ -22,7 +22,7 @@ Untertitel, `[clear]`, Abschnitte, Notizen und andere Schleifen dürfen nicht in
 
 ## Wann eine Schleife startet und stoppt
 
-- Wenn das **Erste** in der Show-Datei eine Schleife ist, startet sie von selbst, sobald die Show gestartet wird; das Publikum sieht die Vorab-Anzeige, während es seine Plätze sucht.
+- Wenn das **Erste** in der Show-Datei eine Schleife ist, startet sie, wenn der Bediener die Show auf Sendung bringt (**START**), sodass das Publikum die Zeit vor der Show sieht, während die Leute ihre Plätze suchen.
 - Jede andere Schleife (zum Beispiel in der Pause) startet, wenn der Operator die Leertaste darauf drückt.
 - Die Leertaste beendet die Schleife und sendet die nächste Zeile. **Umschalt+Q** stoppt die Schleife und lässt den Bildschirm leer. **Zurück** kehrt zur Schleife zurück und startet sie beim ersten Element neu.
 

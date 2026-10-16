@@ -204,7 +204,7 @@
     const o = op(), now = currentIndex();
     S.rows.forEach((li, i) => {
       li.classList.toggle('sent', i < o.cursor && i !== now);
-      li.classList.toggle('now', i === now);
+      li.classList.toggle('now', i === now && !o.standby); // nothing is on the audience screens while in standby
       li.classList.toggle('next', i === o.nextIndex);
       li.classList.toggle('sel', i === S.sel);
       // a running loop: a small play triangle beside the item the audience is looking at now
@@ -225,7 +225,7 @@
     const p = S.payload; if (!p) return;
     const o = p.op;
     $('show').textContent = (REHEARSAL ? __('REHEARSAL') + ' — ' : '') + (p.show.name || p.show.id || __('No show loaded'));
-    const live = $('live'); live.textContent = o.live ? '● ' + __('LIVE') : __('NOT LIVE'); live.classList.toggle('on', o.live);
+    const live = $('live'); live.textContent = o.live ? '● ' + __('LIVE') : o.standby ? __('STANDBY') : __('NOT LIVE'); live.classList.toggle('on', o.live); live.classList.toggle('standby', !!o.standby);
     const langs = p.languages || [];
     let txt = '👥 ' + p.audience;
     if (langs.length > 1) { // how many devices are reading each language
@@ -239,11 +239,18 @@
     $('takeover').hidden = mine;
     $('takeover').textContent = p.controller ? __('Take over') : __('Take control');
     $('stop').disabled = !o.loop; // always in place, so the buttons never move while the show runs
+    // Standby: the show is not on air. NEXT becomes START (same place, same key), the rest wait.
+    document.body.classList.toggle('standby', !!o.standby);
+    $('offair').disabled = !!o.standby;
+    ['back', 'blank', 'clear', 'message'].forEach((id) => { $(id).disabled = !!o.standby; }); // (a disabled control is exempt from the contrast rule, and says what it is)
+    $('next').firstChild.textContent = o.standby ? __('START ▶') : __('NEXT ▶');
+    $('next').title = o.standby ? __('Put the show on air (Space)') : __('Next (Space)');
     renderLastSent();
     $('blank').firstChild.textContent = o.mode === 'blank' ? __('Unblank') : __('Blank');
     const b = $('banner');
     S.timerEnds = o.loop && o.loop.deadline ? o.loop.deadline : 0;
-    if (o.loop) {
+    if (o.standby) { b.hidden = false; b.className = 'standby'; b.textContent = '⏸ ' + __('NOT ON AIR — the audience sees the standby screen. Press Space (START) to put the show on air; it carries on from where it is.'); }
+    else if (o.loop) {
       const c = S.cues[o.loop.cue]; b.hidden = false; b.className = 'loop';
       b.textContent = '🔁 ' + __('LOOP RUNNING — item {n} of {total}. NEXT ends it; STOP blanks the screen.', { n: o.loop.item + 1, total: c ? (c.items || []).length : '?' });
       if (S.timerEnds) { const t = document.createElement('b'); t.id = 'bannertimer'; b.appendChild(document.createTextNode(' ')); b.appendChild(t); paintBannerTimer(); }
@@ -269,8 +276,8 @@
     finally { S.inflight = false; }
   }
 
-  const next = () => (S.sel !== null ? confirmJump() : send('next'));
-  $('next').addEventListener('click', () => send('next'));
+  const next = () => (op().standby ? send('onair') : S.sel !== null ? confirmJump() : send('next'));
+  $('next').addEventListener('click', () => send(op().standby ? 'onair' : 'next'));
   $('back').addEventListener('click', () => send('back'));
   $('stop').addEventListener('click', () => send('stop'));
   $('blank').addEventListener('click', () => send('blank', { on: op().mode !== 'blank' }));
@@ -311,6 +318,8 @@
   // dialogs
   $('message').addEventListener('click', () => { $('msgtext').value = ''; $('msgdlg').showModal(); $('msgtext').focus(); });
   $('msgdlg').addEventListener('close', () => { if ($('msgdlg').returnValue === 'send' && $('msgtext').value.trim()) send('message', { text: $('msgtext').value.trim() }); });
+  $('offair').addEventListener('click', () => $('offdlg').showModal());
+  $('offdlg').addEventListener('close', () => { if ($('offdlg').returnValue === 'go') send('offair'); });
   $('reset').addEventListener('click', () => $('resetdlg').showModal());
   $('resetdlg').addEventListener('close', () => { if ($('resetdlg').returnValue === 'go') send('reset'); });
 
@@ -341,6 +350,8 @@
     let handled = true;
     const now = Date.now();
     const quick = now - lastKey < 120; // debounce double-fire from bouncing clickers
+    // Not on air: only START (Space and the other advance keys), search, Restart and Help do anything.
+    if (op().standby && ['Backspace', 'ArrowLeft', 'PageUp', 'b', 'B', 'c', 'C', 'Q'].indexOf(e.key) >= 0) return;
     switch (e.key) {
       case ' ': case 'ArrowRight': case 'PageDown': case 'Enter': if (!quick) next(); break;
       case 'Backspace': case 'ArrowLeft': case 'PageUp': if (!quick) send('back'); break;

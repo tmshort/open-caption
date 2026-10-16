@@ -27,7 +27,7 @@ Un fichier de spectacle peut faire la même chose avec les commandes `[blank]` e
 
 - Connectez-vous à la page de l'opérateur. Vous verrez « Vous avez la main ». Si elle indique qu'un autre opérateur a la main, utilisez **Reprendre la main** seulement si c'est bien vous l'opérateur.
 - Vérifiez le nombre de spectateurs (l'icône de personnes). Il indique combien d'appareils sont connectés.
-- Si le fichier du spectacle commence par une boucle d'avant-spectacle, elle tourne déjà sur les écrans du public.
+- Un spectacle chargé reste **en attente** : le public voit l'écran d'attente du lieu (un logo et un message) et rien du spectacle, et cette page indique **HORS ANTENNE**. Appuyez sur **Espace** (le bouton indique **DÉMARRER**) pour mettre le spectacle à l'antenne. Si le fichier du spectacle commence par une boucle d'avant-spectacle, elle commence alors.
 
 ## Pendant le spectacle
 
@@ -40,5 +40,6 @@ Un fichier de spectacle peut faire la même chose avec les commandes `[blank]` e
 - **Aller à la section…** (à côté de la zone de recherche) liste les signets du fichier du spectacle ; en choisir un le sélectionne, et vous confirmez le saut.
 - Pour avancer ou reculer, cliquez sur une ligne, puis confirmez « Sauter ici ». Vous pouvez aussi chercher avec `/`.
 - Une annonce ponctuelle comme « Le spectacle reprendra bientôt » s'envoie avec **Message…**. Appuyez sur **Retour** pour la retirer.
+- **Couper l'antenne…** (en haut à droite) retire le spectacle des écrans du public : il revoit l'écran d'attente, et le spectacle garde sa place. **DÉMARRER** le remet à l'antenne exactement où il en était.
 
 Voir [le clavier](topic:operator-keyboard) et [En cas de problème](topic:operator-if-something-goes-wrong).
