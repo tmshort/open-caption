@@ -426,11 +426,13 @@ async function main() {
       check(lang + ': the sign-in page is translated', !/Sign in|Admin password/.test(loginText) && (await leaksOf(a)).length === 0, [loginText.slice(0, 120), await leaksOf(a)]);
       await signIn(a, '#steps button');
       check(lang + ': the Setup steps are translated', (await a.evaluate(() => document.getElementById('steps').innerText)).includes(SEEN[lang]) && !(await a.evaluate(() => document.documentElement.lang !== '' && false)));
-      const leaks = [];
+      const leaks = [], stray = [];
       for (const step of ['Shows', 'Show file', 'Images', 'Look', 'Test', 'Go Live']) {
         await a.evaluate((i) => document.querySelectorAll('#steps button')[i].click(), ['Shows', 'Show file', 'Images', 'Look', 'Test', 'Go Live'].indexOf(step));
         await sleep(700); leaks.push(...(await leaksOf(a)));
+        stray.push(...(await a.evaluate(() => [...document.getElementById('panel').innerText.matchAll(/\b(null|undefined|NaN|\[object Object\])\b/g)].map((m) => m[0]))));
       }
+      check(lang + ': no stray "null" or "undefined" is printed on any step', stray.length === 0, stray);
       await a.evaluate(() => document.getElementById('settingsbtn').click()); await sleep(700); leaks.push(...(await leaksOf(a)));
       check(lang + ': no English is left in Setup (steps, Settings dialog)', leaks.length === 0, [...new Set(leaks)].slice(0, 8));
       const hp = await uiPage('/help?role=admin', lang);

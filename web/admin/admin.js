@@ -639,7 +639,7 @@
     }
     p.append(
       h('h2', {}, A.lang ? __('Show file — {name}', { name: cur.name }) : __('Show file')),
-      tabs, translating,
+      tabs, ...(translating ? [translating] : []), // (append() would print a null as the word "null")
       h('p', { class: 'hint' }, __('This file holds everything about the show except its images: its title and look in a [settings] block, and the lines themselves. Each line is one caption; one press of the spacebar sends one line. You can paste, type, or drop a .txt or .md file. Click a problem to jump to its line.')),
       h('div', { class: 'row' }, h('label', { class: 'row' }, __('Open a file:'), fileInput), h('a', { class: 'btn', href: '/api/admin/shows/' + show.id + '/showfile/download' + q, download: show.id + (A.lang ? '.' + A.lang : '') + '.md', title: __('Edit it in any text editor, then bring it back with Open a file') }, __('Download the show file')), h('button', { onclick: () => openHelp('admin-writing-a-show-file') }, __('Show file help')), h('button', { onclick: showHistory, title: __('Each save keeps the version it replaced') }, __('Earlier versions…')), h('span', { class: 'grow' }), status, saveBtn),
       tools,
