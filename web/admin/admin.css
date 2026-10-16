@@ -26,10 +26,7 @@ button.quiet, a.quiet { background: none; border: none; color: var(--dim); text-
 #login { max-width: 28rem; margin: 12vh auto; padding: 0 1rem; }
 #login label { display: block; margin: 1rem 0; } #login input { width: 100%; max-width: 20rem; }
 #loginerr, .err { color: var(--bad); min-height: 1.5em; }
-header { display: flex; align-items: center; gap: .8rem; padding: .6rem 1rem; background: var(--panel); border-bottom: 1px solid var(--line); flex-wrap: wrap; }
 .grow { flex: 1; }
-.pill { padding: .1rem .6rem; border-radius: 99px; background: var(--bg); border: 1px solid var(--line); font-size: .85rem; }
-.pill.live { background: var(--bad); color: #fff; border-color: var(--bad); font-weight: 700; }
 nav#steps { display: flex; gap: .3rem; padding: .6rem 1rem; overflow-x: auto; background: var(--panel); border-bottom: 1px solid var(--line); }
 nav#steps button { white-space: nowrap; border-radius: 99px; }
 nav#steps button.on { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
@@ -190,7 +187,3 @@ img.sblogo { max-height: 6rem; max-width: 12rem; object-fit: contain; background
 img.sblogo[hidden] { display: none; }
 a.btn.primary { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); font-weight: 600; }
 .startbox a.btn.big { font-size: 1.25rem; padding: .8rem 1.2rem; justify-content: center; text-align: center; }
-#dot { width: 12px; height: 12px; border-radius: 50%; background: var(--bad); flex: none; }
-#dot.on { background: var(--ok); }
-/* the right-hand group moves to the next line as a whole when the header is too narrow, never one item at a time */
-.rhs { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: .7rem; margin-left: auto; }

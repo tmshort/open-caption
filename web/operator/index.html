@@ -10,6 +10,7 @@
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="apple-touch-icon" href="/static/shared/apple-touch-icon.png">
 <title>Operator</title>
+<link rel="stylesheet" href="/static/shared/header.css">
 <link rel="stylesheet" href="/static/operator/operator.css">
 </head>
 <body class="viewonly">
@@ -29,7 +30,7 @@
     <button id="takeover" hidden>Take over</button>
     <!-- right side, in the same order as Setup's: devices, language (added by script), the page's own actions, the other page, Help, Sign out, connection -->
     <div class="rhs">
-    <span id="viewers" title="Audience devices connected">👥 0</span>
+    <span id="viewers" class="pill" title="Audience devices connected">👥 0</span>
     <button id="offair" class="quiet" title="Take the show off the audience's screens. They see the standby screen; the show stays where it is">Go off air…</button>
     <button id="reset" class="quiet">Restart show…</button>
     <a id="setuplink" class="quiet" href="/admin" title="Back to Setup" hidden>Setup</a>

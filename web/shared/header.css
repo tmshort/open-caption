@@ -1,0 +1,35 @@
+/* The header that Setup and the operator page share, so the two look and size alike: the same type size, spacing,
+   status pills, links, language menu and connection dot. Each page sets the colours it uses (--panel, --bg, --dim,
+   --fg, --line, --bad, --ok); the fallbacks below are only for a page that sets none. */
+header {
+  display: flex; align-items: center; flex-wrap: wrap; gap: .7rem; padding: .6rem 1rem;
+  font-size: 16px; line-height: 1.4; font-weight: 400;
+  background: var(--panel, #16161a); border-bottom: 1px solid var(--line, #2a2a31);
+}
+header h1, header #show { margin: 0; font-size: 1.25rem; font-weight: 700; line-height: 1.3; }
+header h1 span { color: var(--dim, #8b909a); font-weight: 400; }
+/* status pills: the show on the left, the audience count on the right, LIVE and STANDBY */
+.pill, .badge {
+  display: inline-block; padding: .1rem .6rem; border-radius: 99px; font-size: .85rem; line-height: 1.4;
+  background: var(--bg, #0b0b0d); border: 1px solid var(--line, #3a3a44); color: inherit;
+}
+.pill.live, .badge.on { background: var(--bad, #b3261e); border-color: var(--bad, #b3261e); color: #fff; font-weight: 700; }
+.badge.standby { background: #1d3b6f; border-color: #1d3b6f; color: #cfe0ff; font-weight: 700; }
+header #ctrl, header #lastsent { font-size: .85rem; color: var(--dim, #8b909a); }
+/* links and buttons: all the same size and height, drawn quietly */
+header button.quiet, header a.quiet {
+  display: inline-flex; align-items: center; box-sizing: border-box; min-height: 2.4rem; padding: .3rem .6rem;
+  font: inherit; font-size: 1rem; line-height: 1.4; color: var(--dim, #8b909a); background: none; border: none; border-radius: 8px;
+  text-decoration: none; cursor: pointer;
+}
+header button.quiet:hover:not(:disabled), header a.quiet:hover { color: var(--fg, #eceff4); }
+header button.quiet:disabled { opacity: .45; cursor: not-allowed; }
+header [hidden], header button.quiet[hidden], header a.quiet[hidden] { display: none; } /* a hidden link or button stays hidden whatever else sets its display */
+header select.uilang {
+  font: inherit; font-size: 1rem; min-height: 2.4rem; box-sizing: border-box; padding: .45rem .6rem; color: inherit;
+  background: var(--bg, #0f0f12); border: 1px solid var(--line, #3a3a44); border-radius: 6px;
+}
+/* the right-hand group moves to the next line as a whole when the header is too narrow, never one item at a time */
+.rhs { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: .7rem; margin-left: auto; }
+#dot { flex: none; width: 12px; height: 12px; border-radius: 50%; background: var(--bad, #b3261e); }
+#dot.on { background: var(--ok, #2ecc71); }

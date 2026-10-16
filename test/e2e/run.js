@@ -346,6 +346,8 @@ async function main() {
     section('The operator page and Setup');
     // The right side of the header is in the same order on both pages (devices, language, the page's own actions, the other page, Help, Sign out, connection).
     const headerOrder = (pg, sels) => pg.evaluate((sels) => { const pts = sels.map((q) => { const e = document.querySelector(q); if (!e || e.hidden || !e.offsetWidth) return null; const r = e.getBoundingClientRect(); return [Math.round(r.top / 40), r.left]; }); const seen = pts.filter(Boolean); return { ok: seen.every((x, i) => i === 0 || x[0] > seen[i - 1][0] || (x[0] === seen[i - 1][0] && x[1] > seen[i - 1][1])), pts: pts.map((x, i) => (x ? sels[i] : '(' + sels[i] + ' hidden)')) }; }, sels);
+    const headerLook = (pg) => pg.evaluate(() => { const g = (q) => { const e = document.querySelector(q); if (!e || !e.offsetWidth) return null; const c = getComputedStyle(e); return [c.fontSize, c.fontFamily, c.fontWeight, Math.round(e.getBoundingClientRect().height)].join('|'); }; const h = document.querySelector('header'); return { header: getComputedStyle(h).fontSize + '|' + getComputedStyle(h).paddingTop + '|' + Math.round(h.getBoundingClientRect().height), title: g('header h1, header #show').split('|').slice(0, 3).join('|'), pill: g('#viewers'), help: g('#helpbtn'), lang: g('header select.uilang'), dot: g('#dot').split('|')[3] }; });
+    const opLook = await headerLook(op);
     {
       const oh = await headerOrder(op, ['#viewers', 'header select.uilang', '#offair', '#reset', '#setuplink', '#helpbtn', '#logout', '#dot']);
       check('operator header, right side: devices, language, Go off air, Restart, Setup, Help, Sign out, connection', oh.ok && oh.pts.filter((x) => x.includes('hidden')).length === 0, oh);
@@ -355,7 +357,7 @@ async function main() {
       const pg = await open();
       await pg.evaluateOnNewDocument((r) => { const f = window.fetch; window.fetch = (u, o) => f(u, o).then((resp) => (String(u).includes('/api/operator/state') ? resp.json().then((j) => { j.role = r; return new Response(JSON.stringify(j), { status: 200, headers: { 'Content-Type': 'application/json' } }); }) : resp)); }, role);
       await pg.goto(B + '/operator'); await pg.waitForSelector('#list .cue');
-      check('on the operator page a session with the ' + role + ' role ' + (linked ? 'has a link back to Setup at the top' : 'has no link to Setup'), await pg.evaluate((want) => { const l = document.getElementById('setuplink'); return want ? (!l.hidden && l.getAttribute('href') === '/admin' && l.getBoundingClientRect().top < 120 && l.textContent === 'Setup') : l.hidden; }, linked));
+      check('on the operator page a session with the ' + role + ' role ' + (linked ? 'has a link back to Setup at the top' : 'has no link to Setup'), await pg.evaluate((want) => { const l = document.getElementById('setuplink'); return want ? (!l.hidden && l.offsetWidth > 0 && l.getAttribute('href') === '/admin' && l.getBoundingClientRect().top < 120 && l.textContent === 'Setup') : (l.hidden && l.offsetWidth === 0); }, linked));
       await pg.close();
     }
     // Moving back and forth between Setup and the operator page must not hang: a browser keeps six connections to one
@@ -447,6 +449,8 @@ async function main() {
     {
       const ah = await headerOrder(arch, ['#viewers', 'header select.uilang', '#settingsbtn', 'header a[href="/operator"]', '#helpbtn', '#logout', '#dot']);
       check('Setup header, right side: devices, language, Settings, Run, Help, Sign out, connection', ah.ok && ah.pts.filter((x) => x.includes('hidden')).length === 0, ah);
+      const adLook = await headerLook(arch);
+      check('the two headers use the same type, spacing and control sizes', JSON.stringify(adLook) === JSON.stringify(opLook), { operator: opLook, setup: adLook });
       check('and the Setup page shows the server is answering (green dot)', await arch.evaluate(() => document.getElementById('dot').classList.contains('on')));
     }
     check('a show to archive is created', made.status === 201 || made.status === 200, made);
@@ -639,9 +643,9 @@ async function main() {
     const lp = await ctx.newPage(); lp.setDefaultTimeout(T(8000)); lp.on('dialog', (d) => d.accept());
     await lp.goto(B + '/operator'); await lp.waitForSelector('#list .cue', { timeout: T(15000) }).catch(() => {});
     check('on localhost the operator page opens without a password', await lp.evaluate(() => document.getElementById('login').hidden && !document.getElementById('app').hidden));
-    check('and links back to Setup (it is signed in as admin), with no Sign out', await lp.evaluate(() => !document.getElementById('setuplink').hidden && document.getElementById('logout').hidden));
+    check('and links back to Setup (it is signed in as admin), with no Sign out', await lp.evaluate(() => !document.getElementById('setuplink').hidden && document.getElementById('logout').offsetWidth === 0));
     await lp.goto(B + '/admin'); await lp.waitForSelector('#steps button', { timeout: T(15000) }).catch(() => {});
-    check('and Setup opens without a password, with no Sign out', await lp.evaluate(() => document.getElementById('login').hidden && !!document.querySelector('#steps button') && document.getElementById('logout').hidden));
+    check('and Setup opens without a password, with no Sign out', await lp.evaluate(() => document.getElementById('login').hidden && !!document.querySelector('#steps button') && document.getElementById('logout').offsetWidth === 0));
     await lp.close(); await ctx.close();
     // the address of this computer on the network is not localhost, so a password is asked for there
     const lan = require('os').networkInterfaces();
