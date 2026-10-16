@@ -9,7 +9,7 @@ Os espectadores conectam seus próprios telefones e tablets ao **WiFi de visitan
 - Uma conexão por cabo é o melhor para este computador. Peça um endereço reservado (uma «reserva DHCP») para que o endereço não mude entre espetáculos.
 - Nenhuma conexão com a internet é necessária.
 
-Teste antes do primeiro espetáculo: conecte um telefone ao WiFi de visitantes e abra o endereço mostrado na etapa **Conduzir**.
+Teste antes do primeiro espetáculo: conecte um telefone ao WiFi de visitantes e abra o endereço mostrado na etapa **Conduzir**. Para um projetor ou uma tela grande, a mesma etapa lista um link de projetor: abra-o no computador ao qual o projetor está ligado.
 
 ## Deixar o endereço fácil
 

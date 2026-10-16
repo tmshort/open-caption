@@ -9,7 +9,7 @@ Zuschauer verbinden ihre eigenen Telefone und Tablets mit dem **Gast-WLAN** des 
 - Für diesen Computer ist eine Kabelverbindung am besten. Bitten Sie um eine reservierte Adresse (eine „DHCP-Reservierung“), damit sich die Adresse zwischen den Vorstellungen nicht ändert.
 - Es ist keine Internetverbindung nötig.
 
-Testen Sie es vor der ersten Show: Verbinden Sie ein Telefon mit dem Gast-WLAN und öffnen Sie die im Schritt **Fahren** angezeigte Adresse.
+Testen Sie es vor der ersten Show: Verbinden Sie ein Telefon mit dem Gast-WLAN und öffnen Sie die im Schritt **Fahren** angezeigte Adresse. Für einen Projektor oder einen großen Bildschirm führt derselbe Schritt einen Projektor-Link auf: Öffnen Sie ihn auf dem Computer, an dem der Projektor angeschlossen ist.
 
 ## Die Adresse leicht machen
 

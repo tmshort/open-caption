@@ -475,6 +475,7 @@ async function main() {
     check('loading it changes nothing until Save', (await arch.evaluate(() => document.querySelector('.editor textarea').value)) !== (await api(arch, 'GET', '/api/admin/shows/' + lastId + '/showfile')).body.text);
     // The Run step no longer puts a show in front of the audience: it opens the operator page, with the show in standby.
     await step(arch, 'Run'); await sleep(T(900));
+    check('the Run step ends its list of addresses with a projector link, in a new window, on this computer', await arch.evaluate(() => { const rows = [...document.querySelectorAll('.urls > .row')]; const p = document.querySelector('.urls a[href*="display=projector"]'); return rows.length >= 2 && !!p && p.target === '_blank' && /\/\?display=projector$/.test(p.getAttribute('href')) && rows[rows.length - 1].contains(p) && /localhost|127\.0\.0\.1/.test(p.getAttribute('href')); }));
     check('the Run step offers Open the operator page (the show waits in standby), not Start show', await arch.evaluate(() => { const t = document.getElementById('panel').innerText; return /Open the operator page/.test(t) && !/Start show/.test(t) && /standby/.test(t); }));
     await step(arch, 'Show file'); await sleep(T(600));
     check('the Show file step has no second Help button (the header Help opens the same topic)', await arch.evaluate(() => ![...document.querySelectorAll('#panel button')].some((b) => /help/i.test(b.textContent))));

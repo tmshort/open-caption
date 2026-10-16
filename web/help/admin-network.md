@@ -9,7 +9,7 @@ Audience members connect their own phones and tablets to the venue's **guest WiF
 - A wired connection for this computer is best. Ask for a reserved address (a "DHCP reservation") so the address does not change between shows.
 - No internet connection is needed.
 
-Test it before the first show: join the guest WiFi on a phone and open the address shown in the **Run** step.
+Test it before the first show: join the guest WiFi on a phone and open the address shown in the **Run** step. For a projector or a large screen, the same step lists a projector link: open it on the computer the projector is plugged into.
 
 ## Making the address easy
 

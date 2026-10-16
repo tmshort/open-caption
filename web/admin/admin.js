@@ -879,7 +879,13 @@
     const big = h('div', { class: 'urlbig' }), qrBox = h('div', { class: 'qr' });
     const paint = () => { big.textContent = chosen || __('No address found'); qrBox.replaceChildren(chosen ? h('img', { src: '/api/admin/network/qr.png?size=512&url=' + encodeURIComponent(chosen), alt: __('QR code for {url}', { url: chosen }) }) : ''); };
     paint();
-    const list = h('div', { class: 'urls' }, ...net.data.urls.map((u) => h('div', { class: 'row' }, h('label', { class: 'row' }, h('input', { type: 'radio', name: 'u', checked: u.url === chosen, onchange: () => { chosen = u.url; paint(); } }), h('a', { href: u.url, target: '_blank', rel: 'noopener', title: __('Opens in a new window') }, u.url), u.public ? '' : __(' (this computer only)'), u.name ? __(' (a name: easy to type, but some WiFi networks and phones cannot use it)') : ''))));
+    // The projector link: the audience page for a shared screen (big text, no buttons, no pointer), opened on this computer,
+    // which is the one the projector is plugged into, so it uses this computer's own address.
+    const projBase = (net.data.urls.find((u) => u.kind === 'http' && !u.public) || net.data.urls.find((u) => u.kind === 'http') || net.data.urls[0] || {}).url;
+    const projRow = projBase ? h('div', { class: 'row projrow' }, h('span', { class: 'radiogap', 'aria-hidden': 'true' }),
+      h('a', { href: projBase + '?display=projector', target: '_blank', rel: 'noopener', title: __('Opens in a new window') }, projBase + '?display=projector'),
+      h('span', { class: 'hint' }, __(' (for a projector or shared screen: big text, no buttons; open it on the computer the projector is plugged into)'))) : null;
+    const list = h('div', { class: 'urls' }, ...net.data.urls.map((u) => h('div', { class: 'row' }, h('label', { class: 'row' }, h('input', { type: 'radio', name: 'u', checked: u.url === chosen, onchange: () => { chosen = u.url; paint(); } }), h('a', { href: u.url, target: '_blank', rel: 'noopener', title: __('Opens in a new window') }, u.url), u.public ? '' : __(' (this computer only)'), u.name ? __(' (a name: easy to type, but some WiFi networks and phones cannot use it)') : ''))), projRow);
     p.append(h('h2', {}, __('Run')), checks,
       h('div', { class: 'card' }, h('h3', {}, __('Tell the audience this address')), big,
         h('div', { class: 'row' }, h('button', { onclick: async () => { try { await navigator.clipboard.writeText(chosen); toast(__('Copied')); } catch (e) { toast(__('Select the address and copy it')); } } }, __('Copy address')),

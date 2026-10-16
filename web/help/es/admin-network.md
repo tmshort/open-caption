@@ -9,7 +9,7 @@ Los miembros del público conectan sus propios teléfonos y tabletas a la **WiFi
 - Lo mejor es una conexión por cable para este equipo. Pida una dirección reservada (una «reserva DHCP») para que la dirección no cambie entre funciones.
 - No se necesita conexión a internet.
 
-Pruébelo antes del primer espectáculo: conéctese a la WiFi de invitados con un teléfono y abra la dirección que se muestra en el paso **Dirigir**.
+Pruébelo antes del primer espectáculo: conéctese a la WiFi de invitados con un teléfono y abra la dirección que se muestra en el paso **Dirigir**. Para un proyector o una pantalla grande, el mismo paso enumera un enlace de proyector: ábralo en el equipo al que está conectado el proyector.
 
 ## Hacer la dirección fácil
 

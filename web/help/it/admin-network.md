@@ -9,7 +9,7 @@ Gli spettatori collegano i propri telefoni e tablet al **WiFi ospiti** del local
 - Per questo computer è meglio una connessione via cavo. Chiedi un indirizzo riservato (una «prenotazione DHCP») perché l'indirizzo non cambi da uno spettacolo all'altro.
 - Non serve alcuna connessione a internet.
 
-Provalo prima del primo spettacolo: collega un telefono al WiFi ospiti e apri l'indirizzo mostrato nel passo **Conduci**.
+Provalo prima del primo spettacolo: collega un telefono al WiFi ospiti e apri l'indirizzo mostrato nel passo **Conduci**. Per un proiettore o uno schermo grande, lo stesso passo elenca un link per il proiettore: aprilo sul computer a cui è collegato il proiettore.
 
 ## Rendere facile l'indirizzo
 

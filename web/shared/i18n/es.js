@@ -593,5 +593,6 @@ OCI18n.add("es", {
  "Standby screen": "Pantalla de espera",
  "Showing the built-in Open Caption logo until you choose your own.": "Se muestra el logotipo de Open Caption incorporado hasta que elija el suyo.",
  "Back to Setup": "Volver a Configuración",
- "Run": "Dirigir"
+ "Run": "Dirigir",
+ "(for a projector or shared screen: big text, no buttons; open it on the computer the projector is plugged into)": "(para un proyector o pantalla compartida: texto grande, sin botones; ábrala en el equipo al que está conectado el proyector)"
 });

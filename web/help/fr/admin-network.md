@@ -9,7 +9,7 @@ Les spectateurs connectent leurs propres téléphones et tablettes au **WiFi inv
 - Une connexion filaire est la meilleure pour cet ordinateur. Demandez une adresse réservée (une « réservation DHCP ») pour que l'adresse ne change pas d'un spectacle à l'autre.
 - Aucune connexion internet n'est nécessaire.
 
-Testez avant le premier spectacle : connectez un téléphone au WiFi invités et ouvrez l'adresse affichée à l'étape **Conduire**.
+Testez avant le premier spectacle : connectez un téléphone au WiFi invités et ouvrez l'adresse affichée à l'étape **Conduire**. Pour un projecteur ou un grand écran, la même étape propose un lien projecteur : ouvrez-le sur l'ordinateur auquel le projecteur est branché.
 
 ## Rendre l'adresse facile
 

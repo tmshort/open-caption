@@ -188,3 +188,5 @@ img.sblogo { max-height: 6rem; max-width: 12rem; object-fit: contain; background
 img.sblogo[hidden] { display: none; }
 a.btn.primary { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); font-weight: 600; }
 .startbox a.btn.big { font-size: 1.25rem; padding: .8rem 1.2rem; justify-content: center; text-align: center; }
+.radiogap { display: inline-block; width: 1.1rem; flex: none; } /* lines the projector link up with the addresses above it */
+.projrow { align-items: baseline; }
