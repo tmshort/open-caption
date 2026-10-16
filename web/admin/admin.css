@@ -151,3 +151,5 @@ dialog input.netname { width: 14rem; max-width: 60%; }
 a.btn, a.quiet { display: inline-flex; align-items: center; min-height: 2.4rem; box-sizing: border-box; text-decoration: none; cursor: pointer; }
 a.btn { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: .45rem .9rem; color: inherit; }
 a.btn:hover { border-color: var(--accent); } /* a quiet link, like a quiet button, does not change when hovered */
+/* quiet buttons and links (Rename, Export, Operator page, ...) all brighten the same way when hovered */
+button.quiet:hover:not(:disabled):not(.danger), a.quiet:hover { color: var(--fg); }
