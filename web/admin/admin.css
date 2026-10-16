@@ -162,7 +162,7 @@ label.tick input { flex: none; margin-top: .3rem; }
 /* a card's first heading and last paragraph add no extra gap inside the card */
 .card > h3:first-child, .readylist > h3:first-child { margin-top: 0; }
 .card > :last-child { margin-bottom: 0; }
-/* Go Live: the checklist on the left, the Start show button where it is seen at once on the right */
+/* Run step: the checklist on the left, the Open the operator page button where it is seen at once on the right */
 .card.ready { display: flex; gap: 1.2rem 2rem; flex-wrap: wrap; align-items: flex-start; }
 .readylist { flex: 1 1 22rem; min-width: 0; }
 .startbox { flex: 0 1 18rem; display: flex; flex-direction: column; gap: .6rem; align-items: stretch; margin-left: auto; text-align: center; }

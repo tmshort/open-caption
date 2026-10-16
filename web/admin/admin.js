@@ -1,10 +1,10 @@
-// Setup page: a six-step wizard (Show, Show file, Images, Look, Test, Go Live).
+// Setup page: a six-step wizard (Show, Show file, Images, Look, Test, Run).
 (() => {
   'use strict';
   if (window.OC_UNSUPPORTED) return; // compat.js has already shown the "too old" message
   const $ = (id) => document.getElementById(id);
   const A = { shows: [], activeId: '', cur: null, step: 'show', text: '', saved: '', analysis: null, mainAnalysis: null, lang: '', loadedLang: null, langs: [], net: null, live: false, audience: 0, rehearsing: false };
-  const STEPS = [['show', 'Shows'], ['showfile', 'Show file'], ['images', 'Images'], ['look', 'Look'], ['test', 'Test'], ['golive', 'Go Live']];
+  const STEPS = [['show', 'Shows'], ['showfile', 'Show file'], ['images', 'Images'], ['look', 'Look'], ['test', 'Test'], ['golive', 'Run']];
   const ICON = { caption: '💬', clear: '🧹', blank: '⬛', image: '🖼', fullscreen: '⛶', loop: '🔁', section: '📑', note: '📝' };
 
   // ---- helpers ----
@@ -202,7 +202,7 @@
     level.addEventListener('change', load);
     const copy = h('button', { onclick: async () => { try { await navigator.clipboard.writeText(lastLines.join('\n')); toast(__('Copied')); } catch (e) { toast(__('Select the text and copy it by hand')); } } }, __('Copy'));
     const body = h('div', {}, h('div', { class: 'row' }, h('label', { class: 'row' }, __('Show: '), level), h('label', { class: 'row' }, auto, __(' Update every few seconds')), h('button', { onclick: load }, __('Refresh')), copy),
-      pre, count, h('p', { class: 'hint' }, __('Passwords are never written to the log. Setup → Go Live has a support bundle with this log and more, for sending to someone who is helping.')));
+      pre, count, h('p', { class: 'hint' }, __('Passwords are never written to the log. Setup → Run has a support bundle with this log and more, for sending to someone who is helping.')));
     await load(); pre.scrollTop = pre.scrollHeight;
     const timer = setInterval(() => { if (auto.checked) load(); }, 3000);
     await ask(__('Recent log'), body, __('Close'), { noCancel: true, wide: true });
@@ -848,7 +848,7 @@
     if (A.rehearsing) start();
   }
 
-  // ---- step 6: go live ----
+  // ---- step 6: run (share the address, open the operator page) ----
   async function stepGoLive(p) {
     const show = curShow(); if (!show) return go('show');
     const [net, sc, lg] = await Promise.all([api('GET', '/api/admin/network'), api('GET', '/api/admin/shows/' + show.id + '/showfile'), api('GET', '/api/admin/shows/' + show.id + '/languages'), loadShows()]);
@@ -880,7 +880,7 @@
     const paint = () => { big.textContent = chosen || __('No address found'); qrBox.replaceChildren(chosen ? h('img', { src: '/api/admin/network/qr.png?size=512&url=' + encodeURIComponent(chosen), alt: __('QR code for {url}', { url: chosen }) }) : ''); };
     paint();
     const list = h('div', { class: 'urls' }, ...net.data.urls.map((u) => h('div', { class: 'row' }, h('label', { class: 'row' }, h('input', { type: 'radio', name: 'u', checked: u.url === chosen, onchange: () => { chosen = u.url; paint(); } }), h('a', { href: u.url, target: '_blank', rel: 'noopener', title: __('Opens in a new window') }, u.url), u.public ? '' : __(' (this computer only)'), u.name ? __(' (a name: easy to type, but some WiFi networks and phones cannot use it)') : ''))));
-    p.append(h('h2', {}, __('Go live')), checks,
+    p.append(h('h2', {}, __('Run')), checks,
       h('div', { class: 'card' }, h('h3', {}, __('Tell the audience this address')), big,
         h('div', { class: 'row' }, h('button', { onclick: async () => { try { await navigator.clipboard.writeText(chosen); toast(__('Copied')); } catch (e) { toast(__('Select the address and copy it')); } } }, __('Copy address')),
           h('a', { class: 'btn', href: '/admin?print=qr&url=' + encodeURIComponent(chosen || ''), target: '_blank', rel: 'noopener' }, __('Print a QR sign for the lobby'))),

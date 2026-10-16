@@ -7,7 +7,7 @@ Setting up a show takes six steps. The row of buttons across the top of the page
 3. **Images** — upload any pictures the show file uses.
 4. **Look** — choose colors and text size.
 5. **Test** — rehearse privately before anyone is in the room.
-6. **Go Live** — share the address with the audience and open the operator page, where the operator starts the show.
+6. **Run** — share the address with the audience and open the operator page, where the operator starts the show.
 
 ## Standby and going on air
 

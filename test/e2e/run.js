@@ -392,7 +392,7 @@ async function main() {
     check('the standby message and logo are saved (venue-level)', sbs.message === 'Welcome to the Little Theatre' && /^\/standby-logo\?v=/.test(sbs.logo || ''), sbs);
     check('and the logo is public, for the audience page', await guard.evaluate(async (u) => { const r = await fetch(u, { credentials: 'omit' }); return r.ok && /image\/png/.test(r.headers.get('Content-Type')); }, sbs.logo));
     check('Settings offers the log detail setting', await guard.evaluate(() => !!document.querySelector('#dlg select[aria-label="Log detail"]')));
-    check('the Settings window has no Recent log button (it is on Go Live)', await guard.evaluate(() => !document.getElementById('dlgextra') || document.getElementById('dlgextra').hidden));
+    check('the Settings window has no Recent log button (it is on the Run step)', await guard.evaluate(() => !document.getElementById('dlgextra') || document.getElementById('dlgextra').hidden));
     check('and its only footer button just closes it', await guard.evaluate(() => document.getElementById('dlgok').textContent.trim() === 'Close' && document.getElementById('dlgcancel').hidden));
     // the operator password can be shown and hidden again
     await guard.evaluate(() => [...document.querySelectorAll('#dlg button')].find((x) => x.textContent.includes('Show the current operator password')).click()); await sleep(500);
@@ -400,8 +400,8 @@ async function main() {
     await guard.evaluate(() => [...document.querySelectorAll('#dlg button')].find((x) => x.textContent.includes('Hide the operator password')).click()); await sleep(300);
     check('and Hide hides it again', await guard.evaluate(() => !/Operator password: /.test(document.getElementById('dlg').innerText)));
     await guard.evaluate(() => document.getElementById('dlgok').click()); await sleep(300);
-    await step(guard, 'Go Live'); await sleep(900);
-    check('on Go Live each address is a link that opens a new window', await guard.evaluate(() => { const l = [...document.querySelectorAll('.urls label a')]; return l.length > 0 && l.every((x) => x.target === '_blank' && /noopener/.test(x.rel) && /^https?:\/\//.test(x.href)); }));
+    await step(guard, 'Run'); await sleep(900);
+    check('on the Run step each address is a link that opens a new window', await guard.evaluate(() => { const l = [...document.querySelectorAll('.urls label a')]; return l.length > 0 && l.every((x) => x.target === '_blank' && /noopener/.test(x.rel) && /^https?:\/\//.test(x.href)); }));
     await guard.evaluate(() => [...document.querySelectorAll('a')].find((x) => x.textContent.includes('Recent log')).click()); await guard.waitForFunction(() => { const p = document.querySelector('pre.logview'); return p && p.textContent.includes('signed in'); }, { timeout: 8000 }).catch(() => {});
     check('the recent log can be read in Setup', await guard.evaluate(() => /INFO .*signed in/.test(document.querySelector('pre.logview').textContent)));
     await guard.select('dialog select[aria-label="Show"]', 'warn'); await sleep(600);
@@ -473,9 +473,9 @@ async function main() {
     const hist = JSON.stringify((await api(arch, 'GET', '/api/admin/shows/' + lastId + '/showfile/history')).body); check('a version can be given a name', hist.includes('Dress rehearsal'), hist);
     await arch.evaluate(() => document.getElementById('dlgok').click()); await sleep(300);
     check('loading it changes nothing until Save', (await arch.evaluate(() => document.querySelector('.editor textarea').value)) !== (await api(arch, 'GET', '/api/admin/shows/' + lastId + '/showfile')).body.text);
-    // Go Live no longer puts a show in front of the audience: it opens the operator page, with the show in standby.
-    await step(arch, 'Go Live'); await sleep(T(900));
-    check('Go Live offers Open the operator page (the show waits in standby), not Start show', await arch.evaluate(() => { const t = document.getElementById('panel').innerText; return /Open the operator page/.test(t) && !/Start show/.test(t) && /standby/.test(t); }));
+    // The Run step no longer puts a show in front of the audience: it opens the operator page, with the show in standby.
+    await step(arch, 'Run'); await sleep(T(900));
+    check('the Run step offers Open the operator page (the show waits in standby), not Start show', await arch.evaluate(() => { const t = document.getElementById('panel').innerText; return /Open the operator page/.test(t) && !/Start show/.test(t) && /standby/.test(t); }));
     await step(arch, 'Show file'); await sleep(T(600));
     check('the Show file step has no second Help button (the header Help opens the same topic)', await arch.evaluate(() => ![...document.querySelectorAll('#panel button')].some((b) => /help/i.test(b.textContent))));
     // The editor grows with the window (no maximum width), and has a minimum.
@@ -598,8 +598,8 @@ async function main() {
       await signIn(a, '#steps button');
       check(lang + ': the Setup steps are translated', (await a.evaluate(() => document.getElementById('steps').innerText)).includes(SEEN[lang]) && !(await a.evaluate(() => document.documentElement.lang !== '' && false)));
       const leaks = [], stray = [];
-      for (const step of ['Shows', 'Show file', 'Images', 'Look', 'Test', 'Go Live']) {
-        await a.evaluate((i) => document.querySelectorAll('#steps button')[i].click(), ['Shows', 'Show file', 'Images', 'Look', 'Test', 'Go Live'].indexOf(step));
+      for (const step of ['Shows', 'Show file', 'Images', 'Look', 'Test', 'Run']) {
+        await a.evaluate((i) => document.querySelectorAll('#steps button')[i].click(), ['Shows', 'Show file', 'Images', 'Look', 'Test', 'Run'].indexOf(step));
         await sleep(700); leaks.push(...(await leaksOf(a)));
         stray.push(...(await a.evaluate(() => [...document.getElementById('panel').innerText.matchAll(/\b(null|undefined|NaN|\[object Object\])\b/g)].map((m) => m[0]))));
         stray.push(...(await a.evaluate(() => [...document.querySelectorAll('input[type=file]')].filter((f) => !f.hidden).map(() => 'a raw file chooser'))));

@@ -7,7 +7,7 @@ Préparer un spectacle demande six étapes. La rangée de boutons en haut de la 
 3. **Images** — téléversez les images utilisées par le fichier du spectacle.
 4. **Apparence** — choisissez les couleurs et la taille du texte.
 5. **Test** — répétez en privé avant que personne ne soit dans la salle.
-6. **En direct** — partagez l'adresse avec le public et ouvrez la page de l'opérateur, d'où le spectacle est lancé.
+6. **Conduire** — partagez l'adresse avec le public et ouvrez la page de l'opérateur, d'où le spectacle est lancé.
 
 ## Attente et passage à l'antenne
 

@@ -68,7 +68,7 @@ Al programa no le importa en qué red esté, mientras los dispositivos del públ
 - Pida **acceso de invitados al servidor**: su equipo debe ser accesible desde el SSID de invitados, por el puerto TCP 80 (y 443 si activa HTTPS). El «aislamiento de clientes» entre invitados está bien; impedir que los invitados lleguen a *su equipo* no.
 - Pida una **dirección reservada** para el adaptador de red de su equipo.
 - Conecte el equipo a la red por **Ethernet** si es en absoluto posible.
-- Pruebe con un teléfono en la WiFi de invitados mucho antes del espectáculo (el paso En vivo muestra la dirección).
+- Pruebe con un teléfono en la WiFi de invitados mucho antes del espectáculo (el paso Dirigir muestra la dirección).
 - Lleve la opción A en una bolsa como respaldo si el espectáculo importa.
 
 ### El equipo de subtitulado
@@ -97,7 +97,7 @@ Si el equipo debe arrancar el servidor solo tras un reinicio, la carpeta [`deplo
 
 En orden de fiabilidad:
 
-1. **El código QR y el cartel** (Configuración → En vivo → *Imprimir un cartel con código QR para el vestíbulo*). Póngalo en la pared, en el programa de mano y en la tarjeta del respaldo de las butacas. Esto es en lo que hay que confiar.
+1. **El código QR y el cartel** (Configuración → Dirigir → *Imprimir un cartel con código QR para el vestíbulo*). Póngalo en la pared, en el programa de mano y en la tarjeta del respaldo de las butacas. Esto es en lo que hay que confiar.
 2. **Una dirección corta.** En el puerto 80 no hay que teclear `:puerto`. El programa también se anuncia como **`open-caption.local`** (cámbielo en Configuración → Ajustes → *Nombre de red*): donde la red de invitados lo permite, `http://open-caption.local/` funciona en la mayoría de teléfonos sin configurar nada. Algunas redes de invitados bloquean ese tipo de anuncio, así que no imprima solo el nombre; el cartel QR usa la dirección numérica. Un nombre en el DNS propio del router (como `captions.theater`) funciona en todas partes pero exige que el local lo añada.
 3. **La página de bienvenida del punto de acceso** (un «portal de invitados» o «portal cautivo» que redirige a su dirección tras conectarse). Se configura en el router o punto de acceso, no en este programa. Consulte [venue-network-guide.md](venue-network-guide.md).
 4. **Opción 114 de DHCP y `/captive-api` (avanzado, experimental).** La opción 114 es un ajuste de DHCP que apunta a los dispositivos a una «API de portal cautivo». El programa responde a esa API en `/captive-api` (por ejemplo `https://<dirección>/captive-api`) con «esta red no es cautiva» y la dirección de la página. Dos advertencias: **no hace que los teléfonos abran solos la página de subtítulos**, y el estándar (RFC 8910/8908) exige **HTTPS con un certificado en el que confíen los dispositivos**, así que un ajuste con `http://` sencillo o el certificado autofirmado del programa se ignora. Configúrelo solo si el local ya usa la opción 114 y puede proporcionar un certificado de confianza. No se ha probado en dispositivos reales.
@@ -147,7 +147,7 @@ Abra la página de configuración y siga los seis pasos de la parte superior. El
 3. **Imágenes.** Suba las imágenes que usa el archivo del espectáculo (PNG, JPG, GIF o WebP, idealmente de menos de 1 MB cada una).
 4. **Aspecto.** Elija colores, fuente y tamaño del texto. Los valores por defecto (blanco sobre negro, grande) son los mejores para la mayoría. Hay dos fuentes de legibilidad integradas: una apta para dislexia (OpenDyslexic) y una de alta legibilidad (Atkinson Hyperlegible, diseñada para baja visión). Cada miembro del público también puede elegir cualquiera para su propio dispositivo con el pequeño control **Aa**.
 5. **Prueba.** Haga un ensayo privado: usted pulsa Espacio como lo haría el operador, y ve la pantalla del público al lado. Nada llega al público.
-6. **En vivo.** Revise la lista de preparación, imprima el cartel QR y pulse **Abrir la página del operador**.
+6. **Dirigir.** Revise la lista de preparación, imprima el cartel QR y pulse **Abrir la página del operador**.
 
 Al abrir la página del operador, el espectáculo se carga **en espera**: el público ve la pantalla de espera del local (un logotipo y un mensaje, que se fijan una sola vez en **Ajustes → Pantalla de espera**) y nada del espectáculo, así que puede preparar, ensayar y revisar la página del operador con tranquilidad. Cuando esté listo, pulse **Espacio** (el botón dice **INICIAR**) en la página del operador para poner el espectáculo en el aire. **Sacar del aire…** lo retira de nuevo sin perder su lugar.
 
@@ -225,7 +225,7 @@ Puede editar y volver a guardar un archivo del espectáculo con el espectáculo 
 ### Antes de que llegue el público
 
 1. Arranque el servidor y abra la **página del operador**; inicie sesión. Debería decir **Usted tiene el control**.
-2. En Configuración → En vivo pulse **Abrir la página del operador**. El espectáculo se carga en espera: el público ve la pantalla de espera del local. Cuando esté listo, pulse **Espacio** (INICIAR) en la página del operador para ponerlo en el aire. Un bucle de previa, si el archivo del espectáculo lo tiene, empieza entonces en todas las pantallas.
+2. En Configuración → Dirigir pulse **Abrir la página del operador**. El espectáculo se carga en espera: el público ve la pantalla de espera del local. Cuando esté listo, pulse **Espacio** (INICIAR) en la página del operador para ponerlo en el aire. Un bucle de previa, si el archivo del espectáculo lo tiene, empieza entonces en todas las pantallas.
 3. Abra la dirección del público en su propio teléfono y, si tiene uno, en el proyector. Compruebe que el recuento de espectadores sube en la página del operador.
 4. Ponga el cartel QR donde la gente lo vea.
 
@@ -241,7 +241,7 @@ Puede editar y volver a guardar un archivo del espectáculo con el espectáculo 
 
 ### Cuando termina el espectáculo
 
-Pulse `Ctrl+C` en la ventana del programa (o detenga el servicio). La posición se guarda. Para volver a dirigir el espectáculo desde el principio, use **Reiniciar espectáculo…** en la página del operador, o **Reiniciar el espectáculo** en Configuración → En vivo. Ambos lo devuelven a la espera.
+Pulse `Ctrl+C` en la ventana del programa (o detenga el servicio). La posición se guarda. Para volver a dirigir el espectáculo desde el principio, use **Reiniciar espectáculo…** en la página del operador, o **Reiniciar el espectáculo** en Configuración → Dirigir. Ambos lo devuelven a la espera.
 
 ## Lista de comprobación del día
 
@@ -253,7 +253,7 @@ Pulse `Ctrl+C` en la ventana del programa (o detenga el servicio). La posición 
 **En el local, una hora antes**
 - [ ] Alimentación: equipo y punto de acceso enchufados; equipo configurado para no suspenderse nunca.
 - [ ] Punto de acceso encendido, en su sitio, con el nombre correcto; el equipo conectado a él por cable.
-- [ ] Arranque el programa; anote la dirección que imprime (y la de En vivo).
+- [ ] Arranque el programa; anote la dirección que imprime (y la de Dirigir).
 - [ ] Un teléfono en la WiFi del público puede abrir la dirección y muestra «Los subtítulos comenzarán en breve».
 - [ ] Configuración → Prueba: haga un ensayo rápido; las teclas del operador funcionan.
 - [ ] Navegador del proyector (si se usa) abierto en `…/?display=projector`, a pantalla completa.
@@ -279,7 +279,7 @@ Pulse `Ctrl+C` en la ventana del programa (o detenga el servicio). La posición 
 | La página del operador dice que otro operador tiene el control | Use **Asumir el control**, si usted es el operador. |
 | El equipo se congeló o se reinició a mitad del espectáculo | Arranque el programa otra vez. La página del operador se reconecta, sigue con la sesión iniciada y recupera el control sola, el espectáculo está donde lo dejó y los dispositivos del público se reconectan solos. Un bucle empieza de nuevo desde su primer elemento. **Retroceso** aún puede deshacer las últimas cosas enviadas antes del reinicio. |
 | Olvidé una contraseña | Inicie sesión con la otra y use **Ajustes** en Configuración, o abra `config.yaml` en la carpeta de datos con cualquier editor de texto. |
-| Otra cosa | Configuración → En vivo → **Descargar un paquete de soporte**; contiene los ajustes (sin contraseñas) y líneas recientes del registro. |
+| Otra cosa | Configuración → Dirigir → **Descargar un paquete de soporte**; contiene los ajustes (sin contraseñas) y líneas recientes del registro. |
 
 ## Mantenimiento
 
@@ -288,7 +288,7 @@ Pulse `Ctrl+C` en la ventana del programa (o detenga el servicio). La posición 
 - **Actualizar el programa:** deténgalo (`Ctrl+C`), sustituya el archivo del programa por el más nuevo y arránquelo de nuevo con la misma carpeta `--data`. No actualice justo antes de un espectáculo.
 - **Reutilizar un espectáculo:** Configuración → Espectáculos tiene **Renombrar…** y **Duplicar**. Duplicar hace una copia del archivo del espectáculo, las imágenes y el aspecto para adaptarla a la próxima temporada, y deja el original intacto.
 - **Limpiar:** elimine los espectáculos que ya no necesite en Configuración → Espectáculos. Los `.zip` exportados son su archivo.
-- **Registros:** Configuración → En vivo → **Registro reciente…** muestra lo que el programa ha registrado últimamente, filtrado por nivel (elija *Solo problemas* para ver avisos y errores); las líneas recientes del registro también están en el paquete de soporte; añada `--log-file` para conservar un archivo. Cada línea empieza con su nivel (`INFO`, `WARN`, `ERROR` o `DEBUG`). El `info` por defecto registra inicios de sesión, quién tomó el control de la página del operador, espectáculos activados y eventos similares; `warn` conserva solo los problemas; `debug` registra además cada petición, lo que ayuda cuando ocurre algo raro. Defínalo con `log: {level: debug}` en `config.yaml`, con `--log-level debug`, o mientras el programa funciona desde Configuración → Ajustes → *Nivel de detalle del registro*. Si el programa se inició con `--log-level`, esa opción manda en cada arranque: Configuración lo dice, un cambio hecho ahí dura solo hasta el siguiente reinicio, y el registro de arranque avisa cuando la opción y el archivo discrepan. Un archivo de registro conservado con `--log-file` empieza uno nuevo a los 5 MB y guarda tres anteriores (`open-caption.log.1` a `.3`), de modo que nunca llena el disco.
+- **Registros:** Configuración → Dirigir → **Registro reciente…** muestra lo que el programa ha registrado últimamente, filtrado por nivel (elija *Solo problemas* para ver avisos y errores); las líneas recientes del registro también están en el paquete de soporte; añada `--log-file` para conservar un archivo. Cada línea empieza con su nivel (`INFO`, `WARN`, `ERROR` o `DEBUG`). El `info` por defecto registra inicios de sesión, quién tomó el control de la página del operador, espectáculos activados y eventos similares; `warn` conserva solo los problemas; `debug` registra además cada petición, lo que ayuda cuando ocurre algo raro. Defínalo con `log: {level: debug}` en `config.yaml`, con `--log-level debug`, o mientras el programa funciona desde Configuración → Ajustes → *Nivel de detalle del registro*. Si el programa se inició con `--log-level`, esa opción manda en cada arranque: Configuración lo dice, un cambio hecho ahí dura solo hasta el siguiente reinicio, y el registro de arranque avisa cuando la opción y el archivo discrepan. Un archivo de registro conservado con `--log-file` empieza uno nuevo a los 5 MB y guarda tres anteriores (`open-caption.log.1` a `.3`), de modo que nunca llena el disco.
 - **Archivar:** en Configuración → Espectáculos, **Archivar** guarda aparte un espectáculo terminado (se conserva, aparece en «Espectáculos archivados» y no puede salir en directo) y **Restaurar** lo devuelve. **Eliminar** borra un espectáculo definitivamente.
 
 ## Tarjeta rápida del operador

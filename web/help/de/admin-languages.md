@@ -22,7 +22,7 @@ Der Name nach dem `|` ist das, was Zuschauer im Sprachmenü sehen; schreiben Sie
 
 Jede Sprache muss **dieselben Einsätze in derselben Reihenfolge** haben: Ein Untertitel bleibt ein Untertitel, ein `[clear]` bleibt ein `[clear]`, eine Schleife behält dieselbe Zahl von Elementen, und gleichzeitig gezeigte Stimmen bleiben dieselbe Zahl von Stimmen. Nur die Wörter ändern sich. Sprechernamen, Notizen, Abschnittsnamen, Bildnamen und Schleifenzeiten dürfen abweichen.
 
-Passt eine Übersetzung nicht mehr, zeigt der Editor einen Fehler mit der Zeile, in der es schiefgeht, zum Beispiel „Einsatz 4 passt nicht zur Show-Datei auf Englisch: Diese Datei hat hier [clear], und diese hat einen Untertitel“. Eine Sprache, die nicht passt, wird **dem Publikum nicht angeboten**, bis sie korrigiert ist. Die englische (Haupt-)Show-Datei bleibt unberührt, und der Schritt Live führt das Problem auf.
+Passt eine Übersetzung nicht mehr, zeigt der Editor einen Fehler mit der Zeile, in der es schiefgeht, zum Beispiel „Einsatz 4 passt nicht zur Show-Datei auf Englisch: Diese Datei hat hier [clear], und diese hat einen Untertitel“. Eine Sprache, die nicht passt, wird **dem Publikum nicht angeboten**, bis sie korrigiert ist. Die englische (Haupt-)Show-Datei bleibt unberührt, und der Schritt Fahren führt das Problem auf.
 
 Damit das Publikum erkennt, welche Wörter zu welcher Zeile gehören, halten Sie die Zeilen im Gleichschritt: Teilt das Englische eine Rede in drei Zeilen, tut das Spanische es auch, selbst wenn die Sprache sie anders umbrechen würde.
 

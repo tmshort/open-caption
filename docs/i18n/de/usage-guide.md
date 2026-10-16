@@ -68,7 +68,7 @@ Dem Programm ist egal, in welchem Netzwerk es ist, solange Publikumsgeräte es e
 - Bitten Sie um **Gast-Zugriff auf den Server**: Ihr Computer muss von der Gast-SSID aus erreichbar sein, über TCP-Port 80 (und 443, wenn Sie HTTPS einschalten). „Client-Isolation“ zwischen Gästen ist in Ordnung; Gäste daran zu hindern, *Ihren Computer* zu erreichen, nicht.
 - Bitten Sie um eine **reservierte Adresse** für den Netzwerkadapter Ihres Computers.
 - Schließen Sie den Computer wenn irgend möglich per **Ethernet** ans Netzwerk an.
-- Testen Sie rechtzeitig vor der Show mit einem Telefon im Gast-WLAN (der Schritt Live zeigt die Adresse).
+- Testen Sie rechtzeitig vor der Show mit einem Telefon im Gast-WLAN (der Schritt Fahren zeigt die Adresse).
 - Haben Sie Option A als Reserve in einer Tasche, wenn die Show wichtig ist.
 
 ### Der Untertitel-Computer
@@ -97,7 +97,7 @@ Wenn der Computer den Server nach einem Neustart von selbst starten soll, enthä
 
 In der Reihenfolge der Zuverlässigkeit:
 
-1. **Der QR-Code und das Schild** (Einrichtung → Live → *QR-Schild für das Foyer drucken*). Hängen Sie es an die Wand, legen Sie es ins Programmheft und auf die Karte an der Sitzlehne. Darauf sollten Sie sich verlassen.
+1. **Der QR-Code und das Schild** (Einrichtung → Fahren → *QR-Schild für das Foyer drucken*). Hängen Sie es an die Wand, legen Sie es ins Programmheft und auf die Karte an der Sitzlehne. Darauf sollten Sie sich verlassen.
 2. **Eine kurze Adresse.** Auf Port 80 gibt es kein `:Port` zu tippen. Das Programm macht sich auch unter **`open-caption.local`** bekannt (ändern unter Einrichtung → Einstellungen → *Netzwerkname*): Wo das Gastnetz es erlaubt, funktioniert `http://open-caption.local/` auf den meisten Telefonen, ohne dass etwas eingerichtet wird. Manche Gastnetze blockieren diese Art von Bekanntmachung, drucken Sie also nicht nur den Namen; das QR-Schild verwendet die numerische Adresse. Ein Name im eigenen DNS des Routers (etwa `captions.theater`) funktioniert überall, muss aber vom Haus angelegt werden.
 3. **Die Startseite des Zugangspunkts** (ein „Gästeportal“ oder „Captive Portal“, das nach dem Beitritt auf Ihre Adresse umleitet). Das wird am Router oder Zugangspunkt eingerichtet, nicht in diesem Programm. Siehe [venue-network-guide.md](venue-network-guide.md).
 4. **DHCP-Option 114 und `/captive-api` (fortgeschritten, experimentell).** Option 114 ist eine DHCP-Einstellung, die Geräte auf eine „Captive-Portal-API“ verweist. Das Programm beantwortet diese API unter `/captive-api` (zum Beispiel `https://<Adresse>/captive-api`) mit „dieses Netzwerk ist nicht gefangen“ und der Adresse der Seite. Zwei Vorbehalte: Es **lässt Telefone die Untertitelseite nicht von selbst öffnen**, und der Standard (RFC 8910/8908) verlangt **HTTPS mit einem Zertifikat, dem die Geräte vertrauen**, sodass eine einfache `http://`-Einstellung oder das selbstsignierte Zertifikat des Programms ignoriert wird. Richten Sie sie nur ein, wenn das Haus Option 114 bereits verwendet und ein vertrauenswürdiges Zertifikat bereitstellen kann. Sie wurde auf echten Geräten nicht getestet.
@@ -147,7 +147,7 @@ Hat `config.yaml` einen Fehler (eine falsch geschriebene Einstellung, eine Zahl 
 3. **Bilder.** Laden Sie die Bilder hoch, die die Show-Datei verwendet (PNG, JPG, GIF oder WebP, idealerweise unter 1 MB je Bild).
 4. **Erscheinungsbild.** Wählen Sie Farben, Schrift und Textgröße. Die Voreinstellungen (weiß auf schwarz, groß) sind für die meisten am besten. Zwei Lesbarkeitsschriften sind eingebaut: eine legasthenie-freundliche (OpenDyslexic) und eine mit hoher Lesbarkeit (Atkinson Hyperlegible, für Sehbehinderung entworfen). Einzelne Zuschauer können über das kleine Steuerelement **Aa** auch für ihr eigenes Gerät eine der beiden wählen.
 5. **Test.** Machen Sie eine private Probe: Sie drücken die Leertaste wie der Operator und sehen daneben den Bildschirm des Publikums. Nichts erreicht das Publikum.
-6. **Live.** Prüfen Sie die Bereitschaftsliste, drucken Sie das QR-Schild und drücken Sie **Die Bedienerseite öffnen**.
+6. **Fahren.** Prüfen Sie die Bereitschaftsliste, drucken Sie das QR-Schild und drücken Sie **Die Bedienerseite öffnen**.
 
 Das Öffnen der Bedienerseite lädt die Show im **Standby**: Das Publikum sieht den Standby-Bildschirm des Hauses (ein Logo und eine Meldung, einmal unter **Einstellungen → Standby-Bildschirm** festgelegt) und nichts von der Show, sodass Sie in Ruhe vorbereiten, proben und die Bedienerseite prüfen können. Wenn Sie bereit sind, drücken Sie auf der Bedienerseite die **Leertaste** (die Schaltfläche heißt **START**), um die Show auf Sendung zu bringen. **Aus der Sendung nehmen …** nimmt sie wieder heraus, ohne ihren Platz zu verlieren.
 
@@ -225,7 +225,7 @@ Sie können eine Show-Datei bearbeiten und erneut speichern, während eine Show 
 ### Bevor das Publikum kommt
 
 1. Starten Sie den Server und öffnen Sie die **Operator-Seite**; melden Sie sich an. Dort sollte **Sie haben die Steuerung** stehen.
-2. Drücken Sie in Einrichtung → Live auf **Die Bedienerseite öffnen**. Die Show wird im Standby geladen: Das Publikum sieht den Standby-Bildschirm des Hauses. Wenn Sie bereit sind, drücken Sie auf der Bedienerseite die **Leertaste** (START), um sie auf Sendung zu bringen. Eine Schleife vor der Show, falls die Show-Datei eine hat, beginnt dann auf jedem Bildschirm.
+2. Drücken Sie in Einrichtung → Fahren auf **Die Bedienerseite öffnen**. Die Show wird im Standby geladen: Das Publikum sieht den Standby-Bildschirm des Hauses. Wenn Sie bereit sind, drücken Sie auf der Bedienerseite die **Leertaste** (START), um sie auf Sendung zu bringen. Eine Schleife vor der Show, falls die Show-Datei eine hat, beginnt dann auf jedem Bildschirm.
 3. Öffnen Sie die Publikumsadresse auf Ihrem eigenen Telefon und, falls vorhanden, am Projektor. Prüfen Sie, dass die Zuschauerzahl auf der Operator-Seite steigt.
 4. Stellen Sie das QR-Schild dort auf, wo die Leute es sehen.
 
@@ -241,7 +241,7 @@ Sie können eine Show-Datei bearbeiten und erneut speichern, während eine Show 
 
 ### Wenn die Show endet
 
-Drücken Sie `Strg+C` im Fenster des Programms (oder beenden Sie den Dienst). Die Position wird gespeichert. Um die Show wieder von vorn laufen zu lassen, verwenden Sie **Show neu starten …** auf der Bedienerseite oder **Show neu starten** in Einrichtung → Live. Beides bringt die Show zurück in den Standby.
+Drücken Sie `Strg+C` im Fenster des Programms (oder beenden Sie den Dienst). Die Position wird gespeichert. Um die Show wieder von vorn laufen zu lassen, verwenden Sie **Show neu starten …** auf der Bedienerseite oder **Show neu starten** in Einrichtung → Fahren. Beides bringt die Show zurück in den Standby.
 
 ## Checkliste für den Vorstellungstag
 
@@ -253,7 +253,7 @@ Drücken Sie `Strg+C` im Fenster des Programms (oder beenden Sie den Dienst). Di
 **Im Haus, eine Stunde vorher**
 - [ ] Strom: Computer und Zugangspunkt angesteckt; Computer so eingestellt, dass er nie in den Ruhezustand geht.
 - [ ] Zugangspunkt an, an Ort und Stelle, mit dem richtigen Namen; der Computer per Kabel daran.
-- [ ] Starten Sie das Programm; notieren Sie die ausgegebene Adresse (und die in Live).
+- [ ] Starten Sie das Programm; notieren Sie die ausgegebene Adresse (und die in Fahren).
 - [ ] Ein Telefon im Publikums-WLAN kann die Adresse öffnen und zeigt „Die Untertitel beginnen in Kürze“.
 - [ ] Einrichtung → Test: Machen Sie eine kurze Probe; die Tasten des Operators funktionieren.
 - [ ] Projektor-Browser (falls verwendet) auf `…/?display=projector` geöffnet, im Vollbild.
@@ -279,7 +279,7 @@ Drücken Sie `Strg+C` im Fenster des Programms (oder beenden Sie den Dienst). Di
 | Die Operator-Seite sagt, ein anderer Operator hat die Steuerung | Verwenden Sie **Übernehmen**, wenn Sie der Operator sind. |
 | Der Computer hängte sich auf oder wurde mitten in der Show neu gestartet | Starten Sie das Programm erneut. Die Operator-Seite verbindet sich neu, bleibt angemeldet und übernimmt die Steuerung von selbst, die Show steht, wo Sie sie verlassen haben, und die Publikumsgeräte verbinden sich von selbst neu. Eine Schleife beginnt wieder beim ersten Element. Die **Rücktaste** kann die letzten Dinge, die vor dem Neustart gesendet wurden, weiterhin rückgängig machen. |
 | Ich habe ein Passwort vergessen | Melden Sie sich mit dem anderen an und verwenden Sie **Einstellungen** in der Einrichtung, oder öffnen Sie `config.yaml` im Datenordner mit einem beliebigen Texteditor. |
-| Etwas anderes | Einrichtung → Live → **Supportpaket herunterladen**; es enthält die Einstellungen (ohne Passwörter) und aktuelle Protokollzeilen. |
+| Etwas anderes | Einrichtung → Fahren → **Supportpaket herunterladen**; es enthält die Einstellungen (ohne Passwörter) und aktuelle Protokollzeilen. |
 
 ## Wartung
 
@@ -288,7 +288,7 @@ Drücken Sie `Strg+C` im Fenster des Programms (oder beenden Sie den Dienst). Di
 - **Das Programm aktualisieren:** Beenden Sie es (`Strg+C`), ersetzen Sie die Programmdatei durch die neuere und starten Sie es mit demselben `--data`-Ordner erneut. Aktualisieren Sie nicht kurz vor einer Show.
 - **Eine Show wiederverwenden:** Einrichtung → Shows hat **Umbenennen …** und **Duplizieren**. Duplizieren erstellt eine Kopie der Show-Datei, der Bilder und des Erscheinungsbilds zum Anpassen für die nächste Serie und lässt das Original unberührt.
 - **Aufräumen:** Löschen Sie nicht mehr benötigte Shows unter Einrichtung → Shows. Exportierte `.zip`-Dateien sind Ihr Archiv.
-- **Protokolle:** Einrichtung → Live → **Aktuelles Protokoll …** zeigt, was das Programm zuletzt protokolliert hat, nach Stufe gefiltert (wählen Sie *Nur Probleme*, um Warnungen und Fehler zu sehen); aktuelle Protokollzeilen stehen auch im Supportpaket; fügen Sie `--log-file` hinzu, um eine Datei zu führen. Jede Zeile beginnt mit ihrer Stufe (`INFO`, `WARN`, `ERROR` oder `DEBUG`). Das voreingestellte `info` zeichnet Anmeldungen auf, wer die Steuerung der Operator-Seite übernommen hat, aktivierte Shows und ähnliche Ereignisse; `warn` behält nur Probleme; `debug` zeichnet zusätzlich jede Anfrage auf, was hilft, wenn etwas Merkwürdiges passiert. Legen Sie es mit `log: {level: debug}` in `config.yaml`, mit `--log-level debug` oder bei laufendem Programm unter Einrichtung → Einstellungen → *Protokoll-Detailgrad* fest. Wurde das Programm mit `--log-level` gestartet, gilt bei jedem Start diese Option: Die Einrichtung sagt das, eine dort vorgenommene Änderung gilt nur bis zum nächsten Neustart, und das Startprotokoll warnt, wenn Option und Datei nicht übereinstimmen. Eine mit `--log-file` geführte Protokolldatei beginnt bei 5 MB eine neue und behält drei ältere (`open-caption.log.1` bis `.3`), sodass sie nie den Datenträger füllt.
+- **Protokolle:** Einrichtung → Fahren → **Aktuelles Protokoll …** zeigt, was das Programm zuletzt protokolliert hat, nach Stufe gefiltert (wählen Sie *Nur Probleme*, um Warnungen und Fehler zu sehen); aktuelle Protokollzeilen stehen auch im Supportpaket; fügen Sie `--log-file` hinzu, um eine Datei zu führen. Jede Zeile beginnt mit ihrer Stufe (`INFO`, `WARN`, `ERROR` oder `DEBUG`). Das voreingestellte `info` zeichnet Anmeldungen auf, wer die Steuerung der Operator-Seite übernommen hat, aktivierte Shows und ähnliche Ereignisse; `warn` behält nur Probleme; `debug` zeichnet zusätzlich jede Anfrage auf, was hilft, wenn etwas Merkwürdiges passiert. Legen Sie es mit `log: {level: debug}` in `config.yaml`, mit `--log-level debug` oder bei laufendem Programm unter Einrichtung → Einstellungen → *Protokoll-Detailgrad* fest. Wurde das Programm mit `--log-level` gestartet, gilt bei jedem Start diese Option: Die Einrichtung sagt das, eine dort vorgenommene Änderung gilt nur bis zum nächsten Neustart, und das Startprotokoll warnt, wenn Option und Datei nicht übereinstimmen. Eine mit `--log-file` geführte Protokolldatei beginnt bei 5 MB eine neue und behält drei ältere (`open-caption.log.1` bis `.3`), sodass sie nie den Datenträger füllt.
 - **Archivieren:** Unter Einrichtung → Shows legt **Archivieren** eine abgeschlossene Show beiseite (sie bleibt erhalten, wird unter „Archivierte Shows“ aufgeführt und kann nicht auf Sendung gehen), und **Wiederherstellen** holt sie zurück. **Löschen** entfernt eine Show endgültig.
 
 ## Kurzkarte für den Operator

@@ -7,7 +7,7 @@ Preparare uno spettacolo richiede sei passi. La fila di pulsanti in alto nella p
 3. **Immagini** — carica le immagini usate dal file dello spettacolo.
 4. **Aspetto** — scegli i colori e la dimensione del testo.
 5. **Prova** — fai una prova in privato prima che ci sia qualcuno in sala.
-6. **In diretta** — condividi l'indirizzo con il pubblico e apri la pagina dell'operatore, da cui si avvia lo spettacolo.
+6. **Conduci** — condividi l'indirizzo con il pubblico e apri la pagina dell'operatore, da cui si avvia lo spettacolo.
 
 ## Attesa e messa in onda
 

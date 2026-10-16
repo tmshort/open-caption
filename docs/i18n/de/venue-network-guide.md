@@ -20,13 +20,13 @@ Für die Person, die das WLAN des Theaters betreut. Der Untertitel-Computer brau
 
 ## Vor der Vorstellung prüfen
 
-Öffnen Sie von einem Telefon im Gast-WLAN die in der Einrichtung unter **Live** angezeigte Adresse. Wenn die Seite lädt und „Die Untertitel beginnen in Kürze“ sagt (oder die Anzeige vor der Show zeigt), sind Sie fertig. Falls nicht, siehe „Nichts lädt“ unten.
+Öffnen Sie von einem Telefon im Gast-WLAN die in der Einrichtung unter **Fahren** angezeigte Adresse. Wenn die Seite lädt und „Die Untertitel beginnen in Kürze“ sagt (oder die Anzeige vor der Show zeigt), sind Sie fertig. Falls nicht, siehe „Nichts lädt“ unten.
 
 ## Die Adresse leichter machen
 
 In der Reihenfolge des Aufwands:
 
-1. **QR-Code** — Einrichtung → Live → „QR-Schild für das Foyer drucken“. Hängen Sie es im Foyer auf und legen Sie es ins Programmheft. Es sind keine Netzwerkänderungen nötig.
+1. **QR-Code** — Einrichtung → Fahren → „QR-Schild für das Foyer drucken“. Hängen Sie es im Foyer auf und legen Sie es ins Programmheft. Es sind keine Netzwerkänderungen nötig.
 2. **Port 80** — läuft das Programm auf Port 80, hat die Adresse kein `:Port`. Unter Linux erlauben Sie das mit `sudo setcap 'cap_net_bind_service=+ep' ./open-caption`.
 3. **Ein lokaler Name** — legen Sie auf dem Router einen DNS-Eintrag für den Untertitel-Computer an, zum Beispiel `captions.theater` → `192.168.1.10`. Die meisten Router (OpenWrt, Pi-hole, UniFi, Omada, auf dnsmasq basierende) erlauben einen „lokalen DNS-Eintrag“ oder eine „Host-Überschreibung“.
 4. **Gäste automatisch dorthin schicken.** Möglichkeiten:
@@ -57,13 +57,13 @@ Ein kleiner Nachteil von einfachem HTTP: Browser erlauben „Bildschirm anlassen
 ## Nichts lädt
 
 1. Ist das Telefon im Gast-WLAN (nicht im Mobilfunknetz)?
-2. Enthält die Adresse den Port, wenn das Programm nicht auf Port 80 läuft? Der Schritt Live zeigt die richtige Adresse.
+2. Enthält die Adresse den Port, wenn das Programm nicht auf Port 80 läuft? Der Schritt Fahren zeigt die richtige Adresse.
 3. Kann ein anderer Computer im Gast-WLAN ihn erreichen (`curl http://192.168.1.10/healthz` sollte `ok` ausgeben)?
 4. Wird der Verkehr von Gästen zum Server vom Router oder Zugangspunkt blockiert (Client-Isolation auf „alles blockieren“ statt „zwischen Clients blockieren“)?
 5. Blockiert die Firewall des Computers das Programm?
-6. Ist der Computer noch wach und noch unter derselben Adresse? Achten Sie in Live auf eine geänderte Adresse.
+6. Ist der Computer noch wach und noch unter derselben Adresse? Achten Sie in Fahren auf eine geänderte Adresse.
 
-Einrichtung → Live → **Supportpaket herunterladen** sammelt die Einstellungen (ohne Passwörter), aktuelle Protokollzeilen und grundlegende Angaben zum Computer.
+Einrichtung → Fahren → **Supportpaket herunterladen** sammelt die Einstellungen (ohne Passwörter), aktuelle Protokollzeilen und grundlegende Angaben zum Computer.
 
 ## Kapazität
 

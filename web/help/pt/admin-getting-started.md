@@ -7,7 +7,7 @@ Preparar um espetáculo leva seis etapas. A fileira de botões no alto da págin
 3. **Imagens** — envie as imagens que o arquivo do espetáculo usa.
 4. **Aparência** — escolha as cores e o tamanho do texto.
 5. **Teste** — ensaie em particular antes de haver alguém na sala.
-6. **Ao vivo** — compartilhe o endereço com o público e abra a página do operador, de onde o espetáculo é iniciado.
+6. **Conduzir** — compartilhe o endereço com o público e abra a página do operador, de onde o espetáculo é iniciado.
 
 ## Espera e entrada no ar
 

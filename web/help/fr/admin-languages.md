@@ -22,7 +22,7 @@ Le nom après le `|` est ce que les spectateurs voient dans le menu des langues 
 
 Chaque langue doit avoir **les mêmes tops dans le même ordre** : un sous-titre reste un sous-titre, un `[clear]` reste un `[clear]`, une boucle garde le même nombre d'éléments, et des voix montrées ensemble restent le même nombre de voix. Seuls les mots changent. Les noms de personnage, les notes, les noms de section, les noms d'image et les durées des boucles peuvent être différents.
 
-Si une traduction cesse de correspondre, l'éditeur affiche une erreur avec la ligne où cela cloche, par exemple « Le top 4 ne correspond pas au fichier du spectacle en anglais : ce fichier a [clear] ici, et celui-ci a un sous-titre ». Une langue qui ne correspond pas **n'est pas proposée au public** tant qu'elle n'est pas corrigée. Le fichier du spectacle en anglais (principal) n'est pas touché, et l'étape En direct signale le problème.
+Si une traduction cesse de correspondre, l'éditeur affiche une erreur avec la ligne où cela cloche, par exemple « Le top 4 ne correspond pas au fichier du spectacle en anglais : ce fichier a [clear] ici, et celui-ci a un sous-titre ». Une langue qui ne correspond pas **n'est pas proposée au public** tant qu'elle n'est pas corrigée. Le fichier du spectacle en anglais (principal) n'est pas touché, et l'étape Conduire signale le problème.
 
 Pour indiquer au public quels mots vont avec quelle ligne, gardez les lignes en phase : si l'anglais découpe une réplique en trois lignes, l'espagnol aussi, même si ce n'est pas ainsi que cette langue la découperait.
 

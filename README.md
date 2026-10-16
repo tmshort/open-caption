@@ -22,7 +22,7 @@ browser on a projector) shows the captions live, with no interaction required.
 - Survives a restart: the position, sign-ins and last few undo steps are kept.
 
 **For whoever sets it up**
-- A guided Setup page: show file editor with problems listed by line, image upload, look, a private rehearsal, then Go Live with a printable QR sign.
+- A guided Setup page: show file editor with problems listed by line, image upload, look, a private rehearsal, then a Run step with the audience address, a printable QR sign and the way into the operator page.
 - Edit the show file in any program you like: download it as a plain `.md`, edit it offline, and open it again to save over the show (or import any `.md` / `.txt` file as a new show). A guide for the person preparing the show file is [Preparing a show file](web/help/admin-preparing-a-show-file.md); [Getting started](web/help/admin-getting-started.md) walks through the six steps of Setup. Both are in the app's Help too.
 - A show is one plain-text Markdown file (plus images): title, colours, fonts and options live in it, layered over `config.yaml` defaults. Earlier versions are kept, can be named and compared, and shows can be exported, imported, duplicated and archived.
 - Setup, the operator page, Help and all the built-in documentation are available in English, Spanish, French, German, Italian and Portuguese.
@@ -47,7 +47,7 @@ The first run creates `config.yaml` (in your user config folder; the path is pri
 
 - **Setup:** open `http://localhost/admin` (or the `:8080` address printed if port 80 was busy), sign in with the admin password, and follow the six steps. "Create a sample show" is a good first try.
 - **Operator:** `/operator` (the operator password; the admin password also works). Space sends the next line.
-- **Audience:** the address shown in Setup → Go Live, or its QR code. Devices must be on the same WiFi.
+- **Audience:** the address shown in Setup → Run, or its QR code. Devices must be on the same WiFi.
 - **Help:** the **Help** button on Setup and Operator. Read [Getting started](web/help/admin-getting-started.md) and [Preparing a show file](web/help/admin-preparing-a-show-file.md) (for whoever writes the show file), [docs/usage-guide.md](docs/usage-guide.md) (deployment, checklist) and [docs/venue-network-guide.md](docs/venue-network-guide.md) (the WiFi side).
 
 `make help` lists every target. `make test` runs the tests; `make e2e` runs the browser end-to-end test (needs Node and Chrome); `make dist` builds binaries for macOS, Windows and Linux.

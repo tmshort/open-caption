@@ -3,7 +3,7 @@
 ## Nessuno riesce ad aprire l'indirizzo
 
 - Controlla che il telefono sia sul WiFi ospiti del locale, non sui dati mobili.
-- Controlla che l'indirizzo coincida con quello del passo **In diretta**. Se ha un numero di porta, includilo.
+- Controlla che l'indirizzo coincida con quello del passo **Conduci**. Se ha un numero di porta, includilo.
 - Chiedi al locale se i dispositivi del WiFi ospiti possono raggiungere questo computer.
 - Il firewall del computer potrebbe bloccare il programma. Su Windows, consentilo sulle **reti private** quando richiesto. Su macOS, consenti le connessioni in entrata per esso.
 - Apri l'indirizzo su questo computer usando `localhost` per verificare il programma stesso.
@@ -34,8 +34,8 @@ Se non riesci proprio ad accedere, entrambe le password sono in `config.yaml`, n
 
 ## Guardare il registro
 
-**In diretta → Registro recente…** mostra cosa il programma ha registrato di recente. Scegli *Solo problemi* per vedere avvisi ed errori, come accessi rifiutati o un nome già usato sulla rete. La stessa finestra imposta quanto dettaglio viene registrato (**Livello di dettaglio del registro**); *Debug* aggiunge ogni richiesta, il che aiuta quando succede qualcosa di strano. Le password non vengono mai scritte nel registro.
+**Conduci → Registro recente…** mostra cosa il programma ha registrato di recente. Scegli *Solo problemi* per vedere avvisi ed errori, come accessi rifiutati o un nome già usato sulla rete. La stessa finestra imposta quanto dettaglio viene registrato (**Livello di dettaglio del registro**); *Debug* aggiunge ogni richiesta, il che aiuta quando succede qualcosa di strano. Le password non vengono mai scritte nel registro.
 
 ## Chiedere aiuto
 
-Scarica il **pacchetto di supporto** dal fondo del passo In diretta. Contiene le impostazioni (senza password), le righe recenti del registro e informazioni di base su questo computer, ed è facile da inviare a chi mantiene il programma.
+Scarica il **pacchetto di supporto** dal fondo del passo Conduci. Contiene le impostazioni (senza password), le righe recenti del registro e informazioni di base su questo computer, ed è facile da inviare a chi mantiene il programma.

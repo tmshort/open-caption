@@ -22,7 +22,7 @@ The name after the `|` is what audience members see in the language menu, so wri
 
 Every language must have **the same cues in the same order**: a caption stays a caption, a `[clear]` stays a `[clear]`, a loop keeps the same number of items, and voices shown together stay the same number of voices. Only the words change. Speaker names, notes, section names, image names and loop timings can be different.
 
-If a translation stops matching, the editor shows an error with the line where it goes wrong, for example "Cue 4 does not match the English show file: that show file has [clear] here, and this one has a caption". A language that does not match is **not offered to the audience** until it is fixed. The English (main) show file is unaffected, and the Go Live step lists the problem.
+If a translation stops matching, the editor shows an error with the line where it goes wrong, for example "Cue 4 does not match the English show file: that show file has [clear] here, and this one has a caption". A language that does not match is **not offered to the audience** until it is fixed. The English (main) show file is unaffected, and the Run step lists the problem.
 
 To tell the audience which words go with which line, keep the lines in step: if the English splits a speech into three lines, so does the Spanish, even where that is not how the language would break it.
 

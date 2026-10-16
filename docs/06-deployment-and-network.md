@@ -54,7 +54,7 @@ Cross-compile with `GOOS/GOARCH`; CI produces release artifacts for all targets.
 
 Audiences should type as little as possible. In increasing effort:
 
-1. **QR code** (REQ-053): printable page `/admin` → Go Live → QR for lobby signage and programs. Highest value, zero infrastructure.
+1. **QR code** (REQ-053): printable page `/admin` → Run → QR for lobby signage and programs. Highest value, zero infrastructure.
 2. **Short IP URL**: `http://192.168.1.10` (port 80 so no `:port`).
 3. **Local DNS name**: router DNS entry, e.g. `captions.theater` → server IP (dnsmasq/OpenWrt/Pi-hole/most routers allow a host override).
 4. **Send guests to the page when they join the WiFi** (a captive-portal-style redirect). Documented for venue staff in [venue-network-guide.md](venue-network-guide.md). The options, most reliable first:

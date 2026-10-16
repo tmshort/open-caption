@@ -20,13 +20,13 @@ Per chi si occupa del WiFi del teatro. Il computer dei sottotitoli non ha bisogn
 
 ## Controllare prima dello spettacolo
 
-Da un telefono sul WiFi ospiti, apri l'indirizzo mostrato in Configurazione → **In diretta**. Se la pagina si carica e dice «I sottotitoli inizieranno a breve» (o mostra il pre-spettacolo), hai finito. Altrimenti vedi «Non si carica nulla» più sotto.
+Da un telefono sul WiFi ospiti, apri l'indirizzo mostrato in Configurazione → **Conduci**. Se la pagina si carica e dice «I sottotitoli inizieranno a breve» (o mostra il pre-spettacolo), hai finito. Altrimenti vedi «Non si carica nulla» più sotto.
 
 ## Rendere l'indirizzo più facile
 
 In ordine di impegno:
 
-1. **Codice QR** — Configurazione → In diretta → «Stampa un cartello con codice QR». Mettilo nell'ingresso e nel programma di sala. Non servono modifiche alla rete.
+1. **Codice QR** — Configurazione → Conduci → «Stampa un cartello con codice QR». Mettilo nell'ingresso e nel programma di sala. Non servono modifiche alla rete.
 2. **Porta 80** — se il programma gira sulla porta 80, l'indirizzo non ha `:porta`. Su Linux, consentilo con `sudo setcap 'cap_net_bind_service=+ep' ./open-caption`.
 3. **Un nome locale** — aggiungi sul router una voce DNS per il computer dei sottotitoli, per esempio `captions.theater` → `192.168.1.10`. La maggior parte dei router (OpenWrt, Pi-hole, UniFi, Omada, basati su dnsmasq) permette un «record DNS locale» o una «sostituzione host».
 4. **Mandare gli ospiti lì automaticamente.** Opzioni:
@@ -57,13 +57,13 @@ Un piccolo costo dell'HTTP semplice: i browser permettono «tieni lo schermo acc
 ## Non si carica nulla
 
 1. Il telefono è sul WiFi ospiti (non sui dati mobili)?
-2. L'indirizzo include la porta se il programma non è sulla porta 80? Il passo In diretta mostra l'indirizzo corretto.
+2. L'indirizzo include la porta se il programma non è sulla porta 80? Il passo Conduci mostra l'indirizzo corretto.
 3. Un altro computer sul WiFi ospiti riesce a raggiungerlo (`curl http://192.168.1.10/healthz` dovrebbe stampare `ok`)?
 4. Il traffico dagli ospiti al server è bloccato dal router o dal punto di accesso (isolamento dei client impostato su «blocca tutto» invece di «blocca tra client»)?
 5. Il firewall del computer sta bloccando il programma?
-6. Il computer è ancora sveglio, e allo stesso indirizzo? Cerca un cambio di indirizzo in In diretta.
+6. Il computer è ancora sveglio, e allo stesso indirizzo? Cerca un cambio di indirizzo in Conduci.
 
-Configurazione → In diretta → **Scarica un pacchetto di supporto** raccoglie le impostazioni (senza password), le righe recenti del registro e informazioni di base sul computer.
+Configurazione → Conduci → **Scarica un pacchetto di supporto** raccoglie le impostazioni (senza password), le righe recenti del registro e informazioni di base sul computer.
 
 ## Capacità
 

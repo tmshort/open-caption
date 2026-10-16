@@ -20,13 +20,13 @@ Para quien se ocupa de la WiFi del teatro. El equipo de subtitulado no necesita 
 
 ## Comprobar antes de la función
 
-Desde un teléfono en la WiFi de invitados, abra la dirección que se muestra en Configuración → **En vivo**. Si la página carga y dice «Los subtítulos comenzarán en breve» (o muestra la previa), ya está. Si no, consulte «No carga nada» más abajo.
+Desde un teléfono en la WiFi de invitados, abra la dirección que se muestra en Configuración → **Dirigir**. Si la página carga y dice «Los subtítulos comenzarán en breve» (o muestra la previa), ya está. Si no, consulte «No carga nada» más abajo.
 
 ## Hacer la dirección más fácil
 
 En orden de esfuerzo:
 
-1. **Código QR** — Configuración → En vivo → «Imprimir un cartel con código QR». Póngalo en el vestíbulo y en el programa de mano. No hace falta cambiar nada en la red.
+1. **Código QR** — Configuración → Dirigir → «Imprimir un cartel con código QR». Póngalo en el vestíbulo y en el programa de mano. No hace falta cambiar nada en la red.
 2. **Puerto 80** — si el programa funciona en el puerto 80, la dirección no lleva `:puerto`. En Linux, permítalo con `sudo setcap 'cap_net_bind_service=+ep' ./open-caption`.
 3. **Un nombre local** — añada en el router una entrada DNS para el equipo de subtitulado, por ejemplo `captions.theater` → `192.168.1.10`. La mayoría de routers (OpenWrt, Pi-hole, UniFi, Omada, basados en dnsmasq) permiten un «registro DNS local» o «anulación de host».
 4. **Enviar a los invitados allí automáticamente.** Opciones:
@@ -57,13 +57,13 @@ Un pequeño inconveniente del HTTP sencillo: los navegadores solo permiten «man
 ## No carga nada
 
 1. ¿Está el teléfono en la WiFi de invitados (no en datos móviles)?
-2. ¿La dirección incluye el puerto si el programa no está en el puerto 80? El paso En vivo muestra la dirección correcta.
+2. ¿La dirección incluye el puerto si el programa no está en el puerto 80? El paso Dirigir muestra la dirección correcta.
 3. ¿Puede otro equipo de la WiFi de invitados llegar a él (`curl http://192.168.1.10/healthz` debería imprimir `ok`)?
 4. ¿Está el tráfico de invitados al servidor bloqueado por el router o el punto de acceso (aislamiento de clientes en «bloquear todo» en vez de «bloquear entre clientes»)?
 5. ¿Está el cortafuegos del equipo bloqueando el programa?
-6. ¿Sigue el equipo despierto, y con la misma dirección? Busque un cambio de dirección en En vivo.
+6. ¿Sigue el equipo despierto, y con la misma dirección? Busque un cambio de dirección en Dirigir.
 
-Configuración → En vivo → **Descargar un paquete de soporte** recoge los ajustes (sin contraseñas), líneas recientes del registro y datos básicos del equipo.
+Configuración → Dirigir → **Descargar un paquete de soporte** recoge los ajustes (sin contraseñas), líneas recientes del registro y datos básicos del equipo.
 
 ## Capacidad
 

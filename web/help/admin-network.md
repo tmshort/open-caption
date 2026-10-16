@@ -9,11 +9,11 @@ Audience members connect their own phones and tablets to the venue's **guest WiF
 - A wired connection for this computer is best. Ask for a reserved address (a "DHCP reservation") so the address does not change between shows.
 - No internet connection is needed.
 
-Test it before the first show: join the guest WiFi on a phone and open the address shown in the **Go Live** step.
+Test it before the first show: join the guest WiFi on a phone and open the address shown in the **Run** step.
 
 ## Making the address easy
 
-1. **QR code** — print the sign from the Go Live step and put it in the lobby and the program. This is the easiest option.
+1. **QR code** — print the sign from the Run step and put it in the lobby and the program. This is the easiest option.
 2. **A short address** — if the program can use port 80, the address has no port number, such as `http://192.168.1.10/`.
 3. **A name** — the program announces itself as **`open-caption.local`**, so `http://open-caption.local/` works on most phones and computers on the same network, with nothing to set up. Change the name, or switch it off, in **Settings → Network name**. Some guest WiFi networks block this kind of announcement; then use the numeric address or the QR code. A venue can also add a name of its own (such as `captions.theater`) on its router, which works everywhere.
 4. **Automatic page** — a venue can send guests to the page when they join the WiFi with the access point's splash page ("captive portal"). The program also answers the standard network-detection address `/captive-api` for venues that use DHCP option 114, but that only reports that the network is not captive: it does not open the page by itself, and it needs a trusted HTTPS certificate. See the [venue network guide](topic:admin-venue-network-guide).
@@ -24,4 +24,4 @@ Plain `http://` addresses work on every device and are the default. HTTPS can be
 
 ## If the port is busy
 
-If port 80 is already used by another program, the server starts on a different port and says so in the console. Audience addresses must then include it, for example `http://192.168.1.10:8080/`; the Go Live step shows the right address.
+If port 80 is already used by another program, the server starts on a different port and says so in the console. Audience addresses must then include it, for example `http://192.168.1.10:8080/`; the Run step shows the right address.
