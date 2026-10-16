@@ -541,5 +541,10 @@ OCI18n.add("de", {
  "Add a show": "Eine Show hinzufügen",
  "Welcome! Start by creating a show, importing one, or look around with the sample.": "Willkommen! Legen Sie eine Show an, importieren Sie eine, oder sehen Sie sich mit der Beispiel-Show um.",
  "Import a show…": "Show importieren …",
- "Choose an exported show (.zip) or a plain .md / .txt show file from this computer": "Wählen Sie eine exportierte Show (.zip) oder eine Show-Textdatei (.md / .txt) von diesem Computer"
+ "Choose an exported show (.zip) or a plain .md / .txt show file from this computer": "Wählen Sie eine exportierte Show (.zip) oder eine Show-Textdatei (.md / .txt) von diesem Computer",
+ "Upload images…": "Bilder hochladen …",
+ "Upload this image…": "Dieses Bild hochladen …",
+ "Upload {name}": "{name} hochladen",
+ "Choose one or more pictures from this computer": "Wählen Sie ein oder mehrere Bilder von diesem Computer",
+ "Choose the picture for {name} from this computer": "Wählen Sie das Bild für {name} von diesem Computer"
 });

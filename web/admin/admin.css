@@ -160,3 +160,4 @@ label.tick input { flex: none; margin-top: .3rem; }
 .savebar { display: inline-flex; align-items: center; gap: .6rem; flex-wrap: nowrap; white-space: nowrap; }
 /* breathing room between the file buttons and the formatting buttons under them */
 .filebar { margin: .6rem 0 .9rem; row-gap: .5rem; }
+.dropzone p { margin: 0 0 .6rem; }

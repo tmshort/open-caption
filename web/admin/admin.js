@@ -315,10 +315,16 @@
           h('button', { class: 'danger quiet', onclick: () => deleteShow(s) }, __('Delete…'))))));
     }
   }
-  // The same kind of button as Upload a show file…: it opens the file chooser (a hidden input), then imports.
+  // Every file chooser in Setup is a button like any other: it opens the browser's chooser through a hidden
+  // input, and hands the chosen files to onFiles. Returns [button, input] to put in a row.
+  const IMAGE_TYPES = 'image/png,image/jpeg,image/gif,image/webp';
+  function fileButton(text, opts, onFiles) {
+    const inp = h('input', { type: 'file', accept: opts.accept, multiple: opts.multiple ? true : null, 'aria-label': opts.label || text, hidden: '', tabindex: '-1',
+      onchange: (e) => { const files = [...e.target.files]; e.target.value = ''; if (files.length) onFiles(files); } });
+    return [h('button', { title: opts.title, onclick: () => inp.click() }, text), inp];
+  }
   function importButton() {
-    const inp = h('input', { type: 'file', accept: '.zip,.md,.txt,text/plain,text/markdown', 'aria-label': __('Import a show…'), hidden: '', tabindex: '-1', onchange: (e) => { const f = e.target.files[0]; e.target.value = ''; if (f) importShow(f); } });
-    return [h('button', { title: __('Choose an exported show (.zip) or a plain .md / .txt show file from this computer'), onclick: () => inp.click() }, __('Import a show…')), inp];
+    return fileButton(__('Import a show…'), { accept: '.zip,.md,.txt,text/plain,text/markdown', title: __('Choose an exported show (.zip) or a plain .md / .txt show file from this computer') }, (files) => importShow(files[0]));
   }
   function newShowForm() {
     const inp = h('input', { type: 'text', placeholder: __('Name of the show'), maxlength: '100', 'aria-label': __('Show name') });
@@ -593,8 +599,7 @@
       const sel = h('select', {}, ...names.map((n) => h('option', { value: n }, n)));
       if (await ask(__('Insert an image'), h('label', { class: 'field' }, h('span', {}, __('Which image?')), sel), __('Insert'))) insert('[image: ' + sel.value + ']\n');
     }
-    const fileInput = h('input', { type: 'file', accept: '.txt,.md,text/plain,text/markdown', 'aria-label': __('Upload a show file…'), hidden: '', tabindex: '-1', onchange: (e) => { readFile(e.target.files[0]); e.target.value = ''; } });
-    const uploadBtn = h('button', { title: __('Choose a .txt or .md file from this computer to put in the editor (nothing is saved until you press Save)'), onclick: () => fileInput.click() }, __('Upload a show file…'));
+    const [uploadBtn, fileInput] = fileButton(__('Upload a show file…'), { accept: '.txt,.md,text/plain,text/markdown', title: __('Choose a .txt or .md file from this computer to put in the editor (nothing is saved until you press Save)') }, (files) => readFile(files[0]));
 
     // --- language tabs and translation helpers ---
     const tabList = h('div', { class: 'tablist', role: 'tablist', 'aria-label': __('Languages') });
@@ -697,9 +702,9 @@
     if (a.missing.length) {
       p.append(h('div', { class: 'card missing' }, h('h3', {}, __('⚠ Images the show file uses but you have not uploaded')),
         ...a.missing.map((m) => h('div', { class: 'row' }, h('b', {}, m.name), h('span', { class: 'hint' }, __('used on line {lines}', { lines: m.lines.join(', ') })),
-          h('label', { class: 'row' }, h('input', { type: 'file', accept: 'image/png,image/jpeg,image/gif,image/webp', 'aria-label': __('Images'), onchange: (e) => e.target.files[0] && upload([e.target.files[0]], m.name) }))))));
+          ...fileButton(__('Upload this image…'), { accept: IMAGE_TYPES, title: __('Choose the picture for {name} from this computer', { name: m.name }), label: __('Upload {name}', { name: m.name }) }, (files) => upload([files[0]], m.name))))));
     }
-    const dz = h('div', { class: 'dropzone' }, h('p', {}, __('Drag images here, or ')), h('input', { type: 'file', multiple: true, accept: 'image/png,image/jpeg,image/gif,image/webp', 'aria-label': __('Images'), onchange: (e) => upload(e.target.files) }));
+    const dz = h('div', { class: 'dropzone' }, h('p', {}, __('Drag images here, or ')), ...fileButton(__('Upload images…'), { accept: IMAGE_TYPES, multiple: true, title: __('Choose one or more pictures from this computer') }, (files) => upload(files)));
     dz.addEventListener('dragover', (e) => { e.preventDefault(); dz.classList.add('drop'); });
     dz.addEventListener('dragleave', () => dz.classList.remove('drop'));
     dz.addEventListener('drop', (e) => { e.preventDefault(); dz.classList.remove('drop'); upload(e.dataTransfer.files); });
