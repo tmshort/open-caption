@@ -596,5 +596,5 @@ OCI18n.add("pt", {
  "Standby screen": "Tela de espera",
  "Showing the built-in Open Caption logo until you choose your own.": "O logotipo integrado do Open Caption é mostrado até você escolher o seu.",
  "Back to Setup": "Voltar à configuração",
- "Setup page": "Página de configuração"
+ "Run": "Conduzir"
 });
