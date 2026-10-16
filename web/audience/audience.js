@@ -259,6 +259,7 @@
   function renderFullscreen() {
     const fs = $('fs'), it = state.fullscreen;
     fs.replaceChildren();
+    fs.classList.remove('bleed');
     document.body.classList.toggle('has-fs', !!it);
     if (!it) { fs.hidden = true; return; }
     fs.hidden = false;
@@ -269,6 +270,7 @@
       fs.appendChild(d);
       startTimers();
     } else if (it.kind === 'image') {
+      fs.classList.toggle('bleed', !it.caption); // a picture with no words fills the whole screen
       const fig = document.createElement('figure');
       const img = document.createElement('img');
       img.alt = it.caption || '';

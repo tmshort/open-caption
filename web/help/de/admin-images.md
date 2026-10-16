@@ -5,6 +5,7 @@ Laden Sie Bilder im Schritt **Bilder** hoch und verwenden Sie sie in der Show-Da
 - Akzeptierte Typen: PNG, JPG, GIF und WebP. Andere Typen, auch SVG, werden nicht akzeptiert.
 - Jede Datei darf bis zu 10 MB groß sein, aber **halten Sie sie unter etwa 1 MB**. Jedes Publikumsgerät lädt das ganze Bild herunter, und 100 Geräte, die gleichzeitig ein großes Bild abrufen, können langsam sein. Etwa 1920 Pixel Breite genügen.
 - Das Programm verkleinert Bilder nicht. Browser passen sie an jeden Bildschirm an.
+- Ein Bild **ohne Bildunterschrift füllt den ganzen Bildschirm**, von Rand zu Rand: Es wird angepasst und nie beschnitten, und die Hintergrundfarbe erscheint in den Balken, wenn die Formen nicht übereinstimmen. Fügen Sie eine Bildunterschrift hinzu (`[image: curtain.jpg | Act 1]`), behält das Bild einen Rand mit den Worten darunter.
 - Kommende Bilder werden im Hintergrund heruntergeladen, bevor sie gezeigt werden, und erscheinen deshalb sofort.
 
 ## Namen

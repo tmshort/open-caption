@@ -327,6 +327,22 @@ async function main() {
     await op.keyboard.press('Space'); await sleep(T(900));
     check('START puts it back on air where it was (the pre-show timer is showing again)', await en.evaluate(() => !document.body.classList.contains('mode-standby') && !!document.querySelector('#fs [data-timer]')));
 
+    // A picture with no words fills the whole screen; with a caption it keeps its margin.
+    {
+      const sample = (await api(op, 'POST', '/api/admin/shows', { sample: true })).body.id;
+      const showImage = async (text) => {
+        await api(op, 'PUT', `/api/admin/shows/${sample}/showfile`, { text: '[settings]\ntitle: Pic\n[/settings]\n' + text, confirm: 'Pic' });
+        await api(op, 'POST', `/api/admin/shows/${sample}/activate`, { force: true, start: true }); await sleep(T(700));
+        await nextN(1); await sleep(T(900));
+        return en.evaluate(() => { const i = document.querySelector('#fs img'); if (!i) return null; const r = i.getBoundingClientRect(); return { l: Math.round(r.left), t: Math.round(r.top), w: Math.round(r.width), h: Math.round(r.height), vw: innerWidth, vh: innerHeight, loaded: i.naturalWidth > 0 }; });
+      };
+      const bare = await showImage('[image: welcome.png]\nHello');
+      check('a picture with no caption fills the whole screen', !!bare && bare.loaded && bare.l === 0 && bare.t === 0 && bare.w === bare.vw && bare.h === bare.vh, bare);
+      const bare2 = await showImage('![](welcome.png)\nHello');
+      check('also when written the Markdown way with no description', !!bare2 && bare2.w === bare2.vw && bare2.h === bare2.vh, bare2);
+      const capt = await showImage('[image: welcome.png | The garden]\nHello');
+      check('a picture with a caption keeps its margin around it', !!capt && capt.l > 0 && capt.w < capt.vw, capt);
+    }
     section('The operator page and Setup');
     // The right side of the header is in the same order on both pages (devices, language, the page's own actions, the other page, Help, Sign out, connection).
     const headerOrder = (pg, sels) => pg.evaluate((sels) => { const pts = sels.map((q) => { const e = document.querySelector(q); if (!e || e.hidden || !e.offsetWidth) return null; const r = e.getBoundingClientRect(); return [Math.round(r.top / 40), r.left]; }); const seen = pts.filter(Boolean); return { ok: seen.every((x, i) => i === 0 || x[0] > seen[i - 1][0] || (x[0] === seen[i - 1][0] && x[1] > seen[i - 1][1])), pts: pts.map((x, i) => (x ? sels[i] : '(' + sels[i] + ' hidden)')) }; }, sels);

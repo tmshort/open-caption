@@ -5,6 +5,7 @@ Carica le immagini nel passo **Immagini** e usale nel file dello spettacolo con 
 - Tipi accettati: PNG, JPG, GIF e WebP. Gli altri tipi, compreso SVG, non sono accettati.
 - Ogni file può pesare fino a 10 MB, ma **tienili sotto circa 1 MB**. Ogni dispositivo del pubblico scarica l'immagine intera, e 100 dispositivi che richiedono una grande immagine nello stesso momento possono essere lenti. Circa 1920 pixel di larghezza bastano.
 - Il programma non ridimensiona le immagini. I browser le riducono per adattarle a ogni schermo.
+- Un'immagine **senza didascalia riempie l'intero schermo**, da bordo a bordo: viene scalata per adattarsi senza mai essere ritagliata, e il colore di sfondo compare nelle bande se le proporzioni sono diverse. Aggiungi una didascalia (`[image: curtain.jpg | Act 1]`) e l'immagine mantiene un margine con le parole sotto.
 - Le immagini in arrivo vengono scaricate in background prima di essere mostrate, così compaiono all'istante.
 
 ## Nomi

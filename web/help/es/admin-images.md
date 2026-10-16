@@ -5,6 +5,7 @@ Suba imágenes en el paso **Imágenes** y úselas en el archivo del espectáculo
 - Tipos admitidos: PNG, JPG, GIF y WebP. No se aceptan otros tipos, incluido SVG.
 - Cada archivo puede pesar hasta 10 MB, pero **manténgalos por debajo de 1 MB aproximadamente**. Cada dispositivo del público descarga la imagen completa, y 100 dispositivos pidiendo una imagen grande a la vez pueden ir lentos. Con unos 1920 píxeles de ancho basta.
 - El programa no redimensiona las imágenes. Los navegadores las reducen para ajustarlas a cada pantalla.
+- Una imagen **sin pie de foto llena toda la pantalla**, de borde a borde: se ajusta sin recortarse, y el color de fondo se ve en las franjas si las proporciones difieren. Añada un pie de foto (`[image: curtain.jpg | Act 1]`) y la imagen conserva un margen con las palabras debajo.
 - Las imágenes próximas se descargan en segundo plano antes de mostrarse, así que aparecen al instante.
 
 ## Nombres

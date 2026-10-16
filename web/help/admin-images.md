@@ -5,6 +5,7 @@ Upload pictures in the **Images** step and use them in the show file with `[imag
 - Accepted types: PNG, JPG, GIF and WebP. Other types, including SVG, are not accepted.
 - Each file can be up to 10 MB, but **keep them under about 1 MB**. Every audience device downloads the full picture, and 100 devices fetching a large picture at once can be slow. About 1920 pixels wide is plenty.
 - The program does not resize pictures. Browsers shrink them to fit each screen.
+- A picture with **no caption fills the whole screen**, edge to edge: it is scaled to fit and never cropped, and the background colour shows in the bars if the shapes differ. Add a caption (`[image: curtain.jpg | Act 1]`) and the picture keeps a margin with the words beneath it.
 - Upcoming pictures are downloaded in the background before they are shown, so they appear instantly.
 
 ## Names

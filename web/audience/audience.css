@@ -102,6 +102,10 @@ body.mode-standby #fs { display: none; }
 #fs figure > * + * { margin-top: 2vmin; }
 #fs img { max-width: 100%; max-height: 100%; min-height: 0; object-fit: contain; flex: 1 1 auto; }
 #fs figcaption { font-size: .45em; flex: 0 0 auto; }
+/* A picture with no caption fills the whole screen, edge to edge (scaled up or down to fit, never cropped; the background shows in
+   the bars when the shapes differ). With a caption it keeps its margin. */
+#fs.bleed { padding: 0; }
+#fs.bleed figure img { width: 100%; height: 100%; max-width: none; max-height: none; object-fit: contain; }
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 
 #offline {

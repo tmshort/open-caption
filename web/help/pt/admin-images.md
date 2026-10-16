@@ -5,6 +5,7 @@ Envie imagens na etapa **Imagens** e use-as no arquivo do espetáculo com `[imag
 - Tipos aceitos: PNG, JPG, GIF e WebP. Outros tipos, incluindo SVG, não são aceitos.
 - Cada arquivo pode ter até 10 MB, mas **mantenha-os abaixo de cerca de 1 MB**. Cada dispositivo do público baixa a imagem inteira, e 100 dispositivos buscando uma imagem grande ao mesmo tempo podem ficar lentos. Cerca de 1920 pixels de largura bastam.
 - O programa não redimensiona as imagens. Os navegadores as reduzem para caber em cada tela.
+- Uma imagem **sem legenda preenche a tela inteira**, de borda a borda: ela é ajustada sem nunca ser cortada, e a cor de fundo aparece nas faixas se as proporções forem diferentes. Adicione uma legenda (`[image: curtain.jpg | Act 1]`) e a imagem mantém uma margem com as palavras abaixo.
 - As próximas imagens são baixadas em segundo plano antes de serem mostradas, então aparecem na hora.
 
 ## Nomes
