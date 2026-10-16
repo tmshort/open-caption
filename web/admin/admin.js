@@ -309,6 +309,7 @@
     refreshNav();
     warmAnalysis();
     const panel = $('panel'); panel.replaceChildren();
+    panel.classList.toggle('wide', A.step === 'showfile'); // the editor uses the whole width of the window
     document.title = __('Setup') + ' — ' + __((STEPS.find((x) => x[0] === A.step) || ['', ''])[1]);
     try { await ({ show: stepShow, showfile: stepShowFile, images: stepImages, look: stepLook, test: stepTest, golive: stepGoLive })[A.step](panel); } catch (e) { if (e.message !== 'login') console.error(e); }
   }

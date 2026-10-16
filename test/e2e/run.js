@@ -477,6 +477,17 @@ async function main() {
     await step(arch, 'Go Live'); await sleep(T(900));
     check('Go Live offers Open the operator page (the show waits in standby), not Start show', await arch.evaluate(() => { const t = document.getElementById('panel').innerText; return /Open the operator page/.test(t) && !/Start show/.test(t) && /standby/.test(t); }));
     await step(arch, 'Show file'); await sleep(T(600));
+    // The editor grows with the window (no maximum width), and has a minimum.
+    {
+      const edW = () => arch.evaluate(() => { const e = document.querySelector('.editor'), r = e.getBoundingClientRect(); return { w: Math.round(r.width), h: Math.round(r.height), vw: innerWidth, scroll: document.documentElement.scrollWidth }; });
+      await arch.setViewport({ width: 1300, height: 950 }); await sleep(300); const w1300 = await edW();
+      await arch.setViewport({ width: 2000, height: 1100 }); await sleep(300); const w2000 = await edW();
+      await arch.setViewport({ width: 1000, height: 700 }); await sleep(300); const w1000 = await edW();
+      await arch.setViewport({ width: 1300, height: 950 }); await sleep(300);
+      check('the Show file editor grows as the window gets wider (no maximum)', w2000.w >= w1300.w + 600 && w1300.w > 800, { w1000, w1300, w2000 });
+      check('and taller', w2000.h > w1300.h, { w1300, w2000 });
+      check('with a minimum, and the page never scrolls sideways', w1000.w >= 440 && w1000.scroll <= w1000.vw && w2000.scroll <= w2000.vw, { w1000, w2000 });
+    }
     // Offline editing: download the plain show file, edit it elsewhere, open it again and save.
     check('the Show file step offers the show file as a plain download', await arch.evaluate(() => { const l = [...document.querySelectorAll('a')].find((x) => x.textContent === 'Download the show file'); return !!l && /\/showfile\/download$/.test(l.getAttribute('href')) && /\.md$/.test(l.getAttribute('download')); }));
     const dl = await arch.evaluate(async (id) => { const r = await fetch('/api/admin/shows/' + id + '/showfile/download'); const bytes = new Uint8Array(await r.clone().arrayBuffer()); const t = await r.text(); return { ok: r.ok, disp: r.headers.get('Content-Disposition'), bom: bytes[0] === 0xEF && bytes[1] === 0xBB && bytes[2] === 0xBF, crlf: t.includes('\r\n'), text: t }; }, lastId);

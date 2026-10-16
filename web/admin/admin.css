@@ -33,6 +33,7 @@ nav#steps button.on { background: var(--accent); color: var(--accent-fg); border
 nav#steps button .n { display: inline-block; width: 1.4rem; height: 1.4rem; line-height: 1.4rem; text-align: center; border-radius: 50%; background: var(--bg); color: var(--fg); margin-right: .4rem; font-size: .8rem; }
 nav#steps button.done .n::before { content: "✓"; } nav#steps button.done .n span { display: none; }
 main { max-width: 70rem; margin: 0 auto; padding: 1rem; }
+main.wide { max-width: none; } /* the Show file step grows with the window */
 .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 1rem; margin: 0 0 1rem; }
 .row { display: flex; gap: .6rem; align-items: center; flex-wrap: wrap; }
 .row.end { justify-content: flex-end; }
@@ -53,7 +54,7 @@ main { max-width: 70rem; margin: 0 auto; padding: 1rem; }
 select.uilang { min-height: 28px; }
 .langtabs .tablist { display: contents; }
 .maintext { max-height: 16rem; overflow: auto; background: var(--bg); padding: .6rem; border-radius: 8px; font: .85rem/1.4 var(--mono); white-space: pre-wrap; }
-.editor-grid { display: grid; grid-template-columns: minmax(0, 3fr) minmax(16rem, 2fr); gap: 1rem; align-items: start; }
+.editor-grid { display: grid; grid-template-columns: minmax(28rem, 1fr) minmax(16rem, 24rem); gap: 1rem; align-items: start; } /* the editor takes every pixel the side panel does not need */
 @media (max-width: 900px) { .editor-grid { grid-template-columns: 1fr; } }
 .editor { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--panel); height: 62vh; min-height: 22rem; }
 .editor .gutter { margin: 0; padding: .5rem .4rem; text-align: right; color: var(--dim); background: var(--bg); font: .9rem/1.45 var(--mono); overflow: hidden; user-select: none; min-width: 3rem; }
