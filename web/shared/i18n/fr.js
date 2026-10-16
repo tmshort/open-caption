@@ -546,5 +546,6 @@ OCI18n.add("fr", {
  "Upload this image…": "Téléverser cette image…",
  "Upload {name}": "Téléverser {name}",
  "Choose one or more pictures from this computer": "Choisissez une ou plusieurs images de cet ordinateur",
- "Choose the picture for {name} from this computer": "Choisissez l'image pour {name} sur cet ordinateur"
+ "Choose the picture for {name} from this computer": "Choisissez l'image pour {name} sur cet ordinateur",
+ "Use these colors": "Utiliser ces couleurs"
 });

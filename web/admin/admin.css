@@ -181,3 +181,8 @@ label.tick input { flex: none; margin-top: .3rem; }
 @media (max-width: 600px) { .fields { grid-template-columns: 1fr; } }
 .savelook { margin-top: .4rem; }
 .fields .contrastrow { margin: 0 0 .9rem; }
+/* a color scheme button is drawn in its own colors (background, text, and the speaker-name color as its border) */
+.presets button.swatch { border-width: 2px; font-weight: 600; }
+.presets button.swatch:hover:not(:disabled) { box-shadow: 0 0 0 3px var(--accent); }
+/* a red quiet button (Delete) shows a red outline when hovered, as the other quiet ones brighten */
+button.quiet.danger:hover:not(:disabled) { box-shadow: inset 0 0 0 1px var(--bad); }

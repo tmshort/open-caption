@@ -16,6 +16,7 @@
       if (k === 'class') e.className = v;
       else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
       else if (k === 'text') e.textContent = v;
+      else if (k === 'ref') v(e); // (a page's CSP forbids style attributes, so styles are set through the DOM)
       else e.setAttribute(k, v === true ? '' : v);
     }
     for (const kid of kids.flat()) if (kid != null && kid !== false) e.append(kid.nodeType ? kid : document.createTextNode(kid));
@@ -784,7 +785,7 @@
     const fieldOrder = [L('bg'), L('fg'), wide(h('div', { class: 'contrastrow' }, ratio)), L('accent'), L('font'), wide(L('scalePct')), wide(L('speakers')), wide(L('idleMessage')), ...idleLabels.map(wide), L('loopSeconds'), L('scrollbackLines')];
     write(); paint();
     Object.values(ctl).forEach((i) => i.addEventListener('input', () => { read(); paint(); }));
-    const presets = h('div', { class: 'presets' }, ...PRESETS.map(([n, bg, fg, ac]) => h('button', { onclick: () => { Object.assign(t, { bg, fg, accent: ac }); write(); paint(); } }, __(n))));
+    const presets = h('div', { class: 'presets' }, ...PRESETS.map(([n, bg, fg, ac]) => h('button', { class: 'swatch', ref: (b) => { b.style.background = bg; b.style.color = fg; b.style.borderColor = ac; }, title: __('Use these colors'), onclick: () => { Object.assign(t, { bg, fg, accent: ac }); write(); paint(); } }, __(n))));
     p.append(h('h2', {}, __('Look')), h('p', { class: 'hint' }, __('Large, high-contrast text is the default and is best for accessibility. Saving writes these choices into the [settings] block of the show file (which you can also edit by hand in the Show file step), and applies them to connected devices straight away.')),
       h('div', { class: 'look-grid' },
         h('div', { class: 'card' }, presets, h('div', { class: 'fields' }, ...fieldOrder),

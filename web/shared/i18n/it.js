@@ -546,5 +546,6 @@ OCI18n.add("it", {
  "Upload this image…": "Carica questa immagine…",
  "Upload {name}": "Carica {name}",
  "Choose one or more pictures from this computer": "Scegli una o più immagini da questo computer",
- "Choose the picture for {name} from this computer": "Scegli l'immagine per {name} da questo computer"
+ "Choose the picture for {name} from this computer": "Scegli l'immagine per {name} da questo computer",
+ "Use these colors": "Usa questi colori"
 });
