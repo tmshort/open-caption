@@ -7,5 +7,6 @@ Eine Schleife ist eine Folge von Vollbild-Bildern und -Texten, die sich wiederho
 - Die **Leertaste** beendet die Schleife und sendet die Zeile danach.
 - **Umschalt+Q** stoppt die Schleife und lässt den Bildschirm leer. Drücken Sie die **Leertaste**, um fortzufahren.
 - Die **Rücktaste** bringt die Schleife zurück, nachdem sie beendet oder gestoppt wurde, und startet sie wieder beim ersten Element.
+- Hat die Schleife einen **Timer** (einen Countdown wie 15 Minuten für die Pause oder eine Uhrzeit wie 7:30pm für die Zeit vor der Show), zeigt das grüne Banner auch die Restzeit, live heruntergezählt (`⏱ Noch 12:30 auf dem Timer`). Das Publikum sieht ihn dort, wo der Text der Schleife den Countdown zeigt. Ein Minuten-Timer beginnt mit dem Start der Schleife; mit der **Rücktaste** zurück in die Schleife beginnt er wieder mit der vollen Zeit.
 
 Die Bildschirme aller wechseln gemeinsam, auch der Projektor, weil der Server den Zeitgeber führt.

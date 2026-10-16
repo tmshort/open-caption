@@ -125,3 +125,4 @@ body.projector #gear, body.projector #ctl { display: none; }
 /* Spacing between the buttons of the display panel and the language menu (flex gap needs a newer Safari). */
 #ctl > * { margin: 0 .2rem; }
 #langmenu > * { margin: .15rem 0; }
+.oc-timer { font-variant-numeric: tabular-nums; white-space: nowrap; } /* digits of equal width, so the time does not shimmer as it counts */

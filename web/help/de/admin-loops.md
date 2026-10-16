@@ -27,3 +27,36 @@ Untertitel, `[clear]`, Abschnitte, Notizen und andere Schleifen dürfen nicht in
 - Die Leertaste beendet die Schleife und sendet die nächste Zeile. **Umschalt+Q** stoppt die Schleife und lässt den Bildschirm leer. **Zurück** kehrt zur Schleife zurück und startet sie beim ersten Element neu.
 
 Die Liste des Operators zeigt eine Schleife als einen Eintrag, der sich aufklappen lässt, um ihre Elemente aufzulisten. Siehe [Schleifen für den Operator](topic:operator-loops).
+
+## Ein Countdown-Timer
+
+Geben Sie einer Schleife einen **Timer**, dann können die Bildschirme des Publikums anzeigen, wie viel Zeit noch bleibt, live heruntergezählt („Weiter in 14:32“). Schreiben Sie `timer` in die Optionen der Schleife und setzen Sie `{timer}` in einen beliebigen Text dieser Schleife, wo die Zeit erscheinen soll.
+
+```showfile
+[loop: timer 15 minutes]
+[fullscreen: **INTERMISSION**]
+Back in {timer}
+![Refreshments are in the lobby](lobby.png)
+[/loop]
+```
+
+Der Wert eines Timers ist eines von zwei Dingen:
+
+- Eine **Anzahl Minuten**, etwa `timer 15` oder `timer 15 minutes`: für eine Pause. Der Countdown beginnt in dem Moment, in dem die Schleife startet (wenn der Bediener darauf die Leertaste drückt), und beginnt wieder mit der vollen Zeit, wenn der Bediener in die Schleife zurückgeht.
+- Eine **Uhrzeit**, etwa `timer 7:30pm`, `timer 7pm` oder `timer 19:30`: für die Zeit vor der Show. Die Bildschirme zählen bis zu dieser Uhrzeit heute herunter. Verwendet werden Uhr und Zeitzone des Computers, auf dem das Programm läuft, prüfen Sie sie also. Eine bereits vergangene Uhrzeit zeigt 0:00.
+
+Optionen teilen sich die Klammern, durch Kommas getrennt, in beliebiger Reihenfolge.
+
+```showfile
+[loop: 10s, timer 7:30pm]
+**Welcome!**
+The show begins in {timer}
+[/loop]
+```
+
+- Die verbleibende Zeit wird in Minuten und Sekunden angezeigt (`14:32`), mit Stunden, wenn es mehr als eine gibt. Bei null bleibt sie bei `0:00`; die Schleife läuft weiter, bis der Bediener fortfährt.
+- Nur Elemente, deren Text `{timer}` enthält, zeigen ihn, Sie können also eine Mitteilung und den Countdown abwechseln.
+- Ein Telefon mit falsch gehender Uhr zeigt trotzdem die richtige Restzeit, weil die Uhr des Programms verwendet wird.
+- Das Speichern der Show-Datei während einer Pause startet den Countdown nicht neu, ebenso wenig ein Neustart des Programms.
+- In einer Übersetzung muss die Schleife denselben Timer haben wie die Haupt-Show-Datei; übersetzen Sie die Wörter um `{timer}`.
+- Der Bediener sieht die Restzeit auch im grünen Banner. Ein `{timer}` in einer Schleife ohne Timer wird wie geschrieben angezeigt, mit einer Warnung.

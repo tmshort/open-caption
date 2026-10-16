@@ -7,5 +7,6 @@ Un ciclo è un insieme di immagini e testi a schermo intero che si ripete, usato
 - **Spazio** termina il ciclo e invia la riga che lo segue.
 - **Maiusc+Q** ferma il ciclo e lascia lo schermo vuoto. Premi **Spazio** per continuare.
 - **Backspace**, dopo che il ciclo è terminato o è stato fermato, lo riporta indietro, ripartendo dal primo elemento.
+- Se il ciclo ha un **timer** (un conto alla rovescia come 15 minuti per l'intervallo, o un orario come 7:30pm per il prima dello spettacolo), il banner verde mostra anche il tempo rimasto, contando alla rovescia in diretta (`⏱ Mancano 12:30 al timer`). Il pubblico lo vede dove il testo del ciclo mostra il conto alla rovescia. Un timer in minuti parte quando parte il ciclo: con **Backspace** tornando nel ciclo riparte dal tempo intero.
 
 Gli schermi di tutti cambiano insieme, proiettore compreso, perché è il server a gestire il timer.

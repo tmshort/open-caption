@@ -48,6 +48,9 @@ type AudItem struct {
 	HTML    string `json:"html,omitempty"`
 	Src     string `json:"src,omitempty"`
 	Caption string `json:"caption,omitempty"`
+	// Deadline (unix ms) is when the countdown in a loop's text reaches zero; the page fills in each
+	// [data-timer] element from it, using the snapshot's ts to allow for a device clock that is wrong.
+	Deadline int64 `json:"deadline,omitempty"`
 }
 
 // LangInfo names a language a show is available in.
@@ -403,7 +406,7 @@ func (rt *Runtime) item(it *showfile.Item) *AudItem {
 		}
 		return &AudItem{Kind: "image", Src: base + url.PathEscape(it.Image), Caption: it.Caption}
 	case "text":
-		return &AudItem{Kind: "text", HTML: it.HTML}
+		return &AudItem{Kind: "text", HTML: it.HTML, Deadline: it.Deadline}
 	}
 	return &AudItem{Kind: "blank"}
 }

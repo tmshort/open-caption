@@ -91,6 +91,10 @@ func CompareStructure(primary, other []Cue, primaryName string) []Diagnostic {
 				same = p.Items[j].Kind == o.Items[j].Kind
 			}
 		}
+		if same && p.Kind == KindLoop && !p.Timer.Equal(o.Timer) {
+			add(o.Line, "The [loop] in cue %d has a different timer from the %s show file. Every language must count down the same way.", i+1, primaryName)
+			break
+		}
 		if !same {
 			add(o.Line, "Cue %d does not match the %s show file: that show file has %s here, and this one has %s. "+
 				"Every language must have the same cues in the same order; only the words may differ.", i+1, primaryName, describe(p), describe(o))

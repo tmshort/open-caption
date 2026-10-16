@@ -547,5 +547,11 @@ OCI18n.add("es", {
  "Choose one or more pictures from this computer": "Elija una o más imágenes de este equipo",
  "Choose the picture for {name} from this computer": "Elija la imagen para {name} de este equipo",
  "Use these colors": "Usar estos colores",
- "Stop the repeating pre-show or intermission loop (Shift+Q). Only available while a loop is playing": "Detiene el bucle de antes del espectáculo o del descanso (Mayús+Q). Solo disponible mientras se reproduce un bucle"
+ "Stop the repeating pre-show or intermission loop (Shift+Q). Only available while a loop is playing": "Detiene el bucle de antes del espectáculo o del descanso (Mayús+Q). Solo disponible mientras se reproduce un bucle",
+ "{time} left on the timer": "Quedan {time} en el temporizador",
+ "The timer length must be more than 0 and at most {0} minutes. The loop has no timer.": "La duración del temporizador debe ser mayor que 0 y como máximo {0} minutos. El bucle no tiene temporizador.",
+ "Timer {0} is not a number of minutes (like 15) or a time of day (like 7:30pm). The loop has no timer.": "El temporizador {0} no es un número de minutos (como 15) ni una hora del día (como 19:30). El bucle no tiene temporizador.",
+ "This loop has a timer, but no text in it contains {timer}, so the countdown is never shown.": "Este bucle tiene un temporizador, pero ningún texto contiene {timer}, así que la cuenta atrás nunca se muestra.",
+ "{timer} needs a timer on its loop, for example [loop: timer 15]. It is shown as typed.": "{timer} necesita un temporizador en su bucle, por ejemplo [loop: timer 15]. Se muestra tal como está escrito.",
+ "The [loop] in cue {0} has a different timer from the {1} show file. Every language must count down the same way.": "El [loop] de la señal {0} tiene un temporizador distinto del archivo del espectáculo {1}. Todos los idiomas deben contar hacia atrás igual."
 });

@@ -264,6 +264,25 @@ async function main() {
     check('with few lines on screen, the older ones slide up instead of jumping', f1 < f0 && few.some((v) => v < f0 - 1 && v > f1 + 1), few.slice(0, 40).join(','));
 
     // ------------------------------------------------------------------ settings & security
+    // An intermission timer: the loop's {timer} counts down live on the audience screen, from the moment the loop starts.
+    const tid = (await api(op, 'POST', '/api/admin/shows', { name: 'Timer test' })).body.id;
+    await api(op, 'PUT', `/api/admin/shows/${tid}/showfile`, { text: '[loop: timer 15 minutes]\n**INTERMISSION**\nBack in {timer}\n[/loop]\nWelcome back' });
+    await api(op, 'POST', `/api/admin/shows/${tid}/activate`, { force: true });
+    const timerText = () => en.evaluate(() => { const t = document.querySelector('#fs [data-timer]'); return t ? t.textContent : null; });
+    await en.waitForFunction(() => { const t = document.querySelector('#fs [data-timer]'); return t && /\d:\d\d/.test(t.textContent); }, { timeout: T(25000) }).catch(() => {});
+    const t1 = await timerText(); await sleep(T(2300)); const t2 = await timerText();
+    const secs = (x) => { const p = (x || '0:0').split(':').map(Number); return p.length === 3 ? p[0] * 3600 + p[1] * 60 + p[2] : p[0] * 60 + p[1]; };
+    check('the intermission timer shows the time left (about 15 minutes)', secs(t1) > 14 * 60 && secs(t1) <= 15 * 60, t1);
+    check('and counts down live', secs(t1) - secs(t2) >= 1 && secs(t1) - secs(t2) <= 5, [t1, t2]);
+    check('the operator sees the countdown too', await op.evaluate(() => /left on the timer/.test((document.getElementById('banner') || {}).textContent || '')));
+    // a device whose clock is wrong still shows the right time (the server's clock is used)
+    await en.evaluate(() => { const real = Date.now; Date.now = () => real() + 3600e3; }); await sleep(T(900));
+    // (the page measured the difference at its snapshot, so reload with the fake clock in place)
+    await en.evaluateOnNewDocument(() => { const real = Date.now; Date.now = () => real() + 3600e3; });
+    await en.reload(); await en.waitForFunction(() => { const t = document.querySelector('#fs [data-timer]'); return t && /\d:\d\d/.test(t.textContent); }, { timeout: T(15000) }).catch(() => {});
+    const t3 = await timerText();
+    check('a device with its clock an hour wrong shows the right time left', secs(t3) > 12 * 60 && secs(t3) <= 15 * 60, t3);
+
     section('Settings and security');
     const guard = await open(); await guard.goto(B + '/admin'); await guard.waitForSelector('#pw'); await guard.type('#pw', ADMIN); await guard.keyboard.press('Enter'); await guard.waitForSelector('#steps button');
     await click(guard, 'Settings'); await sleep(600);

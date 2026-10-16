@@ -75,8 +75,9 @@ type Event struct {
 
 // LoopStatus describes a running loop.
 type LoopStatus struct {
-	Cue  int `json:"cue"`
-	Item int `json:"item"`
+	Cue      int   `json:"cue"`
+	Item     int   `json:"item"`
+	Deadline int64 `json:"deadline,omitempty"` // unix ms the loop's timer reaches zero (0: the loop has no timer)
 }
 
 // OperatorState is what the operator UI needs besides the cue list.
@@ -96,6 +97,8 @@ type OperatorState struct {
 type Config struct {
 	DefaultLoopSeconds float64
 	ScrollbackMax      int
+	// Now is the clock (the computer's local time); tests replace it. Nil means time.Now.
+	Now func() time.Time
 	// StartSeq is the sequence number the first event follows. A replacement
 	// engine continues the previous engine's numbering so connected clients,
 	// which drop events they believe they have seen, never miss any.
@@ -109,10 +112,11 @@ type snapshot struct {
 }
 
 type loopRun struct {
-	cue   int
-	item  int
-	gen   int
-	timer *time.Timer
+	cue      int
+	item     int
+	gen      int
+	timer    *time.Timer
+	deadline int64 // unix ms the loop's countdown ends (0: no timer); set when the loop starts
 }
 
 // Engine is safe for concurrent use. The sink is called with the engine lock
@@ -140,6 +144,9 @@ func New(cues []showfile.Cue, cfg Config, sink func(Event)) *Engine {
 	}
 	if cfg.ScrollbackMax <= 0 {
 		cfg.ScrollbackMax = 200
+	}
+	if cfg.Now == nil {
+		cfg.Now = time.Now
 	}
 	if sink == nil {
 		sink = func(Event) {}
@@ -200,7 +207,7 @@ func (e *Engine) operatorLocked() OperatorState {
 	o := OperatorState{Seq: e.st.Seq, Rev: e.rev, Cursor: e.cursor, NextIndex: e.visibleFrom(e.cursor),
 		Total: len(e.cues), Live: e.touched, Mode: e.st.Mode, LastAt: e.lastAt}
 	if e.loop != nil {
-		o.Loop = &LoopStatus{Cue: e.loop.cue, Item: e.loop.item}
+		o.Loop = &LoopStatus{Cue: e.loop.cue, Item: e.loop.item, Deadline: e.loop.deadline}
 	}
 	return o
 }
@@ -379,6 +386,11 @@ func (e *Engine) ReplaceCues(cues []showfile.Cue) (countChanged bool) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
 	countChanged = len(cues) != len(e.cues)
+	var keepDeadline int64 // saving the show file during an intermission must not restart its countdown
+	var oldTimer *showfile.Timer
+	if e.loop != nil && e.loop.cue < len(e.cues) {
+		keepDeadline, oldTimer = e.loop.deadline, e.cues[e.loop.cue].Timer
+	}
 	e.cues = cues
 	e.history = nil
 	if e.cursor > len(cues) {
@@ -389,6 +401,10 @@ func (e *Engine) ReplaceCues(cues []showfile.Cue) (countChanged bool) {
 		e.stopLoopLocked()
 		if lc < len(cues) && cues[lc].Kind == showfile.KindLoop {
 			e.beginLoopLocked(lc, false)
+			if e.loop != nil && keepDeadline > 0 && oldTimer != nil && cues[lc].Timer.Equal(oldTimer) {
+				e.loop.deadline = keepDeadline
+				e.st.Fullscreen = e.loopItem(lc, 0)
+			}
 		} else {
 			e.st.Fullscreen = nil
 		}
@@ -533,6 +549,9 @@ func (e *Engine) applyTo(st *State, c showfile.Cue, emit func(string, any)) {
 
 func (e *Engine) loopItem(cueIdx, item int) *showfile.Item {
 	it := e.cues[cueIdx].Items[item]
+	if it.Timer && e.loop != nil && e.loop.cue == cueIdx {
+		it.Deadline = e.loop.deadline // every item that shows the countdown carries the moment it ends
+	}
 	return &it
 }
 
@@ -555,7 +574,8 @@ func (e *Engine) beginLoopLocked(cueIdx int, announce bool) {
 		return
 	}
 	e.gen++
-	e.loop = &loopRun{cue: cueIdx, gen: e.gen}
+	// A countdown given in minutes starts now, each time the loop is entered; a time of day is today's.
+	e.loop = &loopRun{cue: cueIdx, gen: e.gen, deadline: e.cues[cueIdx].Timer.Deadline(e.cfg.Now())}
 	e.st.Mode, e.st.Fullscreen = ModeCaptions, e.loopItem(cueIdx, 0)
 	if announce {
 		e.emit(EvFullscreen, *e.st.Fullscreen)
@@ -605,8 +625,10 @@ type Persisted struct {
 	Scrollback []CaptionItem  `json:"scrollback"`
 	Fullscreen *showfile.Item `json:"fullscreen,omitempty"`
 	LoopCue    int            `json:"loopCue"` // -1: none
-	Touched    bool           `json:"touched"`
-	LastAt     int64          `json:"lastAt,omitempty"`
+	// LoopDeadline keeps a minutes countdown running across a restart of the program.
+	LoopDeadline int64 `json:"loopDeadline,omitempty"`
+	Touched      bool  `json:"touched"`
+	LastAt       int64 `json:"lastAt,omitempty"`
 	// History holds the most recent undo steps so Back still works after a restart.
 	History []HistoryEntry `json:"history,omitempty"`
 }
@@ -633,7 +655,7 @@ func (e *Engine) Export() Persisted {
 		p.History = append(p.History, HistoryEntry{State: h.st.clone(), Cursor: h.cursor, LoopCue: h.loopCue})
 	}
 	if e.loop != nil {
-		p.LoopCue = e.loop.cue
+		p.LoopCue, p.LoopDeadline = e.loop.cue, e.loop.deadline
 	}
 	return p
 }
@@ -660,6 +682,10 @@ func (e *Engine) Restore(p Persisted) {
 	}
 	if p.LoopCue >= 0 && p.LoopCue < len(e.cues) && e.cues[p.LoopCue].Kind == showfile.KindLoop {
 		e.beginLoopLocked(p.LoopCue, false)
+		if t := e.cues[p.LoopCue].Timer; e.loop != nil && t != nil && t.Clock == "" && p.LoopDeadline > 0 {
+			e.loop.deadline = p.LoopDeadline // a countdown in minutes carries on rather than starting over
+			e.st.Fullscreen = e.loopItem(p.LoopCue, 0)
+		}
 	}
 	e.emitSnapshot()
 }

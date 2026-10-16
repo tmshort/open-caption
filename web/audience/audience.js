@@ -220,6 +220,28 @@
     }
   }
 
+  // ---- countdown ("Back in 14:32") ----
+  // The server sends the moment the countdown ends and, with the snapshot, its own clock; a phone whose clock
+  // is minutes out still shows the right time left. One timer ticks while a countdown is on screen.
+  let clockSkew = 0, timerTick = 0; // server time minus this device's time, in ms
+  function fmtLeft(ms) {
+    const s = Math.max(0, Math.ceil(ms / 1000)), h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
+    return (h ? h + ':' + (m < 10 ? '0' : '') + m : m) + ':' + (sec < 10 ? '0' : '') + sec;
+  }
+  function paintTimers() {
+    const els = document.querySelectorAll('#fs [data-timer]');
+    const it = state.fullscreen;
+    if (!els.length || !it || !it.deadline) { clearInterval(timerTick); timerTick = 0; return; }
+    const text = fmtLeft(it.deadline - (Date.now() + clockSkew));
+    for (let i = 0; i < els.length; i++) if (els[i].textContent !== text) els[i].textContent = text;
+  }
+  function startTimers() {
+    clearInterval(timerTick); timerTick = 0;
+    if (!document.querySelector('#fs [data-timer]')) return;
+    paintTimers();
+    timerTick = setInterval(paintTimers, 250);
+  }
+
   function renderFullscreen() {
     const fs = $('fs'), it = state.fullscreen;
     fs.replaceChildren();
@@ -231,6 +253,7 @@
       d.dir = 'auto';
       d.innerHTML = it.html;
       fs.appendChild(d);
+      startTimers();
     } else if (it.kind === 'image') {
       const fig = document.createElement('figure');
       const img = document.createElement('img');
@@ -271,6 +294,7 @@
   // ---- event handling ----
   const on = {
     snapshot(d) {
+      if (d.ts) clockSkew = d.ts - Date.now();
       Object.assign(state, { mode: d.mode, scrollback: d.scrollback || [], fullscreen: d.fullscreen, speakers: d.speakers || [], lang: d.lang || 'en', languages: d.languages || [] });
       applyTheme(d.theme || {});
       applyI18n();

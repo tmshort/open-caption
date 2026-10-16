@@ -27,3 +27,36 @@ Captions, `[clear]`, sections, notes and other loops cannot go inside a loop.
 - The spacebar ends the loop and sends the next line. **Shift+Q** stops the loop and leaves the screen blank. **Back** returns to the loop and restarts it from the first item.
 
 The operator's list shows a loop as one entry that expands to list its items. See [Loops for the operator](topic:operator-loops).
+
+## A countdown timer
+
+Give a loop a **timer** and the audience screens can show how much time is left, counting down live ("Back in 14:32"). Write `timer` in the loop's options, then put `{timer}` in any text of that loop where the time should appear.
+
+```showfile
+[loop: timer 15 minutes]
+[fullscreen: **INTERMISSION**]
+Back in {timer}
+![Refreshments are in the lobby](lobby.png)
+[/loop]
+```
+
+The value of a timer is one of two things:
+
+- A **number of minutes**, such as `timer 15` or `timer 15 minutes`: for an intermission. The countdown starts at the moment the loop starts (when the operator presses the spacebar on it), and starts again from the full time if the operator backs into the loop.
+- A **time of day**, such as `timer 7:30pm`, `timer 7pm` or `timer 19:30`: for a pre-show. The screens count down to that time today. It uses the clock and time zone of the computer running the program, so check them. A time that has already passed shows 0:00.
+
+Options share the brackets, separated by commas, in any order.
+
+```showfile
+[loop: 10s, timer 7:30pm]
+**Welcome!**
+The show begins in {timer}
+[/loop]
+```
+
+- The time left is shown as minutes and seconds (`14:32`), with hours when there are more than one. At zero it stays at `0:00`; the loop carries on until the operator moves on.
+- Only the items whose text contains `{timer}` show it, so you can alternate a message with the countdown.
+- A phone whose own clock is wrong still shows the right time left, because the program's clock is used.
+- Saving the show file during an intermission does not restart the countdown, and neither does restarting the program.
+- In a translation, the loop must have the same timer as the main show file; translate the words around `{timer}`.
+- The operator sees the time left in the green banner too. A `{timer}` in a loop without a timer is shown as typed, with a warning.

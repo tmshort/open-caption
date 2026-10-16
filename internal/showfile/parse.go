@@ -1,6 +1,7 @@
 package showfile
 
 import (
+	"errors"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -10,9 +11,11 @@ import (
 var (
 	speakerRe  = regexp.MustCompile(`^([A-Z][A-Z0-9 .'\-]{0,29}):\s+(\S.*)$`)
 	durationRe = regexp.MustCompile(`^(\d+(?:\.\d+)?)\s*s$`)
-	imageMdRe  = regexp.MustCompile(`^!\[(.*?)\]\((.+?)\)$`)
-	htmlTagRe  = regexp.MustCompile(`<[A-Za-z/!][^>]*>`)
-	spacesRe   = regexp.MustCompile(`\s+`)
+	// "timer 15", "timer: 7:30pm", "countdown 10 minutes" (the keyword, then a space or a colon)
+	timerOptionRe = regexp.MustCompile(`(?i)^(?:timer|countdown)(?:\s+|\s*:\s*|$)`)
+	imageMdRe     = regexp.MustCompile(`^!\[(.*?)\]\((.+?)\)$`)
+	htmlTagRe     = regexp.MustCompile(`<[A-Za-z/!][^>]*>`)
+	spacesRe      = regexp.MustCompile(`\s+`)
 )
 
 var directiveAlias = map[string]string{
@@ -35,6 +38,8 @@ type parser struct {
 
 	song     bool // inside [song] ... [/song]: every caption is a sung lyric
 	songLine int
+
+	loopTimer *Timer // the timer of the [loop] being read
 
 	together *togetherBlock // inside [together] ... [/together]: lines are voices shown at once
 }
@@ -412,13 +417,31 @@ func (p *parser) fullscreenBlock(start int) {
 
 func (p *parser) loop(start int, args string) {
 	cue := Cue{Kind: KindLoop, Line: start}
-	if args != "" {
-		if m := durationRe.FindStringSubmatch(args); m != nil {
-			cue.Period, _ = strconv.ParseFloat(m[1], 64)
-		} else {
-			p.diag(start, SevWarning, "[loop: %s] — expected a time like 10s. The default time was used.", args)
+	// Options, separated by commas: an item time (10s) and/or a timer (timer 15, timer 7:30pm).
+	for _, part := range strings.Split(args, ",") {
+		part = strings.TrimSpace(part)
+		low := strings.ToLower(part)
+		switch {
+		case part == "":
+		case durationRe.MatchString(part):
+			cue.Period, _ = strconv.ParseFloat(durationRe.FindStringSubmatch(part)[1], 64)
+		case timerOptionRe.MatchString(low):
+			val := strings.TrimSpace(timerOptionRe.ReplaceAllString(part, ""))
+			t, err := ParseTimer(val)
+			switch {
+			case errors.Is(err, ErrTimerRange):
+				p.diag(start, SevWarning, "The timer length must be more than 0 and at most %d minutes. The loop has no timer.", MaxTimerMinutes)
+			case err != nil:
+				p.diag(start, SevWarning, "Timer %q is not a number of minutes (like 15) or a time of day (like 7:30pm). The loop has no timer.", val)
+			default:
+				cue.Timer = t
+			}
+		default:
+			p.diag(start, SevWarning, "[loop: %s] — expected a time like 10s. The default time was used.", part)
 		}
 	}
+	p.loopTimer = cue.Timer
+	defer func() { p.loopTimer = nil }()
 	closed := false
 	for p.i++; p.i < len(p.lines); p.i++ {
 		t := strings.TrimSpace(p.lines[p.i])
@@ -442,8 +465,31 @@ func (p *parser) loop(start int, args string) {
 	case len(cue.Items) == 0:
 		p.diag(start, SevWarning, "This loop has no items and was skipped.")
 	default:
+		if cue.Timer != nil {
+			shown := false
+			for _, it := range cue.Items {
+				shown = shown || it.Timer
+			}
+			if !shown {
+				p.diag(start, SevWarning, "This loop has a timer, but no text in it contains {timer}, so the countdown is never shown.")
+			}
+		}
 		p.res.Cues = append(p.res.Cues, cue)
 	}
+}
+
+// timerItem turns {timer} in a loop's text item into the placeholder the page fills with the time left.
+func (p *parser) timerItem(it Item, lineNo int) Item {
+	if !usesTimer(it.Text) {
+		return it
+	}
+	if p.loopTimer == nil {
+		p.diag(lineNo, SevWarning, "{timer} needs a timer on its loop, for example [loop: timer 15]. It is shown as typed.")
+		return it
+	}
+	it.HTML = strings.ReplaceAll(it.HTML, TimerPlaceholder, timerSpanHTML)
+	it.Timer = true
+	return it
 }
 
 func (p *parser) loopItem(t string, lineNo int) (Item, bool) {
@@ -474,7 +520,7 @@ func (p *parser) loopItem(t string, lineNo int) (Item, bool) {
 				return Item{}, false
 			}
 			h, pl := RenderInline(strings.Join(fields, " | "))
-			return Item{Kind: "text", HTML: h, Text: pl, Seconds: secs}, true
+			return p.timerItem(Item{Kind: "text", HTML: h, Text: pl, Seconds: secs}, lineNo), true
 		case "blank":
 			_, secs := splitDuration(args, true)
 			return Item{Kind: "blank", Seconds: secs}, true
@@ -487,7 +533,7 @@ func (p *parser) loopItem(t string, lineNo int) (Item, bool) {
 	}
 	fields, secs := splitDuration(t, false)
 	h, pl := RenderInline(strings.Join(fields, " | "))
-	return Item{Kind: "text", HTML: h, Text: pl, Seconds: secs}, true
+	return p.timerItem(Item{Kind: "text", HTML: h, Text: pl, Seconds: secs}, lineNo), true
 }
 
 func (p *parser) addImage(lineNo int, file, caption string, secs float64) {

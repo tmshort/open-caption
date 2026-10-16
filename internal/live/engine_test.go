@@ -464,3 +464,90 @@ func TestConfigureChangesLoopTimeAndScrollbackOfARunningEngine(t *testing.T) {
 		t.Errorf("%v", got)
 	}
 }
+
+// An intermission timer counts from the moment the loop is entered (again each time), a time of day does not
+// move, and the deadline travels on every item that shows it.
+func TestLoopTimerDeadline(t *testing.T) {
+	now := time.Date(2026, 10, 16, 20, 0, 0, 0, time.Local)
+	clock := now
+	r := &rec{}
+	src := "Hello\n[loop: timer 15]\nINTERMISSION\nBack in {timer}\n[/loop]\nWelcome back\n"
+	e := New(parse(src), Config{DefaultLoopSeconds: 60, Now: func() time.Time { return clock }}, r.sink)
+	t.Cleanup(e.Close)
+	if _, err := e.Next(-1); err != nil { // Hello
+		t.Fatal(err)
+	}
+	clock = now.Add(2 * time.Minute)
+	st, err := e.Next(-1) // enter the loop
+	if err != nil || st.Loop == nil {
+		t.Fatalf("%+v %v", st, err)
+	}
+	want := clock.Add(15 * time.Minute).UnixMilli()
+	if st.Loop.Deadline != want {
+		t.Errorf("deadline %d want %d", st.Loop.Deadline, want)
+	}
+	// the timer item carries it, the plain item does not
+	if it := e.loopItemFor(0); it.Deadline != 0 {
+		t.Errorf("plain item has a deadline: %+v", it)
+	}
+	if it := e.loopItemFor(1); it.Deadline != want || !it.Timer {
+		t.Errorf("timer item: %+v", it)
+	}
+	// leave it (a caption) and come back with Back: the countdown starts again from that moment
+	e.Next(-1)
+	clock = now.Add(10 * time.Minute)
+	st, _ = e.Back(-1)
+	if st.Loop == nil || st.Loop.Deadline != clock.Add(15*time.Minute).UnixMilli() {
+		t.Errorf("restart: %+v", st.Loop)
+	}
+}
+
+func TestLoopTimerClockTimeAndSavingTheShowFile(t *testing.T) {
+	now := time.Date(2026, 10, 16, 18, 50, 0, 0, time.Local)
+	r := &rec{}
+	src := "[loop: timer 7:30pm]\nStarting in {timer}\n[/loop]\nHello\n"
+	e := New(parse(src), Config{Now: func() time.Time { return now }}, r.sink)
+	t.Cleanup(e.Close)
+	want := time.Date(2026, 10, 16, 19, 30, 0, 0, time.Local).UnixMilli()
+	if st := e.Operator(); st.Loop == nil || st.Loop.Deadline != want {
+		t.Fatalf("a leading loop starts with its time of day: %+v", st.Loop)
+	}
+	// An edit saved while the loop runs keeps the minutes countdown going (the clock one never moved).
+	e2 := New(parse("[loop: timer 15]\nBack in {timer}\n[/loop]\nHello\n"), Config{Now: func() time.Time { return now }}, r.sink)
+	t.Cleanup(e2.Close)
+	first := e2.Operator().Loop.Deadline
+	now = now.Add(5 * time.Minute)
+	e2.ReplaceCues(parse("[loop: timer 15]\nBack in {timer}, folks\n[/loop]\nHello\n"))
+	if got := e2.Operator().Loop.Deadline; got != first {
+		t.Errorf("saving the show file restarted the countdown: %d -> %d", first, got)
+	}
+	e2.ReplaceCues(parse("[loop: timer 20]\nBack in {timer}\n[/loop]\nHello\n"))
+	if got := e2.Operator().Loop.Deadline; got == first {
+		t.Error("a different timer should start afresh")
+	}
+}
+
+func TestLoopTimerSurvivesARestart(t *testing.T) {
+	now := time.Date(2026, 10, 16, 20, 0, 0, 0, time.Local)
+	src := "[loop: timer 15]\nBack in {timer}\n[/loop]\nHello\n"
+	e := New(parse(src), Config{Now: func() time.Time { return now }}, nil)
+	t.Cleanup(e.Close)
+	p := e.Export()
+	if p.LoopDeadline == 0 {
+		t.Fatal("deadline not saved")
+	}
+	now = now.Add(4 * time.Minute)
+	e2 := New(parse(src), Config{Now: func() time.Time { return now }}, nil)
+	t.Cleanup(e2.Close)
+	e2.Restore(p)
+	if got := e2.Operator().Loop.Deadline; got != p.LoopDeadline {
+		t.Errorf("after restart: %d want %d", got, p.LoopDeadline)
+	}
+}
+
+// loopItemFor returns item i of the running loop as the audience would be sent it.
+func (e *Engine) loopItemFor(i int) showfile.Item {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	return *e.loopItem(e.loop.cue, i)
+}

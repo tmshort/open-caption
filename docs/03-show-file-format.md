@@ -144,6 +144,8 @@ Please silence your phones
 - Loops can't be nested. Captions, `[clear]`, `[section]` and `[note]` inside a
   loop produce a warning and are skipped.
 - The loop is **one cue** with one position in the operator list.
+- **Options** go in the brackets, comma-separated, in any order: an item time (`10s`) and a timer
+  (`timer 15 minutes`). See *Loop timers* below.
 
 Behavior (see doc 02 for the state model):
 - **Starting.** When the operator presses NEXT on a loop cue, the loop starts
@@ -158,6 +160,26 @@ Behavior (see doc 02 for the state model):
   blank screen. NEXT then proceeds as usual.
 - **Restarting.** There is no restart command. Back "backs into" the loop: after
   NEXT ended it, or after STOP, Back restores the loop **running from its first item**.
+
+### Loop timers (REQ-065)
+
+A loop can carry a countdown, so the audience can see about how long an intermission has left or how
+long until the show starts. It has two parts: the **option** on the loop and the **placeholder** in its text.
+
+```
+[loop: 12s, timer 15 minutes]
+[fullscreen: **INTERMISSION**]
+Back in {timer}
+[/loop]
+```
+
+- `timer <value>` (or `countdown <value>`; a colon after the word is allowed) takes either
+  - **minutes**: `15`, `15 min`, `15 minutes`, `7.5m` (more than 0, at most 600). The countdown **starts when the loop starts**, which is each time it is entered: NEXT onto the loop cue, a leading (pre-show) loop starting at activation, and Back into the loop (which restarts the loop from its first item and the countdown from its full length). Saving the show file while the loop runs, and restarting the program (the end time is saved in `live.json`), do **not** restart it.
+  - a **time of day**: `7:30pm`, `7pm`, `12:15 a.m.`, or 24-hour `19:30` (a time with a colon and no am/pm is 24-hour). The countdown runs to that time **today**, by the local clock and time zone of the computer running the program; a time already past stays past, so the timer reads `0:00` rather than counting towards tomorrow. A bare number is minutes, never a time.
+- `{timer}` in any text item of that loop (plain line, `[fullscreen: …]`, but not an image caption) becomes the time left: `m:ss`, or `h:mm:ss` from one hour. At zero it stays `0:00` (the loop carries on until the operator moves on). Only items containing it show it.
+- The page counts down locally once a second from an end time (unix ms) the server sends with the item, and corrects for a device clock that is wrong using the server's time in the snapshot.
+- Diagnostics: a bad value (`timer soon`, `timer 9999`) is a warning and the loop has no timer; `{timer}` in a loop without a timer is a warning and is shown as typed; a loop with a timer whose items never use `{timer}` is a warning (the countdown would never be shown). A `{timer}` outside a loop is ordinary text.
+- Translations: every language's loop must have the **same timer** (minutes or time of day; only the words around `{timer}` differ), otherwise the translation is held back like any other structure difference.
 
 ### Songs and lyrics (musicals)
 
@@ -219,7 +241,7 @@ language is chosen as described in doc 02 (`?lang=`, then `Accept-Language`, the
 ```go
 type CueKind string // caption, clear, blank, image, fullscreen, loop, section, note
 
-type Item struct {      // a fullscreen item (used by image/fullscreen cues and in loops)
+type Item struct {      // a fullscreen item (used by image/fullscreen cues and in loops); also Timer bool, Deadline int64 (unix ms, set by the engine)
     Kind    string      // "text" | "image" | "blank"
     HTML    string      // generated from Markdown by the server (text)
     Text    string      // plain text

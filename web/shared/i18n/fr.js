@@ -547,5 +547,11 @@ OCI18n.add("fr", {
  "Choose one or more pictures from this computer": "Choisissez une ou plusieurs images de cet ordinateur",
  "Choose the picture for {name} from this computer": "Choisissez l'image pour {name} sur cet ordinateur",
  "Use these colors": "Utiliser ces couleurs",
- "Stop the repeating pre-show or intermission loop (Shift+Q). Only available while a loop is playing": "Arrête la boucle d'avant-spectacle ou d'entracte (Maj+Q). Disponible seulement pendant une boucle"
+ "Stop the repeating pre-show or intermission loop (Shift+Q). Only available while a loop is playing": "Arrête la boucle d'avant-spectacle ou d'entracte (Maj+Q). Disponible seulement pendant une boucle",
+ "{time} left on the timer": "Il reste {time} au minuteur",
+ "The timer length must be more than 0 and at most {0} minutes. The loop has no timer.": "La durée du minuteur doit être supérieure à 0 et d'au plus {0} minutes. La boucle n'a pas de minuteur.",
+ "Timer {0} is not a number of minutes (like 15) or a time of day (like 7:30pm). The loop has no timer.": "Le minuteur {0} n'est ni un nombre de minutes (comme 15) ni une heure (comme 19:30). La boucle n'a pas de minuteur.",
+ "This loop has a timer, but no text in it contains {timer}, so the countdown is never shown.": "Cette boucle a un minuteur, mais aucun texte ne contient {timer} : le compte à rebours n'est donc jamais affiché.",
+ "{timer} needs a timer on its loop, for example [loop: timer 15]. It is shown as typed.": "{timer} nécessite un minuteur sur sa boucle, par exemple [loop: timer 15]. Il est affiché tel quel.",
+ "The [loop] in cue {0} has a different timer from the {1} show file. Every language must count down the same way.": "Le [loop] de la cue {0} a un minuteur différent de celui du fichier de spectacle {1}. Toutes les langues doivent décompter de la même façon."
 });

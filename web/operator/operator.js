@@ -88,6 +88,15 @@
     renderMarkers(true);
   }
 
+  // The loop's countdown, shown to the operator too ("⏱ 12:30 left"), so they know when to start the next line.
+  function paintBannerTimer() {
+    const t = $('bannertimer');
+    if (!t || !S.timerEnds) return;
+    const s = Math.max(0, Math.ceil((S.timerEnds - Date.now()) / 1000)), h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
+    t.textContent = '⏱ ' + __('{time} left on the timer', { time: (h ? h + ':' + (m < 10 ? '0' : '') + m : m) + ':' + (sec < 10 ? '0' : '') + sec });
+  }
+  setInterval(paintBannerTimer, 500);
+
   // Sections double as a mini-map: pick one to jump to it (with the usual confirmation).
   function buildSections() {
     const sel = $('sections');
@@ -228,7 +237,12 @@
     renderLastSent();
     $('blank').firstChild.textContent = o.mode === 'blank' ? __('Unblank') : __('Blank');
     const b = $('banner');
-    if (o.loop) { const c = S.cues[o.loop.cue]; b.hidden = false; b.className = 'loop'; b.textContent = '🔁 ' + __('LOOP RUNNING — item {n} of {total}. NEXT ends it; STOP blanks the screen.', { n: o.loop.item + 1, total: c ? (c.items || []).length : '?' }); }
+    S.timerEnds = o.loop && o.loop.deadline ? o.loop.deadline : 0;
+    if (o.loop) {
+      const c = S.cues[o.loop.cue]; b.hidden = false; b.className = 'loop';
+      b.textContent = '🔁 ' + __('LOOP RUNNING — item {n} of {total}. NEXT ends it; STOP blanks the screen.', { n: o.loop.item + 1, total: c ? (c.items || []).length : '?' });
+      if (S.timerEnds) { const t = document.createElement('b'); t.id = 'bannertimer'; b.appendChild(document.createTextNode(' ')); b.appendChild(t); paintBannerTimer(); }
+    }
     else if (o.mode === 'blank') { b.hidden = false; b.className = ''; b.textContent = '⬛ ' + __('Audience screen is blank.'); }
     else if (o.nextIndex < 0 && o.total > 0 && o.cursor >= o.total) { b.hidden = false; b.className = ''; b.textContent = __('End of the show.'); }
     else b.hidden = true;

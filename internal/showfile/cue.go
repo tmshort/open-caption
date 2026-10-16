@@ -27,6 +27,11 @@ type Item struct {
 	Image   string  `json:"image,omitempty"`   // asset filename (image)
 	Caption string  `json:"caption,omitempty"` // optional caption under an image
 	Seconds float64 `json:"seconds,omitempty"` // display time inside a loop; 0 = default
+	// Timer is set on a text item of a loop that has a timer, when its text contains {timer}: HTML then holds
+	// a placeholder the page fills with the time left. Deadline (unix ms) is set by the live engine when the
+	// loop starts, never by the parser.
+	Timer    bool  `json:"timer,omitempty"`
+	Deadline int64 `json:"deadline,omitempty"`
 }
 
 // Part is one voice of a caption sung or spoken together with others.
@@ -52,6 +57,7 @@ type Cue struct {
 	Item    *Item   `json:"item,omitempty"`   // image / fullscreen
 	Items   []Item  `json:"items,omitempty"`  // loop
 	Period  float64 `json:"period,omitempty"` // loop default seconds; 0 = config default
+	Timer   *Timer  `json:"timer,omitempty"`  // loop: a countdown for {timer} (see timer.go)
 }
 
 // Diagnostic is a problem or note found while parsing.

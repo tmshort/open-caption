@@ -75,9 +75,9 @@ EDWIN: ~ Y galletas también, por favor ~
 MARGARET: ~ Leche y azúcar ~ || EDWIN: ~ Limón, gracias ~
 
 [section: Intermedio]
-[loop: 12s]
+[loop: 12s, timer 15 minutes]
 [fullscreen: **INTERMEDIO**]
-15 minutos
+Volvemos en {timer}
 ![Hay refrescos en el vestíbulo](lobby.png)
 [fullscreen: Vuelvan a sus asientos cuando parpadeen las luces]
 [/loop]

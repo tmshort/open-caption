@@ -547,5 +547,11 @@ OCI18n.add("pt", {
  "Choose one or more pictures from this computer": "Escolha uma ou mais imagens deste computador",
  "Choose the picture for {name} from this computer": "Escolha a imagem para {name} deste computador",
  "Use these colors": "Usar estas cores",
- "Stop the repeating pre-show or intermission loop (Shift+Q). Only available while a loop is playing": "Para o laço de antes do espetáculo ou do intervalo (Shift+Q). Disponível só enquanto um laço está tocando"
+ "Stop the repeating pre-show or intermission loop (Shift+Q). Only available while a loop is playing": "Para o laço de antes do espetáculo ou do intervalo (Shift+Q). Disponível só enquanto um laço está tocando",
+ "{time} left on the timer": "Faltam {time} no temporizador",
+ "The timer length must be more than 0 and at most {0} minutes. The loop has no timer.": "A duração do temporizador deve ser maior que 0 e no máximo {0} minutos. O laço não tem temporizador.",
+ "Timer {0} is not a number of minutes (like 15) or a time of day (like 7:30pm). The loop has no timer.": "O temporizador {0} não é um número de minutos (como 15) nem uma hora do dia (como 19:30). O laço não tem temporizador.",
+ "This loop has a timer, but no text in it contains {timer}, so the countdown is never shown.": "Este laço tem um temporizador, mas nenhum texto contém {timer}, então a contagem regressiva nunca é mostrada.",
+ "{timer} needs a timer on its loop, for example [loop: timer 15]. It is shown as typed.": "{timer} precisa de um temporizador no seu laço, por exemplo [loop: timer 15]. Ele é mostrado como foi escrito.",
+ "The [loop] in cue {0} has a different timer from the {1} show file. Every language must count down the same way.": "O [loop] da cue {0} tem um temporizador diferente do arquivo do espetáculo {1}. Todos os idiomas devem contar do mesmo jeito."
 });

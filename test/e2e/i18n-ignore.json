@@ -6,5 +6,7 @@
  "Is that tea for",
  "me?",
  ".local",
- "{0}: {1}"
+ "{0}: {1}",
+ "not a number of minutes or a time of day",
+ "the timer length is out of range"
 ]

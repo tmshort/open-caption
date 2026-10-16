@@ -547,5 +547,11 @@ OCI18n.add("de", {
  "Choose one or more pictures from this computer": "Wählen Sie ein oder mehrere Bilder von diesem Computer",
  "Choose the picture for {name} from this computer": "Wählen Sie das Bild für {name} von diesem Computer",
  "Use these colors": "Diese Farben verwenden",
- "Stop the repeating pre-show or intermission loop (Shift+Q). Only available while a loop is playing": "Beendet die Schleife vor der Show oder in der Pause (Umschalt+Q). Nur verfügbar, während eine Schleife läuft"
+ "Stop the repeating pre-show or intermission loop (Shift+Q). Only available while a loop is playing": "Beendet die Schleife vor der Show oder in der Pause (Umschalt+Q). Nur verfügbar, während eine Schleife läuft",
+ "{time} left on the timer": "Noch {time} auf dem Timer",
+ "The timer length must be more than 0 and at most {0} minutes. The loop has no timer.": "Die Timer-Länge muss größer als 0 und höchstens {0} Minuten sein. Die Schleife hat keinen Timer.",
+ "Timer {0} is not a number of minutes (like 15) or a time of day (like 7:30pm). The loop has no timer.": "Der Timer {0} ist weder eine Minutenzahl (wie 15) noch eine Uhrzeit (wie 19:30). Die Schleife hat keinen Timer.",
+ "This loop has a timer, but no text in it contains {timer}, so the countdown is never shown.": "Diese Schleife hat einen Timer, aber kein Text darin enthält {timer}, daher wird der Countdown nie angezeigt.",
+ "{timer} needs a timer on its loop, for example [loop: timer 15]. It is shown as typed.": "{timer} braucht einen Timer an seiner Schleife, zum Beispiel [loop: timer 15]. Es wird wie geschrieben angezeigt.",
+ "The [loop] in cue {0} has a different timer from the {1} show file. Every language must count down the same way.": "Die [loop] in Cue {0} hat einen anderen Timer als die Show-Datei {1}. Alle Sprachen müssen gleich herunterzählen."
 });

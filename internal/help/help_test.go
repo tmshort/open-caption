@@ -116,6 +116,13 @@ func TestScriptHelpCoversEveryConvention(t *testing.T) {
 			t.Errorf("help never mentions the escape \\%c", ch)
 		}
 	}
+	// The loop timer is explained: the option, both kinds of value and the placeholder.
+	loops := topics["admin-loops"].Markdown
+	for _, want := range []string{"timer 15", "timer 7:30pm", "{timer}", "[loop: timer"} {
+		if !strings.Contains(loops, want) {
+			t.Errorf("the Loops topic never shows %q", want)
+		}
+	}
 	// Every diagnostic the parser can raise is explained in plain words.
 	for _, phrase := range []string{"Unknown setting", "never closed", "Unknown command", "not found", "never closed", "HTML is not supported", "can't go inside a loop"} {
 		if !strings.Contains(text, phrase) {

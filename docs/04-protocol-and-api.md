@@ -159,10 +159,14 @@ the server's retained buffer, the server sends a `snapshot`. Clients treat a
 { "kind": "text", "html": "<strong>INTERMISSION</strong>" }
 { "kind": "image", "src": "/assets/odd-couple/curtain.jpg", "caption": "Act 1" }
 { "kind": "blank" }
+// a text item of a loop that has a timer: HTML holds <span data-timer> where {timer} was written, and
+// deadline is when the countdown ends (unix ms, the server's clock); the page fills the span in every second
+{ "kind": "text", "html": "Back in <span class=\"oc-timer\" data-timer></span>", "deadline": 1760650800000 }
 
 // LiveState
 {
   "seq": 1042,
+  "ts": 1760649900000,           // the server's clock when this snapshot was made; a page uses ts - Date.now() to correct its own clock for deadlines
   "lang": "en",
   "languages": [{"code": "en", "name": "English"}, {"code": "es", "name": "Español"}],
   "mode": "captions",            // idle | captions | blank
@@ -181,7 +185,7 @@ the server's retained buffer, the server sends a `snapshot`. Clients treat a
   "total": 312,
   "controller": "session-id|null",
   "audience": 83,
-  "loop": { "running": true, "cue": 3, "item": 1 },   // or null
+  "loop": { "running": true, "cue": 3, "item": 1, "deadline": 1760650800000 },   // or null; deadline only when the loop has a timer
   "cues": [ /* cue window: kind, text, line, sent, image name only for image cues */ ]
 }
 ```

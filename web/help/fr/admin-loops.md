@@ -27,3 +27,36 @@ Les sous-titres, `[clear]`, les sections, les notes et les autres boucles ne peu
 - La barre d'espace termine la boucle et envoie la ligne suivante. **Maj+Q** arrête la boucle et laisse l'écran vide. **Retour** revient à la boucle et la redémarre au premier élément.
 
 La liste de l'opérateur montre une boucle comme une seule entrée qui se déplie pour lister ses éléments. Voir [Les boucles pour l'opérateur](topic:operator-loops).
+
+## Un minuteur de compte à rebours
+
+Donnez un **minuteur** à une boucle et les écrans du public peuvent afficher le temps qui reste, décompté en direct (« Retour dans 14:32 »). Écrivez `timer` dans les options de la boucle, puis placez `{timer}` dans un texte de cette boucle à l'endroit où le temps doit apparaître.
+
+```showfile
+[loop: timer 15 minutes]
+[fullscreen: **INTERMISSION**]
+Back in {timer}
+![Refreshments are in the lobby](lobby.png)
+[/loop]
+```
+
+La valeur d'un minuteur est l'une de ces deux choses :
+
+- Un **nombre de minutes**, comme `timer 15` ou `timer 15 minutes` : pour un entracte. Le décompte commence au moment où la boucle démarre (quand l'opérateur appuie sur la barre d'espace dessus) et recommence avec la durée complète si l'opérateur revient dans la boucle.
+- Une **heure**, comme `timer 7:30pm`, `timer 7pm` ou `timer 19:30` : pour l'avant-spectacle. Les écrans décomptent jusqu'à cette heure aujourd'hui. L'horloge et le fuseau horaire de l'ordinateur qui exécute le programme sont utilisés : vérifiez-les. Une heure déjà passée affiche 0:00.
+
+Les options partagent les crochets, séparées par des virgules, dans n'importe quel ordre.
+
+```showfile
+[loop: 10s, timer 7:30pm]
+**Welcome!**
+The show begins in {timer}
+[/loop]
+```
+
+- Le temps restant est affiché en minutes et secondes (`14:32`), avec les heures s'il y en a plus d'une. À zéro, il reste à `0:00` ; la boucle continue jusqu'à ce que l'opérateur passe à la suite.
+- Seuls les éléments dont le texte contient `{timer}` l'affichent : vous pouvez donc alterner un message et le décompte.
+- Un téléphone dont l'horloge est fausse affiche quand même le bon temps restant, car c'est l'horloge du programme qui est utilisée.
+- Enregistrer le fichier du spectacle pendant un entracte ne relance pas le décompte, pas plus que le redémarrage du programme.
+- Dans une traduction, la boucle doit avoir le même minuteur que le fichier principal du spectacle ; traduisez les mots autour de `{timer}`.
+- L'opérateur voit aussi le temps restant dans le bandeau vert. Un `{timer}` dans une boucle sans minuteur est affiché tel quel, avec un avertissement.

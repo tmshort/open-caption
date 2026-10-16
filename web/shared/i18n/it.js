@@ -547,5 +547,11 @@ OCI18n.add("it", {
  "Choose one or more pictures from this computer": "Scegli una o più immagini da questo computer",
  "Choose the picture for {name} from this computer": "Scegli l'immagine per {name} da questo computer",
  "Use these colors": "Usa questi colori",
- "Stop the repeating pre-show or intermission loop (Shift+Q). Only available while a loop is playing": "Ferma il ciclo di prima dello spettacolo o dell'intervallo (Maiusc+Q). Disponibile solo mentre un ciclo è in corso"
+ "Stop the repeating pre-show or intermission loop (Shift+Q). Only available while a loop is playing": "Ferma il ciclo di prima dello spettacolo o dell'intervallo (Maiusc+Q). Disponibile solo mentre un ciclo è in corso",
+ "{time} left on the timer": "Mancano {time} al timer",
+ "The timer length must be more than 0 and at most {0} minutes. The loop has no timer.": "La durata del timer deve essere maggiore di 0 e al massimo {0} minuti. Il ciclo non ha un timer.",
+ "Timer {0} is not a number of minutes (like 15) or a time of day (like 7:30pm). The loop has no timer.": "Il timer {0} non è un numero di minuti (come 15) né un'ora del giorno (come 19:30). Il ciclo non ha un timer.",
+ "This loop has a timer, but no text in it contains {timer}, so the countdown is never shown.": "Questo ciclo ha un timer, ma nessun testo contiene {timer}, quindi il conto alla rovescia non viene mai mostrato.",
+ "{timer} needs a timer on its loop, for example [loop: timer 15]. It is shown as typed.": "{timer} richiede un timer sul suo ciclo, per esempio [loop: timer 15]. Viene mostrato così com'è.",
+ "The [loop] in cue {0} has a different timer from the {1} show file. Every language must count down the same way.": "Il [loop] della cue {0} ha un timer diverso dal file dello spettacolo {1}. Tutte le lingue devono contare alla rovescia allo stesso modo."
 });
