@@ -203,7 +203,7 @@
   function renderMarkers(scroll) {
     const o = op(), now = currentIndex();
     S.rows.forEach((li, i) => {
-      li.classList.toggle('sent', i < o.cursor && i !== now);
+      li.classList.toggle('sent', i < o.cursor && i !== now && i !== o.nextIndex);
       li.classList.toggle('now', i === now && !o.standby); // nothing is on the audience screens while in standby
       li.classList.toggle('next', i === o.nextIndex);
       li.classList.toggle('sel', i === S.sel);

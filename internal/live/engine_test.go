@@ -572,6 +572,9 @@ func TestStandbyShowsNothingUntilStart(t *testing.T) {
 	if o.Live || !o.Standby || o.Loop != nil {
 		t.Fatalf("operator state: %+v", o)
 	}
+	if o.NextIndex != 0 || o.Cursor != 1 {
+		t.Errorf("START will run the pre-show loop, so that is what is next: %+v", o)
+	}
 	for name, fn := range map[string]func() error{
 		"next":  func() error { _, err := e.Next(-1); return err },
 		"back":  func() error { _, err := e.Back(-1); return err },
@@ -612,7 +615,7 @@ func TestStandbyWithoutALeadingLoop(t *testing.T) {
 	if st := e.Snapshot(); st.Mode != ModeIdle { // the show's own message, until the first line
 		t.Errorf("on air before the first line: %+v", st)
 	}
-	if o := e.Operator(); !o.Live || o.Cursor != 0 {
+	if o := e.Operator(); !o.Live || o.Cursor != 0 || o.NextIndex != 0 {
 		t.Errorf("%+v", o)
 	}
 }

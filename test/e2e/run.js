@@ -177,6 +177,7 @@ async function main() {
     check('with the built-in [oc] logo until the venue sets its own', await en.evaluate(() => { const i = document.getElementById('standbylogo'); return !i.hidden && /favicon\.svg/.test(i.getAttribute('src')) && i.naturalWidth > 0; }));
     check('in every language (the built-in words are translated)', await es.evaluate(() => /Los subtítulos comenzarán en breve/.test(document.getElementById('standby').textContent)));
     check('and the operator page says it is not on air, with START where NEXT will be', await op.evaluate(() => /STANDBY/.test(document.getElementById('live').textContent) && /START/.test(document.getElementById('next').textContent) && document.getElementById('offair').disabled && /NOT ON AIR/.test(document.getElementById('banner').textContent) && document.getElementById('stop').disabled));
+    check('in standby the highlighted next line is the pre-show loop that START will run', await op.evaluate(() => { const n = document.querySelector('#list .cue.next'); return !!n && n.classList.contains('k-loop') && !n.classList.contains('sent') && !document.querySelector('#list .cue.now'); }));
     await op.keyboard.press('Backspace'); await op.keyboard.press('b'); await sleep(400);
     check('nothing but START does anything in standby', await standbyShown(en));
     await op.keyboard.press('Space'); await sleep(T(900)); // START: the pre-show loop begins

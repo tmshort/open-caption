@@ -238,6 +238,9 @@ func (e *Engine) operatorLocked() OperatorState {
 	if e.loop != nil {
 		o.Loop = &LoopStatus{Cue: e.loop.cue, Item: e.loop.item, Deadline: e.loop.deadline}
 	}
+	if e.standby && e.resumeLoop >= 0 {
+		o.NextIndex = e.resumeLoop // START runs the pre-show (or the loop that was running), so that is what comes next
+	}
 	return o
 }
 
