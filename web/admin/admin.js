@@ -285,12 +285,12 @@
   // ---- step 1: show ----
   async function stepShow(p) {
     await loadShows();
-    p.append(h('h2', {}, __('Choose a show')));
+    p.append(h('h2', {}, A.shows.length ? __('Choose a show') : __('Add a show')));
     const current = unarchived(), archived = A.shows.filter((s) => s.archived);
     if (!A.shows.length) {
       p.append(h('div', { class: 'card empty' },
-        h('p', { class: 'big' }, __('Welcome! Start by creating a show, or look around with the sample.')),
-        h('div', { class: 'row' }, ...newShowForm(), h('button', { onclick: makeSample }, __('Create a sample show')))));
+        h('p', { class: 'big' }, __('Welcome! Start by creating a show, importing one, or look around with the sample.')),
+        h('div', { class: 'row' }, ...newShowForm(), h('button', { onclick: makeSample }, __('Create a sample show')), ...importButton())));
     } else {
       if (!current.length) p.append(h('div', { class: 'card empty' }, h('p', { class: 'big' }, __('All your shows are archived. Create a new show below, or restore one from the archive.'))));
       current.forEach((s) => p.append(h('div', { class: 'card show' },
@@ -302,8 +302,7 @@
         h('a', { class: 'quiet', href: '/api/admin/shows/' + s.id + '/export', download: s.id + '.zip' }, __('Export')),
         h('button', { class: 'quiet', disabled: s.active, title: s.active ? __('The show on air cannot be archived. Activate another show first.') : __('Put this show away; you can restore it later'), onclick: () => archiveShow(s, true) }, __('Archive')),
         h('button', { class: 'danger quiet', onclick: () => deleteShow(s) }, __('Delete…')))));
-      p.append(h('h3', {}, __('Add another show')), h('div', { class: 'card row' }, ...newShowForm(), h('button', { onclick: makeSample }, __('Sample show')),
-        h('label', { class: 'row' }, __('Import a show (a .zip, or a plain .md / .txt show file):'), h('input', { type: 'file', accept: '.zip,.md,.txt,text/plain,text/markdown', 'aria-label': __('Import a show (a .zip, or a plain .md / .txt show file):'), onchange: importShow }))));
+      p.append(h('h3', {}, __('Add another show')), h('div', { class: 'card row' }, ...newShowForm(), h('button', { onclick: makeSample }, __('Sample show')), ...importButton()));
     }
     if (archived.length) {
       p.append(h('details', { class: 'archive', open: A.showArchive ? '' : null, ontoggle: (e) => { A.showArchive = e.target.open; } },
@@ -315,6 +314,11 @@
           h('a', { class: 'quiet', href: '/api/admin/shows/' + s.id + '/export', download: s.id + '.zip' }, __('Export')),
           h('button', { class: 'danger quiet', onclick: () => deleteShow(s) }, __('Delete…'))))));
     }
+  }
+  // The same kind of button as Upload a show file…: it opens the file chooser (a hidden input), then imports.
+  function importButton() {
+    const inp = h('input', { type: 'file', accept: '.zip,.md,.txt,text/plain,text/markdown', 'aria-label': __('Import a show…'), hidden: '', tabindex: '-1', onchange: (e) => { const f = e.target.files[0]; e.target.value = ''; if (f) importShow(f); } });
+    return [h('button', { title: __('Choose an exported show (.zip) or a plain .md / .txt show file from this computer'), onclick: () => inp.click() }, __('Import a show…')), inp];
   }
   function newShowForm() {
     const inp = h('input', { type: 'text', placeholder: __('Name of the show'), maxlength: '100', 'aria-label': __('Show name') });
@@ -332,8 +336,7 @@
     if (!r.ok) return fail(r);
     await loadShows(); setCur(r.data.id); toast(__('Sample show created')); go('showfile');
   }
-  async function importShow(e) {
-    const f = e.target.files[0]; if (!f) return;
+  async function importShow(f) {
     const fd = new FormData(); fd.append('file', f);
     const r = await api('POST', '/api/admin/shows/import', undefined, fd);
     if (!r.ok) return fail(r, __('That file could not be imported'));

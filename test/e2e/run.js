@@ -110,6 +110,10 @@ async function main() {
     await admin.type('#pw', ADMIN); await admin.keyboard.press('Enter');
     await admin.waitForSelector('#steps button');
     await admin.waitForFunction(() => [...document.querySelectorAll('button')].some((x) => x.textContent.includes('sample')), { timeout: 20000 });
+    check('with no shows the page says Add a show and offers Import as a button like the others', await admin.evaluate(() => {
+      const h = document.querySelector('#panel h2'), b = [...document.querySelectorAll('#panel button')].find((x) => x.textContent === 'Import a show…'), f = document.querySelector('#panel input[type=file]'), c = [...document.querySelectorAll('#panel button')].find((x) => x.textContent.includes('sample'));
+      return h.textContent === 'Add a show' && !!b && !!f && f.hidden && b.getBoundingClientRect().height === c.getBoundingClientRect().height;
+    }));
     await click(admin, 'sample'); await admin.waitForSelector('.editor textarea'); await sleep(900);
     check('the sample show file has no problems', (await admin.evaluate(() => document.querySelector('.diags').innerText)).includes('No problems') || (await admin.evaluate(() => document.getElementById('panel').innerText)).includes('No problems found'));
     const tabs = await admin.evaluate(() => [...document.querySelectorAll('.langtabs button')].map((x) => x.textContent.trim()));

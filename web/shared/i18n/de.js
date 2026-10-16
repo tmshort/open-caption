@@ -48,7 +48,6 @@ OCI18n.add("de", {
  "No show selected": "Keine Show ausgewählt",
  "Setup": "Einrichtung",
  "Choose a show": "Wählen Sie eine Show",
- "Welcome! Start by creating a show, or look around with the sample.": "Willkommen! Legen Sie zuerst eine Show an, oder sehen Sie sich das Beispiel an.",
  "Create a sample show": "Beispiel-Show anlegen",
  "All your shows are archived. Create a new show below, or restore one from the archive.": "Alle Ihre Shows sind archiviert. Legen Sie unten eine neue an oder stellen Sie eine aus dem Archiv wieder her.",
  "ACTIVE": "AKTIV",
@@ -532,12 +531,15 @@ OCI18n.add("de", {
  "These are fixed in the settings file. To change them, edit that file and start the program again.": "Diese Werte sind in der Einstellungsdatei festgelegt. Um sie zu ändern, bearbeiten Sie die Datei und starten Sie das Programm neu.",
  "Hide the operator password": "Das Operator-Passwort verbergen",
  "Opens in a new window": "Öffnet sich in einem neuen Fenster",
- "Import a show (a .zip, or a plain .md / .txt show file):": "Show importieren (eine .zip oder eine einfache Textdatei .md / .txt):",
  "Download the show file": "Show-Datei herunterladen",
  "Loaded {name}. Check the problems list, then press Save.": "{name} wurde geladen. Prüfen Sie die Problemliste und drücken Sie dann Speichern.",
  "That is not a text file. Choose a show file (.md or .txt) or an exported show (.zip).": "Das ist keine Textdatei. Wählen Sie eine Show-Datei (.md oder .txt) oder eine exportierte Show (.zip).",
  "That file is empty.": "Diese Datei ist leer.",
  "Upload a show file…": "Show-Datei hochladen …",
  "Choose a .txt or .md file from this computer to put in the editor (nothing is saved until you press Save)": "Wählen Sie eine .txt- oder .md-Datei von diesem Computer, um sie in den Editor zu laden (gespeichert wird erst, wenn Sie auf Speichern drücken)",
- "Edit it in any text editor, then bring it back with Upload a show file": "Bearbeiten Sie sie in einem beliebigen Texteditor und holen Sie sie mit Show-Datei hochladen zurück"
+ "Edit it in any text editor, then bring it back with Upload a show file": "Bearbeiten Sie sie in einem beliebigen Texteditor und holen Sie sie mit Show-Datei hochladen zurück",
+ "Add a show": "Eine Show hinzufügen",
+ "Welcome! Start by creating a show, importing one, or look around with the sample.": "Willkommen! Legen Sie eine Show an, importieren Sie eine, oder sehen Sie sich mit der Beispiel-Show um.",
+ "Import a show…": "Show importieren …",
+ "Choose an exported show (.zip) or a plain .md / .txt show file from this computer": "Wählen Sie eine exportierte Show (.zip) oder eine Show-Textdatei (.md / .txt) von diesem Computer"
 });

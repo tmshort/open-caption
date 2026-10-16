@@ -48,7 +48,6 @@ OCI18n.add("it", {
  "No show selected": "Nessuno spettacolo selezionato",
  "Setup": "Configurazione",
  "Choose a show": "Scegli uno spettacolo",
- "Welcome! Start by creating a show, or look around with the sample.": "Benvenuto! Inizia creando uno spettacolo, oppure dai un'occhiata all'esempio.",
  "Create a sample show": "Crea uno spettacolo di esempio",
  "All your shows are archived. Create a new show below, or restore one from the archive.": "Tutti i tuoi spettacoli sono archiviati. Creane uno nuovo qui sotto, oppure ripristinane uno dall'archivio.",
  "ACTIVE": "ATTIVO",
@@ -532,12 +531,15 @@ OCI18n.add("it", {
  "These are fixed in the settings file. To change them, edit that file and start the program again.": "Questi valori sono fissati nel file delle impostazioni. Per cambiarli, modifica quel file e riavvia il programma.",
  "Hide the operator password": "Nascondi la password operatore",
  "Opens in a new window": "Si apre in una nuova finestra",
- "Import a show (a .zip, or a plain .md / .txt show file):": "Importa uno spettacolo (un .zip, o un semplice file di testo .md / .txt):",
  "Download the show file": "Scarica il file dello spettacolo",
  "Loaded {name}. Check the problems list, then press Save.": "{name} è stato caricato. Controlla l'elenco dei problemi, poi premi Salva.",
  "That is not a text file. Choose a show file (.md or .txt) or an exported show (.zip).": "Non è un file di testo. Scegli un file dello spettacolo (.md o .txt) o uno spettacolo esportato (.zip).",
  "That file is empty.": "Il file è vuoto.",
  "Upload a show file…": "Carica un file dello spettacolo…",
  "Choose a .txt or .md file from this computer to put in the editor (nothing is saved until you press Save)": "Scegli un file .txt o .md da questo computer da mettere nell'editor (non viene salvato nulla finché non premi Salva)",
- "Edit it in any text editor, then bring it back with Upload a show file": "Modificalo con qualsiasi editor di testo, poi riportalo con Carica un file dello spettacolo"
+ "Edit it in any text editor, then bring it back with Upload a show file": "Modificalo con qualsiasi editor di testo, poi riportalo con Carica un file dello spettacolo",
+ "Add a show": "Aggiungi uno spettacolo",
+ "Welcome! Start by creating a show, importing one, or look around with the sample.": "Benvenuto! Inizia creando uno spettacolo, importandone uno, oppure dai un'occhiata con quello di esempio.",
+ "Import a show…": "Importa uno spettacolo…",
+ "Choose an exported show (.zip) or a plain .md / .txt show file from this computer": "Scegli uno spettacolo esportato (.zip) o un file dello spettacolo .md / .txt da questo computer"
 });
