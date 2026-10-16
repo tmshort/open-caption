@@ -542,7 +542,7 @@ func (s *Server) getShowFile(w http.ResponseWriter, r *http.Request) {
 }
 
 // downloadShowFile sends the show file itself (not a .zip) for editing in the preparer's own editor; the
-// editor's Open a file puts it back. ?lang= picks a translation.
+// editor's Upload a show file puts it back. ?lang= picks a translation.
 func (s *Server) downloadShowFile(w http.ResponseWriter, r *http.Request) {
 	id, lang := r.PathValue("id"), r.URL.Query().Get("lang")
 	text, err := s.store.ReadShowFile(id, lang)

@@ -63,7 +63,7 @@ everywhere an operator session is; the reverse is not true.
 | POST | `/api/admin/shows/{id}/duplicate` | `{name?}` copy show files (every language), images and look |
 | GET | `/api/admin/shows/{id}/showfile` | Raw text + parsed cues + diagnostics (`?lang=`) |
 | PUT | `/api/admin/shows/{id}/showfile` | Body: raw show file text (`?lang=`) → diagnostics |
-| GET | `/api/admin/shows/{id}/showfile/download` | The show file as a plain `<id>.md` (or `<id>.<lang>.md`) attachment, UTF-8 with a BOM and CRLF line ends so any Windows editor opens it correctly; for editing offline. It goes back through the editor's **Open a file** and the normal save |
+| GET | `/api/admin/shows/{id}/showfile/download` | The show file as a plain `<id>.md` (or `<id>.<lang>.md`) attachment, UTF-8 with a BOM and CRLF line ends so any Windows editor opens it correctly; for editing offline. It goes back through the editor's **Upload a show file** and the normal save |
 | POST | `/api/admin/shows/{id}/archive` | Archive the show (`archived: yes` in its show file); 409 if it is the show on air. Returns the show summary (`archived: true`) |
 | POST | `/api/admin/shows/{id}/unarchive` | Restore an archived show |
 | GET | `/api/admin/shows/{id}/export` | Download the show as a `.zip` (format: doc 06, *Show archive*) |

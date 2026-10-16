@@ -329,6 +329,11 @@ async function main() {
     check('the download is a plain .md file that Windows editors open correctly', dl.ok && /attachment; filename=".*\.md"/.test(dl.disp) && dl.bom && dl.crlf && dl.text.includes('Second draft'), dl.disp);
     const offline = path.join(os.tmpdir(), 'oc-offline-' + process.pid + '.txt');
     fs.writeFileSync(offline, Buffer.from('[settings]\r\ntitle: Last year\r\n[/settings]\r\nCAF\xc9 edited offline\r\n', 'latin1'));
+    check('the file chooser is behind an Upload button like the other buttons, with the save state and Save together', await arch.evaluate(() => {
+      const b = [...document.querySelectorAll('#panel button')].find((x) => x.textContent === 'Upload a show file…'), f = document.querySelector('#panel input[type=file]');
+      const st = [...document.querySelectorAll('#panel .savebar span')][0], sv = [...document.querySelectorAll('#panel .savebar button')][0];
+      return !!b && f.hidden && b.getBoundingClientRect().height === document.querySelector('#panel a.btn').getBoundingClientRect().height && !!st && !!sv && Math.abs(st.getBoundingClientRect().top - sv.getBoundingClientRect().top) < 30;
+    }));
     await (await arch.$('input[type=file]')).uploadFile(offline);
     await arch.waitForFunction(() => document.querySelector('.editor textarea').value.includes('edited offline'), { timeout: T(8000) }).catch(() => {});
     check('a file edited elsewhere (even saved as Windows ANSI) opens in the editor with its accents', await arch.evaluate(() => document.querySelector('.editor textarea').value.includes('CAFÉ edited offline')));

@@ -45,7 +45,7 @@ Nunca está obligado a escribir en el editor del paso Archivo del espectáculo. 
 
 1. En el paso **Archivo del espectáculo**, pulse **Descargar el archivo del espectáculo**. Obtiene un archivo `.md` de texto sin formato.
 2. Ábralo en su propio programa, edítelo y guárdelo. Conserve el archivo como texto sin formato.
-3. De vuelta en el paso Archivo del espectáculo, use **Abrir un archivo** y elija el suyo. Su texto reemplaza lo que hay en el editor y la lista de problemas se actualiza al instante. Nada cambia definitivamente hasta que pulse **Guardar**.
+3. De vuelta en el paso Archivo del espectáculo, use **Subir un archivo del espectáculo…** y elija el suyo. Su texto reemplaza lo que hay en el editor y la lista de problemas se actualiza al instante. Nada cambia definitivamente hasta que pulse **Guardar**.
 4. Pulse **Guardar**. La versión que sustituye se conserva en **Versiones anteriores**, donde puede compararla con la nueva, así que un error siempre se puede deshacer.
 
 Lo mismo vale para una traducción: elija primero la pestaña del idioma y luego descargue y abra el archivo de ese idioma. También puede soltar un archivo sobre el editor.

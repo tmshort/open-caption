@@ -45,7 +45,7 @@ Vous n'êtes jamais obligé de taper dans l'éditeur de l'étape Fichier du spec
 
 1. À l'étape **Fichier du spectacle**, appuyez sur **Télécharger le fichier du spectacle**. Vous obtenez un fichier `.md` en texte brut.
 2. Ouvrez-le dans votre propre programme, modifiez-le et enregistrez-le. Gardez-le en texte brut.
-3. De retour à l'étape Fichier du spectacle, utilisez **Ouvrir un fichier** et choisissez le vôtre. Son texte remplace celui de l'éditeur et la liste des problèmes est mise à jour aussitôt. Rien n'est changé pour de bon avant que vous appuyiez sur **Enregistrer**.
+3. De retour à l'étape Fichier du spectacle, utilisez **Téléverser un fichier de spectacle…** et choisissez le vôtre. Son texte remplace celui de l'éditeur et la liste des problèmes est mise à jour aussitôt. Rien n'est changé pour de bon avant que vous appuyiez sur **Enregistrer**.
 4. Appuyez sur **Enregistrer**. La version remplacée est conservée sous **Versions antérieures**, où vous pouvez la comparer à la nouvelle : une erreur peut donc toujours être annulée.
 
 Il en va de même pour une traduction : choisissez d'abord l'onglet de la langue, puis téléchargez et ouvrez le fichier de cette langue. Vous pouvez aussi déposer un fichier sur l'éditeur.

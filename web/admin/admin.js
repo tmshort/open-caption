@@ -590,7 +590,8 @@
       const sel = h('select', {}, ...names.map((n) => h('option', { value: n }, n)));
       if (await ask(__('Insert an image'), h('label', { class: 'field' }, h('span', {}, __('Which image?')), sel), __('Insert'))) insert('[image: ' + sel.value + ']\n');
     }
-    const fileInput = h('input', { type: 'file', accept: '.txt,.md,text/plain,text/markdown', 'aria-label': __('Open a file:'), onchange: (e) => readFile(e.target.files[0]) });
+    const fileInput = h('input', { type: 'file', accept: '.txt,.md,text/plain,text/markdown', 'aria-label': __('Upload a show file…'), hidden: '', tabindex: '-1', onchange: (e) => { readFile(e.target.files[0]); e.target.value = ''; } });
+    const uploadBtn = h('button', { title: __('Choose a .txt or .md file from this computer to put in the editor (nothing is saved until you press Save)'), onclick: () => fileInput.click() }, __('Upload a show file…'));
 
     // --- language tabs and translation helpers ---
     const tabList = h('div', { class: 'tablist', role: 'tablist', 'aria-label': __('Languages') });
@@ -641,7 +642,7 @@
       h('h2', {}, A.lang ? __('Show file — {name}', { name: cur.name }) : __('Show file')),
       tabs, ...(translating ? [translating] : []), // (append() would print a null as the word "null")
       h('p', { class: 'hint' }, __('This file holds everything about the show except its images: its title and look in a [settings] block, and the lines themselves. Each line is one caption; one press of the spacebar sends one line. You can paste, type, or drop a .txt or .md file. Click a problem to jump to its line.')),
-      h('div', { class: 'row' }, h('label', { class: 'row' }, __('Open a file:'), fileInput), h('a', { class: 'btn', href: '/api/admin/shows/' + show.id + '/showfile/download' + q, download: show.id + (A.lang ? '.' + A.lang : '') + '.md', title: __('Edit it in any text editor, then bring it back with Open a file') }, __('Download the show file')), h('button', { onclick: () => openHelp('admin-writing-a-show-file') }, __('Show file help')), h('button', { onclick: showHistory, title: __('Each save keeps the version it replaced') }, __('Earlier versions…')), h('span', { class: 'grow' }), status, saveBtn),
+      h('div', { class: 'row' }, uploadBtn, fileInput, h('a', { class: 'btn', href: '/api/admin/shows/' + show.id + '/showfile/download' + q, download: show.id + (A.lang ? '.' + A.lang : '') + '.md', title: __('Edit it in any text editor, then bring it back with Upload a show file') }, __('Download the show file')), h('button', { onclick: () => openHelp('admin-writing-a-show-file') }, __('Show file help')), h('button', { onclick: showHistory, title: __('Each save keeps the version it replaced') }, __('Earlier versions…')), h('span', { class: 'grow' }), h('span', { class: 'savebar' }, status, saveBtn)),
       tools,
       h('div', { class: 'editor-grid' }, editor, h('div', {}, h('div', { class: 'card' }, diagTitle, diagList), h('div', { class: 'card' }, h('h3', {}, __('What the operator will step through')), cueList))),
       cheatSheet());

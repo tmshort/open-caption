@@ -156,3 +156,5 @@ button.quiet:hover:not(:disabled):not(.danger), a.quiet:hover { color: var(--fg)
 /* a checkbox with a sentence: the box stays beside the first line of the words, whatever the width */
 label.tick { display: flex; gap: .6rem; align-items: flex-start; margin: 0 0 .9rem; }
 label.tick input { flex: none; margin-top: .3rem; }
+/* the save state and the Save button stay together, wherever the row wraps */
+.savebar { display: inline-flex; align-items: center; gap: .6rem; flex-wrap: nowrap; white-space: nowrap; }

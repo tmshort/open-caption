@@ -45,7 +45,7 @@ Você nunca é obrigado a digitar no editor da etapa Arquivo do espetáculo. Em 
 
 1. Na etapa **Arquivo do espetáculo**, pressione **Baixar o arquivo do espetáculo**. Você recebe um arquivo `.md` de texto simples.
 2. Abra-o no seu próprio programa, edite e salve. Mantenha-o como texto simples.
-3. De volta à etapa Arquivo do espetáculo, use **Abrir um arquivo** e escolha o seu. O texto dele substitui o do editor e a lista de problemas é atualizada na hora. Nada muda em definitivo até você pressionar **Salvar**.
+3. De volta à etapa Arquivo do espetáculo, use **Enviar um arquivo do espetáculo…** e escolha o seu. O texto dele substitui o do editor e a lista de problemas é atualizada na hora. Nada muda em definitivo até você pressionar **Salvar**.
 4. Pressione **Salvar**. A versão substituída fica guardada em **Versões anteriores**, onde você pode compará-la com a nova, então um erro sempre pode ser desfeito.
 
 O mesmo vale para uma tradução: escolha primeiro a aba do idioma, depois baixe e abra o arquivo desse idioma. Você também pode soltar um arquivo sobre o editor.

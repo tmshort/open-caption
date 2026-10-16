@@ -162,7 +162,6 @@ OCI18n.add("fr", {
  "Remove {name}…": "Retirer {name}…",
  "Show file — {name}": "Fichier du spectacle — {name}",
  "This file holds everything about the show except its images: its title and look in a [settings] block, and the lines themselves. Each line is one caption; one press of the spacebar sends one line. You can paste, type, or drop a .txt or .md file. Click a problem to jump to its line.": "Ce fichier contient tout ce qui concerne le spectacle sauf ses images : son titre et son apparence dans un bloc [settings], et les lignes elles-mêmes. Chaque ligne est un sous-titre ; une pression sur la barre d'espace envoie une ligne. Vous pouvez coller, saisir ou déposer un fichier .txt ou .md. Cliquez sur un problème pour aller à sa ligne.",
- "Open a file:": "Ouvrir un fichier :",
  "Show file help": "Aide sur le fichier du spectacle",
  "Each save keeps the version it replaced": "Chaque enregistrement conserve la version qu'il remplace",
  "Earlier versions…": "Versions antérieures…",
@@ -535,8 +534,10 @@ OCI18n.add("fr", {
  "Opens in a new window": "S'ouvre dans une nouvelle fenêtre",
  "Import a show (a .zip, or a plain .md / .txt show file):": "Importer un spectacle (un .zip, ou un simple fichier texte .md / .txt) :",
  "Download the show file": "Télécharger le fichier du spectacle",
- "Edit it in any text editor, then bring it back with Open a file": "Modifiez-le dans n'importe quel éditeur de texte, puis rapportez-le avec Ouvrir un fichier",
  "Loaded {name}. Check the problems list, then press Save.": "{name} est chargé. Vérifiez la liste des problèmes, puis appuyez sur Enregistrer.",
  "That is not a text file. Choose a show file (.md or .txt) or an exported show (.zip).": "Ce n'est pas un fichier texte. Choisissez un fichier de spectacle (.md ou .txt) ou un spectacle exporté (.zip).",
- "That file is empty.": "Ce fichier est vide."
+ "That file is empty.": "Ce fichier est vide.",
+ "Upload a show file…": "Téléverser un fichier de spectacle…",
+ "Choose a .txt or .md file from this computer to put in the editor (nothing is saved until you press Save)": "Choisissez un fichier .txt ou .md de cet ordinateur pour le placer dans l'éditeur (rien n'est enregistré avant que vous appuyiez sur Enregistrer)",
+ "Edit it in any text editor, then bring it back with Upload a show file": "Modifiez-le dans n'importe quel éditeur de texte, puis rapportez-le avec Téléverser un fichier de spectacle"
 });

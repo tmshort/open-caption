@@ -162,7 +162,6 @@ OCI18n.add("es", {
  "Remove {name}…": "Quitar {name}…",
  "Show file — {name}": "Archivo del espectáculo — {name}",
  "This file holds everything about the show except its images: its title and look in a [settings] block, and the lines themselves. Each line is one caption; one press of the spacebar sends one line. You can paste, type, or drop a .txt or .md file. Click a problem to jump to its line.": "Este archivo contiene todo sobre el espectáculo excepto sus imágenes: su título y aspecto en un bloque [settings], y las propias líneas. Cada línea es un subtítulo; una pulsación de la barra espaciadora envía una línea. Puede pegar, escribir o soltar un archivo .txt o .md. Pulse un problema para saltar a su línea.",
- "Open a file:": "Abrir un archivo:",
  "Show file help": "Ayuda del archivo del espectáculo",
  "Each save keeps the version it replaced": "Cada guardado conserva la versión que reemplazó",
  "Earlier versions…": "Versiones anteriores…",
@@ -535,8 +534,10 @@ OCI18n.add("es", {
  "Opens in a new window": "Se abre en una ventana nueva",
  "Import a show (a .zip, or a plain .md / .txt show file):": "Importar un espectáculo (un .zip, o un archivo de texto .md / .txt):",
  "Download the show file": "Descargar el archivo del espectáculo",
- "Edit it in any text editor, then bring it back with Open a file": "Edítelo en cualquier editor de texto y vuelva a traerlo con Abrir un archivo",
  "Loaded {name}. Check the problems list, then press Save.": "Se cargó {name}. Revise la lista de problemas y pulse Guardar.",
  "That is not a text file. Choose a show file (.md or .txt) or an exported show (.zip).": "Eso no es un archivo de texto. Elija un archivo de espectáculo (.md o .txt) o un espectáculo exportado (.zip).",
- "That file is empty.": "Ese archivo está vacío."
+ "That file is empty.": "Ese archivo está vacío.",
+ "Upload a show file…": "Subir un archivo del espectáculo…",
+ "Choose a .txt or .md file from this computer to put in the editor (nothing is saved until you press Save)": "Elija un archivo .txt o .md de este equipo para ponerlo en el editor (no se guarda nada hasta que pulse Guardar)",
+ "Edit it in any text editor, then bring it back with Upload a show file": "Edítelo en cualquier editor de texto y vuelva a traerlo con Subir un archivo del espectáculo"
 });

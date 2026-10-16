@@ -162,7 +162,6 @@ OCI18n.add("de", {
  "Remove {name}…": "{name} entfernen …",
  "Show file — {name}": "Show-Datei — {name}",
  "This file holds everything about the show except its images: its title and look in a [settings] block, and the lines themselves. Each line is one caption; one press of the spacebar sends one line. You can paste, type, or drop a .txt or .md file. Click a problem to jump to its line.": "Diese Datei enthält alles zur Show außer den Bildern: Titel und Erscheinungsbild in einem [settings]-Block und die Zeilen selbst. Jede Zeile ist ein Untertitel; ein Druck auf die Leertaste sendet eine Zeile. Sie können eine .txt- oder .md-Datei einfügen, tippen oder hineinziehen. Klicken Sie auf ein Problem, um zu seiner Zeile zu springen.",
- "Open a file:": "Datei öffnen:",
  "Show file help": "Hilfe zur Show-Datei",
  "Each save keeps the version it replaced": "Jedes Speichern bewahrt die ersetzte Version auf",
  "Earlier versions…": "Frühere Versionen …",
@@ -535,8 +534,10 @@ OCI18n.add("de", {
  "Opens in a new window": "Öffnet sich in einem neuen Fenster",
  "Import a show (a .zip, or a plain .md / .txt show file):": "Show importieren (eine .zip oder eine einfache Textdatei .md / .txt):",
  "Download the show file": "Show-Datei herunterladen",
- "Edit it in any text editor, then bring it back with Open a file": "Bearbeiten Sie sie in einem beliebigen Texteditor und holen Sie sie mit Datei öffnen zurück",
  "Loaded {name}. Check the problems list, then press Save.": "{name} wurde geladen. Prüfen Sie die Problemliste und drücken Sie dann Speichern.",
  "That is not a text file. Choose a show file (.md or .txt) or an exported show (.zip).": "Das ist keine Textdatei. Wählen Sie eine Show-Datei (.md oder .txt) oder eine exportierte Show (.zip).",
- "That file is empty.": "Diese Datei ist leer."
+ "That file is empty.": "Diese Datei ist leer.",
+ "Upload a show file…": "Show-Datei hochladen …",
+ "Choose a .txt or .md file from this computer to put in the editor (nothing is saved until you press Save)": "Wählen Sie eine .txt- oder .md-Datei von diesem Computer, um sie in den Editor zu laden (gespeichert wird erst, wenn Sie auf Speichern drücken)",
+ "Edit it in any text editor, then bring it back with Upload a show file": "Bearbeiten Sie sie in einem beliebigen Texteditor und holen Sie sie mit Show-Datei hochladen zurück"
 });
