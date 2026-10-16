@@ -615,7 +615,7 @@
       const copy = h('input', { type: 'checkbox', checked: true, id: 'copymain' });
       const body = h('div', {}, h('p', {}, __('Each language is its own show file with exactly the same lines, commands and blank screens in the same order. Only the words change, so one press of Space shows the same moment in every language.')),
         h('label', { class: 'field' }, h('span', {}, __('Language')), sel), other,
-        h('label', { class: 'row' }, copy, __('Start from a copy of the {name} show file, so I only have to change the words (recommended)', { name: main.name })));
+        h('label', { class: 'tick' }, copy, h('span', {}, __('Start from a copy of the {name} show file, so I only have to change the words (recommended)', { name: main.name }))));
       if (!await ask(__('Add a language'), body, __('Add language'))) return;
       const c = (sel.value || code.value).trim().toLowerCase();
       const r = await api('POST', '/api/admin/shows/' + show.id + '/languages', { code: c, name: sel.value ? '' : name.value, copyFromMain: copy.checked });

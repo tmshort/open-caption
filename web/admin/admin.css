@@ -153,3 +153,6 @@ a.btn { background: var(--panel); border: 1px solid var(--line); border-radius: 
 a.btn:hover { border-color: var(--accent); } /* a quiet link, like a quiet button, does not change when hovered */
 /* quiet buttons and links (Rename, Export, Operator page, ...) all brighten the same way when hovered */
 button.quiet:hover:not(:disabled):not(.danger), a.quiet:hover { color: var(--fg); }
+/* a checkbox with a sentence: the box stays beside the first line of the words, whatever the width */
+label.tick { display: flex; gap: .6rem; align-items: flex-start; margin: 0 0 .9rem; }
+label.tick input { flex: none; margin-top: .3rem; }
