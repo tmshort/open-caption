@@ -777,13 +777,18 @@
         if (t.speakers === 'color' && window.OCSpeakers) f.querySelectorAll('.spk').forEach((e) => { e.style.color = OCSpeakers.forName(e.textContent, ['Margaret', 'Edwin'], t.bg); });
       }
     }
+    // Two columns of controls: the colors with their contrast just under them, then the text options, then the
+    // pre-show message in every language together (full width), then the loop and scrollback numbers.
+    const L = (k) => ctl[k].closest('label'), wide = (e) => { e.classList.add('wide'); return e; };
+    L('scalePct').append(sizeLabel);
+    const fieldOrder = [L('bg'), L('fg'), wide(h('div', { class: 'contrastrow' }, ratio)), L('accent'), L('font'), wide(L('scalePct')), wide(L('speakers')), wide(L('idleMessage')), ...idleLabels.map(wide), L('loopSeconds'), L('scrollbackLines')];
     write(); paint();
     Object.values(ctl).forEach((i) => i.addEventListener('input', () => { read(); paint(); }));
     const presets = h('div', { class: 'presets' }, ...PRESETS.map(([n, bg, fg, ac]) => h('button', { onclick: () => { Object.assign(t, { bg, fg, accent: ac }); write(); paint(); } }, __(n))));
     p.append(h('h2', {}, __('Look')), h('p', { class: 'hint' }, __('Large, high-contrast text is the default and is best for accessibility. Saving writes these choices into the [settings] block of the show file (which you can also edit by hand in the Show file step), and applies them to connected devices straight away.')),
       h('div', { class: 'look-grid' },
-        h('div', { class: 'card' }, presets, ...Object.keys(ctl).map((k) => ctl[k].closest('label')), ...idleLabels, sizeLabel, ratio,
-          h('div', { class: 'row end' }, h('button', { class: 'primary', onclick: async () => {
+        h('div', { class: 'card' }, presets, h('div', { class: 'fields' }, ...fieldOrder),
+          h('div', { class: 'row end savelook' }, h('button', { class: 'primary', onclick: async () => {
             if (A.text !== A.saved && A.loadedLang === '') { toast(__('You have unsaved changes in the Show file step. Save them first: saving the look rewrites the settings in the saved show file.')); return; }
             read(); const s = await api('PUT', '/api/admin/shows/' + show.id, { theme: t }); if (!s.ok) return fail(s); A.analysis = null; A.text = A.saved = ''; markLookSaved(); toast(__('Look saved in the show file'));
           } }, __('Save look')))),
