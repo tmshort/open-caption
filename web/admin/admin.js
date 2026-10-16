@@ -816,30 +816,32 @@
     const langs = lg.data.languages;
     A.analysis = sc.data.analysis; A.net = net.data;
     const a = A.analysis, errs = a.diagnostics.filter((d) => d.severity === 'error').length, warns = a.diagnostics.filter((d) => d.severity === 'warning').length;
-    const checks = h('div', { class: 'card' }, h('h3', {}, __('Ready?')),
+    const isActive = A.activeId === show.id;
+    const checklist = h('div', { class: 'readylist' }, h('h3', {}, __('Ready?')),
       h('div', { class: 'check' + (a.cues.length ? '' : ' bad') }, a.cues.length ? __('{n} lines in the show file', { n: a.cues.length }) : __('The show file is empty')),
       h('div', { class: 'check' + (errs ? ' bad' : warns ? ' warn' : '') }, errs ? __('{n} show file error(s) to fix', { n: errs }) : warns ? __('{n} show file warning(s) to review', { n: warns }) : __('No show file problems')),
       h('div', { class: 'check' + (a.missing.length ? ' warn' : '') }, a.missing.length ? __('Missing images: {list}', { list: a.missing.map((m) => m.name).join(', ') }) : __('All images are uploaded')),
       langs.length > 1 ? h('div', { class: 'check' }, __('Languages: {list}', { list: langs.filter((l) => l.available).map((l) => l.name).join(', ') })) : null,
       ...langs.filter((l) => !l.available).map((l) => h('div', { class: 'check bad' }, __('{name} will NOT be shown to the audience until it matches the main show file: {why}', { name: l.name, why: __((l.structure[0] || {}).message || '') }))));
+    // The Start show button sits beside the checklist, where it is seen without scrolling.
+    const startBox = h('div', { class: 'startbox' },
+      h('button', { class: 'primary big', onclick: () => startShow(show), disabled: !a.cues.length }, isActive ? __('Restart the show and open the operator page') : __('Start show')),
+      h('span', { class: 'hint' }, isActive ? __('This show is active.') : __('Starting makes this the show audiences see.')),
+      isActive ? h('a', { class: 'btn', href: '/operator' }, __('Open the operator page without restarting')) : null);
+    const checks = h('div', { class: 'card ready' }, checklist, startBox);
     const urls = net.data.urls.filter((u) => u.public);
     let chosen = (urls.find((u) => u.kind === 'http' && !u.name) || urls.find((u) => u.kind === 'http') || urls[0] || net.data.urls[0] || {}).url; // the numeric address is the safest to print
     const big = h('div', { class: 'urlbig' }), qrBox = h('div', { class: 'qr' });
     const paint = () => { big.textContent = chosen || __('No address found'); qrBox.replaceChildren(chosen ? h('img', { src: '/api/admin/network/qr.png?size=512&url=' + encodeURIComponent(chosen), alt: __('QR code for {url}', { url: chosen }) }) : ''); };
     paint();
     const list = h('div', { class: 'urls' }, ...net.data.urls.map((u) => h('div', { class: 'row' }, h('label', { class: 'row' }, h('input', { type: 'radio', name: 'u', checked: u.url === chosen, onchange: () => { chosen = u.url; paint(); } }), h('a', { href: u.url, target: '_blank', rel: 'noopener', title: __('Opens in a new window') }, u.url), u.public ? '' : __(' (this computer only)'), u.name ? __(' (a name: easy to type, but some WiFi networks and phones cannot use it)') : ''))));
-    const isActive = A.activeId === show.id;
     p.append(h('h2', {}, __('Go live')), checks,
       h('div', { class: 'card' }, h('h3', {}, __('Tell the audience this address')), big,
         h('div', { class: 'row' }, h('button', { onclick: async () => { try { await navigator.clipboard.writeText(chosen); toast(__('Copied')); } catch (e) { toast(__('Select the address and copy it')); } } }, __('Copy address')),
-          h('a', { href: '/admin?print=qr&url=' + encodeURIComponent(chosen || ''), target: '_blank', rel: 'noopener' }, __('Print a QR sign for the lobby'))),
+          h('a', { class: 'btn', href: '/admin?print=qr&url=' + encodeURIComponent(chosen || ''), target: '_blank', rel: 'noopener' }, __('Print a QR sign for the lobby'))),
         h('div', { class: 'row' }, qrBox, list),
         ...(net.data.warnings || []).map((w) => h('div', { class: 'check warn' }, w)),
         h('p', { class: 'hint' }, __('Audience devices must be on the same WiFi as this computer. Devices connected right now: '), h('b', { id: 'audcount' }, String(A.audience)))),
-      h('div', { class: 'card row' },
-        h('button', { class: 'primary big', onclick: () => startShow(show), disabled: !a.cues.length }, isActive ? __('Restart the show and open the operator page') : __('Start show')),
-        isActive ? h('a', { href: '/operator' }, __('Open the operator page without restarting')) : null,
-        h('span', { class: 'hint' }, isActive ? __('This show is active.') : __('Starting makes this the show audiences see.'))),
       h('p', { class: 'hint' }, __('Something not working? '), h('a', { href: '#', onclick: (e) => { e.preventDefault(); openHelp('admin-troubleshooting'); } }, __('Troubleshooting help')), ' · ', h('a', { href: '/api/admin/support-bundle', download: 'support-bundle.zip' }, __('Download a support bundle')), ' · ', h('a', { href: '#', onclick: (e) => { e.preventDefault(); showLog(); } }, __('Recent log…'))));
   }
   async function startShow(show) {
