@@ -188,8 +188,6 @@ img.sblogo { max-height: 6rem; max-width: 12rem; object-fit: contain; background
 img.sblogo[hidden] { display: none; }
 a.btn.primary { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); font-weight: 600; }
 .startbox a.btn.big { font-size: 1.25rem; padding: .8rem 1.2rem; justify-content: center; text-align: center; }
-.radiogap { display: inline-block; width: 1.1rem; flex: none; } /* lines the projector link up with the addresses above it */
-.projrow { align-items: baseline; }
 /* Dialogs: the title and the buttons stay in view; only the middle scrolls */
 dialog form { display: flex; flex-direction: column; max-height: calc(100vh - 4.5rem); }
 dialog form > h2 { flex: none; margin-top: 0; }
@@ -205,3 +203,12 @@ dialog menu { flex: none; }
 .tabpanel.inactive { visibility: hidden; pointer-events: none; }
 .tabpanel > .setsec:first-child { margin-top: 0; padding-top: 0; border-top: none; }
 .tabpanel > .check { margin: 0 0 1rem; }
+/* Run step: the QR code on the left and the addresses to its right (they stack on a narrow screen) */
+.qrrow { flex-wrap: nowrap; align-items: flex-start; }
+.qrrow .qr { flex: none; }
+.qrrow .urls { flex: 1 1 auto; min-width: 0; }
+@media (max-width: 760px) { .qrrow { flex-wrap: wrap; } }
+.urls .row { flex-wrap: wrap; row-gap: .2rem; }
+.radiogap { display: inline-block; width: 13px; margin: 3px 3px 3px 4px; flex: none; } /* the width of a radio button, so rows without one line up */
+.nametoggle { margin-left: .6rem; cursor: pointer; }
+.off { color: var(--dim); }

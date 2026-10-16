@@ -600,5 +600,7 @@ OCI18n.add("fr", {
  "About": "À propos",
  "Choose a logo…": "Choisir un logo…",
  "Choose a PNG, JPEG, GIF or WebP picture from this computer, up to 2 MB": "Choisissez sur cet ordinateur une image PNG, JPEG, GIF ou WebP, jusqu'à 2 Mo",
- "PNG, JPEG, GIF or WebP, up to 2 MB": "PNG, JPEG, GIF ou WebP, jusqu'à 2 Mo"
+ "PNG, JPEG, GIF or WebP, up to 2 MB": "PNG, JPEG, GIF ou WebP, jusqu'à 2 Mo",
+ "Use a name": "Utiliser un nom",
+ "(for a projector or shared screen; open it on that computer)": "(pour un projecteur ou un écran partagé ; ouvrez-le sur cet ordinateur)"
 });

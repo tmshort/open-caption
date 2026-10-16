@@ -92,31 +92,6 @@
   document.addEventListener('keydown', (e) => { if (e.key === 'F1') { e.preventDefault(); openHelp(); } });
 
   // ---- settings: passwords and where things are ----
-  // The local network name (open-caption.local): shown on the Run step, beside the addresses it adds to. m is the status from the
-  // server; applied() runs after a change, so the page can show the new address.
-  function mdnsControls(m, applied) {
-    m = m || {};
-    const mdnsOn = h('input', { type: 'checkbox', 'aria-label': __('Announce this computer by name') }); mdnsOn.checked = !!m.enabled;
-    const mdnsName = h('input', { type: 'text', class: 'netname', maxlength: '63', size: '16', 'aria-label': __('Name'), autocapitalize: 'none', spellcheck: 'false' }); mdnsName.value = m.requested || 'open-caption';
-    const mdnsMsg = h('div', { class: 'hint', role: 'status' });
-    const showMdns = (x) => {
-      mdnsMsg.className = x.error ? 'check warn' : x.renamed ? 'check warn' : 'hint';
-      mdnsMsg.textContent = !x.enabled ? __('Not announced.') : x.error ? __('Could not announce this name: {error}', { error: x.error })
-        : x.renamed ? __('Another computer on this network already uses {name}.local, so this one is http://{host}/', { name: x.requested, host: x.host })
-        : x.active ? __('Devices on this network can open http://{host}/', { host: x.host }) : __('Starting…');
-    };
-    showMdns(m);
-    async function applyMdns() {
-      mdnsMsg.className = 'hint'; mdnsMsg.textContent = __('Checking that nobody else uses the name…');
-      const x = await api('PUT', '/api/admin/settings/mdns', { enabled: mdnsOn.checked, name: mdnsName.value });
-      if (!x.ok) { mdnsMsg.className = 'check warn'; mdnsMsg.textContent = __((x.data && x.data.error) || 'Could not change the name'); return; }
-      showMdns(x.data.mdns); if (x.data.mdns.active) mdnsName.value = x.data.mdns.requested;
-      if (applied) applied(x.data.mdns);
-    }
-    return h('div', { class: 'netnamebox' }, h('h3', {}, __('Network name')),
-      h('p', { class: 'hint' }, __('Devices can open this computer by name instead of a number. It needs no router settings, but some guest WiFi networks block it, so keep the numeric address and QR code as the main way in.')),
-      h('div', { class: 'row' }, mdnsOn, __(' Announce as '), mdnsName, __('.local '), h('button', { type: 'button', onclick: applyMdns }, __('Apply'))), mdnsMsg);
-  }
   async function openSettings() {
     const r = await api('GET', '/api/admin/settings'); if (!r.ok) return fail(r);
     const s = r.data;
@@ -910,19 +885,53 @@
     const big = h('div', { class: 'urlbig' }), qrBox = h('div', { class: 'qr' });
     const paint = () => { big.textContent = chosen || __('No address found'); qrBox.replaceChildren(chosen ? h('img', { src: '/api/admin/network/qr.png?size=512&url=' + encodeURIComponent(chosen), alt: __('QR code for {url}', { url: chosen }) }) : ''); };
     paint();
+    // Every address is one row: [radio] link, and what belongs to that address. The name row (open-caption.local) also holds its own
+    // settings: a checkbox that turns the announcement on or off and a Rename button; the row shows even while the name is off.
+    const m = net.data.mdns || {};
+    const httpUrl = net.data.urls.find((u) => u.kind === 'http' && !u.name);
+    let portSuffix = ''; try { const pt = new URL(httpUrl.url).port; portSuffix = pt ? ':' + pt : ''; } catch (e) { /* no port to add */ }
+    async function setName(enabled, name) { // returns an error message, or '' when it worked
+      const x = await api('PUT', '/api/admin/settings/mdns', { enabled, name });
+      if (!x.ok) return __((x.data && x.data.error) || 'Could not change the name');
+      return '';
+    }
+    async function renameName() {
+      const input = h('input', { type: 'text', class: 'netname', maxlength: '63', size: '16', 'aria-label': __('Name'), autocapitalize: 'none', spellcheck: 'false' }); input.value = m.requested || 'open-caption';
+      const msg = h('div', { class: 'check warn', role: 'alert', hidden: '' });
+      for (;;) {
+        if (!await ask(__('Network name'), h('div', {}, h('div', { class: 'row' }, 'http://', input, __('.local ')), msg), __('Apply'))) return;
+        msg.hidden = true; const err = await setName(!!m.enabled, input.value);
+        if (!err) { render(); return; }
+        msg.textContent = err; msg.hidden = false;
+      }
+    }
+    const radio = (u) => h('input', { type: 'radio', name: 'u', checked: u.url === chosen, onchange: () => { chosen = u.url; paint(); } });
+    const link = (url) => h('a', { href: url, target: '_blank', rel: 'noopener', title: __('Opens in a new window') }, url);
+    const nameU = net.data.urls.find((u) => u.name);
+    const nameRows = () => {
+      const url = nameU ? nameU.url : 'http://' + (m.requested || 'open-caption') + '.local' + portSuffix + '/';
+      const use = h('input', { type: 'checkbox', 'aria-label': __('Announce this computer by name'), onchange: async (e) => { e.target.disabled = true; const err = await setName(e.target.checked, m.requested || 'open-caption'); if (err) toast(err); render(); } });
+      use.checked = !!m.enabled;
+      const out = [h('div', { class: 'row' },
+        h('label', { class: 'row' }, nameU ? radio(nameU) : h('span', { class: 'radiogap', 'aria-hidden': 'true' }), nameU ? link(url) : h('span', { class: 'off' }, url)),
+        h('label', { class: 'row nametoggle', title: __('Devices can open this computer by name instead of a number. It needs no router settings, but some guest WiFi networks block it, so keep the numeric address and QR code as the main way in.') }, use, __('Use a name')),
+        h('button', { class: 'quiet', onclick: renameName }, __('Rename…')))];
+      if (m.error) out.push(h('div', { class: 'check warn' }, __('Could not announce this name: {error}', { error: m.error })));
+      else if (m.renamed) out.push(h('div', { class: 'check warn' }, __('Another computer on this network already uses {name}.local, so this one is http://{host}/', { name: m.requested, host: m.host })));
+      return out;
+    };
     // The projector link: the audience page for a shared screen (big text, no buttons, no pointer), opened on this computer,
     // which is the one the projector is plugged into, so it uses this computer's own address.
-    const projBase = (net.data.urls.find((u) => u.kind === 'http' && !u.public) || net.data.urls.find((u) => u.kind === 'http') || net.data.urls[0] || {}).url;
-    const projRow = projBase ? h('div', { class: 'row projrow' }, h('span', { class: 'radiogap', 'aria-hidden': 'true' }),
-      h('a', { href: projBase + '?display=projector', target: '_blank', rel: 'noopener', title: __('Opens in a new window') }, projBase + '?display=projector'),
-      h('span', { class: 'hint' }, __(' (for a projector or shared screen: big text, no buttons; open it on the computer the projector is plugged into)'))) : null;
-    const list = h('div', { class: 'urls' }, ...net.data.urls.map((u) => h('div', { class: 'row' }, h('label', { class: 'row' }, h('input', { type: 'radio', name: 'u', checked: u.url === chosen, onchange: () => { chosen = u.url; paint(); } }), h('a', { href: u.url, target: '_blank', rel: 'noopener', title: __('Opens in a new window') }, u.url), u.public ? '' : __(' (this computer only)'), u.name ? __(' (a name: easy to type, but some WiFi networks and phones cannot use it)') : ''))), projRow);
+    const projBase = (net.data.urls.find((u) => u.kind === 'http' && !u.public) || httpUrl || net.data.urls[0] || {}).url;
+    const projRow = projBase ? h('div', { class: 'row projrow' }, h('label', { class: 'row' }, h('span', { class: 'radiogap', 'aria-hidden': 'true' }), link(projBase + '?display=projector')),
+      h('span', { class: 'hint' }, __('(for a projector or shared screen; open it on that computer)'))) : null;
+    const rows = net.data.urls.filter((u) => !u.name).map((u) => h('div', { class: 'row' }, h('label', { class: 'row' }, radio(u), link(u.url), u.public ? '' : __(' (this computer only)'))));
+    const list = h('div', { class: 'urls' }, ...rows, ...nameRows(), projRow);
     p.append(h('h2', {}, __('Run')), checks,
       h('div', { class: 'card' }, h('h3', {}, __('Tell the audience this address')), big,
         h('div', { class: 'row' }, h('button', { onclick: async () => { try { await navigator.clipboard.writeText(chosen); toast(__('Copied')); } catch (e) { toast(__('Select the address and copy it')); } } }, __('Copy address')),
           h('a', { class: 'btn', href: '/admin?print=qr&url=' + encodeURIComponent(chosen || ''), target: '_blank', rel: 'noopener' }, __('Print a QR sign for the lobby'))),
         h('div', { class: 'row qrrow' }, qrBox, list),
-        mdnsControls(net.data.mdns, () => render()), // the name adds an address to the list above, so show it
         ...(net.data.warnings || []).map((w) => h('div', { class: 'check warn' }, w)),
         h('p', { class: 'hint' }, __('Audience devices must be on the same WiFi as this computer. Devices connected right now: '), h('b', { id: 'audcount' }, String(A.audience)))),
       h('p', { class: 'hint' }, __('Something not working? '), h('a', { href: '#', onclick: (e) => { e.preventDefault(); openHelp('admin-troubleshooting'); } }, __('Troubleshooting help')), ' · ', h('a', { href: '/api/admin/support-bundle', download: 'support-bundle.zip' }, __('Download a support bundle')), ' · ', h('a', { href: '#', onclick: (e) => { e.preventDefault(); showLog(); } }, __('Recent log…'))));
