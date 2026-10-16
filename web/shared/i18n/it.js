@@ -594,5 +594,9 @@ OCI18n.add("it", {
  "Showing the built-in Open Caption logo until you choose your own.": "Viene mostrato il logo Open Caption integrato finché non ne scegli uno tuo.",
  "Back to Setup": "Torna alla configurazione",
  "Run": "Conduci",
- "(for a projector or shared screen: big text, no buttons; open it on the computer the projector is plugged into)": "(per un proiettore o uno schermo condiviso: testo grande, senza pulsanti; aprila sul computer a cui è collegato il proiettore)"
+ "(for a projector or shared screen: big text, no buttons; open it on the computer the projector is plugged into)": "(per un proiettore o uno schermo condiviso: testo grande, senza pulsanti; aprila sul computer a cui è collegato il proiettore)",
+ "Audience screen": "Schermo del pubblico",
+ "Security": "Sicurezza",
+ "This copy": "Questa copia",
+ "Settings sections": "Sezioni delle impostazioni"
 });

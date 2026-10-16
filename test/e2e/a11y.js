@@ -47,7 +47,8 @@ async function audit(page, label) {
           const name = await p.evaluate((k) => document.querySelectorAll('#steps button')[k].innerText.replace(/\s+/g, ' ').trim(), i);
           await audit(p, `${t} setup: ${name}`);
         }
-        await p.evaluate(() => document.getElementById('settingsbtn').click()); await sleep(800); await audit(p, t + ' setup: settings dialog');
+        await p.evaluate(() => document.getElementById('settingsbtn').click()); await sleep(800);
+        for (const tab of ['aud', 'sec', 'cop']) { await p.evaluate((i) => document.getElementById('settab-' + i).click(), tab); await sleep(300); await audit(p, t + ' setup: settings dialog, ' + tab + ' tab'); }
         await p.evaluate(() => document.getElementById('dlgok').click()); await sleep(300);
         await p.goto(B + '/operator'); await p.waitForSelector('#message', { visible: true }).catch(() => {});
         await sleep(800); await audit(p, t + ' operator');

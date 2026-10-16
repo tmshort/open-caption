@@ -190,3 +190,17 @@ a.btn.primary { background: var(--accent); color: var(--accent-fg); border-color
 .startbox a.btn.big { font-size: 1.25rem; padding: .8rem 1.2rem; justify-content: center; text-align: center; }
 .radiogap { display: inline-block; width: 1.1rem; flex: none; } /* lines the projector link up with the addresses above it */
 .projrow { align-items: baseline; }
+/* Dialogs: the title and the buttons stay in view; only the middle scrolls */
+dialog form { display: flex; flex-direction: column; max-height: calc(100vh - 4.5rem); }
+dialog form > h2 { flex: none; margin-top: 0; }
+#dlgbody { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding-right: .3rem; }
+dialog menu { flex: none; }
+/* Settings: a tab row that stays at the top of the scrolling part, and a body of fixed height so the window does not change size between tabs */
+#dlg.tabbed #dlgbody { height: 32rem; }
+.tabs { display: flex; gap: .2rem; position: sticky; top: 0; z-index: 1; margin: 0 0 .9rem; background: var(--panel); border-bottom: 1px solid var(--line); overflow-x: auto; }
+.tabs button { flex: none; min-height: 2.6rem; padding: .5rem .95rem; background: none; border: none; border-bottom: 3px solid transparent; border-radius: 0; color: var(--dim); font: inherit; cursor: pointer; }
+.tabs button:hover { color: var(--fg); }
+.tabs button[aria-selected=true] { color: var(--fg); border-bottom-color: var(--accent); font-weight: 600; }
+.tabpanel[hidden] { display: none; }
+.tabpanel > .setsec:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+.tabpanel > .check { margin: 0 0 1rem; }

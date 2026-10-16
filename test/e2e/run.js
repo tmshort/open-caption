@@ -379,7 +379,14 @@ async function main() {
     section('Settings and security');
     const guard = await open(); await guard.goto(B + '/admin'); await guard.waitForSelector('#pw'); await guard.type('#pw', ADMIN); await guard.keyboard.press('Enter'); await guard.waitForSelector('#steps button');
     await click(guard, 'Settings'); await sleep(600);
+    const tab = async (id) => { await guard.evaluate((i) => document.getElementById('settab-' + i).click(), id); await sleep(150); };
+    check('Settings has three tabs, with Close in view', await guard.evaluate(() => { const t = [...document.querySelectorAll('#dlg [role=tab]')].map((x) => x.textContent); const c = document.getElementById('dlgok').getBoundingClientRect(); return t.join('|') === 'Audience screen|Security|This copy' && c.bottom <= innerHeight && c.top >= 0; }));
+    await tab('cop');
+    await guard.focus('#settab-cop'); await guard.keyboard.press('ArrowLeft'); await sleep(150);
+    check('the arrow keys move between the tabs (and the selected tab says so)', await guard.evaluate(() => document.activeElement.id === 'settab-sec' && document.activeElement.getAttribute('aria-selected') === 'true' && document.getElementById('setpanel-sec').hidden === false && document.getElementById('setpanel-cop').hidden === true));
+    await tab('cop');
     check('Settings tells you Setup is open to the whole network', (await guard.evaluate(() => document.getElementById('dlg').innerText)).includes('any computer on the network'));
+    await tab('aud');
     check('Settings offers the network name setting', await guard.evaluate(() => /Network name/.test(document.getElementById('dlg').innerText) && !document.querySelector('#dlg input[aria-label="Announce this computer by name"]').checked));
     check('Settings has a Standby screen section with a message and a logo', await guard.evaluate(() => { const d = document.getElementById('dlg').innerText; return /Standby screen/.test(d) && !!document.querySelector('#dlg input[aria-label="Standby message"]') && !!document.querySelector('#dlg input[type=file]'); }));
     await guard.type('#dlg input[aria-label="Standby message"]', 'Welcome to the Little Theatre');
@@ -391,10 +398,12 @@ async function main() {
     const sbs = (await api(guard, 'GET', '/api/admin/settings')).body.standby;
     check('the standby message and logo are saved (venue-level)', sbs.message === 'Welcome to the Little Theatre' && /^\/standby-logo\?v=/.test(sbs.logo || ''), sbs);
     check('and the logo is public, for the audience page', await guard.evaluate(async (u) => { const r = await fetch(u, { credentials: 'omit' }); return r.ok && /image\/png/.test(r.headers.get('Content-Type')); }, sbs.logo));
+    await tab('cop');
     check('Settings offers the log detail setting', await guard.evaluate(() => !!document.querySelector('#dlg select[aria-label="Log detail"]')));
     check('the Settings window has no Recent log button (it is on the Run step)', await guard.evaluate(() => !document.getElementById('dlgextra') || document.getElementById('dlgextra').hidden));
     check('and its only footer button just closes it', await guard.evaluate(() => document.getElementById('dlgok').textContent.trim() === 'Close' && document.getElementById('dlgcancel').hidden));
     // the operator password can be shown and hidden again
+    await tab('sec');
     await guard.evaluate(() => [...document.querySelectorAll('#dlg button')].find((x) => x.textContent.includes('Show the current operator password')).click()); await sleep(500);
     check('showing the operator password turns the button into Hide', await guard.evaluate(() => /Operator password: /.test(document.getElementById('dlg').innerText) && [...document.querySelectorAll('#dlg button')].some((x) => x.textContent.includes('Hide the operator password'))));
     await guard.evaluate(() => [...document.querySelectorAll('#dlg button')].find((x) => x.textContent.includes('Hide the operator password')).click()); await sleep(300);
@@ -409,6 +418,7 @@ async function main() {
     check('it never contains a password', !(await guard.evaluate(() => document.querySelector('pre.logview').textContent)).includes(ADMIN));
     await guard.evaluate(() => document.getElementById('dlgok').click()); await sleep(300);
     await click(guard, 'Settings'); await sleep(600);
+    await guard.evaluate(() => document.getElementById('settab-sec').click()); await sleep(150);
     const inputs = await guard.$$('#dlg input[type=password]'); await inputs[1].type('new-operator-pw');
     await guard.evaluate(() => [...document.querySelectorAll('#dlg button')].find((x) => x.textContent.trim() === 'Change passwords').click()); await sleep(700);
     await guard.evaluate(() => document.getElementById('dlgok').click()); await sleep(300);

@@ -40,6 +40,7 @@
     return new Promise((resolve) => {
       const d = $('dlg');
       d.classList.toggle('wide', !!(opts && opts.wide));
+      d.classList.toggle('tabbed', !!(opts && opts.tabbed));
       $('dlgtitle').textContent = title;
       $('dlgbody').replaceChildren(body);
       $('dlgok').textContent = okLabel || __('OK');
@@ -151,35 +152,58 @@
     } }, ...[['error', 'Errors only'], ['warn', 'Problems (warnings and errors)'], ['info', 'Normal (events, sign-ins)'], ['debug', 'Debug (every request)']].map(([v, t]) => h('option', { value: v }, __(t))));
     logSelect.value = s.logLevel;
     const sec = (title, ...kids) => h('section', { class: 'setsec' }, h('h3', {}, __(title)), ...kids);
-    const body = h('div', {},
-      sec('About this copy',
-        h('table', { class: 'cheat' },
-          row('Program', 'open-caption ' + s.version), row('Settings file', s.configPath), row('Shows and data', s.dataDir),
-          row('Setup page can be opened from', s.adminRestricted ? s.adminAllow.join(', ') : 'any computer on the network'),
-          row('Operator page can be opened from', s.operatorRestricted ? s.operatorAllow.join(', ') : 'any computer on the network'),
-          row('Web port (HTTP)', (s.httpAddr || '').replace(/^.*:/, '')), row('Web port (HTTPS)', (s.httpsAddr || '').replace(/^.*:/, ''))),
-        h('p', { class: 'hint' }, __('These are fixed in the settings file. To change them, edit that file and start the program again.')),
-        !s.adminRestricted && !s.httpsAddr ? h('p', { class: 'check warn' }, __('Anyone on this WiFi can try to sign in to Setup, and passwords travel unencrypted over plain http. To limit it, set access: admin_allow in the settings file (for example [localhost]); see the usage guide.')) : null),
-      sec('Network name',
-        h('p', { class: 'hint' }, __('Devices can open this computer by name instead of a number. It needs no router settings, but some guest WiFi networks block it, so keep the numeric address and QR code as the main way in.')),
-        h('div', { class: 'row' }, mdnsOn, __(' Announce as '), mdnsName, __('.local '), h('button', { type: 'button', onclick: applyMdns }, __('Apply'))), mdnsMsg),
-      sec('Standby screen',
-        h('p', { class: 'hint' }, __('What the audience sees while no show is on air: before the operator presses START, after Go off air, and when no show is loaded. It belongs to the venue, not to a show.')),
-        h('div', { class: 'row' }, sbImg, sbNone), h('div', { class: 'row' }, h('label', { class: 'row' }, __('Logo (PNG, JPEG, GIF or WebP, up to 2 MB): '), sbFile), sbRemove),
-        h('label', { class: 'field' }, h('span', {}, __('Message (optional; empty uses “Captions will begin shortly” in each viewer’s language)')), sbMsg), h('div', { class: 'row' }, sbSave)),
-      sec('Log detail',
-        logSelect,
-        s.logLevelPinned ? h('p', { class: 'check warn' }, __('This copy was started with --log-level {level}, which overrides the settings file every time it starts. A change made here applies now but lasts only until the program restarts.', { level: s.logLevelPinned })) : null,
-        h('p', { class: 'hint' }, s.canChangePasswords ? __('How much the program records (in the support bundle and in the log file, if one is kept). Info records sign-ins and events; Debug adds every request, for tracking down a problem. Applies at once and is kept in the settings file.') : __('How much the program records (in the support bundle and in the log file, if one is kept). Info records sign-ins and events; Debug adds every request, for tracking down a problem. Applies at once.'))),
-      sec('Change passwords',
-        s.canChangePasswords
-          ? h('div', {}, h('p', { class: 'hint' }, __('Leave a box empty to keep that password. At least 6 characters. People signed in with a changed password are signed out; you stay signed in.')),
-              h('label', { class: 'field' }, h('span', {}, __('New admin password')), adminPw),
-              h('label', { class: 'field' }, h('span', {}, __('New operator password')), opPw),
-              h('div', { class: 'row' }, changePw, reveal), shown)
-          : h('p', { class: 'hint' }, __('This copy was started without a settings file, so passwords cannot be changed here.'))));
+    // Three tabs, so the window is short and the controls people come for are one click away; the title, the tabs and Close stay in
+    // view while a tab scrolls. Every tab stays in the page (only hidden), so something typed but not yet saved survives a switch.
+    const tabDefs = [
+      ['aud', 'Audience screen', [
+        sec('Standby screen',
+          h('p', { class: 'hint' }, __('What the audience sees while no show is on air: before the operator presses START, after Go off air, and when no show is loaded. It belongs to the venue, not to a show.')),
+          h('div', { class: 'row' }, sbImg, sbNone), h('div', { class: 'row' }, h('label', { class: 'row' }, __('Logo (PNG, JPEG, GIF or WebP, up to 2 MB): '), sbFile), sbRemove),
+          h('label', { class: 'field' }, h('span', {}, __('Message (optional; empty uses “Captions will begin shortly” in each viewer’s language)')), sbMsg), h('div', { class: 'row' }, sbSave)),
+        sec('Network name',
+          h('p', { class: 'hint' }, __('Devices can open this computer by name instead of a number. It needs no router settings, but some guest WiFi networks block it, so keep the numeric address and QR code as the main way in.')),
+          h('div', { class: 'row' }, mdnsOn, __(' Announce as '), mdnsName, __('.local '), h('button', { type: 'button', onclick: applyMdns }, __('Apply'))), mdnsMsg),
+      ]],
+      ['sec', 'Security', [
+          !s.adminRestricted && !s.httpsAddr ? h('p', { class: 'check warn' }, __('Anyone on this WiFi can try to sign in to Setup, and passwords travel unencrypted over plain http. To limit it, set access: admin_allow in the settings file (for example [localhost]); see the usage guide.')) : null,
+        sec('Change passwords',
+          s.canChangePasswords
+            ? h('div', {}, h('p', { class: 'hint' }, __('Leave a box empty to keep that password. At least 6 characters. People signed in with a changed password are signed out; you stay signed in.')),
+                h('label', { class: 'field' }, h('span', {}, __('New admin password')), adminPw),
+                h('label', { class: 'field' }, h('span', {}, __('New operator password')), opPw),
+                h('div', { class: 'row' }, changePw, reveal), shown)
+            : h('p', { class: 'hint' }, __('This copy was started without a settings file, so passwords cannot be changed here.'))),
+      ]],
+      ['cop', 'This copy', [
+        sec('About this copy',
+          h('table', { class: 'cheat' },
+            row('Program', 'open-caption ' + s.version), row('Settings file', s.configPath), row('Shows and data', s.dataDir),
+            row('Setup page can be opened from', s.adminRestricted ? s.adminAllow.join(', ') : 'any computer on the network'),
+            row('Operator page can be opened from', s.operatorRestricted ? s.operatorAllow.join(', ') : 'any computer on the network'),
+            row('Web port (HTTP)', (s.httpAddr || '').replace(/^.*:/, '')), row('Web port (HTTPS)', (s.httpsAddr || '').replace(/^.*:/, ''))),
+          h('p', { class: 'hint' }, __('These are fixed in the settings file. To change them, edit that file and start the program again.'))),
+        sec('Log detail',
+          logSelect,
+          s.logLevelPinned ? h('p', { class: 'check warn' }, __('This copy was started with --log-level {level}, which overrides the settings file every time it starts. A change made here applies now but lasts only until the program restarts.', { level: s.logLevelPinned })) : null,
+          h('p', { class: 'hint' }, s.canChangePasswords ? __('How much the program records (in the support bundle and in the log file, if one is kept). Info records sign-ins and events; Debug adds every request, for tracking down a problem. Applies at once and is kept in the settings file.') : __('How much the program records (in the support bundle and in the log file, if one is kept). Info records sign-ins and events; Debug adds every request, for tracking down a problem. Applies at once.'))),
+      ]]];
+    const tabs = h('div', { class: 'tabs', role: 'tablist', 'aria-label': __('Settings sections') });
+    const panels = tabDefs.map(([id, label, kids]) => h('div', { class: 'tabpanel', role: 'tabpanel', id: 'setpanel-' + id, 'aria-labelledby': 'settab-' + id, hidden: '' }, ...kids));
+    const tabBtns = tabDefs.map(([id, label], i) => h('button', { type: 'button', role: 'tab', id: 'settab-' + id, 'aria-controls': 'setpanel-' + id, onclick: () => pick(i, false),
+      onkeydown: (e) => { const n = tabDefs.length, k = e.key; const to = k === 'ArrowRight' ? (i + 1) % n : k === 'ArrowLeft' ? (i + n - 1) % n : k === 'Home' ? 0 : k === 'End' ? n - 1 : -1; if (to >= 0) { e.preventDefault(); pick(to, true); } } }, __(label)));
+    function pick(i, focus) {
+      tabBtns.forEach((b, k) => { b.setAttribute('aria-selected', k === i ? 'true' : 'false'); b.tabIndex = k === i ? 0 : -1; panels[k].hidden = k !== i; });
+      if (focus) tabBtns[i].focus();
+      $('dlgbody').scrollTop = 0;
+      try { localStorage.setItem('oc.settings.tab', tabDefs[i][0]); } catch (e) { /* storage unavailable */ }
+    }
+    tabs.append(...tabBtns);
+    const body = h('div', { class: 'settingsbody' }, tabs, ...panels);
+    let first = 0;
+    try { const last = localStorage.getItem('oc.settings.tab'); const k = tabDefs.findIndex((t) => t[0] === last); if (k >= 0) first = k; } catch (e) { /* storage unavailable */ }
+    pick(first, false);
     // Each section above has its own button (or applies as soon as you choose); this one only closes the window.
-    await ask(__('Settings'), body, __('Close'), { noCancel: true, wide: true });
+    await ask(__('Settings'), body, __('Close'), { noCancel: true, wide: true, tabbed: true });
   }
   // The program's recent log (the last 1000 lines it keeps in memory), so a problem can be looked at without
   // opening the log file or the support bundle.
