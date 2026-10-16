@@ -146,12 +146,12 @@
     const sbRemove = h('button', { type: 'button', onclick: async () => { const x = await api('DELETE', '/api/admin/settings/standby-logo'); if (!x.ok) return fail(x); paintSb(x.data.standby); toast(__('Logo removed')); } }, __('Remove logo'));
     function paintSb(v) { sbImg.hidden = !v.logo; if (v.logo) sbImg.src = v.logo; sbNone.hidden = !v.default; sbRemove.disabled = !!v.default; }
     paintSb(sb);
-    const sbFile = h('input', { type: 'file', accept: 'image/png,image/jpeg,image/gif,image/webp', 'aria-label': __('Choose a logo'), onchange: async (e) => {
-      const f = e.target.files[0]; if (!f) return;
-      const fd = new FormData(); fd.append('file', f);
-      const x = await api('POST', '/api/admin/settings/standby-logo', undefined, fd); e.target.value = '';
+    // The browser's own "Choose File / No file chosen" control is hidden; a button like the others opens the chooser.
+    const [sbChoose, sbFile] = fileButton(__('Choose a logo…'), { accept: IMAGE_TYPES, label: __('Choose a logo'), title: __('Choose a PNG, JPEG, GIF or WebP picture from this computer, up to 2 MB') }, async (files) => {
+      const fd = new FormData(); fd.append('file', files[0]);
+      const x = await api('POST', '/api/admin/settings/standby-logo', undefined, fd);
       if (!x.ok) return fail(x); paintSb(x.data.standby); toast(__('Logo saved'));
-    } });
+    });
     const sbSave = h('button', { type: 'button', onclick: async () => { const x = await api('PUT', '/api/admin/settings/standby', { message: sbMsg.value }); if (!x.ok) return fail(x); toast(__('Message saved')); } }, __('Save message'));
     const logSelect = h('select', { 'aria-label': __('Log detail'), onchange: async (e) => {
       const x = await api('PUT', '/api/admin/settings/log-level', { level: e.target.value });
@@ -166,7 +166,7 @@
       ['aud', 'Audience screen', [
         sec('Standby screen',
           h('p', { class: 'hint' }, __('What the audience sees while no show is on air: before the operator presses START, after Go off air, and when no show is loaded. It belongs to the venue, not to a show.')),
-          h('div', { class: 'row' }, sbImg, sbNone), h('div', { class: 'row' }, h('label', { class: 'row' }, __('Logo (PNG, JPEG, GIF or WebP, up to 2 MB): '), sbFile), sbRemove),
+          h('div', { class: 'row' }, sbImg, sbNone), h('div', { class: 'row' }, sbChoose, sbFile, sbRemove, h('span', { class: 'hint' }, __('PNG, JPEG, GIF or WebP, up to 2 MB'))),
           h('label', { class: 'field' }, h('span', {}, __('Message (optional; empty uses “Captions will begin shortly” in each viewer’s language)')), sbMsg), h('div', { class: 'row' }, sbSave)),
         ]],
       ['sec', 'Security', [

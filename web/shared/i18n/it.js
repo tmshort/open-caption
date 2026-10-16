@@ -562,7 +562,6 @@ OCI18n.add("it", {
  "Message saved": "Messaggio salvato",
  "Save message": "Salva il messaggio",
  "What the audience sees while no show is on air: before the operator presses START, after Go off air, and when no show is loaded. It belongs to the venue, not to a show.": "Ciò che vede il pubblico finché nessuno spettacolo è in onda: prima che l'operatore prema AVVIA, dopo Togli dall'onda e quando non è caricato alcuno spettacolo. Appartiene alla sala, non a uno spettacolo.",
- "Logo (PNG, JPEG, GIF or WebP, up to 2 MB):": "Logo (PNG, JPEG, GIF o WebP, fino a 2 MB): ",
  "Message (optional; empty uses “Captions will begin shortly” in each viewer’s language)": "Messaggio (facoltativo; se vuoto si usa «I sottotitoli inizieranno a breve» nella lingua di ogni spettatore)",
  "Open the operator page": "Apri la pagina dell'operatore",
  "This show is on air now.": "Questo spettacolo è in onda adesso.",
@@ -598,5 +597,8 @@ OCI18n.add("it", {
  "Audience screen": "Schermo del pubblico",
  "Security": "Sicurezza",
  "Settings sections": "Sezioni delle impostazioni",
- "About": "Informazioni"
+ "About": "Informazioni",
+ "Choose a logo…": "Scegli un logo…",
+ "Choose a PNG, JPEG, GIF or WebP picture from this computer, up to 2 MB": "Scegli da questo computer un'immagine PNG, JPEG, GIF o WebP, fino a 2 MB",
+ "PNG, JPEG, GIF or WebP, up to 2 MB": "PNG, JPEG, GIF o WebP, fino a 2 MB"
 });
