@@ -10,10 +10,12 @@ Las líneas largas se ajustan solas en la pantalla. Usted decide dónde dividir 
 |---------|---------|
 | `**fuerte**` | texto en **negrita** |
 | `*aparte*` o `_aparte_` | texto en *cursiva* |
+| `***very loud***` | texto en negrita y cursiva |
+| `~~old line~~` | texto tachado (una corrección, o un chiste tachado) |
 | `(thunder rumbles)` | una línea entera entre paréntesis se muestra como un sonido o una acotación |
 | `HAMLET: To be, or not to be` | una etiqueta de personaje sobre la línea (el nombre debe ir en MAYÚSCULAS seguido de dos puntos) |
 
-Todo lo demás se muestra tal como se escribe. No se admiten enlaces, listas, tablas ni títulos. Tampoco se admite HTML sin procesar: si escribe `<b>`, aparece literalmente, y la página muestra una nota que sugiere la forma Markdown.
+Todo lo demás se muestra tal como se escribe. No se admiten enlaces, listas, tablas ni títulos. Tampoco se admite HTML sin procesar: si escribe `<b>`, aparece literalmente, y la página muestra una nota que sugiere la forma Markdown. El subrayado, los superíndices y los subíndices no tienen marca, pero cualquier carácter que pueda escribir funciona tal cual, así que escriba H₂O, x², 1ˢᵗ o ½ directamente.
 
 ```showfile
 HAMLET: To be, or not to be, **that** is the question.

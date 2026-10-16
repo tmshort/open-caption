@@ -57,7 +57,7 @@ type AudItem struct {
 // the page uses its built-in words in the viewer's language).
 type StandbyView struct {
 	Message string `json:"message,omitempty"`
-	Logo    string `json:"logo,omitempty"` // URL of the logo image
+	Logo    string `json:"logo,omitempty"`    // URL of the logo image
 	Default bool   `json:"default,omitempty"` // the built-in Open Caption logo, because none was uploaded
 }
 

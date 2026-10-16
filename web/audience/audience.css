@@ -54,6 +54,7 @@ body.dys #fs { line-height: 1.35; }
 /* Sung lyrics: between musical notes (added by the server), in italics and a little looser. */
 .cap.sung { font-style: italic; letter-spacing: .01em; }
 .cap strong { font-weight: 800; }
+.cap del, #fs del { text-decoration-thickness: .08em; opacity: .85; } /* ~~struck~~ text stays readable */
 @media (prefers-reduced-motion: reduce) { .cap, #fs > * { animation: none !important; } }
 
 /* The column ends at its bottom padding: a line that has not yet scrolled up is out of sight below that edge, so new text

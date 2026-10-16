@@ -10,10 +10,12 @@ Lange Zeilen werden auf dem Bildschirm automatisch umgebrochen. Sie entscheiden,
 |---------------|--------------|
 | `**laut**` | **fetten** Text |
 | `*Beiseite*` oder `_Beiseite_` | *kursiven* Text |
+| `***very loud***` | fetter und kursiver Text |
+| `~~old line~~` | durchgestrichener Text (eine Korrektur oder ein durchgestrichener Scherz) |
 | `(thunder rumbles)` | eine ganze Zeile in Klammern wird als Geräusch oder Bühnenanweisung gezeigt |
 | `HAMLET: To be, or not to be` | eine Sprecher-Kennzeichnung über der Zeile (der Name muss in GROSSBUCHSTABEN stehen, gefolgt von einem Doppelpunkt) |
 
-Alles andere wird so gezeigt, wie es getippt wurde. Links, Listen, Tabellen und Überschriften werden nicht unterstützt. Rohes HTML wird ebenfalls nicht unterstützt: Wenn Sie `<b>` tippen, erscheint es wörtlich, und die Seite zeigt einen Hinweis, der die Markdown-Form vorschlägt.
+Alles andere wird so gezeigt, wie es getippt wurde. Links, Listen, Tabellen und Überschriften werden nicht unterstützt. Rohes HTML wird ebenfalls nicht unterstützt: Wenn Sie `<b>` tippen, erscheint es wörtlich, und die Seite zeigt einen Hinweis, der die Markdown-Form vorschlägt. Unterstreichung, Hoch- und Tiefstellung haben keine Auszeichnung, aber jedes Zeichen, das Sie tippen können, funktioniert so, wie es ist: Schreiben Sie H₂O, x², 1ˢᵗ oder ½ einfach direkt.
 
 ```showfile
 HAMLET: To be, or not to be, **that** is the question.

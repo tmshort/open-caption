@@ -7,8 +7,8 @@ import (
 )
 
 // RenderInline converts the supported Markdown subset (**bold**, *italic*,
-// _italic_, backslash escapes) to escaped HTML and a plain-text rendition.
-// All input text is HTML-escaped; only <strong> and <em> are generated.
+// _italic_, ***both***, ~~strikethrough~~, backslash escapes) to escaped HTML and a plain-text
+// rendition. All input text is HTML-escaped; only <strong>, <em> and <del> are generated.
 func RenderInline(s string) (htmlOut, plain string) {
 	var h, p strings.Builder
 	renderInto(&h, &p, []rune(s))
@@ -27,6 +27,28 @@ func renderInto(h, p *strings.Builder, r []rune) {
 		case c == '\\' && i+1 < len(r) && strings.ContainsRune(escapable, r[i+1]):
 			writeLit(h, p, r[i+1])
 			i += 2
+		case c == '*' && i+3 < len(r) && r[i+1] == '*' && r[i+2] == '*' && !unicode.IsSpace(r[i+3]):
+			// ***bold italic***
+			if end := findClose(r, i+3, "***"); end > i+3 && canClose(r, end) {
+				h.WriteString("<strong><em>")
+				renderInto(h, p, r[i+3:end])
+				h.WriteString("</em></strong>")
+				i = end + 3
+				continue
+			}
+			writeLit(h, p, c)
+			i++
+		case c == '~' && i+2 < len(r) && r[i+1] == '~' && !unicode.IsSpace(r[i+2]):
+			// ~~strikethrough~~ (GitHub-flavoured Markdown). A sung line starts with "~ " (a space), so the two never meet.
+			if end := findClose(r, i+2, "~~"); end > i+2 && canClose(r, end) {
+				h.WriteString("<del>")
+				renderInto(h, p, r[i+2:end])
+				h.WriteString("</del>")
+				i = end + 2
+				continue
+			}
+			writeLit(h, p, c)
+			i++
 		case c == '*' && i+1 < len(r) && r[i+1] == '*':
 			if end := findClose(r, i+2, "**"); end > i+2 {
 				h.WriteString("<strong>")
@@ -101,7 +123,7 @@ func findClose(r []rune, from int, marker string) int {
 			i++ // skip a ** pair inside an *italic* span
 			continue
 		}
-		if len(m) == 2 && (i+1 >= len(r) || r[i+1] != m[1]) {
+		if len(m) > 1 && (i+len(m) > len(r) || string(r[i:i+len(m)]) != marker) {
 			continue
 		}
 		return i

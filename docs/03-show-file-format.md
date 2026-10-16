@@ -36,12 +36,16 @@ emits only the small set of tags it generates itself.
 |-------|--------|
 | `**loud**` | **bold** |
 | `*aside*` or `_aside_` | *italic* |
+| `***very loud***` | ***bold italic*** (`<strong><em>`) |
+| `~~old line~~` | ~~strikethrough~~ (`<del>`; GitHub-flavoured Markdown). Needs a non-space just inside each pair, so `~~ x ~~` stays literal; it cannot be confused with a sung line, which is `~` followed by a space |
 | `(thunder rumbles)` — whole line in parentheses | automatically styled as a sound/stage direction |
 | `![Act 1](set.jpg)` — alone on a line | fullscreen image (same as `[image: set.jpg \| Act 1]`) |
 | `\*` `\_` `\#` `\[` `\:` | literal character |
 
 Not supported (shown as plain text): links, lists, tables, blockquotes, code,
-headings (ignored), raw HTML.
+headings (ignored), raw HTML. **Underline, superscript and subscript deliberately have no markup**
+(Markdown has none: `__x__` is bold in CommonMark, and `~sub~`/`^sup^` are Pandoc extensions that would clash with `~` for sung lines).
+Any Unicode character works as typed, so H₂O, x², 1ˢᵗ and ½ need no syntax. The generated tags are only `<strong>`, `<em>` and `<del>`.
 
 ## Settings: the title, the look and other show-wide options
 

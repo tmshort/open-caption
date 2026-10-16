@@ -116,6 +116,11 @@ func TestScriptHelpCoversEveryConvention(t *testing.T) {
 			t.Errorf("help never mentions the escape \\%c", ch)
 		}
 	}
+	for _, want := range []string{"***", "~~", "H₂O"} {
+		if !strings.Contains(topics["admin-writing-a-show-file"].Markdown, want) {
+			t.Errorf("the show file topic never mentions %q (bold italic, strikethrough, Unicode sub/superscripts)", want)
+		}
+	}
 	// The loop timer is explained: the option, both kinds of value and the placeholder.
 	loops := topics["admin-loops"].Markdown
 	for _, want := range []string{"timer 15", "timer 7:30pm", "{timer}", "[loop: timer"} {

@@ -277,7 +277,7 @@ async function main() {
     await shot(en, '04-audience-english');
     // With only a few lines on screen (they sit at the bottom), the older lines slide up instead of jumping.
     const fid = (await api(op, 'POST', '/api/admin/shows', { name: 'Few lines' })).body.id;
-    await api(op, 'PUT', `/api/admin/shows/${fid}/showfile`, { text: 'One\nTwo\nThree\nFour' });
+    await api(op, 'PUT', `/api/admin/shows/${fid}/showfile`, { text: 'One\n~~Two~~\n***Three***\nFour' });
     await api(op, 'POST', `/api/admin/shows/${fid}/activate`, { force: true, start: true }); await sleep(T(800));
     await nextN(2); await sleep(T(700));
     await en.evaluate(() => { const first = document.querySelector('#captions .cap'); window.__seen = []; const f = () => { window.__seen.push(Math.round(first.getBoundingClientRect().top)); window.__raf = requestAnimationFrame(f); }; f(); });
@@ -286,6 +286,7 @@ async function main() {
     const f0 = few[0], f1 = few[few.length - 1];
     check('with few lines on screen, the older ones slide up instead of jumping', f1 < f0 && few.some((v) => v < f0 - 1 && v > f1 + 1), few.slice(0, 40).join(','));
     await arrival('with few lines');
+    check('~~strikethrough~~ and ***bold italic*** are drawn on the audience screen', await en.evaluate(() => { const d = document.querySelector('#captions .cap del'), b = document.querySelector('#captions .cap strong em'); return !!d && /line-through/.test(getComputedStyle(d).textDecorationLine) && d.textContent === 'Two' && !!b && b.textContent === 'Three'; }));
 
     // ------------------------------------------------------------------ settings & security
     // An intermission timer: the loop's {timer} counts down live on the audience screen, from the moment the loop starts.

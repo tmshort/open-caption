@@ -10,10 +10,12 @@ Les longues lignes passent automatiquement à la ligne à l'écran. C'est vous q
 |---------|--------------|
 | `**fort**` | du texte en **gras** |
 | `*aparté*` ou `_aparté_` | du texte en *italique* |
+| `***very loud***` | texte en gras et en italique |
+| `~~old line~~` | texte barré (une correction, ou une blague biffée) |
 | `(thunder rumbles)` | une ligne entière entre parenthèses est affichée comme un bruit ou une indication de scène |
 | `HAMLET: To be, or not to be` | une étiquette de personnage au-dessus de la ligne (le nom doit être en MAJUSCULES suivi de deux-points) |
 
-Tout le reste est affiché tel quel. Les liens, listes, tableaux et titres ne sont pas pris en charge. Le HTML brut non plus : si vous tapez `<b>`, il apparaît tel quel, et la page affiche une remarque suggérant la forme Markdown.
+Tout le reste est affiché tel quel. Les liens, listes, tableaux et titres ne sont pas pris en charge. Le HTML brut non plus : si vous tapez `<b>`, il apparaît tel quel, et la page affiche une remarque suggérant la forme Markdown. Le soulignement, les exposants et les indices n'ont pas de balisage, mais tout caractère que vous pouvez saisir fonctionne tel quel : écrivez directement H₂O, x², 1ˢᵗ ou ½.
 
 ```showfile
 HAMLET: To be, or not to be, **that** is the question.

@@ -10,10 +10,12 @@ As linhas longas quebram sozinhas na tela. Você decide onde dividir uma fala lo
 |---------|------------|
 | `**forte**` | texto em **negrito** |
 | `*aparte*` ou `_aparte_` | texto em *itálico* |
+| `***very loud***` | texto em negrito e itálico |
+| `~~old line~~` | texto riscado (uma correção, ou uma piada riscada) |
 | `(thunder rumbles)` | uma linha inteira entre parênteses é mostrada como um som ou uma indicação de cena |
 | `HAMLET: To be, or not to be` | um rótulo de personagem acima da linha (o nome deve estar em MAIÚSCULAS seguido de dois-pontos) |
 
-Todo o resto é mostrado como foi digitado. Links, listas, tabelas e títulos não são suportados. HTML puro também não: se você digitar `<b>`, ele aparece literalmente, e a página mostra uma nota sugerindo a forma Markdown.
+Todo o resto é mostrado como foi digitado. Links, listas, tabelas e títulos não são suportados. HTML puro também não: se você digitar `<b>`, ele aparece literalmente, e a página mostra uma nota sugerindo a forma Markdown. Sublinhado, sobrescrito e subscrito não têm marcação, mas qualquer caractere que você consiga digitar funciona como está: escreva H₂O, x², 1ˢᵗ ou ½ diretamente.
 
 ```showfile
 HAMLET: To be, or not to be, **that** is the question.
