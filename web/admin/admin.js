@@ -299,7 +299,7 @@
         h('button', { class: A.cur === s.id ? '' : 'primary', onclick: () => { setCur(s.id); go('showfile'); } }, A.cur === s.id ? __('Continue with this show') : __('Work on this show')),
         h('button', { class: 'quiet', onclick: () => renameShow(s) }, __('Rename…')),
         h('button', { class: 'quiet', onclick: () => duplicateShow(s) }, __('Duplicate')),
-        h('a', { href: '/api/admin/shows/' + s.id + '/export', download: s.id + '.zip' }, __('Export')),
+        h('a', { class: 'quiet', href: '/api/admin/shows/' + s.id + '/export', download: s.id + '.zip' }, __('Export')),
         h('button', { class: 'quiet', disabled: s.active, title: s.active ? __('The show on air cannot be archived. Activate another show first.') : __('Put this show away; you can restore it later'), onclick: () => archiveShow(s, true) }, __('Archive')),
         h('button', { class: 'danger quiet', onclick: () => deleteShow(s) }, __('Delete…')))));
       p.append(h('h3', {}, __('Add another show')), h('div', { class: 'card row' }, ...newShowForm(), h('button', { onclick: makeSample }, __('Sample show')),
@@ -312,7 +312,7 @@
         ...archived.map((s) => h('div', { class: 'card show' },
           h('div', { class: 'name' }, s.name, h('div', { class: 'hint' }, __('Updated {when}', { when: new Date(s.updated).toLocaleString(OCI18n.lang) }))),
           h('button', { class: 'primary', onclick: () => archiveShow(s, false) }, __('Restore')),
-          h('a', { href: '/api/admin/shows/' + s.id + '/export', download: s.id + '.zip' }, __('Export')),
+          h('a', { class: 'quiet', href: '/api/admin/shows/' + s.id + '/export', download: s.id + '.zip' }, __('Export')),
           h('button', { class: 'danger quiet', onclick: () => deleteShow(s) }, __('Delete…'))))));
     }
   }
@@ -641,7 +641,7 @@
       h('h2', {}, A.lang ? __('Show file — {name}', { name: cur.name }) : __('Show file')),
       tabs, translating,
       h('p', { class: 'hint' }, __('This file holds everything about the show except its images: its title and look in a [settings] block, and the lines themselves. Each line is one caption; one press of the spacebar sends one line. You can paste, type, or drop a .txt or .md file. Click a problem to jump to its line.')),
-      h('div', { class: 'row' }, h('label', { class: 'row' }, __('Open a file:'), fileInput), h('a', { href: '/api/admin/shows/' + show.id + '/showfile/download' + q, download: show.id + (A.lang ? '.' + A.lang : '') + '.md', title: __('Edit it in any text editor, then bring it back with Open a file') }, __('Download the show file')), h('button', { onclick: () => openHelp('admin-writing-a-show-file') }, __('Show file help')), h('button', { onclick: showHistory, title: __('Each save keeps the version it replaced') }, __('Earlier versions…')), h('span', { class: 'grow' }), status, saveBtn),
+      h('div', { class: 'row' }, h('label', { class: 'row' }, __('Open a file:'), fileInput), h('a', { class: 'btn', href: '/api/admin/shows/' + show.id + '/showfile/download' + q, download: show.id + (A.lang ? '.' + A.lang : '') + '.md', title: __('Edit it in any text editor, then bring it back with Open a file') }, __('Download the show file')), h('button', { onclick: () => openHelp('admin-writing-a-show-file') }, __('Show file help')), h('button', { onclick: showHistory, title: __('Each save keeps the version it replaced') }, __('Earlier versions…')), h('span', { class: 'grow' }), status, saveBtn),
       tools,
       h('div', { class: 'editor-grid' }, editor, h('div', {}, h('div', { class: 'card' }, diagTitle, diagList), h('div', { class: 'card' }, h('h3', {}, __('What the operator will step through')), cueList))),
       cheatSheet());
