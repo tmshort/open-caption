@@ -151,7 +151,7 @@
     const tabDefs = [
       ['aud', 'Audience screen', [
         sec('Standby screen',
-          h('p', { class: 'hint' }, __('What the audience sees while no show is on air: before the operator presses START, after Go off air, and when no show is loaded. It belongs to the venue, not to a show.')),
+          h('p', { class: 'hint' }, __('What the audience sees while no show is on air: before the operator presses START, after Go to standby, and when no show is loaded. It belongs to the venue, not to a show.')),
           h('div', { class: 'row' }, sbImg, sbNone), h('div', { class: 'row' }, sbChoose, sbFile, sbRemove, h('span', { class: 'hint' }, __('PNG, JPEG, GIF or WebP, up to 2 MB'))),
           h('label', { class: 'field' }, h('span', {}, __('Message (optional; empty uses “Captions will begin shortly” in each viewer’s language)')), sbMsg), h('div', { class: 'row' }, sbSave)),
         ]],
@@ -270,7 +270,7 @@
       const wasLive = A.live, wasStart = A.atStart;
       A.atStart = p.op.atStart; A.live = p.op.live; A.audience = p.audience; A.activeId = p.show.id;
       $('viewers').textContent = OCClients.label(p); $('viewers').title = OCClients.title(p.audience);
-      $('live').hidden = !p.op.live; $('live').textContent = '● ' + __('LIVE');
+      $('live').hidden = !p.op.live; $('live').textContent = '● ' + __('ON AIR');
       if (A.step === 'golive') { const v = document.getElementById('audcount'); if (v) v.textContent = String(p.audience); }
       if ((wasLive !== A.live || wasStart !== A.atStart) && (A.step === 'show' || A.step === 'golive')) loadShows().then(() => (A.step === 'show' || A.step === 'golive') && render());
     });
@@ -363,14 +363,14 @@
     } else {
       if (!current.length) p.append(h('div', { class: 'card empty' }, h('p', { class: 'big' }, __('All your shows are archived. Create a new show below, or restore one from the archive.'))));
       current.forEach((s) => p.append(h('div', { class: 'card show' },
-        h('div', { class: 'name' }, s.name, ' ', s.active ? h('span', { class: 'badge active' }, __('ACTIVE')) : null, ' ', s.live ? h('span', { class: 'badge live' }, __('LIVE')) : null,
+        h('div', { class: 'name' }, s.name, ' ', s.active ? h('span', { class: 'badge active' }, __('ACTIVE')) : null, ' ', s.live ? h('span', { class: 'badge live' }, __('ON AIR')) : null,
           h('div', { class: 'hint' }, __('Updated {when}', { when: new Date(s.updated).toLocaleString(OCI18n.lang) }))),
         h('button', { class: A.cur === s.id ? '' : 'primary', onclick: () => { setCur(s.id); go('showfile'); } }, A.cur === s.id ? __('Continue with this show') : __('Work on this show')),
         h('button', { class: 'quiet', onclick: () => renameShow(s) }, __('Rename…')),
         h('button', { class: 'quiet', onclick: () => duplicateShow(s) }, __('Duplicate…')),
         h('a', { class: 'quiet', href: '/api/admin/shows/' + s.id + '/export', download: s.id + '.zip' }, __('Export')),
         h('button', { class: 'quiet', disabled: s.active, title: s.active ? __('The show on air cannot be archived. Activate another show first.') : __('Put this show away; you can restore it later'), onclick: () => archiveShow(s, true) }, __('Archive')),
-        h('button', { class: 'danger quiet', title: s.live ? __('This show is live. Restart it from the operator page, or activate another show first.') : null, onclick: () => deleteShow(s) }, __('Delete…')))));
+        h('button', { class: 'danger quiet', title: s.live ? __('This show is on air. Restart it from the Run page, or activate another show first.') : null, onclick: () => deleteShow(s) }, __('Delete…')))));
       p.append(h('h3', {}, __('Add another show')), h('div', { class: 'card row addrow' }, ...newShowForm(), h('button', { onclick: makeSample }, __('Create a sample show')), ...importButton()));
     }
     if (archived.length) {
@@ -381,7 +381,7 @@
           h('div', { class: 'name' }, s.name, h('div', { class: 'hint' }, __('Updated {when}', { when: new Date(s.updated).toLocaleString(OCI18n.lang) }))),
           h('button', { class: 'primary', onclick: () => archiveShow(s, false) }, __('Restore')),
           h('a', { class: 'quiet', href: '/api/admin/shows/' + s.id + '/export', download: s.id + '.zip' }, __('Export')),
-          h('button', { class: 'danger quiet', title: s.live ? __('This show is live. Restart it from the operator page, or activate another show first.') : null, onclick: () => deleteShow(s) }, __('Delete…'))))));
+          h('button', { class: 'danger quiet', title: s.live ? __('This show is on air. Restart it from the Run page, or activate another show first.') : null, onclick: () => deleteShow(s) }, __('Delete…'))))));
     }
   }
   // Every file chooser in Setup is a button like any other: it opens the browser's chooser through a hidden
@@ -447,7 +447,7 @@
   // A refusal is shown in a window that has to be dismissed: a toast is easy to miss, and "nothing happened" looks like a bug.
   function refuseDelete(why) { return ask(__("Can't delete this show"), h('p', {}, why), __('OK'), { noCancel: true }); }
   async function deleteShow(s) {
-    if (s.live) return refuseDelete(__('This show is live. Restart it from the operator page, or activate another show first.'));
+    if (s.live) return refuseDelete(__('This show is on air. Restart it from the Run page, or activate another show first.'));
     const ok = await confirmBox(__('Delete “{name}”?', { name: s.name }), s.archived ? __('This archived show, its show file and its images will be permanently deleted. Export it first if you may want it back.') : __('Its show file and images will be permanently deleted. Export it first if you may want it back. (Archive keeps a show without deleting it.)'), __('Delete'), true);
     if (!ok) return;
     const r = await api('DELETE', '/api/admin/shows/' + s.id);
@@ -529,7 +529,7 @@
       const r = await api('PUT', '/api/admin/shows/' + show.id + '/showfile' + q, body);
       if (r.status === 409 && r.data.needConfirm) {
         const inp = h('input', { type: 'text', 'aria-label': __('Show name'), placeholder: r.data.showName });
-        const ok = await ask(__('This show is live'), h('div', {}, h('p', {}, __('Changing the show file now affects what the operator sees. The current position is kept by line number. To continue, type the show’s name:')), h('p', {}, h('b', {}, r.data.showName)), inp), __('Save change'));
+        const ok = await ask(__('This show is on air'), h('div', {}, h('p', {}, __('Changing the show file now affects what the operator sees. The current position is kept by line number. To continue, type the show’s name:')), h('p', {}, h('b', {}, r.data.showName)), inp), __('Save change'));
         if (ok) return save(inp.value);
         return;
       }
@@ -810,17 +810,17 @@
     mk('font', 'Font', h('select', {}, h('option', { value: 'system' }, __('Clean (system)')), h('option', { value: 'serif' }, __('Serif')), h('option', { value: 'mono' }, __('Monospace')), h('option', { value: 'dyslexic' }, __('Dyslexia-friendly (OpenDyslexic)')), h('option', { value: 'hyperlegible' }, __('High legibility (Atkinson Hyperlegible)'))));
     mk('scalePct', 'Text size', h('input', { type: 'range', min: '60', max: '200', step: '10' }));
     mk('speakers', 'Speaker names', h('select', {}, h('option', { value: 'label' }, __('Show above the line (in the speaker name color)')), h('option', { value: 'color' }, __('Show above the line, a different color for each character')), h('option', { value: 'hidden' }, __('Hide'))));
-    mk('idleMessage', 'Message before the show starts', h('input', { type: 'text', maxlength: '200' }));
+    mk('idleMessage', 'Pre-show message', h('input', { type: 'text', maxlength: '200' }));
     mk('loopSeconds', 'Default time for each item in a loop (seconds)', h('input', { type: 'number', min: '1', max: '3600', step: 'any' }));
     mk('scrollbackLines', 'Captions a viewer can scroll back through', h('input', { type: 'number', min: '20', max: '2000', step: '10' }));
     // Other languages get their own pre-show message.
     const lgs = await api('GET', '/api/admin/shows/' + show.id + '/languages');
     const idleOthers = {};
     const idleLabels = (lgs.ok ? lgs.data.languages.filter((l) => !l.primary) : []).map((l) => {
-      const inp = h('input', { type: 'text', maxlength: '200', dir: 'auto', 'aria-label': __('Message before the show starts ({name})', { name: l.name }) });
+      const inp = h('input', { type: 'text', maxlength: '200', dir: 'auto', 'aria-label': __('Pre-show message ({name})', { name: l.name }) });
       inp.value = (t.idleMessages || {})[l.code] || '';
       idleOthers[l.code] = inp;
-      return h('label', { class: 'field' }, h('span', {}, __('Message before the show starts ({name})', { name: l.name })), inp);
+      return h('label', { class: 'field' }, h('span', {}, __('Pre-show message ({name})', { name: l.name })), inp);
     });
     const ratio = h('div', { class: 'hint' });
     const sizeLabel = h('span', { class: 'hint' });
@@ -871,7 +871,7 @@
   async function stepTest(p) {
     const show = curShow(); if (!show) return go('show');
     p.append(h('h2', {}, __('Test with a rehearsal')),
-      h('p', { class: 'hint' }, __('A rehearsal runs this show privately: you press the keys as the operator would and see the audience screen beside it. Nothing here reaches real audience devices, and it does not affect a show that is live.')));
+      h('p', { class: 'hint' }, __('A rehearsal runs this show privately: you press the keys as the operator would and see the audience screen beside it. Nothing here reaches real audience devices, and it does not affect a show that is on air.')));
     const area = h('div', {});
     p.append(h('div', { class: 'row' }, h('button', { class: 'primary', onclick: start }, A.rehearsing ? __('Restart rehearsal') : __('Start rehearsal'))), area);
     async function start() {

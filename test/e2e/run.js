@@ -176,13 +176,13 @@ async function main() {
     check('before the operator starts the show, the audience sees the standby screen', await standbyShown(en));
     check('with the built-in [oc] logo until the venue sets its own', await en.evaluate(() => { const i = document.getElementById('standbylogo'); return !i.hidden && /favicon\.svg/.test(i.getAttribute('src')) && i.naturalWidth > 0; }));
     check('in every language (the built-in words are translated)', await es.evaluate(() => /Los subtítulos comenzarán en breve/.test(document.getElementById('standby').textContent)));
-    check('and the operator page says it is not on air, with START where NEXT will be', await op.evaluate(() => /STANDBY/.test(document.getElementById('live').textContent) && /START/.test(document.getElementById('next').textContent) && document.getElementById('offair').disabled && /NOT ON AIR/.test(document.getElementById('banner').textContent) && document.getElementById('stop').disabled));
+    check('and the operator page says it is not on air, with START where NEXT will be', await op.evaluate(() => /STANDBY/.test(document.getElementById('live').textContent) && /START/.test(document.getElementById('next').textContent) && document.getElementById('offair').disabled && /STANDBY — /.test(document.getElementById('banner').textContent) && document.getElementById('stop').disabled));
     check('in standby the highlighted next line is the pre-show loop that START will run', await op.evaluate(() => { const n = document.querySelector('#list .cue.next'); return !!n && n.classList.contains('k-loop') && !n.classList.contains('sent') && !document.querySelector('#list .cue.now'); }));
     await op.keyboard.press('Backspace'); await op.keyboard.press('b'); await sleep(400);
     check('nothing but START does anything in standby', await standbyShown(en));
     check('Restart show… is disabled while the show is at the start in standby', await op.evaluate(() => document.getElementById('reset').disabled));
     await op.keyboard.press('Space'); await sleep(T(900)); // START: the pre-show loop begins
-    check('START puts the show on air (LIVE), and the pre-show appears', await op.evaluate(() => /LIVE/.test(document.getElementById('live').textContent) && !document.getElementById('offair').disabled && /NEXT/.test(document.getElementById('next').textContent)));
+    check('START puts the show on air (ON AIR), and the pre-show appears', await op.evaluate(() => /ON AIR/.test(document.getElementById('live').textContent) && !document.getElementById('offair').disabled && /NEXT/.test(document.getElementById('next').textContent)));
     check('and Restart show… works once the show is on air', await op.evaluate(() => !document.getElementById('reset').disabled));
     check('the item of a running loop is marked with a play triangle in the operator list', await op.evaluate(() => { const l = document.querySelectorAll('.items li.playing'); return l.length === 1 && l[0].getAttribute('aria-current') === 'true' && getComputedStyle(l[0].querySelector('.pl'), '::before').content.includes('▶'); }));
     check('the pre-show loop is on the audience screens after START (fullscreen)', await en.evaluate(() => !document.getElementById('fs').hidden));
@@ -321,7 +321,7 @@ async function main() {
     await op.bringToFront(); // a page in the background does not get its dialog's close event
     await op.evaluate(() => document.getElementById('offair').click());
     await op.waitForFunction(() => document.getElementById('offdlg').open, { timeout: T(5000) }).catch(() => {});
-    check('Go off air asks first, and says what happens', await op.evaluate(() => /standby screen/.test(document.getElementById('offdlg').innerText)));
+    check('Go to standby asks first, and says what happens', await op.evaluate(() => /standby screen/.test(document.getElementById('offdlg').innerText)));
     await op.evaluate(() => document.getElementById('offgo').click()); await sleep(T(900));
     check('off air: the audience sees the standby screen again, nothing of the show', await standbyShown(en));
     check('and the operator page shows STANDBY with START', await op.evaluate(() => /STANDBY/.test(document.getElementById('live').textContent) && /START/.test(document.getElementById('next').textContent)));
@@ -363,7 +363,7 @@ async function main() {
     await op.evaluate(() => document.querySelector('#clientsdlg button').click()); await sleep(300);
     {
       const oh = await headerOrder(op, ['#viewers', 'header select.uilang', '#offair', '#reset', '#setuplink', '#helpbtn', '#logout', '#dot']);
-      check('operator header, right side: devices, language, Go off air, Restart, Setup, Help, Sign out, connection', oh.ok && oh.pts.filter((x) => x.includes('hidden')).length === 0, oh);
+      check('operator header, right side: devices, language, Go to standby, Restart, Setup, Help, Sign out, connection', oh.ok && oh.pts.filter((x) => x.includes('hidden')).length === 0, oh);
     }
     // (the sign-in rate limit is five a minute, so the role is faked in the page's own state request instead of logging in again)
     for (const [role, linked] of [['operator', false], ['admin', true]]) {
@@ -480,7 +480,7 @@ async function main() {
       const ah = await headerOrder(arch, ['#viewers', 'header select.uilang', '#settingsbtn', 'header a[href="/operator"]', '#helpbtn', '#logout', '#dot']);
       check('Setup header, right side: devices, language, Settings, Run, Help, Sign out, connection', ah.ok && ah.pts.filter((x) => x.includes('hidden')).length === 0, ah);
       const adLook = await headerLook(arch);
-      check('the LIVE pill is the same red on Setup and the operator page', (await liveRed(arch)) === opRed && opRed === 'rgb(179, 38, 30)', { setup: await liveRed(arch), operator: opRed });
+      check('the ON AIR pill is the same red on Setup and the operator page', (await liveRed(arch)) === opRed && opRed === 'rgb(179, 38, 30)', { setup: await liveRed(arch), operator: opRed });
       check('the audience count leaves out a language nobody is using (Setup too)', JSON.stringify(await countText(arch)) === JSON.stringify(['👥 3 (en 3)', '👥 0', '👥 5 (en 3 · es 2)', '👥 2']));
       await arch.evaluate(() => document.getElementById('viewers').click()); await arch.waitForSelector('dialog[open] table.clients', { timeout: T(5000) }).catch(() => {});
       check('clicking the count on Setup lists the connected devices too', await arch.evaluate(() => { const d = document.getElementById('dlg'); const rows = [...d.querySelectorAll('table.clients tr')].slice(1); return d.open && /Connected devices/.test(d.innerText) && rows.length >= 2; }));
@@ -491,7 +491,7 @@ async function main() {
       check('the two headers use the same type, spacing and control sizes', JSON.stringify(adLook) === JSON.stringify(opLook), { operator: opLook, setup: adLook });
       check('and the Setup page shows the server is answering (green dot)', await arch.evaluate(() => document.getElementById('dot').classList.contains('on')));
     }
-    check('the LIVE badge in the show list is the same red as the LIVE pills', await arch.evaluate(() => { const e = document.createElement('span'); e.className = 'badge live'; document.querySelector('.card.show .name').appendChild(e); const c = getComputedStyle(e).backgroundColor; e.remove(); return c === 'rgb(179, 38, 30)'; }));
+    check('the ON AIR badge in the show list is the same red as the ON AIR pills', await arch.evaluate(() => { const e = document.createElement('span'); e.className = 'badge live'; document.querySelector('.card.show .name').appendChild(e); const c = getComputedStyle(e).backgroundColor; e.remove(); return c === 'rgb(179, 38, 30)'; }));
     check('the name box under Add another show is a little larger than a normal box', await arch.evaluate(() => { const i = document.querySelector('input.newname'), r = i.getBoundingClientRect(); return parseFloat(getComputedStyle(i).fontSize) >= 17 && r.height >= 44 && r.width >= 300; }));
     check('Duplicate… is named for the dialog it opens', await arch.evaluate(() => [...document.querySelectorAll('.card.show button')].some((b) => b.textContent === 'Duplicate…') && ![...document.querySelectorAll('.card.show button')].some((b) => b.textContent === 'Duplicate')));
     check('a show to archive is created', made.status === 201 || made.status === 200, made);
@@ -675,7 +675,7 @@ async function main() {
     check('the operator status strip shows how far through the show it is', /^(Line \d+ of \d+|\d+ lines)$/.test(await op.evaluate(() => document.getElementById('progress').textContent)));
     await guard.evaluate(() => { location.hash = 'images'; }); await sleep(900);
     check('Setup offers the next step under the current one', await guard.evaluate(() => { const b = document.querySelector('#nextstep button'); return !!b && b.offsetWidth > 0 && /^Next: /.test(b.textContent); }));
-    check('the operator page has a title with the show and its state', /^Run — .+ \((LIVE|STANDBY|NOT LIVE)\)$/.test(await op.title()), await op.title());
+    check('the operator page has a title with the show and its state', /^Run — .+ \((ON AIR|STANDBY)\)$/.test(await op.title()), await op.title());
     await stopServer(); await sleep(T(3500));
     const lost = (pg) => pg.evaluate(() => !document.getElementById('connbar').hidden && /lost/.test(document.getElementById('connbar').textContent) && !document.getElementById('dot').classList.contains('on'));
     check('when the program cannot be reached, the operator page and Setup both say so (and the dot turns red)', (await lost(op)) && (await lost(guard)));
@@ -691,11 +691,11 @@ async function main() {
     await op.keyboard.press('Space'); await sleep(500); // the show is live again
     // Deleting the show that is live is refused, in a window that cannot be missed.
     await guard.goto(B + '/admin#show'); await guard.reload(); await guard.waitForSelector('.card.show'); await sleep(500);
-    await guard.evaluate(() => { const c = [...document.querySelectorAll('.card.show')].find((x) => /LIVE/.test(x.textContent)); [...c.querySelectorAll('button')].find((b) => b.textContent.startsWith('Delete')).click(); });
+    await guard.evaluate(() => { const c = [...document.querySelectorAll('.card.show')].find((x) => /ON AIR/.test(x.textContent)); [...c.querySelectorAll('button')].find((b) => b.textContent.startsWith('Delete')).click(); });
     await guard.waitForFunction(() => document.getElementById('dlg').open, { timeout: T(5000) }).catch(() => {});
-    check('deleting the live show says why it cannot be done', await guard.evaluate(() => { const d = document.getElementById('dlg'); return d.open && /This show is live/.test(d.innerText) && d.querySelector('#dlgcancel').hidden; }));
+    check('deleting the live show says why it cannot be done', await guard.evaluate(() => { const d = document.getElementById('dlg'); return d.open && /This show is on air/.test(d.innerText) && d.querySelector('#dlgcancel').hidden; }));
     await guard.evaluate(() => document.getElementById('dlgok').click()); await sleep(300);
-    check('and the show is still there', await guard.evaluate(() => [...document.querySelectorAll('.card.show')].some((x) => /LIVE/.test(x.textContent))));
+    check('and the show is still there', await guard.evaluate(() => [...document.querySelectorAll('.card.show')].some((x) => /ON AIR/.test(x.textContent))));
 
     // ------------------------------------------------------------------ this computer
     section('This computer: no password for Setup and the operator page');

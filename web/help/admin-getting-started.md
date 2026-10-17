@@ -11,7 +11,7 @@ Setting up a show takes six steps. The row of buttons across the top of the page
 
 ## Standby and going on air
 
-Opening the operator page loads the show in **standby**: the audience sees the venue's standby screen (a logo and a message, set once under **Settings → Standby screen**) and nothing of the show. The operator presses **Space** (the button says **START**) to put the show on air, and **Go off air…** takes it off again without losing its place. Setup, rehearsal and editing are never in front of the audience while the show is in standby, and a show in standby can be deleted.
+Opening the operator page loads the show in **standby**: the audience sees the venue's standby screen (a logo and a message, set once under **Settings → Standby screen**) and nothing of the show. The operator presses **Space** (the button says **START**) to put the show on air, and **Go to standby…** takes it off again without losing its place. Setup, rehearsal and editing are never in front of the audience while the show is in standby, and a show in standby can be deleted.
 
 ## Where things are stored
 

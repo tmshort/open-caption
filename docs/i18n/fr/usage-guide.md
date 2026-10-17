@@ -149,7 +149,7 @@ Ouvrez la page de configuration et suivez les six étapes en haut. Le bouton **A
 5. **Test.** Faites une répétition privée : vous appuyez sur Espace comme le ferait l'opérateur, et voyez l'écran du public à côté. Rien n'atteint le public.
 6. **Conduire.** Vérifiez la liste de préparation, imprimez l'affichette QR et appuyez sur **Ouvrir la page de l'opérateur**.
 
-Ouvrir la page de l'opérateur charge le spectacle **en attente** : le public voit l'écran d'attente du lieu (un logo et un message, réglés une seule fois sous **Réglages → Écran d'attente**) et rien du spectacle ; vous pouvez donc préparer, répéter et vérifier la page de l'opérateur tranquillement. Quand vous êtes prêt, appuyez sur **Espace** (le bouton indique **DÉMARRER**) sur la page de l'opérateur pour mettre le spectacle à l'antenne. **Couper l'antenne…** le retire de nouveau sans perdre sa place.
+Ouvrir la page de l'opérateur charge le spectacle **en attente** : le public voit l'écran d'attente du lieu (un logo et un message, réglés une seule fois sous **Réglages → Écran d'attente**) et rien du spectacle ; vous pouvez donc préparer, répéter et vérifier la page de l'opérateur tranquillement. Quand vous êtes prêt, appuyez sur **Espace** (le bouton indique **DÉMARRER**) sur la page de l'opérateur pour mettre le spectacle à l'antenne. **Mettre en attente…** le retire de nouveau sans perdre sa place.
 
 ### Écrire le fichier du spectacle
 
@@ -235,7 +235,7 @@ Vous pouvez modifier et réenregistrer un fichier de spectacle pendant qu'un spe
 - **Retour arrière** annule la dernière chose envoyée.
 - **B** vide les écrans du public (masque tout ; les mêmes sous-titres reviennent quand vous appuyez de nouveau sur **B**). **C** les efface (efface les sous-titres, pour que la ligne suivante commence sur un écran vide). **Retour arrière** annule l'un ou l'autre.
 - **Maj+Q** arrête une boucle d'entracte ou d'avant-spectacle (écran vide). **Espace** continue.
-- **Message…** place un avis ponctuel sur chaque écran (« Le spectacle reprendra bientôt »). **Retour** le retire.
+- **Annonce…** place un avis ponctuel sur chaque écran (« Le spectacle reprendra bientôt »). **Retour** le retire.
 - Cliquez sur une ligne puis confirmez pour sauter n'importe où. **/** recherche dans le fichier du spectacle.
 - La ligne avec la flèche jaune est la *suivante*. Le point vert marque ce qui est à l'écran maintenant.
 
@@ -307,5 +307,5 @@ Imprimez ceci et gardez-le près de l'opérateur.
 
 - Flèche jaune = ligne suivante. Point vert = à l'écran maintenant.
 - Mauvaise ligne ? **Retour arrière.** Vous avez perdu le fil ? Cliquez sur la ligne voulue puis confirmez.
-- Besoin de dire quelque chose au public ? **Message…**
-- Spectacle interrompu ? **B** pour vider les écrans, **Message…** pour expliquer.
+- Besoin de dire quelque chose au public ? **Annonce…**
+- Spectacle interrompu ? **B** pour vider les écrans, **Annonce…** pour expliquer.

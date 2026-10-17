@@ -26,11 +26,11 @@
 <div id="app" hidden>
   <header>
     <b id="show">—</b>
-    <span id="live" class="badge">NOT LIVE</span>
+    <span id="live" class="badge">STANDBY</span>
     <!-- right side, in the same order as Setup's: devices, language (added by script), the page's own actions, the other page, Help, Sign out, connection -->
     <div class="rhs">
     <button id="viewers" class="pill" title="Show which devices are connected">👥 0</button>
-    <button id="offair" class="quiet" title="Take the show off the audience's screens. They see the standby screen; the show stays where it is">Go off air…</button>
+    <button id="offair" class="quiet" title="Take the show off the audience's screens. They see the standby screen; the show stays where it is">Go to standby…</button>
     <button id="reset" class="quiet">Restart show…</button>
     <a id="setuplink" class="quiet" href="/admin" title="Back to Setup" hidden>Setup</a>
     <button id="helpbtn" class="quiet" title="Help (?)">Help</button>
@@ -59,7 +59,7 @@
     <button id="stop" title="Stop the repeating pre-show or intermission loop (Shift+Q). Only available while a loop is playing" disabled>■ STOP loop<small><kbd aria-hidden="true">⇧</kbd> Shift+Q</small></button>
     <button id="blank" title="Hide everything on the audience screens. The captions come back when you unblank (B)">Blank<small>B</small></button>
     <button id="clear" title="Erase the captions from the audience screens, so the next line starts on an empty screen (C). Back undoes it">Clear<small>C</small></button>
-    <button id="message" title="Send a one-off message">Message…</button>
+    <button id="message" title="Send a one-off announcement">Announcement…</button>
   </footer>
 </div>
 
@@ -70,7 +70,7 @@
 
 <dialog id="msgdlg">
   <form method="dialog">
-    <h2>Send a message to the audience</h2>
+    <h2>Send an announcement to the audience</h2>
     <textarea id="msgtext" rows="3" maxlength="500" placeholder="e.g. The show will resume shortly" required></textarea>
     <p class="hint" data-t>Shown fullscreen until the next line is sent. Use <b>Back</b> to undo.</p>
     <menu><button value="cancel" formnovalidate>Cancel</button><button id="msgsend" value="send" class="primary">Send</button></menu>
@@ -85,9 +85,9 @@
 </dialog>
 <dialog id="offdlg">
   <form method="dialog">
-    <h2>Go off air?</h2>
+    <h2>Go to standby?</h2>
     <p>The audience will see the standby screen. The show stays exactly where it is; START puts it back on air.</p>
-    <menu><button value="cancel">Cancel</button><button id="offgo" value="go" class="primary">Go off air</button></menu>
+    <menu><button value="cancel">Cancel</button><button id="offgo" value="go" class="primary">Go to standby</button></menu>
   </form>
 </dialog>
 <dialog id="resetdlg">

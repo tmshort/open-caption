@@ -4,7 +4,7 @@
 
 **Vous avez perdu le fil.** Cliquez sur la ligne que vous voulez voir en suivante et confirmez « Sauter ici », ou appuyez sur `/` et saisissez quelques mots de la ligne.
 
-**Un message doit partir.** Utilisez **Message…** pour afficher un grand texte sur tous les écrans, comme « Le spectacle reprendra bientôt ». Il reste jusqu'à la ligne suivante. **Retour arrière** le supprime.
+**Une annonce doit partir.** Utilisez **Annonce…** pour afficher un grand texte sur tous les écrans, comme « Le spectacle reprendra bientôt ». Il reste jusqu'à la ligne suivante. **Retour arrière** le supprime.
 
 **Les écrans du public doivent s'éteindre.** Appuyez sur **B**. Appuyez de nouveau sur **B** pour faire revenir les sous-titres.
 

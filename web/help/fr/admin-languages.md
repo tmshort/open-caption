@@ -37,7 +37,7 @@ Pour indiquer au public quels mots vont avec quelle ligne, gardez les lignes en 
 
 - **Images :** toutes les langues peuvent utiliser les mêmes images. Pour une image contenant du texte, téléversez une version par langue et nommez chacune dans le fichier du spectacle de cette langue.
 - **Message d'avant-spectacle :** chaque langue a le sien, conservé dans le fichier du spectacle de cette langue (`idle message:` dans son bloc `[settings]`). L'étape Apparence a une zone pour chaque langue et les écrit pour vous. Le fichier du spectacle d'une traduction ne peut rien définir d'autre : l'apparence se définit une seule fois, dans le fichier principal du spectacle.
-- **Les messages de l'opérateur** (« Message… ») sont envoyés tels quels à toutes les langues ; saisissez-les donc dans les langues voulues.
+- **Les annonces de l'opérateur** (« Annonce… ») sont envoyés tels quels à toutes les langues ; saisissez-les donc dans les langues voulues.
 - **Modifier un fichier de spectacle pendant le spectacle :** ajouter ou corriger une traduction prend effet tout de suite et conserve la position de l'opérateur. Retirer une langue n'est pas permis tant que le spectacle est en direct.
 - **Décomptes :** la page de l'opérateur montre combien d'appareils lisent chaque langue, par exemple `👥 83 (en 60 · es 23)`.
 - **Sauvegardes :** Exporter enregistre toutes les langues ; Dupliquer les copie aussi.

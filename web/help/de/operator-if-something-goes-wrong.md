@@ -4,7 +4,7 @@
 
 **Sie haben die Stelle verloren.** Klicken Sie auf die Zeile, die als Nächstes kommen soll, und bestätigen Sie „Hierher springen“, oder drücken Sie `/` und tippen Sie ein paar Wörter aus der Zeile.
 
-**Eine Nachricht muss raus.** Mit **Nachricht …** bringen Sie großen Text auf alle Bildschirme, etwa „Die Show geht gleich weiter“. Er bleibt bis zur nächsten Zeile. Die **Rücktaste** entfernt ihn.
+**Eine Durchsage muss raus.** Mit **Durchsage …** bringen Sie großen Text auf alle Bildschirme, etwa „Die Show geht gleich weiter“. Er bleibt bis zur nächsten Zeile. Die **Rücktaste** entfernt ihn.
 
 **Die Publikumsbildschirme sollen dunkel werden.** Drücken Sie **B**. Drücken Sie noch einmal **B**, um die Untertitel zurückzubringen.
 

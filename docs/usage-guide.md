@@ -149,7 +149,7 @@ Open the setup page and follow the six steps along the top. The **Help** button 
 5. **Test.** Run a private rehearsal: you press Space as the operator would, and see the audience screen next to it. Nothing reaches the audience.
 6. **Run.** Check the readiness list, print the QR sign, and press **Open the operator page**.
 
-Opening the operator page loads the show in **standby**: the audience sees the venue's standby screen (a logo and a message, set once under **Settings → Standby screen**) and nothing of the show, so you can prepare, rehearse and check the operator page quietly. When you are ready, press **Space** (the button says **START**) on the operator page to put the show on air. **Go off air…** takes it off again without losing its place.
+Opening the operator page loads the show in **standby**: the audience sees the venue's standby screen (a logo and a message, set once under **Settings → Standby screen**) and nothing of the show, so you can prepare, rehearse and check the operator page quietly. When you are ready, press **Space** (the button says **START**) on the operator page to put the show on air. **Go to standby…** takes it off again without losing its place.
 
 ### Writing the show file
 
@@ -235,7 +235,7 @@ You can edit and re-save a show file while a show is live (for example to fix a 
 - **Backspace** undoes the last thing you sent.
 - **B** blanks the audience screens (hides everything; the same captions return when you press **B** again). **C** clears them (erases the captions, so the next line starts on an empty screen). **Backspace** undoes either.
 - **Shift+Q** stops an intermission or pre-show loop (blank screen). **Space** continues.
-- **Message…** puts a one-off notice on every screen ("The show will resume shortly"). **Back** removes it.
+- **Announcement…** puts a one-off notice on every screen ("The show will resume shortly"). **Back** removes it.
 - Click a line, then confirm, to jump anywhere. **/** searches the show file.
 - The line with the yellow arrow is *next*. The green dot marks what is on screen now.
 
@@ -307,5 +307,5 @@ Print this and keep it by the operator.
 
 - Yellow arrow = next line. Green dot = on screen now.
 - Wrong line? **Backspace.** Lost your place? Click the line you want, then confirm.
-- Need to say something to the audience? **Message…**
-- Show interrupted? **B** to blank the screens, **Message…** to explain.
+- Need to say something to the audience? **Announcement…**
+- Show interrupted? **B** to blank the screens, **Announcement…** to explain.

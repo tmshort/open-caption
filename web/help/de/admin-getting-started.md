@@ -11,7 +11,7 @@ Eine Show einzurichten dauert sechs Schritte. Die Schaltflächenreihe oben auf d
 
 ## Standby und auf Sendung gehen
 
-Das Öffnen der Bedienerseite lädt die Show im **Standby**: Das Publikum sieht den Standby-Bildschirm des Hauses (ein Logo und eine Meldung, einmal unter **Einstellungen → Standby-Bildschirm** festgelegt) und nichts von der Show. Der Bediener drückt die **Leertaste** (die Schaltfläche heißt **START**), um die Show auf Sendung zu bringen, und **Aus der Sendung nehmen …** nimmt sie wieder heraus, ohne ihren Platz zu verlieren. Einrichtung, Probe und Bearbeitung sind nie vor dem Publikum, solange die Show im Standby ist, und eine Show im Standby kann gelöscht werden.
+Das Öffnen der Bedienerseite lädt die Show im **Standby**: Das Publikum sieht den Standby-Bildschirm des Hauses (ein Logo und eine Meldung, einmal unter **Einstellungen → Standby-Bildschirm** festgelegt) und nichts von der Show. Der Bediener drückt die **Leertaste** (die Schaltfläche heißt **START**), um die Show auf Sendung zu bringen, und **In den Standby …** nimmt sie wieder heraus, ohne ihren Platz zu verlieren. Einrichtung, Probe und Bearbeitung sind nie vor dem Publikum, solange die Show im Standby ist, und eine Show im Standby kann gelöscht werden.
 
 ## Wo alles gespeichert wird
 

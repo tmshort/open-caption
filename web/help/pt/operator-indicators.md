@@ -4,7 +4,7 @@
 |---------------|-----------------|
 | Ponto verde no alto à direita | Conectado ao servidor. Vermelho significa que a conexão caiu; a página se reconecta sozinha |
 | **● AO VIVO** | O espetáculo está no ar: o público o vê |
-| **EM ESPERA** e um aviso azul **FORA DO AR** | O público vê a tela de espera do local e nada do espetáculo. **Espaço** (**INICIAR**) o coloca no ar |
+| **EM ESPERA** e um aviso azul | O público vê a tela de espera do local e nada do espetáculo. **Espaço** (**INICIAR**) o coloca no ar |
 | Ícone de pessoas e um número | Quantos dispositivos do público estão conectados. Com vários idiomas, o número é seguido de uma contagem por idioma, como `(en 60 · es 23)` |
 | **Você tem o controle** | Suas teclas controlam o espetáculo |
 | **Outro operador tem o controle** | Você pode assistir mas não enviar. **Assumir** tira o controle dele |

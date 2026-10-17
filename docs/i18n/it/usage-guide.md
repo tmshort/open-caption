@@ -149,7 +149,7 @@ Apri la pagina di configurazione e segui i sei passi in alto. Il pulsante **Aiut
 5. **Prova.** Fai una prova privata: premi Spazio come farebbe l'operatore, e vedi accanto lo schermo del pubblico. Nulla raggiunge il pubblico.
 6. **Conduci.** Controlla l'elenco di preparazione, stampa il cartello QR e premi **Apri la pagina dell'operatore**.
 
-Aprire la pagina dell'operatore carica lo spettacolo **in attesa**: il pubblico vede la schermata di attesa della sala (un logo e un messaggio, impostati una sola volta in **Impostazioni → Schermata di attesa**) e nulla dello spettacolo, così puoi preparare, provare e controllare la pagina dell'operatore con calma. Quando sei pronto, premi **Spazio** (il pulsante dice **AVVIA**) nella pagina dell'operatore per mettere lo spettacolo in onda. **Togli dall'onda…** lo ritira di nuovo senza perdere il punto.
+Aprire la pagina dell'operatore carica lo spettacolo **in attesa**: il pubblico vede la schermata di attesa della sala (un logo e un messaggio, impostati una sola volta in **Impostazioni → Schermata di attesa**) e nulla dello spettacolo, così puoi preparare, provare e controllare la pagina dell'operatore con calma. Quando sei pronto, premi **Spazio** (il pulsante dice **AVVIA**) nella pagina dell'operatore per mettere lo spettacolo in onda. **Metti in attesa…** lo ritira di nuovo senza perdere il punto.
 
 ### Scrivere il file dello spettacolo
 
@@ -235,7 +235,7 @@ Puoi modificare e risalvare un file dello spettacolo mentre uno spettacolo è in
 - **Backspace** annulla l'ultima cosa che hai inviato.
 - **B** svuota gli schermi del pubblico (nasconde tutto; gli stessi sottotitoli tornano quando premi di nuovo **B**). **C** li cancella (cancella i sottotitoli, così la riga successiva inizia su uno schermo vuoto). **Backspace** annulla entrambe le cose.
 - **Maiusc+Q** ferma un ciclo di intervallo o di pre-spettacolo (schermo vuoto). **Spazio** continua.
-- **Messaggio…** mette un avviso singolo su ogni schermo («Lo spettacolo riprenderà a breve»). **Indietro** lo toglie.
+- **Annuncio…** mette un avviso singolo su ogni schermo («Lo spettacolo riprenderà a breve»). **Indietro** lo toglie.
 - Fai clic su una riga e conferma per saltare ovunque. **/** cerca nel file dello spettacolo.
 - La riga con la freccia gialla è la *successiva*. Il punto verde segna ciò che è sullo schermo adesso.
 
@@ -307,5 +307,5 @@ Stampala e tienila accanto all'operatore.
 
 - Freccia gialla = riga successiva. Punto verde = sullo schermo adesso.
 - Riga sbagliata? **Backspace.** Hai perso il segno? Fai clic sulla riga che vuoi e conferma.
-- Devi dire qualcosa al pubblico? **Messaggio…**
-- Spettacolo interrotto? **B** per svuotare gli schermi, **Messaggio…** per spiegare.
+- Devi dire qualcosa al pubblico? **Annuncio…**
+- Spettacolo interrotto? **B** per svuotare gli schermi, **Annuncio…** per spiegare.

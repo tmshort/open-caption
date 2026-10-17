@@ -25,8 +25,8 @@ Un fichier de spectacle peut faire la même chose avec les commandes `[blank]` e
 
 ## Les mots de cette page
 
-- **En attente** (**HORS ANTENNE**) : le spectacle est chargé, mais le public ne voit que l'écran d'attente du lieu.
-- **À l'antenne** (**EN DIRECT**) : le public voit le spectacle. **DÉMARRER** (START) le met à l'antenne ; **Couper l'antenne…** le remet en attente en gardant sa position.
+- **En attente** (**EN ATTENTE**) : le spectacle est chargé, mais le public ne voit que l'écran d'attente du lieu.
+- **À l'antenne** (**À L'ANTENNE**) : le public voit le spectacle. **DÉMARRER** (START) le met à l'antenne ; **Mettre en attente…** le remet en attente en gardant sa position.
 - **Redémarrer le spectacle…** : retour à la première ligne et à l'attente.
 - **Écran vide** masque les sous-titres mais garde les lignes précédentes ; **Effacer** les supprime (voir plus haut).
 
@@ -34,7 +34,7 @@ Un fichier de spectacle peut faire la même chose avec les commandes `[blank]` e
 
 - Connectez-vous à la page de l'opérateur. Vous verrez « Vous avez la main ». Si elle indique qu'un autre opérateur a la main, utilisez **Reprendre la main** seulement si c'est bien vous l'opérateur.
 - Vérifiez le nombre de spectateurs (l'icône de personnes). Il indique combien d'appareils sont connectés.
-- Un spectacle chargé reste **en attente** : le public voit l'écran d'attente du lieu (un logo et un message) et rien du spectacle, et cette page indique **HORS ANTENNE**. Appuyez sur **Espace** (le bouton indique **DÉMARRER**) pour mettre le spectacle à l'antenne. Si le fichier du spectacle commence par une boucle d'avant-spectacle, elle commence alors.
+- Un spectacle chargé reste **en attente** : le public voit l'écran d'attente du lieu (un logo et un message) et rien du spectacle, et cette page indique **EN ATTENTE**. Appuyez sur **Espace** (le bouton indique **DÉMARRER**) pour mettre le spectacle à l'antenne. Si le fichier du spectacle commence par une boucle d'avant-spectacle, elle commence alors.
 
 ## Pendant le spectacle
 
@@ -46,7 +46,7 @@ Un fichier de spectacle peut faire la même chose avec les commandes `[blank]` e
 - La bande sous l'en-tête indique qui a le contrôle, **Ligne n sur total** et **Dernier envoi il y a …**, pour voir d'un coup d'œil que le spectacle et votre écran sont toujours synchrones. Il devient jaune après deux minutes sans ligne.
 - **Aller à la section…** (à côté de la zone de recherche) liste les signets du fichier du spectacle ; en choisir un le sélectionne, et vous confirmez le saut.
 - Pour avancer ou reculer, cliquez sur une ligne, puis confirmez « Sauter ici ». Vous pouvez aussi chercher avec `/`.
-- Une annonce ponctuelle comme « Le spectacle reprendra bientôt » s'envoie avec **Message…**. Appuyez sur **Retour** pour la retirer.
-- **Couper l'antenne…** (en haut à droite) retire le spectacle des écrans du public : il revoit l'écran d'attente, et le spectacle garde sa place. **DÉMARRER** le remet à l'antenne exactement où il en était.
+- Une annonce ponctuelle comme « Le spectacle reprendra bientôt » s'envoie avec **Annonce…**. Appuyez sur **Retour** pour la retirer.
+- **Mettre en attente…** (en haut à droite) retire le spectacle des écrans du public : il revoit l'écran d'attente, et le spectacle garde sa place. **DÉMARRER** le remet à l'antenne exactement où il en était.
 
 Voir [le clavier](topic:operator-keyboard) et [En cas de problème](topic:operator-if-something-goes-wrong).

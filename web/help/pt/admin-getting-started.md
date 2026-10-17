@@ -11,7 +11,7 @@ Preparar um espetáculo leva seis etapas. A fileira de botões no alto da págin
 
 ## Espera e entrada no ar
 
-Abrir a página do operador carrega o espetáculo **em espera**: o público vê a tela de espera do local (um logotipo e uma mensagem, definidos uma só vez em **Configurações → Tela de espera**) e nada do espetáculo. O operador pressiona **Espaço** (o botão diz **INICIAR**) para colocar o espetáculo no ar, e **Tirar do ar…** o retira de novo sem perder o lugar. Preparação, ensaio e edição nunca ficam diante do público enquanto o espetáculo está em espera, e um espetáculo em espera pode ser excluído.
+Abrir a página do operador carrega o espetáculo **em espera**: o público vê a tela de espera do local (um logotipo e uma mensagem, definidos uma só vez em **Configurações → Tela de espera**) e nada do espetáculo. O operador pressiona **Espaço** (o botão diz **INICIAR**) para colocar o espetáculo no ar, e **Colocar em espera…** o retira de novo sem perder o lugar. Preparação, ensaio e edição nunca ficam diante do público enquanto o espetáculo está em espera, e um espetáculo em espera pode ser excluído.
 
 ## Onde fica tudo guardado
 

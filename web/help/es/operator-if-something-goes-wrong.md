@@ -4,7 +4,7 @@
 
 **Ha perdido el sitio.** Haga clic en la línea que quiere que sea la siguiente y confirme «Saltar aquí», o pulse `/` y escriba unas palabras de la línea.
 
-**Hay que enviar un mensaje.** Use **Mensaje…** para poner un texto grande en todas las pantallas, como «El espectáculo se reanudará en breve». Permanece hasta la línea siguiente. **Retroceso** lo quita.
+**Hay que enviar un anuncio.** Use **Anuncio…** para poner un texto grande en todas las pantallas, como «El espectáculo se reanudará en breve». Permanece hasta la línea siguiente. **Retroceso** lo quita.
 
 **Las pantallas del público deben quedar a oscuras.** Pulse **B**. Pulse **B** otra vez para recuperar los subtítulos.
 

@@ -149,7 +149,7 @@ Abra la página de configuración y siga los seis pasos de la parte superior. El
 5. **Prueba.** Haga un ensayo privado: usted pulsa Espacio como lo haría el operador, y ve la pantalla del público al lado. Nada llega al público.
 6. **Dirigir.** Revise la lista de preparación, imprima el cartel QR y pulse **Abrir la página del operador**.
 
-Al abrir la página del operador, el espectáculo se carga **en espera**: el público ve la pantalla de espera del local (un logotipo y un mensaje, que se fijan una sola vez en **Ajustes → Pantalla de espera**) y nada del espectáculo, así que puede preparar, ensayar y revisar la página del operador con tranquilidad. Cuando esté listo, pulse **Espacio** (el botón dice **INICIAR**) en la página del operador para poner el espectáculo en el aire. **Sacar del aire…** lo retira de nuevo sin perder su lugar.
+Al abrir la página del operador, el espectáculo se carga **en espera**: el público ve la pantalla de espera del local (un logotipo y un mensaje, que se fijan una sola vez en **Ajustes → Pantalla de espera**) y nada del espectáculo, así que puede preparar, ensayar y revisar la página del operador con tranquilidad. Cuando esté listo, pulse **Espacio** (el botón dice **INICIAR**) en la página del operador para poner el espectáculo en el aire. **Poner en espera…** lo retira de nuevo sin perder su lugar.
 
 ### Escribir el archivo del espectáculo
 
@@ -235,7 +235,7 @@ Puede editar y volver a guardar un archivo del espectáculo con el espectáculo 
 - **Retroceso** deshace lo último que envió.
 - **B** deja en blanco las pantallas del público (oculta todo; los mismos subtítulos vuelven al pulsar **B** otra vez). **C** las borra (borra los subtítulos, para que la línea siguiente empiece en una pantalla vacía). **Retroceso** deshace cualquiera de las dos.
 - **Mayús+Q** detiene un bucle de descanso o de previa (pantalla en blanco). **Espacio** continúa.
-- **Mensaje…** pone un aviso puntual en todas las pantallas («El espectáculo se reanudará en breve»). **Atrás** lo quita.
+- **Anuncio…** pone un aviso puntual en todas las pantallas («El espectáculo se reanudará en breve»). **Atrás** lo quita.
 - Haga clic en una línea y confirme para saltar a cualquier sitio. **/** busca en el archivo del espectáculo.
 - La línea con la flecha amarilla es la *siguiente*. El punto verde marca lo que está ahora en pantalla.
 
@@ -307,5 +307,5 @@ Imprímala y téngala junto al operador.
 
 - Flecha amarilla = línea siguiente. Punto verde = en pantalla ahora.
 - ¿Línea equivocada? **Retroceso.** ¿Ha perdido el sitio? Haga clic en la línea que quiere y confirme.
-- ¿Necesita decir algo al público? **Mensaje…**
-- ¿Espectáculo interrumpido? **B** para dejar en blanco las pantallas, **Mensaje…** para explicarlo.
+- ¿Necesita decir algo al público? **Anuncio…**
+- ¿Espectáculo interrumpido? **B** para dejar en blanco las pantallas, **Anuncio…** para explicarlo.

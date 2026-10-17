@@ -493,7 +493,7 @@ func (s *Server) deleteShow(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	if s.rt.ShowID() == id {
 		if s.rt.Engine().Operator().Live {
-			writeErr(w, http.StatusConflict, "This show is live. Restart it from the operator page, or activate another show first.")
+			writeErr(w, http.StatusConflict, "This show is on air. Restart it from the Run page, or activate another show first.")
 			return
 		}
 		s.rt.SetShow("", "", "", nil, DefaultTheme(s.cfg.Defaults.IdleMessage))
@@ -619,7 +619,7 @@ func (s *Server) putShowFile(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	if active && s.rt.Engine().Operator().Live && strings.TrimSpace(req.Confirm) != m.Name {
-		writeJSON(w, http.StatusConflict, map[string]any{"error": "This show is live. Type the show's name to confirm the change.",
+		writeJSON(w, http.StatusConflict, map[string]any{"error": "This show is on air. Type the show's name to confirm the change.",
 			"needConfirm": true, "showName": m.Name})
 		return
 	}
@@ -791,7 +791,7 @@ func containsStr(list []string, s string) bool {
 func (s *Server) deleteLanguage(w http.ResponseWriter, r *http.Request) {
 	id, code := r.PathValue("id"), r.PathValue("lang")
 	if s.rt.ShowID() == id && s.rt.Engine().Operator().Live {
-		writeErr(w, http.StatusConflict, "This show is live. Restart it before removing a language.")
+		writeErr(w, http.StatusConflict, "This show is on air. Restart it before removing a language.")
 		return
 	}
 	if err := s.store.DeleteShowFile(id, code); err != nil {
@@ -897,7 +897,7 @@ func (s *Server) activateShow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if s.rt.Engine().Operator().Live && !req.Force {
-		writeJSON(w, http.StatusConflict, map[string]any{"error": "A show is live right now. Activating a show restarts it from the beginning.",
+		writeJSON(w, http.StatusConflict, map[string]any{"error": "A show is on air right now. Activating a show restarts it from the beginning.",
 			"live": true, "activeId": s.rt.ShowID()})
 		return
 	}

@@ -36,8 +36,8 @@ Per dire al pubblico quali parole vanno con quale riga, tieni le righe in passo:
 ## Altre cose da sapere
 
 - **Immagini:** ogni lingua può usare le stesse immagini. Per un'immagine con delle parole, carica una versione per lingua e indica ciascuna nel file dello spettacolo di quella lingua.
-- **Messaggio prima dello spettacolo:** ogni lingua ha il proprio, conservato nel file dello spettacolo di quella lingua (`idle message:` nel suo blocco `[settings]`). Il passo Aspetto ha una casella per ogni lingua e li scrive per te. Il file dello spettacolo di una traduzione non può impostare altro: l'aspetto si imposta una volta sola, nel file principale dello spettacolo.
-- **I messaggi dell'operatore** («Messaggio…») vengono inviati esattamente come scritti a ogni lingua, quindi scrivili nelle lingue che servono.
+- **Messaggio pre-spettacolo:** ogni lingua ha il proprio, conservato nel file dello spettacolo di quella lingua (`idle message:` nel suo blocco `[settings]`). Il passo Aspetto ha una casella per ogni lingua e li scrive per te. Il file dello spettacolo di una traduzione non può impostare altro: l'aspetto si imposta una volta sola, nel file principale dello spettacolo.
+- **Gli annunci dell'operatore** («Annuncio…») vengono inviati esattamente come scritti a ogni lingua, quindi scrivili nelle lingue che servono.
 - **Modificare un file dello spettacolo mentre lo spettacolo è in corso:** aggiungere o correggere una traduzione ha effetto subito e mantiene il punto dell'operatore. Rimuovere una lingua non è permesso mentre lo spettacolo è in diretta.
 - **Conteggi:** la pagina dell'operatore mostra quanti dispositivi leggono ciascuna lingua, per esempio `👥 83 (en 60 · es 23)`.
 - **Copie di sicurezza:** Esporta salva ogni lingua; Duplica le copia tutte.

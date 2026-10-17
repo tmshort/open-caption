@@ -66,7 +66,7 @@
 **On air, standby, off air (REQ-066).** A show that is loaded (activated) waits in **standby**: the audience is
 told `mode: "standby"` and sees the *venue's* standby screen (a logo and a message, see below), never anything of
 the show, so Setup, rehearsal and editing are never in front of the audience. The operator's **START** (`onair`)
-puts the show on air; **Go off air** (`offair`) takes it off again **without losing its place** (the lines,
+puts the show on air; **Go to standby** (`offair`) takes it off again **without losing its place** (the lines,
 cursor and undo history are kept underneath, and START puts it back as it was; a loop that was running restarts
 from its first item). `reset` (Restart show) and activating a show return it to the beginning **and to standby**.
 While in standby every command that changes what the audience sees (next, back, stop, jump, blank, clear,

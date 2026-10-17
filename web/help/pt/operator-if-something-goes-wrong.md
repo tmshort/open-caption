@@ -4,7 +4,7 @@
 
 **Você perdeu o lugar.** Clique na linha que quer como a próxima e confirme «Pular para cá», ou aperte `/` e digite algumas palavras da linha.
 
-**Uma mensagem precisa sair.** Use **Mensagem…** para pôr um texto grande em todas as telas, como «O espetáculo recomeça em instantes». Ela fica até a próxima linha. **Backspace** a remove.
+**Um aviso precisa sair.** Use **Aviso…** para pôr um texto grande em todas as telas, como «O espetáculo recomeça em instantes». Ela fica até a próxima linha. **Backspace** a remove.
 
 **As telas do público devem ficar escuras.** Aperte **B**. Aperte **B** de novo para trazer as legendas de volta.
 

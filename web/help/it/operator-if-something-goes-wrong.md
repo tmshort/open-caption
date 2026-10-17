@@ -4,7 +4,7 @@
 
 **Hai perso il segno.** Fai clic sulla riga che vuoi come prossima e conferma «Salta qui», oppure premi `/` e scrivi qualche parola della riga.
 
-**Serve mandare un messaggio.** Usa **Messaggio…** per mettere un testo grande su tutti gli schermi, come «Lo spettacolo riprenderà a breve». Resta fino alla riga successiva. **Backspace** lo toglie.
+**Serve mandare un annuncio.** Usa **Annuncio…** per mettere un testo grande su tutti gli schermi, come «Lo spettacolo riprenderà a breve». Resta fino alla riga successiva. **Backspace** lo toglie.
 
 **Gli schermi del pubblico devono andare al buio.** Premi **B**. Premi di nuovo **B** per riportare i sottotitoli.
 

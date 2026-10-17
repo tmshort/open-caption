@@ -4,7 +4,7 @@
 
 **You lost your place.** Click the line you want to be next and confirm "Jump here", or press `/` and type a few words from the line.
 
-**A message needs to go out.** Use **Message…** to put large text on every screen, such as "The show will resume shortly". It stays until the next line. **Backspace** removes it.
+**A message needs to go out.** Use **Announcement…** to put large text on every screen, such as "The show will resume shortly". It stays until the next line. **Backspace** removes it.
 
 **The audience screens should go dark.** Press **B**. Press **B** again to bring the captions back.
 

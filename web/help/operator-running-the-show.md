@@ -25,8 +25,8 @@ A show file can do the same with the `[blank]` and `[clear]` commands; they appe
 
 ## Words on this page
 
-- **Standby** (**NOT ON AIR**): the show is loaded, but the audience sees only the venue's standby screen.
-- **On air** (**LIVE**): the audience sees the show. **START** puts a show on air; **Go off air…** puts it back in standby, keeping its place.
+- **Standby**: the show is loaded, but the audience sees only the venue's standby screen.
+- **On air**: the audience sees the show. **START** puts a show on air; **Go to standby…** puts it back in standby, keeping its place.
 - **Restart show…**: back to the first line, and to standby.
 - **Blank** hides the captions but keeps the earlier lines; **Clear** erases them (see above).
 
@@ -34,7 +34,7 @@ A show file can do the same with the `[blank]` and `[clear]` commands; they appe
 
 - Sign in to the operator page. You will see "You are in control". If it says another operator is in control, use **Take over** only if you are meant to be the operator.
 - Check the viewer count (the people icon). It shows how many devices are connected.
-- A loaded show waits in **standby**: the audience sees the venue's standby screen (a logo and a message) and nothing of the show, and this page says **NOT ON AIR**. Press **Space** (the button says **START**) to put the show on air. If the show file starts with a pre-show loop, it begins then.
+- A loaded show waits in **standby**: the audience sees the venue's standby screen (a logo and a message) and nothing of the show, and this page says **STANDBY**. Press **Space** (the button says **START**) to put the show on air. If the show file starts with a pre-show loop, it begins then.
 
 ## During the show
 
@@ -46,7 +46,7 @@ A show file can do the same with the `[blank]` and `[clear]` commands; they appe
 - The strip under the header shows who is in control, **Line n of total**, and **Last sent … ago**, so you can see at a glance that the show and your screen are still in step. It turns yellow after two minutes without a line.
 - **Go to section…** (beside the search box) lists the show file's bookmarks; picking one selects it, and you confirm the jump.
 - To skip ahead or go back, click a line, then confirm "Jump here". You can also search with `/`.
-- A one-off announcement such as "The show will resume shortly" can be sent with **Message…**. Press **Back** to remove it.
-- **Go off air…** (top right) takes the show off the audience's screens: they see the standby screen again, and the show keeps its place. **START** puts it back on air exactly where it was.
+- A one-off announcement such as "The show will resume shortly" can be sent with **Announcement…**. Press **Back** to remove it.
+- **Go to standby…** (top right) takes the show off the audience's screens: they see the standby screen again, and the show keeps its place. **START** puts it back on air exactly where it was.
 
 See [the keyboard](topic:operator-keyboard) and [If something goes wrong](topic:operator-if-something-goes-wrong).

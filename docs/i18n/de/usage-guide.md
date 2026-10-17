@@ -149,7 +149,7 @@ Hat `config.yaml` einen Fehler (eine falsch geschriebene Einstellung, eine Zahl 
 5. **Test.** Machen Sie eine private Probe: Sie drücken die Leertaste wie der Operator und sehen daneben den Bildschirm des Publikums. Nichts erreicht das Publikum.
 6. **Fahren.** Prüfen Sie die Bereitschaftsliste, drucken Sie das QR-Schild und drücken Sie **Die Bedienerseite öffnen**.
 
-Das Öffnen der Bedienerseite lädt die Show im **Standby**: Das Publikum sieht den Standby-Bildschirm des Hauses (ein Logo und eine Meldung, einmal unter **Einstellungen → Standby-Bildschirm** festgelegt) und nichts von der Show, sodass Sie in Ruhe vorbereiten, proben und die Bedienerseite prüfen können. Wenn Sie bereit sind, drücken Sie auf der Bedienerseite die **Leertaste** (die Schaltfläche heißt **START**), um die Show auf Sendung zu bringen. **Aus der Sendung nehmen …** nimmt sie wieder heraus, ohne ihren Platz zu verlieren.
+Das Öffnen der Bedienerseite lädt die Show im **Standby**: Das Publikum sieht den Standby-Bildschirm des Hauses (ein Logo und eine Meldung, einmal unter **Einstellungen → Standby-Bildschirm** festgelegt) und nichts von der Show, sodass Sie in Ruhe vorbereiten, proben und die Bedienerseite prüfen können. Wenn Sie bereit sind, drücken Sie auf der Bedienerseite die **Leertaste** (die Schaltfläche heißt **START**), um die Show auf Sendung zu bringen. **In den Standby …** nimmt sie wieder heraus, ohne ihren Platz zu verlieren.
 
 ### Die Show-Datei schreiben
 
@@ -235,7 +235,7 @@ Sie können eine Show-Datei bearbeiten und erneut speichern, während eine Show 
 - Die **Rücktaste** macht das Letzte rückgängig, was Sie gesendet haben.
 - **B** blendet die Publikumsbildschirme aus (verbirgt alles; dieselben Untertitel kommen zurück, wenn Sie noch einmal **B** drücken). **C** leert sie (löscht die Untertitel, damit die nächste Zeile auf einem leeren Bildschirm beginnt). Die **Rücktaste** macht beides rückgängig.
 - **Umschalt+Q** stoppt eine Schleife in der Pause oder vor der Show (leerer Bildschirm). Die **Leertaste** macht weiter.
-- **Nachricht …** bringt eine einmalige Mitteilung auf jeden Bildschirm („Die Show geht gleich weiter“). **Zurück** entfernt sie.
+- **Durchsage …** bringt eine einmalige Mitteilung auf jeden Bildschirm („Die Show geht gleich weiter“). **Zurück** entfernt sie.
 - Klicken Sie eine Zeile an und bestätigen Sie, um irgendwohin zu springen. **/** durchsucht die Show-Datei.
 - Die Zeile mit dem gelben Pfeil ist die *nächste*. Der grüne Punkt markiert, was jetzt auf dem Bildschirm ist.
 
@@ -307,5 +307,5 @@ Drucken Sie sie aus und halten Sie sie beim Operator bereit.
 
 - Gelber Pfeil = nächste Zeile. Grüner Punkt = jetzt auf dem Bildschirm.
 - Falsche Zeile? **Rücktaste.** Stelle verloren? Klicken Sie die gewünschte Zeile an und bestätigen Sie.
-- Müssen Sie dem Publikum etwas sagen? **Nachricht …**
-- Show unterbrochen? **B**, um die Bildschirme leer zu machen, **Nachricht …**, um es zu erklären.
+- Müssen Sie dem Publikum etwas sagen? **Durchsage …**
+- Show unterbrochen? **B**, um die Bildschirme leer zu machen, **Durchsage …**, um es zu erklären.

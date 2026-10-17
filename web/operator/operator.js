@@ -250,8 +250,8 @@
     const p = S.payload; if (!p) return;
     const o = p.op;
     $('show').textContent = (REHEARSAL ? __('REHEARSAL') + ' — ' : '') + (p.show.name || p.show.id || __('No show loaded'));
-    if (!REHEARSAL) document.title = __('Run') + ' — ' + (p.show.name || p.show.id || __('No show loaded')) + ' (' + (o.live ? __('LIVE') : o.standby ? __('STANDBY') : __('NOT LIVE')) + ')';
-    const live = $('live'); live.textContent = o.live ? '● ' + __('LIVE') : o.standby ? __('STANDBY') : __('NOT LIVE'); live.classList.toggle('on', o.live); live.classList.toggle('standby', !!o.standby);
+    if (!REHEARSAL) document.title = __('Run') + ' — ' + (p.show.name || p.show.id || __('No show loaded')) + ' (' + (o.live ? __('ON AIR') : __('STANDBY')) + ')';
+    const live = $('live'); live.textContent = o.live ? '● ' + __('ON AIR') : __('STANDBY'); live.classList.toggle('on', o.live); live.classList.toggle('standby', !!o.standby);
     const langs = p.languages || [];
     $('viewers').textContent = OCClients.label(p); // languages nobody is using are left out
     $('viewers').title = OCClients.title(p.audience);
@@ -272,7 +272,7 @@
     $('blank').firstChild.textContent = o.mode === 'blank' ? __('Unblank') : __('Blank');
     const b = $('banner');
     S.timerEnds = o.loop && o.loop.deadline ? o.loop.deadline : 0;
-    if (o.standby) { b.hidden = false; b.className = 'standby'; b.textContent = '⏸ ' + __('NOT ON AIR — the audience sees the standby screen. Press Space (START) to put the show on air; it carries on from where it is.'); }
+    if (o.standby) { b.hidden = false; b.className = 'standby'; b.textContent = '⏸ ' + __('STANDBY — the audience sees the standby screen. Press Space (START) to put the show on air; it carries on from where it is.'); }
     else if (o.loop) {
       const c = S.cues[o.loop.cue]; b.hidden = false; b.className = 'loop';
       b.textContent = '🔁 ' + __('LOOP RUNNING — item {n} of {total}. NEXT ends it; STOP blanks the screen.', { n: o.loop.item + 1, total: c ? (c.items || []).length : '?' });

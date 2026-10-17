@@ -11,7 +11,7 @@ Préparer un spectacle demande six étapes. La rangée de boutons en haut de la 
 
 ## Attente et passage à l'antenne
 
-Ouvrir la page de l'opérateur charge le spectacle **en attente** : le public voit l'écran d'attente du lieu (un logo et un message, réglés une seule fois sous **Réglages → Écran d'attente**) et rien du spectacle. L'opérateur appuie sur **Espace** (le bouton indique **DÉMARRER**) pour mettre le spectacle à l'antenne, et **Couper l'antenne…** le retire sans perdre sa place. La préparation, la répétition et la modification ne sont jamais devant le public tant que le spectacle est en attente, et un spectacle en attente peut être supprimé.
+Ouvrir la page de l'opérateur charge le spectacle **en attente** : le public voit l'écran d'attente du lieu (un logo et un message, réglés une seule fois sous **Réglages → Écran d'attente**) et rien du spectacle. L'opérateur appuie sur **Espace** (le bouton indique **DÉMARRER**) pour mettre le spectacle à l'antenne, et **Mettre en attente…** le retire sans perdre sa place. La préparation, la répétition et la modification ne sont jamais devant le public tant que le spectacle est en attente, et un spectacle en attente peut être supprimé.
 
 ## Où tout est rangé
 

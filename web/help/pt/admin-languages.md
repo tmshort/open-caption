@@ -37,7 +37,7 @@ Para dizer ao público quais palavras vão com qual linha, mantenha as linhas em
 
 - **Imagens:** todos os idiomas podem usar as mesmas imagens. Para uma imagem com palavras, envie uma versão por idioma e indique cada uma no arquivo do espetáculo desse idioma.
 - **Mensagem de pré-espetáculo:** cada idioma tem a sua, guardada no arquivo do espetáculo desse idioma (`idle message:` no seu bloco `[settings]`). A etapa Aparência tem uma caixa para cada idioma e as escreve para você. O arquivo do espetáculo de uma tradução não pode definir mais nada: a aparência é definida uma só vez, no arquivo principal do espetáculo.
-- **As mensagens do operador** («Mensagem…») são enviadas exatamente como digitadas a todos os idiomas, então digite-as nos idiomas de que precisar.
+- **Os avisos do operador** («Aviso…») são enviadas exatamente como digitadas a todos os idiomas, então digite-as nos idiomas de que precisar.
 - **Alterar um arquivo do espetáculo com o espetáculo em andamento:** adicionar ou corrigir uma tradução vale na hora e mantém o lugar do operador. Remover um idioma não é permitido enquanto o espetáculo está ao vivo.
 - **Contagens:** a página do operador mostra quantos dispositivos estão lendo cada idioma, por exemplo `👥 83 (en 60 · es 23)`.
 - **Cópias de segurança:** Exportar guarda todos os idiomas; Duplicar também os copia.

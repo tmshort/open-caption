@@ -11,7 +11,7 @@ Preparare uno spettacolo richiede sei passi. La fila di pulsanti in alto nella p
 
 ## Attesa e messa in onda
 
-Aprire la pagina dell'operatore carica lo spettacolo **in attesa**: il pubblico vede la schermata di attesa della sala (un logo e un messaggio, impostati una sola volta in **Impostazioni → Schermata di attesa**) e nulla dello spettacolo. L'operatore preme **Spazio** (il pulsante dice **AVVIA**) per mettere lo spettacolo in onda, e **Togli dall'onda…** lo ritira senza perdere il punto. Preparazione, prova e modifica non sono mai davanti al pubblico mentre lo spettacolo è in attesa, e uno spettacolo in attesa può essere eliminato.
+Aprire la pagina dell'operatore carica lo spettacolo **in attesa**: il pubblico vede la schermata di attesa della sala (un logo e un messaggio, impostati una sola volta in **Impostazioni → Schermata di attesa**) e nulla dello spettacolo. L'operatore preme **Spazio** (il pulsante dice **AVVIA**) per mettere lo spettacolo in onda, e **Metti in attesa…** lo ritira senza perdere il punto. Preparazione, prova e modifica non sono mai davanti al pubblico mentre lo spettacolo è in attesa, e uno spettacolo in attesa può essere eliminato.
 
 ## Dove viene conservato tutto
 

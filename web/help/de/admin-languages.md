@@ -37,7 +37,7 @@ Damit das Publikum erkennt, welche Wörter zu welcher Zeile gehören, halten Sie
 
 - **Bilder:** Alle Sprachen können dieselben Bilder verwenden. Laden Sie für ein Bild mit Text eine Fassung je Sprache hoch und nennen Sie jede in der Show-Datei dieser Sprache.
 - **Nachricht vor der Show:** Jede Sprache hat ihre eigene, aufbewahrt in der eigenen Show-Datei dieser Sprache (`idle message:` in deren `[settings]`-Block). Der Schritt Erscheinungsbild hat ein Feld für jede Sprache und schreibt sie für Sie. Die Show-Datei einer Übersetzung kann nichts anderes festlegen: Das Erscheinungsbild wird einmal in der Haupt-Show-Datei festgelegt.
-- **Nachrichten des Operators** („Nachricht …“) werden genau wie getippt an alle Sprachen gesendet; tippen Sie sie also in den Sprachen, die Sie brauchen.
+- **Durchsagen des Operators** („Durchsage …“) werden genau wie getippt an alle Sprachen gesendet; tippen Sie sie also in den Sprachen, die Sie brauchen.
 - **Eine Show-Datei ändern, während die Show läuft:** Das Hinzufügen oder Korrigieren einer Übersetzung wirkt sofort und behält die Position des Operators. Das Entfernen einer Sprache ist nicht erlaubt, solange die Show live ist.
 - **Zählungen:** Die Operator-Seite zeigt, wie viele Geräte jede Sprache lesen, zum Beispiel `👥 83 (en 60 · es 23)`.
 - **Sicherungen:** Exportieren speichert jede Sprache; Duplizieren kopiert sie ebenfalls.

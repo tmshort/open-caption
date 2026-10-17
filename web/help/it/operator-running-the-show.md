@@ -25,8 +25,8 @@ Un file dello spettacolo può fare lo stesso con i comandi `[blank]` e `[clear]`
 
 ## Le parole di questa pagina
 
-- **In attesa** (**NON IN ONDA**): lo spettacolo è caricato, ma il pubblico vede solo la schermata di attesa del locale.
-- **In onda** (**LIVE**): il pubblico vede lo spettacolo. **AVVIA** (START) lo manda in onda; **Togli dall'onda…** lo riporta in attesa mantenendo la posizione.
+- **In attesa**: lo spettacolo è caricato, ma il pubblico vede solo la schermata di attesa del locale.
+- **In onda**: il pubblico vede lo spettacolo. **AVVIA** (START) lo manda in onda; **Metti in attesa…** lo riporta in attesa mantenendo la posizione.
 - **Riavvia lo spettacolo…**: torna alla prima riga e all'attesa.
 - **Schermo vuoto** nasconde i sottotitoli ma mantiene le righe precedenti; **Cancella** le elimina (vedi sopra).
 
@@ -34,7 +34,7 @@ Un file dello spettacolo può fare lo stesso con i comandi `[blank]` e `[clear]`
 
 - Accedi alla pagina dell'operatore. Vedrai «Hai il controllo». Se dice che un altro operatore ha il controllo, usa **Subentra** solo se sei tu a dover fare l'operatore.
 - Controlla il conteggio degli spettatori (l'icona di persone). Mostra quanti dispositivi sono connessi.
-- Uno spettacolo caricato resta **in attesa**: il pubblico vede la schermata di attesa della sala (un logo e un messaggio) e nulla dello spettacolo, e questa pagina dice **NON IN ONDA**. Premi **Spazio** (il pulsante dice **AVVIA**) per mettere lo spettacolo in onda. Se il file dello spettacolo inizia con un ciclo di pre-spettacolo, parte allora.
+- Uno spettacolo caricato resta **in attesa**: il pubblico vede la schermata di attesa della sala (un logo e un messaggio) e nulla dello spettacolo, e questa pagina dice **IN ATTESA**. Premi **Spazio** (il pulsante dice **AVVIA**) per mettere lo spettacolo in onda. Se il file dello spettacolo inizia con un ciclo di pre-spettacolo, parte allora.
 
 ## Durante lo spettacolo
 
@@ -46,7 +46,7 @@ Un file dello spettacolo può fare lo stesso con i comandi `[blank]` e `[clear]`
 - La striscia sotto l'intestazione mostra chi ha il controllo, **Riga n di totale** e **Ultimo invio … fa**, così vedi a colpo d'occhio che lo spettacolo e il tuo schermo sono ancora allineati. Diventa gialla dopo due minuti senza una riga.
 - **Vai alla sezione…** (accanto alla casella di ricerca) elenca i segnalibri del file dello spettacolo; sceglierne uno lo seleziona, e tu confermi il salto.
 - Per andare avanti o indietro, fai clic su una riga e conferma «Salta qui». Puoi anche cercare con `/`.
-- Un annuncio singolo come «Lo spettacolo riprenderà a breve» si può inviare con **Messaggio…**. Premi **Indietro** per toglierlo.
-- **Togli dall'onda…** (in alto a destra) toglie lo spettacolo dagli schermi del pubblico: rivede la schermata di attesa e lo spettacolo mantiene il suo punto. **AVVIA** lo rimette in onda esattamente dov'era.
+- Un annuncio singolo come «Lo spettacolo riprenderà a breve» si può inviare con **Annuncio…**. Premi **Indietro** per toglierlo.
+- **Metti in attesa…** (in alto a destra) toglie lo spettacolo dagli schermi del pubblico: rivede la schermata di attesa e lo spettacolo mantiene il suo punto. **AVVIA** lo rimette in onda esattamente dov'era.
 
 Vedi [la tastiera](topic:operator-keyboard) e [Se qualcosa va storto](topic:operator-if-something-goes-wrong).

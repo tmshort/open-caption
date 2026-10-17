@@ -149,7 +149,7 @@ Abra a página de configuração e siga as seis etapas no alto. O botão **Ajuda
 5. **Teste.** Faça um ensaio particular: você aperta Espaço como o operador faria, e vê a tela do público ao lado. Nada chega ao público.
 6. **Conduzir.** Confira a lista de preparação, imprima o cartaz com o QR e pressione **Abrir a página do operador**.
 
-Abrir a página do operador carrega o espetáculo **em espera**: o público vê a tela de espera do local (um logotipo e uma mensagem, definidos uma só vez em **Configurações → Tela de espera**) e nada do espetáculo, então você pode preparar, ensaiar e conferir a página do operador com calma. Quando estiver pronto, pressione **Espaço** (o botão diz **INICIAR**) na página do operador para colocar o espetáculo no ar. **Tirar do ar…** o retira de novo sem perder o lugar.
+Abrir a página do operador carrega o espetáculo **em espera**: o público vê a tela de espera do local (um logotipo e uma mensagem, definidos uma só vez em **Configurações → Tela de espera**) e nada do espetáculo, então você pode preparar, ensaiar e conferir a página do operador com calma. Quando estiver pronto, pressione **Espaço** (o botão diz **INICIAR**) na página do operador para colocar o espetáculo no ar. **Colocar em espera…** o retira de novo sem perder o lugar.
 
 ### Escrever o arquivo do espetáculo
 
@@ -235,7 +235,7 @@ Você pode editar e salvar de novo um arquivo do espetáculo com o espetáculo a
 - **Backspace** desfaz a última coisa que você enviou.
 - **B** deixa em branco as telas do público (esconde tudo; as mesmas legendas voltam quando você aperta **B** de novo). **C** as limpa (apaga as legendas, para que a próxima linha comece numa tela vazia). **Backspace** desfaz qualquer um dos dois.
 - **Shift+Q** para um laço de intervalo ou pré-espetáculo (tela em branco). **Espaço** continua.
-- **Mensagem…** põe um aviso avulso em todas as telas («O espetáculo recomeça em instantes»). **Voltar** o remove.
+- **Aviso…** põe um aviso avulso em todas as telas («O espetáculo recomeça em instantes»). **Voltar** o remove.
 - Clique numa linha e confirme para pular para qualquer lugar. **/** busca no arquivo do espetáculo.
 - A linha com a seta amarela é a *seguinte*. O ponto verde marca o que está na tela agora.
 
@@ -307,5 +307,5 @@ Imprima e deixe junto do operador.
 
 - Seta amarela = próxima linha. Ponto verde = na tela agora.
 - Linha errada? **Backspace.** Perdeu o lugar? Clique na linha que quer e confirme.
-- Precisa dizer algo ao público? **Mensagem…**
-- Espetáculo interrompido? **B** para deixar as telas em branco, **Mensagem…** para explicar.
+- Precisa dizer algo ao público? **Aviso…**
+- Espetáculo interrompido? **B** para deixar as telas em branco, **Aviso…** para explicar.

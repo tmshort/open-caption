@@ -11,7 +11,7 @@ Preparar un espectáculo lleva seis pasos. La fila de botones de la parte superi
 
 ## En espera y en el aire
 
-Al abrir la página del operador, el espectáculo se carga **en espera**: el público ve la pantalla de espera del local (un logotipo y un mensaje, que se fijan una sola vez en **Ajustes → Pantalla de espera**) y nada del espectáculo. El operador pulsa **Espacio** (el botón dice **INICIAR**) para poner el espectáculo en el aire, y **Sacar del aire…** lo retira de nuevo sin perder su lugar. La preparación, el ensayo y la edición nunca están delante del público mientras el espectáculo está en espera, y un espectáculo en espera se puede eliminar.
+Al abrir la página del operador, el espectáculo se carga **en espera**: el público ve la pantalla de espera del local (un logotipo y un mensaje, que se fijan una sola vez en **Ajustes → Pantalla de espera**) y nada del espectáculo. El operador pulsa **Espacio** (el botón dice **INICIAR**) para poner el espectáculo en el aire, y **Poner en espera…** lo retira de nuevo sin perder su lugar. La preparación, el ensayo y la edición nunca están delante del público mientras el espectáculo está en espera, y un espectáculo en espera se puede eliminar.
 
 ## Dónde se guarda todo
 
