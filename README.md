@@ -72,6 +72,7 @@ behavior needs to change, change the spec first (in the same PR).
 | [docs/07-testing-and-acceptance.md](docs/07-testing-and-acceptance.md) | Test strategy, load target, acceptance checklist |
 | [docs/08-roadmap.md](docs/08-roadmap.md) | Milestones and task breakdown |
 | [docs/09-open-questions.md](docs/09-open-questions.md) | Resolved decisions and remaining open questions |
+| [docs/10-acme-lets-encrypt.md](docs/10-acme-lets-encrypt.md) | Design notes for automatic certificates (not built) |
 
 Requirement IDs (`REQ-…`) are referenced from the other docs and should be
 referenced from tests and commits.
