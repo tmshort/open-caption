@@ -616,5 +616,8 @@ OCI18n.add("de", {
  "Duplicate": "Duplizieren",
  "Connection to the program lost. Reconnecting…": "Die Verbindung zum Programm ist abgebrochen. Verbindung wird wiederhergestellt …",
  "Open Caption — Run": "Open Caption — Fahren",
- "Enter the <strong>operator</strong> password. The admin password works too.": "Geben Sie das <strong>Bediener</strong>-Passwort ein. Das Admin-Passwort funktioniert ebenfalls."
+ "Enter the <strong>operator</strong> password. The admin password works too.": "Geben Sie das <strong>Bediener</strong>-Passwort ein. Das Admin-Passwort funktioniert ebenfalls.",
+ "Help (F1)": "Hilfe (F1)",
+ "Save (Ctrl+S, or Cmd+S on a Mac)": "Speichern (Strg+S, auf dem Mac Cmd+S)",
+ "Control status": "Steuerungsstatus"
 });

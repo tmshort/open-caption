@@ -18,7 +18,6 @@ header h1 span { color: var(--dim, #8b909a); font-weight: 400; }
 /* the audience count is a button that lists the connected devices, drawn as the pill it was */
 header button.pill { min-height: 0; padding: .1rem .6rem; font: inherit; font-size: .85rem; line-height: 1.4; cursor: pointer; color: inherit; background: var(--bg, #0b0b0d); border: 1px solid var(--line, #3a3a44); border-radius: 99px; }
 header button.pill:hover { border-color: var(--accent, #ffd400); }
-header #ctrl, header #lastsent { font-size: .85rem; color: var(--dim, #8b909a); }
 /* links and buttons: all the same size and height, drawn quietly */
 header button.quiet, header a.quiet {
   display: inline-flex; align-items: center; box-sizing: border-box; min-height: 2.4rem; padding: .3rem .6rem;

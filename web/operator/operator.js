@@ -22,12 +22,12 @@
   }
 
   let toastTimer;
-  function toast(msg) {
+  function toast(msg, ms) {
     const t = $('toast');
     t.textContent = __(msg);
     t.classList.add('show');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+    toastTimer = setTimeout(() => t.classList.remove('show'), ms || 2500);
   }
 
   // ---- boot / login ----
@@ -243,7 +243,7 @@
     const mine = isController();
     document.body.classList.toggle('viewonly', !mine);
     $('ctrl').textContent = mine ? __('You are in control') : (p.controller ? __('Another operator is in control') : __('Nobody is in control'));
-    $('takeover').hidden = mine;
+    $('takeover').hidden = mine; $('statusbar').classList.toggle('other', !mine);
     $('takeover').textContent = p.controller ? __('Take over') : __('Take control');
     $('stop').disabled = !o.loop; // always in place, so the buttons never move while the show runs
     // Standby: the show is not on air. NEXT becomes START (same place, same key), the rest wait.
@@ -270,7 +270,7 @@
 
   // ---- commands ----
   async function send(name, extra) {
-    if (!isController()) { toast(__('Another operator is in control — use Take over')); return; }
+    if (!isController()) { toast(__('Another operator is in control — use Take over'), 6000); return; }
     if (S.inflight) return;
     S.inflight = true;
     try {
@@ -278,9 +278,9 @@
       if (r.data.payload) setPayload(r.data.payload);
       if (r.status === 409) toast(__(r.data.error || 'Out of date — refreshed'));
       else if (r.data.notice) toast(__(r.data.notice));
-      else if (!r.ok) toast(__(r.data.error || 'Something went wrong'));
+      else if (!r.ok) toast(__(r.data.error || 'Something went wrong'), 6000); // a problem stays long enough to read
       if (r.ok && name !== 'jump') clearSel();
-    } catch (e) { toast(__('Connection problem — try again')); }
+    } catch (e) { toast(__('Connection problem — try again'), 6000); }
     finally { S.inflight = false; }
   }
 

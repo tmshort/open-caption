@@ -39,14 +39,18 @@ button small { display: block; font-size: .65em; opacity: .9; font-weight: 400; 
 #jumpbar[hidden] { display: none; }
 #jumptext { flex: 1; min-width: 12rem; }
 footer { display: flex; gap: .6rem; padding: .6rem .9rem calc(.6rem + env(safe-area-inset-bottom)); background: var(--panel); border-top: 1px solid #2a2a31; flex-wrap: wrap; align-items: stretch; }
-#lastsent { color: var(--dim); font-size: .85rem; }
+/* the status strip under the header: who is in control and when a line was last sent (kept out of the header so it never wraps) */
+#statusbar { display: flex; align-items: center; gap: .4rem 1rem; flex-wrap: wrap; padding: .25rem .9rem; background: var(--panel); border-bottom: 1px solid var(--line); font-size: .9rem; color: var(--dim); }
+#statusbar button { min-height: 0; padding: .1rem .7rem; }
+#statusbar.other { background: #3d2f00; color: var(--mark); font-weight: 600; } /* someone else is in control: this page's keys do nothing */
+#lastsent { margin-left: auto; }
 #lastsent.stale { color: var(--mark); }
 footer select { max-width: 12rem; }
 /* Fixed widths: the buttons in the footer stay where they are whatever their label says (Blank / Unblank) or whether a loop is playing */
 footer button { flex: none; }
 #back { min-width: 7.5rem; } #stop { min-width: 8.5rem; } #blank { min-width: 5.5rem; } #clear { min-width: 4.5rem; }
 footer button { padding-inline: .7rem; }
-/* One row of buttons on a laptop or tablet. The header keeps wrapping: its notes ("You are in control") matter more than a single row. */
+/* One row of buttons on a laptop or tablet. */
 @media (min-width: 900px) {
   footer { flex-wrap: nowrap; }
   footer #search { flex: 1 1 5rem; min-width: 5rem; }

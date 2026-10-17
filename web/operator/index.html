@@ -27,9 +27,6 @@
   <header>
     <b id="show">—</b>
     <span id="live" class="badge">NOT LIVE</span>
-    <span id="ctrl"></span>
-    <span id="lastsent" title="How long ago a line was last sent"></span>
-    <button id="takeover" hidden>Take over</button>
     <!-- right side, in the same order as Setup's: devices, language (added by script), the page's own actions, the other page, Help, Sign out, connection -->
     <div class="rhs">
     <button id="viewers" class="pill" title="Show which devices are connected">👥 0</button>
@@ -41,6 +38,7 @@
     <i id="dot" title="Connection"></i>
     </div>
   </header>
+  <div id="statusbar" role="region" aria-label="Control status"><span id="ctrl"></span><span id="lastsent" title="How long ago a line was last sent"></span><button id="takeover" hidden>Take over</button></div>
   <div id="connbar" class="connbar" role="alert" hidden>Connection to the program lost. Reconnecting…</div>
   <main id="stage">
   <h1 class="sr">Operator</h1>

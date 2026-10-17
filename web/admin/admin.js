@@ -469,7 +469,7 @@
     const status = h('span', { class: 'hint' });
     const diagList = h('ul', { class: 'diags', tabindex: '0', 'aria-label': __('Problems and notes') }), cueList = h('ul', { class: 'cues', tabindex: '0', 'aria-label': __('What the operator will step through') }), diagTitle = h('h3', {}, __('Problems and notes'));
     const editor = h('div', { class: 'editor' }, gutter, ta);
-    const saveBtn = h('button', { class: 'primary', onclick: save }, __('Save'));
+    const saveBtn = h('button', { class: 'primary', title: __('Save (Ctrl+S, or Cmd+S on a Mac)'), onclick: save }, __('Save'));
 
     function lines() { const n = ta.value.split('\n').length; gutter.textContent = Array.from({ length: n }, (_, i) => i + 1).join('\n'); }
     function setStatus() {
