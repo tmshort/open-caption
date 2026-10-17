@@ -27,6 +27,8 @@ type Item struct {
 	Image   string  `json:"image,omitempty"`   // asset filename (image)
 	Caption string  `json:"caption,omitempty"` // optional caption under an image
 	Seconds float64 `json:"seconds,omitempty"` // display time inside a loop; 0 = default
+	// Announcement marks the operator's one-off notice (Engine.Message), so the operator page can say one is on the screens.
+	Announcement bool `json:"announcement,omitempty"`
 	// Timer is set on a text item of a loop that has a timer, when its text contains {timer}: HTML then holds
 	// a placeholder the page fills with the time left. Deadline (unix ms) is set by the live engine when the
 	// loop starts, never by the parser.

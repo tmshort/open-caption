@@ -43,10 +43,10 @@ Un fichier de spectacle peut faire la même chose avec les commandes `[blank]` e
 - **Chansons :** les lignes chantées sont entourées de notes de musique (♪) et s'affichent en italique sur les écrans du public. Le titre d'une chanson apparaît comme un signet bleu pour vous seul. Essayez d'appuyer sur Espace au début de chaque phrase.
 - **Langues :** si le spectacle a des traductions, vous suivez la langue principale et tout ce que vous envoyez part vers toutes les langues à la fois. Le nombre de spectateurs dans l'en-tête liste chaque langue, par exemple `83 (en 60 · es 23)`.
 - **Plusieurs voix à la fois :** une ligne marquée `ENSEMBLE` montre deux chanteurs ou plus sur les écrans en même temps. Une seule pression sur Espace les envoie tous.
-- La bande sous l'en-tête indique qui a le contrôle, **Ligne n sur total** et **Dernier envoi il y a …**, pour voir d'un coup d'œil que le spectacle et votre écran sont toujours synchrones. Il devient jaune après deux minutes sans ligne.
+- La bande sous l'en-tête indique qui a le contrôle, **Élément n sur total** et **Dernier envoi il y a …**, pour voir d'un coup d'œil que le spectacle et votre écran sont toujours synchrones. Il devient jaune après deux minutes sans ligne.
 - **Aller à la section…** (à côté de la zone de recherche) liste les signets du fichier du spectacle ; en choisir un le sélectionne, et vous confirmez le saut.
 - Pour avancer ou reculer, cliquez sur une ligne, puis confirmez « Sauter ici ». Vous pouvez aussi chercher avec `/`.
-- Une annonce ponctuelle comme « Le spectacle reprendra bientôt » s'envoie avec **Annonce…**. Appuyez sur **Retour** pour la retirer.
+- Une annonce ponctuelle comme « Le spectacle reprendra bientôt » s'envoie avec **Annonce…**. Appuyez sur **Retour** pour la retirer. Tant qu'elle est à l'écran, un bandeau bleu de cette page la cite.
 - **Mettre en attente…** (en haut à droite) retire le spectacle des écrans du public : il revoit l'écran d'attente, et le spectacle garde sa place. **DÉMARRER** le remet à l'antenne exactement où il en était.
 
 Voir [le clavier](topic:operator-keyboard) et [En cas de problème](topic:operator-if-something-goes-wrong).

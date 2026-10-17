@@ -212,6 +212,27 @@ func TestNextEndsLoopStopBlanksBackRestarts(t *testing.T) {
 	}
 }
 
+func TestAnnouncementIsReportedToTheOperatorUntilReplacedOrUndone(t *testing.T) {
+	e, _ := newEngine(t, "A\nB")
+	mustNext(t, e)
+	if e.Operator().Announcement != "" {
+		t.Fatal("no announcement yet")
+	}
+	e.Message("Back soon", -1)
+	if got := e.Operator().Announcement; got != "Back soon" {
+		t.Fatalf("announcement = %q", got)
+	}
+	e.Back(-1)
+	if got := e.Operator().Announcement; got != "" {
+		t.Errorf("undone, but the operator still sees %q", got)
+	}
+	e.Message("Again", -1)
+	mustNext(t, e)
+	if got := e.Operator().Announcement; got != "" {
+		t.Errorf("the next line replaced it, but the operator still sees %q", got)
+	}
+}
+
 func TestAdHocCommandsAreUndoable(t *testing.T) {
 	e, _ := newEngine(t, "A")
 	mustNext(t, e)

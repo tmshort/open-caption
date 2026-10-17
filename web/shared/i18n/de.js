@@ -603,8 +603,6 @@ OCI18n.add("de", {
  "The program had a problem. Try again; if it keeps happening, restart the program.": "Das Programm hatte ein Problem. Versuchen Sie es erneut; falls es weiter auftritt, starten Sie das Programm neu.",
  "That did not work. Check the connection and try again.": "Das hat nicht funktioniert. Prüfen Sie die Verbindung und versuchen Sie es erneut.",
  "Next: {step} →": "Weiter: {step} →",
- "Line {n} of {total}": "Zeile {n} von {total}",
- "{total} lines": "{total} Zeilen",
  "How far through the show the audience is (notes and section headings are not counted)": "Wie weit das Publikum in der Show ist (Notizen und Abschnittsüberschriften zählen nicht)",
  "If a phone cannot open this name (some Android phones and guest WiFi networks cannot), give it the numeric address or the QR code instead.": "Wenn ein Telefon diesen Namen nicht öffnen kann (manche Android-Telefone und Gast-WLANs können es nicht), verwenden Sie die numerische Adresse oder den QR-Code.",
  "Replace the show on air?": "Die laufende Show ersetzen?",
@@ -626,5 +624,8 @@ OCI18n.add("de", {
  "Pre-show message ({name})": "Nachricht vor der Show ({name})",
  "What the audience sees while no show is on air: before the operator presses START, after Go to standby, and when no show is loaded. It belongs to the venue, not to a show.": "Was das Publikum sieht, solange keine Show auf Sendung ist: bevor der Bediener START drückt, nach „In den Standby“ und wenn keine Show geladen ist. Es gehört dem Haus, nicht einer Show.",
  "A rehearsal runs this show privately: you press the keys as the operator would and see the audience screen beside it. Nothing here reaches real audience devices, and it does not affect a show that is on air.": "Eine Probe lässt diese Show privat laufen: Sie drücken die Tasten wie der Operator und sehen daneben den Bildschirm des Publikums. Nichts davon erreicht echte Publikumsgeräte, und eine Show auf Sendung bleibt unberührt.",
- "Open the Run page": "Die Seite „Fahren“ öffnen"
+ "Open the Run page": "Die Seite „Fahren“ öffnen",
+ "Item {n} of {total}": "Element {n} von {total}",
+ "{total} items": "{total} Elemente",
+ "ANNOUNCEMENT ON SCREEN: “{text}” — Back removes it; the next line replaces it.": "DURCHSAGE AUF DEM BILDSCHIRM: „{text}“ — Zurück entfernt sie; die nächste Zeile ersetzt sie."
 });

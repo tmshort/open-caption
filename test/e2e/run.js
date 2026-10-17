@@ -675,7 +675,7 @@ async function main() {
     // ------------------------------------------------------------------ restart
     section('Restart: logins, control and undo survive');
     const before2 = await cursor();
-    check('the operator status strip shows how far through the show it is', /^(Line \d+ of \d+|\d+ lines)$/.test(await op.evaluate(() => document.getElementById('progress').textContent)));
+    check('the operator status strip shows how far through the show it is', /^(Item \d+ of \d+|\d+ items)$/.test(await op.evaluate(() => document.getElementById('progress').textContent)));
     await guard.evaluate(() => { location.hash = 'images'; }); await sleep(900);
     check('Setup offers the next step under the current one', await guard.evaluate(() => { const b = document.querySelector('#nextstep button'); return !!b && b.offsetWidth > 0 && /^Next: /.test(b.textContent); }));
     check('the operator page has a title with the show and its state', /^Run — .+ \((ON AIR|STANDBY)\)$/.test(await op.title()), await op.title());
@@ -692,6 +692,11 @@ async function main() {
     await op.keyboard.press('Backspace'); await sleep(500);
     check('Backspace still undoes a line sent before the restart', (await cursor()) === before2);
     await op.keyboard.press('Space'); await sleep(500); // the show is live again
+    await op.evaluate(() => fetch('/api/operator/message', { method: 'POST', body: JSON.stringify({ text: 'Back soon' }) })); await sleep(700);
+    check('an announcement on the screens is quoted in a banner on the operator page', await op.evaluate(() => { const b = document.getElementById('banner'); return !b.hidden && b.classList.contains('announce') && /Back soon/.test(b.textContent); }));
+    await op.evaluate(() => fetch('/api/operator/back', { method: 'POST', body: '{}' })); await sleep(700);
+    check('and the banner goes when it is undone', await op.evaluate(() => !document.getElementById('banner').classList.contains('announce')));
+    check('choosing a section gives the keyboard back to the page (Enter and Esc work at once)', await op.evaluate(() => { const sel = document.getElementById('sections'); if (sel.hidden || sel.options.length < 2) return true; sel.focus(); sel.value = sel.options[1].value; sel.dispatchEvent(new Event('change')); const ok = document.activeElement !== sel; document.getElementById('jumpcancel').click(); return ok; }));
     // Deleting the show that is live is refused, in a window that cannot be missed.
     await guard.goto(B + '/admin#show'); await guard.reload(); await guard.waitForSelector('.card.show'); await sleep(500);
     await guard.evaluate(() => { const c = [...document.querySelectorAll('.card.show')].find((x) => /ON AIR/.test(x.textContent)); [...c.querySelectorAll('button')].find((b) => b.textContent.startsWith('Delete')).click(); });

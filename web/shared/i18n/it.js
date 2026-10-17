@@ -603,8 +603,6 @@ OCI18n.add("it", {
  "The program had a problem. Try again; if it keeps happening, restart the program.": "Il programma ha avuto un problema. Riprova; se continua, riavvia il programma.",
  "That did not work. Check the connection and try again.": "Non ha funzionato. Controlla la connessione e riprova.",
  "Next: {step} →": "Avanti: {step} →",
- "Line {n} of {total}": "Riga {n} di {total}",
- "{total} lines": "{total} righe",
  "How far through the show the audience is (notes and section headings are not counted)": "A che punto è il pubblico nello spettacolo (note e titoli di sezione non sono contati)",
  "If a phone cannot open this name (some Android phones and guest WiFi networks cannot), give it the numeric address or the QR code instead.": "Se un telefono non riesce ad aprire questo nome (alcuni telefoni Android e reti WiFi ospiti non ci riescono), usa l'indirizzo numerico o il codice QR.",
  "Replace the show on air?": "Sostituire lo spettacolo in onda?",
@@ -626,5 +624,8 @@ OCI18n.add("it", {
  "Pre-show message ({name})": "Messaggio pre-spettacolo ({name})",
  "What the audience sees while no show is on air: before the operator presses START, after Go to standby, and when no show is loaded. It belongs to the venue, not to a show.": "Ciò che vede il pubblico finché nessuno spettacolo è in onda: prima che l'operatore prema AVVIA, dopo Metti in attesa e quando non è caricato alcuno spettacolo. Appartiene alla sala, non a uno spettacolo.",
  "A rehearsal runs this show privately: you press the keys as the operator would and see the audience screen beside it. Nothing here reaches real audience devices, and it does not affect a show that is on air.": "Una prova generale esegue questo spettacolo in privato: premi i tasti come farebbe l'operatore e vedi accanto lo schermo del pubblico. Nulla di qui raggiunge i veri dispositivi del pubblico, e non influisce su uno spettacolo in onda.",
- "Open the Run page": "Apri la pagina Conduci"
+ "Open the Run page": "Apri la pagina Conduci",
+ "Item {n} of {total}": "Elemento {n} di {total}",
+ "{total} items": "{total} elementi",
+ "ANNOUNCEMENT ON SCREEN: “{text}” — Back removes it; the next line replaces it.": "ANNUNCIO SULLO SCHERMO: «{text}» — Indietro lo toglie; la riga successiva lo sostituisce."
 });

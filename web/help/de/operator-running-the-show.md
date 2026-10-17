@@ -43,10 +43,10 @@ Eine Show-Datei kann dasselbe mit den Befehlen `[blank]` und `[clear]` tun; in I
 - **Lieder:** Gesungene Zeilen sind von Noten (♪) umgeben und werden auf den Publikumsbildschirmen kursiv gezeigt. Der Titel eines Lieds erscheint nur für Sie als blaues Lesezeichen. Drücken Sie die Leertaste möglichst, wenn jede Phrase beginnt.
 - **Sprachen:** Hat die Show Übersetzungen, folgen Sie der Hauptsprache, und alles, was Sie senden, geht gleichzeitig an alle Sprachen. Die Publikumszahl in der Kopfzeile listet jede Sprache auf, zum Beispiel `83 (en 60 · es 23)`.
 - **Mehrere Stimmen gleichzeitig:** Eine mit `GLEICHZEITIG` markierte Zeile zeigt zwei oder mehr Singende zugleich auf den Bildschirmen. Ein Druck auf die Leertaste sendet alle.
-- Der Streifen unter der Kopfzeile zeigt, wer die Kontrolle hat, **Zeile n von gesamt** und **Zuletzt gesendet vor …**, sodass Sie auf einen Blick sehen, dass Show und Bildschirm noch im Gleichschritt sind. Sie wird nach zwei Minuten ohne Zeile gelb.
+- Der Streifen unter der Kopfzeile zeigt, wer die Kontrolle hat, **Element n von gesamt** und **Zuletzt gesendet vor …**, sodass Sie auf einen Blick sehen, dass Show und Bildschirm noch im Gleichschritt sind. Sie wird nach zwei Minuten ohne Zeile gelb.
 - **Zum Abschnitt …** (neben dem Suchfeld) listet die Lesezeichen der Show-Datei auf; die Auswahl markiert eines, und Sie bestätigen den Sprung.
 - Um vor- oder zurückzuspringen, klicken Sie eine Zeile an und bestätigen dann „Hierher springen“. Sie können auch mit `/` suchen.
-- Eine einmalige Durchsage wie „Die Show geht gleich weiter“ lässt sich mit **Durchsage …** senden. Mit **Zurück** entfernen Sie sie.
+- Eine einmalige Durchsage wie „Die Show geht gleich weiter“ lässt sich mit **Durchsage …** senden. Mit **Zurück** entfernen Sie sie. Solange sie auf den Bildschirmen steht, zitiert sie ein blaues Banner auf dieser Seite.
 - **In den Standby …** (oben rechts) nimmt die Show von den Bildschirmen des Publikums: Es sieht wieder den Standby-Bildschirm, und die Show behält ihren Platz. **START** bringt sie genau dort wieder auf Sendung.
 
 Siehe [die Tastatur](topic:operator-keyboard) und [Wenn etwas schiefgeht](topic:operator-if-something-goes-wrong).

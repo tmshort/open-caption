@@ -43,10 +43,10 @@ Un archivo del espectáculo puede hacer lo mismo con los comandos `[blank]` y `[
 - **Canciones:** las líneas cantadas llevan notas musicales (♪) alrededor y se muestran en cursiva en las pantallas del público. El título de una canción aparece como marcador azul solo para usted. Intente pulsar Espacio al empezar cada frase.
 - **Idiomas:** si el espectáculo tiene traducciones, usted sigue el idioma principal y todo lo que envía va a todos los idiomas a la vez. El recuento de público en la cabecera enumera cada idioma, por ejemplo `83 (en 60 · es 23)`.
 - **Varias voces a la vez:** una línea marcada `A LA VEZ` muestra dos o más cantantes en las pantallas al mismo tiempo. Una pulsación de Espacio los envía todos.
-- La franja bajo la cabecera muestra quién tiene el control, **Línea n de total** y **Último envío hace …**, para ver de un vistazo que el espectáculo y su pantalla siguen sincronizados. Se pone amarillo tras dos minutos sin una línea.
+- La franja bajo la cabecera muestra quién tiene el control, **Elemento n de total** y **Último envío hace …**, para ver de un vistazo que el espectáculo y su pantalla siguen sincronizados. Se pone amarillo tras dos minutos sin una línea.
 - **Ir a la sección…** (junto al cuadro de búsqueda) enumera los marcadores del archivo del espectáculo; al elegir uno se selecciona, y usted confirma el salto.
 - Para avanzar o retroceder, haga clic en una línea y luego confirme «Saltar aquí». También puede buscar con `/`.
-- Un aviso puntual como «El espectáculo se reanudará en breve» se puede enviar con **Anuncio…**. Pulse **Atrás** para quitarlo.
+- Un aviso puntual como «El espectáculo se reanudará en breve» se puede enviar con **Anuncio…**. Pulse **Atrás** para quitarlo. Mientras está en las pantallas, un cartel azul de esta página lo cita.
 - **Poner en espera…** (arriba a la derecha) quita el espectáculo de las pantallas del público: vuelven a ver la pantalla de espera y el espectáculo conserva su lugar. **INICIAR** lo vuelve a poner en el aire exactamente donde estaba.
 
 Consulte [el teclado](topic:operator-keyboard) y [Si algo sale mal](topic:operator-if-something-goes-wrong).

@@ -603,8 +603,6 @@ OCI18n.add("pt", {
  "The program had a problem. Try again; if it keeps happening, restart the program.": "O programa teve um problema. Tente novamente; se continuar, reinicie o programa.",
  "That did not work. Check the connection and try again.": "Não funcionou. Verifique a conexão e tente novamente.",
  "Next: {step} →": "Próximo: {step} →",
- "Line {n} of {total}": "Linha {n} de {total}",
- "{total} lines": "{total} linhas",
  "How far through the show the audience is (notes and section headings are not counted)": "Em que ponto do espetáculo o público está (notas e títulos de seção não contam)",
  "If a phone cannot open this name (some Android phones and guest WiFi networks cannot), give it the numeric address or the QR code instead.": "Se um telefone não conseguir abrir este nome (alguns telefones Android e redes WiFi de visitantes não conseguem), use o endereço numérico ou o código QR.",
  "Replace the show on air?": "Substituir o espetáculo no ar?",
@@ -626,5 +624,8 @@ OCI18n.add("pt", {
  "Pre-show message ({name})": "Mensagem pré-espetáculo ({name})",
  "What the audience sees while no show is on air: before the operator presses START, after Go to standby, and when no show is loaded. It belongs to the venue, not to a show.": "O que o público vê enquanto nenhum espetáculo está no ar: antes de o operador pressionar INICIAR, depois de Colocar em espera e quando nenhum espetáculo está carregado. Pertence ao local, não a um espetáculo.",
  "A rehearsal runs this show privately: you press the keys as the operator would and see the audience screen beside it. Nothing here reaches real audience devices, and it does not affect a show that is on air.": "Um ensaio roda este espetáculo em particular: você aperta as teclas como o operador e vê a tela do público ao lado. Nada daqui chega aos dispositivos reais do público, e não afeta um espetáculo que esteja no ar.",
- "Open the Run page": "Abrir a página Conduzir"
+ "Open the Run page": "Abrir a página Conduzir",
+ "Item {n} of {total}": "Item {n} de {total}",
+ "{total} items": "{total} itens",
+ "ANNOUNCEMENT ON SCREEN: “{text}” — Back removes it; the next line replaces it.": "AVISO NA TELA: «{text}» — Voltar o remove; a próxima linha o substitui."
 });

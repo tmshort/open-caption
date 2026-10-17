@@ -43,10 +43,10 @@ Un file dello spettacolo può fare lo stesso con i comandi `[blank]` e `[clear]`
 - **Canzoni:** le righe cantate hanno note musicali (♪) intorno e sono mostrate in corsivo sugli schermi del pubblico. Il titolo di una canzone appare come segnalibro blu solo per te. Cerca di premere Spazio all'inizio di ogni frase.
 - **Lingue:** se lo spettacolo ha traduzioni, segui la lingua principale e tutto ciò che invii va a tutte le lingue insieme. Il conteggio del pubblico nell'intestazione elenca ogni lingua, per esempio `83 (en 60 · es 23)`.
 - **Più voci insieme:** una riga segnata `INSIEME` mostra due o più cantanti sugli schermi nello stesso momento. Una pressione di Spazio li invia tutti.
-- La striscia sotto l'intestazione mostra chi ha il controllo, **Riga n di totale** e **Ultimo invio … fa**, così vedi a colpo d'occhio che lo spettacolo e il tuo schermo sono ancora allineati. Diventa gialla dopo due minuti senza una riga.
+- La striscia sotto l'intestazione mostra chi ha il controllo, **Elemento n di totale** e **Ultimo invio … fa**, così vedi a colpo d'occhio che lo spettacolo e il tuo schermo sono ancora allineati. Diventa gialla dopo due minuti senza una riga.
 - **Vai alla sezione…** (accanto alla casella di ricerca) elenca i segnalibri del file dello spettacolo; sceglierne uno lo seleziona, e tu confermi il salto.
 - Per andare avanti o indietro, fai clic su una riga e conferma «Salta qui». Puoi anche cercare con `/`.
-- Un annuncio singolo come «Lo spettacolo riprenderà a breve» si può inviare con **Annuncio…**. Premi **Indietro** per toglierlo.
+- Un annuncio singolo come «Lo spettacolo riprenderà a breve» si può inviare con **Annuncio…**. Premi **Indietro** per toglierlo. Finché è sugli schermi, un banner blu in questa pagina lo cita.
 - **Metti in attesa…** (in alto a destra) toglie lo spettacolo dagli schermi del pubblico: rivede la schermata di attesa e lo spettacolo mantiene il suo punto. **AVVIA** lo rimette in onda esattamente dov'era.
 
 Vedi [la tastiera](topic:operator-keyboard) e [Se qualcosa va storto](topic:operator-if-something-goes-wrong).

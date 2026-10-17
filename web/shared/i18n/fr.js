@@ -603,8 +603,6 @@ OCI18n.add("fr", {
  "The program had a problem. Try again; if it keeps happening, restart the program.": "Le programme a rencontré un problème. Réessayez ; si cela continue, redémarrez le programme.",
  "That did not work. Check the connection and try again.": "Cela n'a pas fonctionné. Vérifiez la connexion et réessayez.",
  "Next: {step} →": "Suivant : {step} →",
- "Line {n} of {total}": "Ligne {n} sur {total}",
- "{total} lines": "{total} lignes",
  "How far through the show the audience is (notes and section headings are not counted)": "Où en est le public dans le spectacle (les notes et titres de section ne sont pas comptés)",
  "If a phone cannot open this name (some Android phones and guest WiFi networks cannot), give it the numeric address or the QR code instead.": "Si un téléphone n'arrive pas à ouvrir ce nom (certains téléphones Android et réseaux WiFi invités n'y arrivent pas), utilisez l'adresse numérique ou le code QR.",
  "Replace the show on air?": "Remplacer le spectacle à l'antenne ?",
@@ -626,5 +624,8 @@ OCI18n.add("fr", {
  "Pre-show message ({name})": "Message d'avant-spectacle ({name})",
  "What the audience sees while no show is on air: before the operator presses START, after Go to standby, and when no show is loaded. It belongs to the venue, not to a show.": "Ce que voit le public tant qu'aucun spectacle n'est à l'antenne : avant que l'opérateur appuie sur DÉMARRER, après Mettre en attente, et quand aucun spectacle n'est chargé. Il appartient au lieu, pas à un spectacle.",
  "A rehearsal runs this show privately: you press the keys as the operator would and see the audience screen beside it. Nothing here reaches real audience devices, and it does not affect a show that is on air.": "Une répétition fait tourner ce spectacle en privé : vous appuyez sur les touches comme l'opérateur et voyez l'écran du public à côté. Rien ici n'atteint les vrais appareils du public, et cela n'affecte pas un spectacle à l'antenne.",
- "Open the Run page": "Ouvrir la page Conduire"
+ "Open the Run page": "Ouvrir la page Conduire",
+ "Item {n} of {total}": "Élément {n} sur {total}",
+ "{total} items": "{total} éléments",
+ "ANNOUNCEMENT ON SCREEN: “{text}” — Back removes it; the next line replaces it.": "ANNONCE À L'ÉCRAN : « {text} » — Retour la retire ; la ligne suivante la remplace."
 });

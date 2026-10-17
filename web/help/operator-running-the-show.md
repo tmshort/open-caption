@@ -43,10 +43,10 @@ A show file can do the same with the `[blank]` and `[clear]` commands; they appe
 - **Songs:** sung lines have music notes (♪) around them and are shown in italics on the audience's screens. A song's title appears as a blue bookmark for you only. Aim to press Space as each phrase begins.
 - **Languages:** if the show has translations, you follow the main language and everything you send goes to every language at once. The audience count in the header lists each language, for example `83 (en 60 · es 23)`.
 - **Several voices at once:** a line marked `TOGETHER` shows two or more singers on the screens at the same time. One press of Space sends all of them.
-- The strip under the header shows who is in control, **Line n of total**, and **Last sent … ago**, so you can see at a glance that the show and your screen are still in step. It turns yellow after two minutes without a line.
+- The strip under the header shows who is in control, **Item n of total**, and **Last sent … ago**, so you can see at a glance that the show and your screen are still in step. It turns yellow after two minutes without a line.
 - **Go to section…** (beside the search box) lists the show file's bookmarks; picking one selects it, and you confirm the jump.
 - To skip ahead or go back, click a line, then confirm "Jump here". You can also search with `/`.
-- A one-off announcement such as "The show will resume shortly" can be sent with **Announcement…**. Press **Back** to remove it.
+- A one-off announcement such as "The show will resume shortly" can be sent with **Announcement…**. Press **Back** to remove it. While it is on the screens, a blue banner on this page quotes it.
 - **Go to standby…** (top right) takes the show off the audience's screens: they see the standby screen again, and the show keeps its place. **START** puts it back on air exactly where it was.
 
 See [the keyboard](topic:operator-keyboard) and [If something goes wrong](topic:operator-if-something-goes-wrong).

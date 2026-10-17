@@ -129,6 +129,7 @@
   $('sections').addEventListener('change', () => {
     const v = $('sections').value;
     $('sections').value = '';
+    $('sections').blur(); // give the keys (Enter to jump, Esc to cancel) back to the page
     if (v === '') return;
     const i = Number(v);
     select(i); scrollTo(i);
@@ -236,7 +237,7 @@
     // "Line 34 of 210": the audience-visible lines up to the one on screen (notes and section headings are not counted)
     let total = 0, at = 0;
     S.cues.forEach((c, i) => { if (!isOpOnly(c.kind)) { total++; if (i <= now) at++; } });
-    $('progress').textContent = total ? (o.standby ? __('{total} lines', { total }) : __('Line {n} of {total}', { n: at, total })) : '';
+    $('progress').textContent = total ? (o.standby ? __('{total} items', { total }) : __('Item {n} of {total}', { n: at, total })) : '';
   }
 
   function scrollTo(i) {
@@ -273,6 +274,7 @@
     const b = $('banner');
     S.timerEnds = o.loop && o.loop.deadline ? o.loop.deadline : 0;
     if (o.standby) { b.hidden = false; b.className = 'standby'; b.textContent = '⏸ ' + __('STANDBY — the audience sees the standby screen. Press Space (START) to put the show on air; it carries on from where it is.'); }
+    else if (o.announcement) { b.hidden = false; b.className = 'announce'; b.textContent = '📢 ' + __('ANNOUNCEMENT ON SCREEN: “{text}” — Back removes it; the next line replaces it.', { text: o.announcement.length > 100 ? o.announcement.slice(0, 100) + '…' : o.announcement }); }
     else if (o.loop) {
       const c = S.cues[o.loop.cue]; b.hidden = false; b.className = 'loop';
       b.textContent = '🔁 ' + __('LOOP RUNNING — item {n} of {total}. NEXT ends it; STOP blanks the screen.', { n: o.loop.item + 1, total: c ? (c.items || []).length : '?' });

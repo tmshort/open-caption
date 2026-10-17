@@ -43,6 +43,7 @@ footer { display: flex; gap: .6rem; padding: .6rem .9rem calc(.6rem + env(safe-a
 #statusbar { display: flex; align-items: center; gap: .4rem 1rem; flex-wrap: wrap; padding: .25rem .9rem; background: var(--panel); border-bottom: 1px solid var(--line); font-size: .9rem; color: var(--dim); }
 #statusbar button { min-height: 0; padding: .1rem .7rem; }
 #statusbar.other { background: #3d2f00; color: var(--mark); font-weight: 600; } /* someone else is in control: this page's keys do nothing */
+#banner.announce { background: #1d3b6f; color: #fff; }
 #progress { color: var(--fg); font-variant-numeric: tabular-nums; }
 #lastsent { margin-left: auto; }
 #lastsent.stale { color: var(--mark); }

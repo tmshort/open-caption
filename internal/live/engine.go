@@ -103,17 +103,19 @@ func (e *Engine) liveLocked() bool {
 
 // OperatorState is what the operator UI needs besides the cue list.
 type OperatorState struct {
-	Seq       int64       `json:"seq"`
-	Rev       int64       `json:"rev"`
-	Cursor    int         `json:"cursor"`    // index of the next cue (may be operator-only)
-	NextIndex int         `json:"nextIndex"` // next audience-visible cue, -1 at the end
-	Total     int         `json:"total"`
-	Live      bool        `json:"live"`    // on air (with Standby): the audience is being shown the show
-	Standby   bool        `json:"standby"` // not on air: the audience sees the venue's standby screen
-	AtStart   bool        `json:"atStart"` // in standby with nothing sent yet (just started up, or just restarted): there is nothing to restart
-	Mode      string      `json:"mode"`    // audience mode: idle | captions | blank
-	LastAt    int64       `json:"lastAt"`  // unix ms of the operator's last action (0 = none yet)
-	Loop      *LoopStatus `json:"loop"`
+	Seq       int64  `json:"seq"`
+	Rev       int64  `json:"rev"`
+	Cursor    int    `json:"cursor"`    // index of the next cue (may be operator-only)
+	NextIndex int    `json:"nextIndex"` // next audience-visible cue, -1 at the end
+	Total     int    `json:"total"`
+	Live      bool   `json:"live"`    // on air (with Standby): the audience is being shown the show
+	Standby   bool   `json:"standby"` // not on air: the audience sees the venue's standby screen
+	AtStart   bool   `json:"atStart"` // in standby with nothing sent yet (just started up, or just restarted): there is nothing to restart
+	Mode      string `json:"mode"`    // audience mode: idle | captions | blank
+	// Announcement is the text of the operator's one-off notice while it is on the audience's screens ("" = none).
+	Announcement string      `json:"announcement,omitempty"`
+	LastAt       int64       `json:"lastAt"` // unix ms of the operator's last action (0 = none yet)
+	Loop         *LoopStatus `json:"loop"`
 }
 
 // Config tunes the engine.
@@ -236,6 +238,9 @@ func (e *Engine) Operator() OperatorState {
 func (e *Engine) operatorLocked() OperatorState {
 	o := OperatorState{Seq: e.st.Seq, Rev: e.rev, Cursor: e.cursor, NextIndex: e.visibleFrom(e.cursor),
 		Total: len(e.cues), Live: e.liveLocked(), Standby: e.standby, Mode: e.st.Mode, LastAt: e.lastAt}
+	if f := e.st.Fullscreen; f != nil && f.Announcement && !e.standby {
+		o.Announcement = f.Text
+	}
 	o.AtStart = e.standby && len(e.history) == 0 && e.cursor == e.initialCursor() && len(e.st.Scrollback) == 0
 	if e.loop != nil {
 		o.Loop = &LoopStatus{Cue: e.loop.cue, Item: e.loop.item, Deadline: e.loop.deadline}
@@ -392,7 +397,7 @@ func (e *Engine) Message(text string, rev int64) (OperatorState, error) {
 	}
 	h, p := showfile.RenderInline(text)
 	e.pushLocked()
-	e.applyLocked(showfile.Cue{Kind: showfile.KindFullscreen, Item: &showfile.Item{Kind: "text", HTML: h, Text: p}}, -1)
+	e.applyLocked(showfile.Cue{Kind: showfile.KindFullscreen, Item: &showfile.Item{Kind: "text", HTML: h, Text: p, Announcement: true}}, -1)
 	e.touched = true
 	e.bumpLocked()
 	return e.operatorLocked(), nil

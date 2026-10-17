@@ -43,10 +43,10 @@ Um arquivo do espetáculo pode fazer o mesmo com os comandos `[blank]` e `[clear
 - **Músicas:** as linhas cantadas têm notas musicais (♪) em volta e aparecem em itálico nas telas do público. O título de uma música aparece como um marcador azul só para você. Procure apertar Espaço no começo de cada frase.
 - **Idiomas:** se o espetáculo tem traduções, você acompanha o idioma principal e tudo o que envia vai a todos os idiomas ao mesmo tempo. A contagem do público no cabeçalho lista cada idioma, por exemplo `83 (en 60 · es 23)`.
 - **Várias vozes ao mesmo tempo:** uma linha marcada `JUNTOS` mostra dois ou mais cantores nas telas ao mesmo tempo. Um toque em Espaço envia todos.
-- A faixa abaixo do cabeçalho mostra quem tem o controle, **Linha n de total** e **Último envio há …**, para você ver de relance que o espetáculo e a sua tela continuam em compasso. Ele fica amarelo depois de dois minutos sem uma linha.
+- A faixa abaixo do cabeçalho mostra quem tem o controle, **Item n de total** e **Último envio há …**, para você ver de relance que o espetáculo e a sua tela continuam em compasso. Ele fica amarelo depois de dois minutos sem uma linha.
 - **Ir para a seção…** (ao lado da caixa de busca) lista os marcadores do arquivo do espetáculo; escolher um o seleciona, e você confirma o salto.
 - Para avançar ou voltar, clique numa linha e confirme «Pular para cá». Você também pode buscar com `/`.
-- Um aviso avulso como «O espetáculo recomeça em instantes» pode ser enviado com **Aviso…**. Aperte **Voltar** para removê-lo.
+- Um aviso avulso como «O espetáculo recomeça em instantes» pode ser enviado com **Aviso…**. Aperte **Voltar** para removê-lo. Enquanto está nas telas, um aviso azul desta página o cita.
 - **Colocar em espera…** (no alto, à direita) tira o espetáculo das telas do público: elas voltam a ver a tela de espera e o espetáculo mantém o seu lugar. **INICIAR** o coloca de volta no ar exatamente onde estava.
 
 Veja [o teclado](topic:operator-keyboard) e [Se algo der errado](topic:operator-if-something-goes-wrong).
