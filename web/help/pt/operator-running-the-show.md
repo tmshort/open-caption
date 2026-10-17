@@ -32,6 +32,7 @@ Um arquivo do espetáculo pode fazer o mesmo com os comandos `[blank]` e `[clear
 
 ## Antes do espetáculo
 
+- Use a página do operador num computador com teclado (um notebook serve). Ela foi pensada para a tecla **Espaço**, e um telefone ou tablet não é recomendado: numa tela sensível ao toque é fácil errar o toque durante o espetáculo.
 - Entre na página do operador. Você verá «Você tem o controle». Se disser que outro operador tem o controle, use **Assumir** somente se você deve ser o operador.
 - Confira a contagem de espectadores (o ícone de pessoas). Ela mostra quantos dispositivos estão conectados.
 - Um espetáculo carregado fica **em espera**: o público vê a tela de espera do local (um logotipo e uma mensagem) e nada do espetáculo, e esta página diz **EM ESPERA**. Pressione **Espaço** (o botão diz **INICIAR**) para colocar o espetáculo no ar. Se o arquivo do espetáculo começar com um laço de pré-espetáculo, ele começa então.

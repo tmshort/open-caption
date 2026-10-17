@@ -82,7 +82,7 @@ The program does not care which network it is on, as long as audience devices ca
 
 ### Who sits where
 
-- **The operator** needs a clear view of the stage and a reliable device. The simplest arrangement is the captioning computer itself at the tech desk. The operator page also works from any other laptop, tablet or phone on the same network (`http://<computer's address>/operator`), which lets the operator sit where they can see the stage. A Bluetooth clicker or keyboard is easier than a touch screen.
+- **The operator** needs a clear view of the stage and a reliable device. The simplest arrangement is the captioning computer itself at the tech desk. The operator page is meant for a computer with a keyboard (Space sends the next line). Use the captioning computer, or another laptop on the same network (`http://<computer's address>/operator`) so the operator can sit where they can see the stage. A phone or tablet will show the page but is **not recommended**: a touch screen is easy to mis-tap during a show. A Bluetooth clicker or keyboard is a good alternative.
 - **Only one operator controls the show at a time.** Anyone else who opens the operator page can watch, and can use **Take over** if the operator hands over.
 - **The setup volunteers** use the Setup page from any computer on the network before the show, or from the captioning computer.
 - **A shared screen** for the whole room: open the audience address on a computer connected to a projector or a large monitor, add `?display=projector` to the address for large text and no on-screen clutter, and make the browser full screen (`F11`, or run Chrome with `--kiosk`).

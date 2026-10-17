@@ -82,7 +82,7 @@ O programa não se importa com a rede em que está, desde que os dispositivos do
 
 ### Quem fica onde
 
-- **O operador** precisa de uma boa visão do palco e de um dispositivo confiável. O arranjo mais simples é o próprio computador das legendas na mesa técnica. A página do operador também funciona em qualquer outro notebook, tablet ou telefone da mesma rede (`http://<endereço do computador>/operator`), o que permite ao operador sentar onde veja o palco. Um controle Bluetooth ou um teclado é mais fácil que uma tela sensível ao toque.
+- **O operador** precisa de uma boa visão do palco e de um dispositivo confiável. O arranjo mais simples é o próprio computador das legendas na mesa técnica. A página do operador foi pensada para um computador com teclado (Espaço envia a próxima linha). Use o computador das legendas ou outro notebook da mesma rede (`http://<endereço do computador>/operator`), para o operador sentar onde veja o palco. Um telefone ou tablet mostra a página, mas **não é recomendado**: numa tela sensível ao toque é fácil errar o toque durante o espetáculo. Um controle Bluetooth ou um teclado é uma boa alternativa.
 - **Só um operador controla o espetáculo por vez.** Qualquer outra pessoa que abrir a página do operador pode assistir, e pode usar **Assumir** se o operador passar a vez.
 - **Os voluntários da configuração** usam a página de Configuração de qualquer computador da rede antes do espetáculo, ou do computador das legendas.
 - **Uma tela compartilhada** para a sala toda: abra o endereço do público num computador ligado a um projetor ou monitor grande, acrescente `?display=projector` ao endereço para ter texto grande e nada de poluição na tela, e ponha o navegador em tela cheia (`F11`, ou rode o Chrome com `--kiosk`).

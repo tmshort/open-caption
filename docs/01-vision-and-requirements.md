@@ -59,7 +59,7 @@ simultaneous shows, internet-facing deployment.
 - **REQ-032** Operator can jump to any cue (click/search) and undo (Back) the last operator action; going forward again is just NEXT.
 - **REQ-033** Operator view shows live audience count and connection health.
 - **REQ-034** Only one operator controls at a time; others are view-only, with explicit takeover.
-- **REQ-035** Operator can work from a laptop keyboard, and also from a tablet/phone (large Next button; optional Bluetooth clicker maps to keys).
+- **REQ-035** The operator page is meant for a computer with a keyboard (Space for the next line; a laptop is ideal; a Bluetooth clicker or keyboard maps to the same keys). It also adapts to a tablet or phone screen (large Next button), but that is **not recommended** for running a show, and the guides say so.
 - **REQ-036** Setup (`/admin`) and Operator (`/operator`) are separate pages with separate passwords; the operator page exposes no setup actions.
 - **REQ-037** Built-in help for operators and admins, available from every `/admin` and `/operator` screen, works offline, and includes the show file/Markdown conventions with copy-able examples (doc 05, section 4).
 
