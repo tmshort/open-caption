@@ -19,7 +19,7 @@ A show is a folder containing its **show file** (a plain text file, `show.md`), 
 
 ## Finished with a show?
 
-On the Show step, **Archive** puts a show away: it is kept in full but listed under *Archived shows* and cannot go on air. **Restore** brings it back. **Delete** removes it for good (Export it first if you might want it back). The show that is on air can be neither archived nor deleted.
+Rename, Duplicate, Export, Archive and Delete are in the **More ▾** menu on each show. On the Show step, **Archive** puts a show away: it is kept in full but listed under *Archived shows* and cannot go on air. **Restore** brings it back. **Delete** removes it for good (Export it first if you might want it back). The show that is on air can be neither archived nor deleted.
 
 ## Before you start
 

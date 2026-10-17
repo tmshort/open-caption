@@ -338,3 +338,32 @@ func TestAdminTranslationWorkflow(t *testing.T) {
 		t.Errorf("after delete: %v", got)
 	}
 }
+
+func TestAnnouncementReachesEveryLanguageAndTheOperatorSeesItUntilTheNextLine(t *testing.T) {
+	s, _ := twoLanguageRuntime(t, "[clear]\nHELLO\nHow are you?", "[clear]\nHOLA\n¿Cómo estás?")
+	rt := s.Runtime()
+	post := func(fn func(*live.Engine) (live.OperatorState, error)) live.OperatorState {
+		o, err := rt.Do(fn)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return o
+	}
+	post(func(e *live.Engine) (live.OperatorState, error) { return e.Next(-1) })
+	post(func(e *live.Engine) (live.OperatorState, error) { return e.Next(-1) })
+	long := strings.Repeat("Back soon. ", 40)
+	o := post(func(e *live.Engine) (live.OperatorState, error) { return e.Message(long, -1) })
+	if o.Announcement == "" {
+		t.Fatal("the operator is not told an announcement is on the screens")
+	}
+	for _, lang := range []string{"en", "es"} {
+		st := rt.State(lang)
+		if st.Fullscreen == nil || !strings.Contains(st.Fullscreen.HTML, "Back soon.") {
+			t.Errorf("%s: the announcement did not reach this language: %+v", lang, st.Fullscreen)
+		}
+	}
+	o = post(func(e *live.Engine) (live.OperatorState, error) { return e.Next(-1) })
+	if o.Announcement != "" {
+		t.Errorf("the next line should replace the announcement, operator still sees %q", o.Announcement)
+	}
+}

@@ -19,7 +19,7 @@ Eine Show ist ein Ordner mit ihrer **Show-Datei** (einer einfachen Textdatei, `s
 
 ## Mit einer Show fertig?
 
-Im Schritt Shows legt **Archivieren** eine Show beiseite: Sie bleibt vollständig erhalten, wird aber unter *Archivierte Shows* aufgeführt und kann nicht auf Sendung gehen. **Wiederherstellen** holt sie zurück. **Löschen** entfernt sie endgültig (exportieren Sie sie vorher, falls Sie sie vielleicht noch brauchen). Die Show, die gerade läuft, kann weder archiviert noch gelöscht werden.
+Umbenennen, Duplizieren, Exportieren, Archivieren und Löschen finden Sie im Menü **Mehr ▾** jeder Show. Im Schritt Shows legt **Archivieren** eine Show beiseite: Sie bleibt vollständig erhalten, wird aber unter *Archivierte Shows* aufgeführt und kann nicht auf Sendung gehen. **Wiederherstellen** holt sie zurück. **Löschen** entfernt sie endgültig (exportieren Sie sie vorher, falls Sie sie vielleicht noch brauchen). Die Show, die gerade läuft, kann weder archiviert noch gelöscht werden.
 
 ## Bevor Sie anfangen
 

@@ -19,7 +19,7 @@ Uno spettacolo è una cartella che contiene il suo **file dello spettacolo** (un
 
 ## Hai finito con uno spettacolo?
 
-Nel passo Spettacoli, **Archivia** mette da parte uno spettacolo: viene conservato per intero ma elencato sotto *Spettacoli archiviati* e non può andare in onda. **Ripristina** lo riporta indietro. **Elimina** lo rimuove definitivamente (esportalo prima se potresti averne ancora bisogno). Lo spettacolo in onda non può essere né archiviato né eliminato.
+Rinomina, Duplica, Esporta, Archivia ed Elimina sono nel menu **Altro ▾** di ogni spettacolo. Nel passo Spettacoli, **Archivia** mette da parte uno spettacolo: viene conservato per intero ma elencato sotto *Spettacoli archiviati* e non può andare in onda. **Ripristina** lo riporta indietro. **Elimina** lo rimuove definitivamente (esportalo prima se potresti averne ancora bisogno). Lo spettacolo in onda non può essere né archiviato né eliminato.
 
 ## Prima di iniziare
 

@@ -502,6 +502,14 @@ async function main() {
     check('the arrow keys move through the actions', /^Export/.test((await menuState()).focus), await menuState());
     await arch.keyboard.press('Escape'); await sleep(150); ms = await menuState();
     check('Esc closes the menu and returns to the More button', !ms.open && ms.expanded === 'false' && await arch.evaluate(() => document.activeElement.classList.contains('more')), ms);
+    await arch.click('.card.show button.more'); await sleep(200);
+    const rp = await arch.evaluate(() => { const e = [...document.querySelectorAll('.card.show .menu .item')].find((x) => /^Rename/.test(x.textContent)), r = e.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, w: r.width }; });
+    await arch.mouse.click(rp.x, rp.y); await sleep(300);
+    check('with the mouse, More shows Rename… on screen and clicking it opens its dialog', rp.w > 50 && await arch.evaluate(() => document.getElementById('dlg').hasAttribute('open') && document.querySelector('.card.show .menu').hidden));
+    await arch.keyboard.press('Escape'); await sleep(250);
+    await arch.click('.card.show button.more'); await sleep(150);
+    await arch.click('#panel h2'); await sleep(150);
+    check('a click elsewhere closes the menu', await arch.evaluate(() => document.querySelector('.card.show .menu').hidden));
     check('the menu lists Rename, Duplicate, Export, Archive and Delete, Delete last and in red', await arch.evaluate(() => { const c = document.querySelector('.card.show'), it = [...c.querySelectorAll('.menu .item')].map((e) => e.textContent.trim()), d = c.querySelector('.menu .item.danger'); return it.length === 5 && /^Rename/.test(it[0]) && /^Delete/.test(it[4]) && !!d && getComputedStyle(d).color !== getComputedStyle(document.body).color; }));
     check('an action that cannot be done is listed with its reason', await arch.evaluate(() => [...document.querySelectorAll('.card.show .menu .item[aria-disabled=true] small')].every((x) => x.textContent.length > 10)));
     check('Duplicate… is named for the dialog it opens', await arch.evaluate(() => [...document.querySelectorAll('.card.show button')].some((b) => b.textContent === 'Duplicate…') && ![...document.querySelectorAll('.card.show button')].some((b) => b.textContent === 'Duplicate')));
@@ -707,6 +715,9 @@ async function main() {
     check('an announcement on the screens is quoted in a banner on the operator page', await op.evaluate(() => { const b = document.getElementById('banner'); return !b.hidden && b.classList.contains('announce') && /Back soon/.test(b.textContent); }));
     await op.evaluate(() => fetch('/api/operator/back', { method: 'POST', body: '{}' })); await sleep(700);
     check('and the banner goes when it is undone', await op.evaluate(() => !document.getElementById('banner').classList.contains('announce')));
+    await op.evaluate(() => fetch('/api/operator/message', { method: 'POST', body: JSON.stringify({ text: 'Please remain seated, the show will resume shortly. '.repeat(9) }) })); await sleep(700);
+    check('a very long announcement is cut short in the banner (which stays a few lines)', await op.evaluate(() => { const b = document.getElementById('banner'); return !b.hidden && b.classList.contains('announce') && b.textContent.includes('…') && b.textContent.length < 260 && b.getBoundingClientRect().height < 130; }));
+    await op.evaluate(() => fetch('/api/operator/back', { method: 'POST', body: '{}' })); await sleep(700);
     check('choosing a section gives the keyboard back to the page (Enter and Esc work at once)', await op.evaluate(() => { const sel = document.getElementById('sections'); if (sel.hidden || sel.options.length < 2) return true; sel.focus(); sel.value = sel.options[1].value; sel.dispatchEvent(new Event('change')); const ok = document.activeElement !== sel; document.getElementById('jumpcancel').click(); return ok; }));
     // Deleting the show that is live is refused, in a window that cannot be missed.
     await guard.goto(B + '/admin#show'); await guard.reload(); await guard.waitForSelector('.card.show'); await sleep(500);

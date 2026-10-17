@@ -19,7 +19,7 @@ Un espectáculo es una carpeta que contiene su **archivo del espectáculo** (un 
 
 ## ¿Ha terminado con un espectáculo?
 
-En el paso Espectáculos, **Archivar** guarda un espectáculo aparte: se conserva completo pero aparece en *Espectáculos archivados* y no puede salir en directo. **Restaurar** lo devuelve. **Eliminar** lo borra definitivamente (Expórtelo antes si puede querer recuperarlo). El espectáculo que está en emisión no se puede archivar ni eliminar.
+Renombrar, Duplicar, Exportar, Archivar y Eliminar están en el menú **Más ▾** de cada espectáculo. En el paso Espectáculos, **Archivar** guarda un espectáculo aparte: se conserva completo pero aparece en *Espectáculos archivados* y no puede salir en directo. **Restaurar** lo devuelve. **Eliminar** lo borra definitivamente (Expórtelo antes si puede querer recuperarlo). El espectáculo que está en emisión no se puede archivar ni eliminar.
 
 ## Antes de empezar
 

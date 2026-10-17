@@ -19,7 +19,7 @@ Um espetáculo é uma pasta que contém o seu **arquivo do espetáculo** (um arq
 
 ## Terminou um espetáculo?
 
-Na etapa Espetáculos, **Arquivar** guarda um espetáculo de lado: ele é mantido por inteiro, mas listado em *Espetáculos arquivados* e não pode ir ao ar. **Restaurar** o traz de volta. **Excluir** o remove de vez (exporte antes se puder precisar dele). O espetáculo que está no ar não pode ser arquivado nem excluído.
+Renomear, Duplicar, Exportar, Arquivar e Excluir estão no menu **Mais ▾** de cada espetáculo. Na etapa Espetáculos, **Arquivar** guarda um espetáculo de lado: ele é mantido por inteiro, mas listado em *Espetáculos arquivados* e não pode ir ao ar. **Restaurar** o traz de volta. **Excluir** o remove de vez (exporte antes se puder precisar dele). O espetáculo que está no ar não pode ser arquivado nem excluído.
 
 ## Antes de começar
 

@@ -19,7 +19,7 @@ Un spectacle est un dossier contenant son **fichier du spectacle** (un simple fi
 
 ## Fini avec un spectacle ?
 
-À l'étape Spectacles, **Archiver** range un spectacle : il est conservé intégralement mais listé sous *Spectacles archivés* et ne peut pas passer à l'antenne. **Restaurer** le remet en place. **Supprimer** l'efface définitivement (exportez-le d'abord si vous pourriez en avoir encore besoin). Le spectacle à l'antenne ne peut être ni archivé ni supprimé.
+Renommer, Dupliquer, Exporter, Archiver et Supprimer se trouvent dans le menu **Plus ▾** de chaque spectacle. À l'étape Spectacles, **Archiver** range un spectacle : il est conservé intégralement mais listé sous *Spectacles archivés* et ne peut pas passer à l'antenne. **Restaurer** le remet en place. **Supprimer** l'efface définitivement (exportez-le d'abord si vous pourriez en avoir encore besoin). Le spectacle à l'antenne ne peut être ni archivé ni supprimé.
 
 ## Avant de commencer
 
