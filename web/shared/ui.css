@@ -1,0 +1,60 @@
+/* The interface that Setup and the operator page share: type, headings, links, buttons, text boxes, focus ring, hints, the sign-in
+   panel, dialogs, the help panel and the toast. Each page sets its own PALETTE (the custom properties below) and nothing here
+   uses a colour that is not one of them, so the two pages cannot drift apart. Page-specific layout stays in the page's own CSS.
+
+   Palette each page must define:
+     --bg --panel --fg --dim --line       page, raised surface, text, quiet text, borders
+     --control --input                    the fill of a button and of a text box
+     --accent --accent-fg                 the one highlight colour (primary buttons, links, the focus ring) and the text on it
+     --ok --warn --bad                    good, caution, bad
+   The operator page also sets --toast-bottom (its footer is in the way). */
+:root { --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace; --toast-bottom: 1.2rem; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+h1 { font-size: 1.25rem; margin: 0; } h1 span { color: var(--dim); font-weight: 400; }
+h2 { font-size: 1.2rem; margin: 0 0 .6rem; } h3 { font-size: 1rem; margin: 1.2rem 0 .4rem; }
+a { color: var(--accent); }
+code { font-family: var(--mono); font-size: .9em; }
+.hint { color: var(--dim); font-size: .9rem; }
+.err { color: var(--bad); min-height: 1.5em; }
+
+/* controls: one height, one shape */
+input, select, textarea, button { font: inherit; color: inherit; }
+input[type=text], input[type=password], input[type=number], input[type=search], input:not([type]), select, textarea { background: var(--input); border: 1px solid var(--line); border-radius: 6px; padding: .45rem .6rem; }
+button, select, input[type=text], input[type=password], input[type=number], input[type=search] { min-height: 2.4rem; }
+button { background: var(--control); border: 1px solid var(--line); border-radius: 8px; padding: .45rem .9rem; cursor: pointer; }
+button:hover:not(:disabled) { border-color: var(--accent); }
+button:disabled { opacity: .45; cursor: not-allowed; }
+button.primary { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); font-weight: 600; }
+button.danger { color: var(--bad); }
+button.primary.danger { background: var(--bad); border-color: var(--bad); color: #fff; }
+button.quiet { background: none; border: none; color: var(--dim); text-decoration: none; padding: .3rem .5rem; }
+button.quiet:hover:not(:disabled):not(.danger) { color: var(--fg); }
+:focus { outline: 3px solid var(--accent); outline-offset: 2px; }
+:focus:not(:focus-visible) { outline: none; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+/* the sign-in panel */
+#login { max-width: 28rem; margin: 12vh auto; padding: 0 1rem; }
+#login label { display: block; margin: 1rem 0; }
+#login input { width: 100%; max-width: 20rem; }
+#loginerr { color: var(--bad); min-height: 1.5em; }
+
+/* dialogs */
+dialog { background: var(--panel); color: var(--fg); border: 1px solid var(--line); border-radius: 12px; padding: 1.2rem; max-width: 32rem; width: calc(100% - 2rem); }
+dialog::backdrop { background: #0009; }
+dialog menu { display: flex; gap: .6rem; justify-content: flex-end; padding: 0; margin: 1rem 0 0; }
+dialog input[type=text], dialog textarea { width: 100%; }
+
+/* the help panel */
+#help { position: fixed; top: 0; right: 0; bottom: 0; width: min(30rem, 100%); background: var(--panel); border-left: 1px solid var(--line); z-index: 20; display: flex; flex-direction: column; box-shadow: -8px 0 24px #0005; }
+#help[hidden] { display: none; }
+#help .bar { display: flex; align-items: center; gap: .8rem; padding: .5rem .8rem; border-bottom: 1px solid var(--line); }
+#help .bar b { flex: none; } #help .bar span { flex: 1; font-size: .9rem; }
+#help .bar > button:last-child { margin-left: auto; }
+#help iframe { flex: 1; border: 0; background: #fff; }
+
+/* the toast */
+#toast { position: fixed; left: 50%; bottom: var(--toast-bottom); transform: translateX(-50%); background: #000d; color: #fff; padding: .5rem 1rem; border-radius: 8px; opacity: 0; transition: opacity .2s; pointer-events: none; max-width: 90vw; }
+#toast.show { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { #toast { transition: none; } }

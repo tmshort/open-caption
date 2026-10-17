@@ -1,45 +1,32 @@
-:root { --bg:#0b0b0d; --panel:#16161a; --fg:#eceff4; --dim:#8b909a; --accent:#ffd400; --ok:#2ecc71; --bad:#e74c3c; --next:#1d3b6f; }
-* { box-sizing: border-box; }
+/* The operator page is always dark (a booth). Its palette uses the shared names; --mark is the yellow of "next", speaker names and warnings. */
+/* (the page background is a shade darker than Setup's, for the booth; everything else is Setup's dark palette) */
+:root { --bg:#0b0b0d; --panel:#1b1e24; --fg:#e8ebf0; --dim:#9aa3b0; --line:#323843; --control:#1b1e24; --input:#1b1e24; --accent:#6c9cff; --accent-fg:#0b1020; --mark:#ffd400; --ok:#4cc38a; --warn:#f0b24a; --bad:#ff7b72; --next:#1d3b6f; --toast-bottom: 6.5rem; }
 html, body { height: 100%; margin: 0; }
-body { background: var(--bg); color: var(--fg); font: 18px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; display: flex; flex-direction: column; }
+body { display: flex; flex-direction: column; }
 #app { display: flex; flex-direction: column; height: 100%; min-height: 0; }
 #app[hidden], #login[hidden] { display: none; }
-#login { margin: 15vh auto; max-width: 22rem; padding: 1rem; }
-#login label { display: block; margin: 1rem 0; }
-#login input { width: 100%; }
-#loginerr { color: var(--bad); min-height: 1.5em; }
-input, textarea, button { font: inherit; color: inherit; }
-input, textarea { background: #0f0f12; border: 1px solid #444; border-radius: 6px; padding: .5rem .7rem; }
-button { background: #26262d; border: 1px solid #3a3a44; border-radius: 8px; padding: .6rem 1rem; cursor: pointer; min-height: 2.8rem; }
-button:hover:not(:disabled) { background: #30303a; }
-button:disabled { opacity: .4; cursor: not-allowed; }
-button.primary { background: #2456b3; border-color: #3b6fd1; font-weight: 700; }
-button.quiet { background: transparent; border-color: transparent; color: var(--dim); min-height: 0; padding: .3rem .6rem; }
 button small { display: block; font-size: .65em; opacity: .9; font-weight: 400; }
-:focus { outline: 3px solid var(--accent); outline-offset: 2px; }
-:focus:not(:focus-visible) { outline: none; }
-:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
-#banner { padding: .55rem .9rem; background: #3d2f00; color: var(--accent); font-weight: 600; }
+#banner { padding: .55rem .9rem; font-size: 1.1rem; background: #3d2f00; color: var(--mark); font-weight: 600; }
 #banner.loop { background: #0f3b2a; color: #7ef0b6; }
 #banner.standby { background: #1d2c4a; color: #cfe0ff; }
 
 #stage { flex: 1; min-height: 0; display: flex; flex-direction: column; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-#list { list-style: none; margin: 0; padding: 0 0 40vh; overflow-y: auto; flex: 1; min-height: 0; }
+#list { font-size: 1.125rem; list-style: none; margin: 0; padding: 0 0 40vh; overflow-y: auto; flex: 1; min-height: 0; }
 .cue { display: flex; gap: .7rem; padding: .55rem .9rem; border-left: 6px solid transparent; cursor: pointer; border-bottom: 1px solid #17171b; }
 .cue .gut { width: 1.4rem; flex: none; color: var(--dim); text-align: center; }
 .cue .body { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .cue .ln { flex: none; color: #4b4f58; font-size: .75rem; padding-top: .3rem; }
-.cue .spk { color: var(--accent); font-size: .75em; letter-spacing: .06em; margin-right: .5rem; }
+.cue .spk { color: var(--mark); font-size: .75em; letter-spacing: .06em; margin-right: .5rem; }
 .cue.stage .txt, .cue.sung .txt, .cue .part.sung .txt { font-style: italic; }
 .cue .part { padding-left: .6rem; border-left: 3px solid #4a5a7a; margin-top: .15rem; }
 .cue.sent { color: #6e737d; }
 .cue.now { color: var(--fg); border-left-color: #2ecc71; background: #10201a; }
 .cue.now .gut::before { content: "●"; color: var(--ok); }
-.cue.next { background: var(--next); border-left-color: var(--accent); font-size: 1.35em; color: #fff; padding-block: .9rem; }
-.cue.next .gut::before { content: "▶"; color: var(--accent); }
-.cue.sel { outline: 3px dashed var(--accent); outline-offset: -3px; }
+.cue.next { background: var(--next); border-left-color: var(--mark); font-size: 1.35em; color: #fff; padding-block: .9rem; }
+.cue.next .gut::before { content: "▶"; color: var(--mark); }
+.cue.sel { outline: 3px dashed var(--mark); outline-offset: -3px; }
 .cue.match { background: #2b2b12; }
 .cue.k-section { color: #7fb0ff; font-weight: 700; background: #101826; }
 .cue.k-note { color: #d7a5ff; background: #1a1223; font-style: italic; }
@@ -53,8 +40,7 @@ button small { display: block; font-size: .65em; opacity: .9; font-weight: 400; 
 #jumptext { flex: 1; min-width: 12rem; }
 footer { display: flex; gap: .6rem; padding: .6rem .9rem calc(.6rem + env(safe-area-inset-bottom)); background: var(--panel); border-top: 1px solid #2a2a31; flex-wrap: wrap; align-items: stretch; }
 #lastsent { color: var(--dim); font-size: .85rem; }
-#lastsent.stale { color: var(--accent); }
-select { font: inherit; color: inherit; background: #0f0f12; border: 1px solid #444; border-radius: 6px; padding: .5rem .6rem; }
+#lastsent.stale { color: var(--mark); }
 footer select { max-width: 12rem; }
 /* Fixed widths: the buttons in the footer stay where they are whatever their label says (Blank / Unblank) or whether a loop is playing */
 footer button { flex: none; }
@@ -66,27 +52,19 @@ footer button { padding-inline: .7rem; }
   footer #search { flex: 1 1 5rem; min-width: 5rem; }
   footer select { max-width: 9.5rem; }
 }
-}
 footer #search { flex: 1 1 10rem; min-width: 8rem; }
 #next { min-width: 11rem; font-size: 1.25rem; }
-#help { position: fixed; top: 0; right: 0; bottom: 0; width: min(30rem, 100%); background: var(--panel); border-left: 1px solid #444; z-index: 20; display: flex; flex-direction: column; box-shadow: -8px 0 24px #0008; }
-#help[hidden] { display: none; }
-#help .bar { display: flex; gap: .8rem; align-items: center; padding: .5rem .8rem; border-bottom: 1px solid #333; background: #3d2f00; color: var(--accent); }
-#help .bar b { color: var(--fg); } #help .bar span { flex: 1; font-size: .85rem; } #help iframe { flex: 1; border: 0; background: #fff; }
+/* the operator's help bar is amber: it says the show keys are paused while it is open */
+#help .bar { background: #3d2f00; color: var(--mark); border-bottom-color: #4a3a00; }
+#help .bar b { color: var(--fg); }
 @media (min-width: 900px) { body.helpopen #app { margin-right: min(30rem, 100%); } }
-#toast { position: fixed; left: 50%; bottom: 6.5rem; transform: translateX(-50%); background: #000c; border: 1px solid #555; padding: .5rem 1rem; border-radius: 8px; opacity: 0; transition: opacity .2s; pointer-events: none; }
-#toast.show { opacity: 1; }
 body.viewonly footer button:not(#search), body.viewonly #offair, body.viewonly #reset { opacity: .35; pointer-events: none; }
-dialog { background: var(--panel); color: var(--fg); border: 1px solid #444; border-radius: 12px; padding: 1.2rem; max-width: 30rem; width: calc(100% - 2rem); }
-dialog::backdrop { background: #000a; }
-dialog textarea { width: 100%; }
-dialog menu { display: flex; gap: .6rem; justify-content: flex-end; padding: 0; margin: 1rem 0 0; }
-.hint { color: var(--dim); font-size: .85rem; }
 @media (max-width: 640px) { footer { display: grid; grid-template-columns: 1fr 1fr; } footer #search { grid-column: 1 / -1; } #next { grid-column: 1 / -1; padding-block: 1.1rem; } }
-@media (prefers-reduced-motion: reduce) { #toast { transition: none; } }
 button small kbd { font: inherit; border: 1px solid currentColor; border-radius: 3px; padding: 0 .25em; margin-right: .2em; }
 /* the item of a running loop that is on the audience screens now */
 .items li { display: flex; gap: .4rem; }
 .items .pl { flex: none; width: 1em; text-align: center; }
 .items li.playing { color: var(--fg); font-weight: 600; }
 .items li.playing .pl::before { content: "▶"; color: var(--ok); }
+/* The stage scale: the lines, the banner and the footer controls are a size larger than the rest of the interface, on purpose. */
+footer button, footer select, footer #search { min-height: 2.8rem; font-size: 1.125rem; }
