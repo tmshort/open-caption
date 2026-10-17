@@ -358,6 +358,8 @@ async function main() {
     // the count opens the list of connected devices: device, address, language
     await op.evaluate(() => document.getElementById('viewers').click()); await sleep(700);
     check('clicking the count on the operator page lists the connected devices (device, address, language)', await op.evaluate(() => { const d = document.getElementById('clientsdlg'); const rows = [...d.querySelectorAll('table.clients tr')].slice(1).map((r) => [...r.children].map((c) => c.textContent)); const head = [...d.querySelectorAll('table.clients th')].map((x) => x.textContent).join('|'); return d.open && head === 'Device|IP address|Language' && rows.length >= 1 && rows.every((r) => /^(Phone|Tablet|Computer|Projector screen|Unknown device)/.test(r[0]) && /^[0-9a-f.:]+$/i.test(r[1]) && r[2].length > 0) && rows.some((r) => r[2] === 'English') && rows.length === Number((document.getElementById('viewers').textContent.match(/\d+/) || [0])[0]); }));
+    const dlgLook = (pg, sel) => pg.evaluate((q) => { const d = document.querySelector(q), c = (e) => { const x = getComputedStyle(e); return [x.fontSize, x.fontFamily, x.fontWeight, x.lineHeight].join('|'); }; return { width: Math.round(d.getBoundingClientRect().width), title: c(d.querySelector('h2')), th: c(d.querySelector('th')), td: c(d.querySelector('td')), pad: getComputedStyle(d.querySelector('td')).padding, cols: [...d.querySelectorAll('th')].map((x) => Math.round(x.getBoundingClientRect().width)).join(',') }; }, sel);
+    const opDlg = await dlgLook(op, '#clientsdlg');
     await op.evaluate(() => document.querySelector('#clientsdlg button').click()); await sleep(300);
     {
       const oh = await headerOrder(op, ['#viewers', 'header select.uilang', '#offair', '#reset', '#setuplink', '#helpbtn', '#logout', '#dot']);
@@ -482,6 +484,9 @@ async function main() {
       check('the audience count leaves out a language nobody is using (Setup too)', JSON.stringify(await countText(arch)) === JSON.stringify(['👥 3 (en 3)', '👥 0', '👥 5 (en 3 · es 2)', '👥 2']));
       await arch.evaluate(() => document.getElementById('viewers').click()); await arch.waitForSelector('dialog[open] table.clients', { timeout: T(5000) }).catch(() => {});
       check('clicking the count on Setup lists the connected devices too', await arch.evaluate(() => { const d = document.getElementById('dlg'); const rows = [...d.querySelectorAll('table.clients tr')].slice(1); return d.open && /Connected devices/.test(d.innerText) && rows.length >= 2; }));
+      const adDlg = await dlgLook(arch, '#dlg');
+      const colsAlike = adDlg.cols.split(',').every((w, k) => Math.abs(Number(w) - Number(opDlg.cols.split(',')[k])) <= 4); // (Setup keeps a few pixels for a scrollbar)
+      check('the Connected devices window looks the same on both pages (size, type, spacing)', JSON.stringify({ ...adDlg, cols: '' }) === JSON.stringify({ ...opDlg, cols: '' }) && colsAlike, { operator: opDlg, setup: adDlg });
       await arch.evaluate(() => document.getElementById('dlgok').click()); await sleep(300);
       check('the two headers use the same type, spacing and control sizes', JSON.stringify(adLook) === JSON.stringify(opLook), { operator: opLook, setup: adLook });
       check('and the Setup page shows the server is answering (green dot)', await arch.evaluate(() => document.getElementById('dot').classList.contains('on')));

@@ -41,6 +41,7 @@
       const d = $('dlg');
       d.classList.toggle('wide', !!(opts && opts.wide));
       d.classList.toggle('tabbed', !!(opts && opts.tabbed));
+      if (opts && opts.kind) d.dataset.kind = opts.kind; else delete d.dataset.kind;
       $('dlgtitle').textContent = title;
       $('dlgbody').replaceChildren(body);
       $('dlgok').textContent = okLabel || __('OK');
@@ -278,7 +279,7 @@
     const fill = async () => { const r = await api('GET', '/api/operator/clients'); if (r.ok) box.replaceChildren(OCClients.table(r.data.clients)); };
     await fill();
     const timer = setInterval(fill, 3000);
-    await ask(__('Connected devices'), box, __('Close'), { noCancel: true, wide: true });
+    await ask(__('Connected devices'), box, __('Close'), { noCancel: true, kind: 'clients' });
     clearInterval(timer);
   });
 
