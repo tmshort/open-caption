@@ -255,7 +255,7 @@
     const es = new EventSource('/api/operator/stream');
     A.es = es;
     es.addEventListener('opstate', (e) => {
-      $('dot').classList.add('on'); // the server is answering
+      $('dot').classList.add('on'); clearTimeout(A.lostTimer); A.lostTimer = 0; $('connbar').hidden = true; // the server is answering
       const p = JSON.parse(e.data);
       const wasLive = A.live, wasStart = A.atStart;
       A.atStart = p.op.atStart; A.live = p.op.live; A.audience = p.audience; A.activeId = p.show.id;
@@ -264,7 +264,7 @@
       if (A.step === 'golive') { const v = document.getElementById('audcount'); if (v) v.textContent = String(p.audience); }
       if ((wasLive !== A.live || wasStart !== A.atStart) && (A.step === 'show' || A.step === 'golive')) loadShows().then(() => (A.step === 'show' || A.step === 'golive') && render());
     });
-    es.onerror = () => { $('dot').classList.remove('on'); es.close(); if (A.es === es) setTimeout(openOpStream, 2000); };
+    es.onerror = () => { $('dot').classList.remove('on'); es.close(); if (!A.lostTimer) A.lostTimer = setTimeout(() => { if (!A.parked) $('connbar').hidden = false; }, 2000); if (A.es === es) setTimeout(openOpStream, 2000); };
   }
 
   // A browser keeps only six connections to one address and every open page holds a stream; a page left through a link
@@ -351,7 +351,7 @@
         h('a', { class: 'quiet', href: '/api/admin/shows/' + s.id + '/export', download: s.id + '.zip' }, __('Export')),
         h('button', { class: 'quiet', disabled: s.active, title: s.active ? __('The show on air cannot be archived. Activate another show first.') : __('Put this show away; you can restore it later'), onclick: () => archiveShow(s, true) }, __('Archive')),
         h('button', { class: 'danger quiet', title: s.live ? __('This show is live. Restart it from the operator page, or activate another show first.') : null, onclick: () => deleteShow(s) }, __('Delete…')))));
-      p.append(h('h3', {}, __('Add another show')), h('div', { class: 'card row addrow' }, ...newShowForm(), h('button', { onclick: makeSample }, __('Sample show')), ...importButton()));
+      p.append(h('h3', {}, __('Add another show')), h('div', { class: 'card row addrow' }, ...newShowForm(), h('button', { onclick: makeSample }, __('Create a sample show')), ...importButton()));
     }
     if (archived.length) {
       p.append(h('details', { class: 'archive', open: A.showArchive ? '' : null, ontoggle: (e) => { A.showArchive = e.target.open; } },
@@ -889,7 +889,7 @@
         : h('button', { class: 'primary big', onclick: () => loadShow(show), disabled: !a.cues.length }, __('Open the operator page')),
       h('span', { class: 'hint' }, isActive ? (onAir ? __('This show is on air now.') : __('This show is loaded and waiting in standby.'))
         : __('Opening it loads it in standby: the audience keeps seeing the standby screen until the operator presses START.')),
-      isActive ? h('button', { class: 'quiet', disabled: !!((A.shows || []).find((x) => x.id === show.id) || {}).fresh, title: ((A.shows || []).find((x) => x.id === show.id) || {}).fresh ? __('The show is at the start and in standby, so there is nothing to restart') : null, onclick: () => restartShow(show) }, __('Restart the show')) : null);
+      isActive ? h('button', { class: 'quiet', disabled: !!((A.shows || []).find((x) => x.id === show.id) || {}).fresh, title: ((A.shows || []).find((x) => x.id === show.id) || {}).fresh ? __('The show is at the start and in standby, so there is nothing to restart') : null, onclick: () => restartShow(show) }, __('Restart show…')) : null);
     const checks = h('div', { class: 'card ready' }, checklist, startBox);
     const urls = net.data.urls.filter((u) => u.public);
     let chosen = (urls.find((u) => u.kind === 'http' && !u.name) || urls.find((u) => u.kind === 'http') || urls[0] || net.data.urls[0] || {}).url; // the numeric address is the safest to print

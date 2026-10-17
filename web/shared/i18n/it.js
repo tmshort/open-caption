@@ -613,5 +613,8 @@ OCI18n.add("it", {
  "Show which devices are connected": "Mostra quali dispositivi sono collegati",
  "Duplicate…": "Duplica…",
  "The show is at the start and in standby, so there is nothing to restart": "Lo spettacolo è all'inizio e in attesa, quindi non c'è nulla da riavviare",
- "Duplicate": "Duplica"
+ "Duplicate": "Duplica",
+ "Connection to the program lost. Reconnecting…": "Connessione al programma persa. Riconnessione…",
+ "Open Caption — Run": "Open Caption — Conduci",
+ "Enter the <strong>operator</strong> password. The admin password works too.": "Inserisci la password dell'<strong>operatore</strong>. Funziona anche la password dell'amministratore."
 });

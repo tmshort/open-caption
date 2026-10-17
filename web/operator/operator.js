@@ -68,9 +68,11 @@
     const es = new EventSource(API + '/stream');
     S.es = es;
     S.lastEvent = Date.now();
-    es.addEventListener('opstate', (e) => { S.lastEvent = Date.now(); $('dot').classList.add('on'); setPayload(JSON.parse(e.data)); });
-    es.addEventListener('ping', () => { S.lastEvent = Date.now(); });
-    es.onerror = () => { $('dot').classList.remove('on'); es.close(); setTimeout(openStream, 1000 + Math.random() * 500); };
+    const up = () => { S.lastEvent = Date.now(); clearTimeout(S.lostTimer); S.lostTimer = 0; $('connbar').hidden = true; };
+    es.addEventListener('opstate', (e) => { up(); $('dot').classList.add('on'); setPayload(JSON.parse(e.data)); });
+    es.addEventListener('ping', up);
+    // (a failed retry must not push the notice back, so the timer is only started once)
+    es.onerror = () => { $('dot').classList.remove('on'); es.close(); if (!S.lostTimer) S.lostTimer = setTimeout(() => { if (!S.parked) $('connbar').hidden = false; }, 2000); setTimeout(openStream, 1000 + Math.random() * 500); };
   }
   setInterval(() => { if (S.es && Date.now() - S.lastEvent > 40000) openStream(); }, 5000);
   // A browser keeps only six connections to one address, and every open page holds a live stream. A page that has been
@@ -233,6 +235,7 @@
     const p = S.payload; if (!p) return;
     const o = p.op;
     $('show').textContent = (REHEARSAL ? __('REHEARSAL') + ' — ' : '') + (p.show.name || p.show.id || __('No show loaded'));
+    if (!REHEARSAL) document.title = __('Run') + ' — ' + (p.show.name || p.show.id || __('No show loaded')) + ' (' + (o.live ? __('LIVE') : o.standby ? __('STANDBY') : __('NOT LIVE')) + ')';
     const live = $('live'); live.textContent = o.live ? '● ' + __('LIVE') : o.standby ? __('STANDBY') : __('NOT LIVE'); live.classList.toggle('on', o.live); live.classList.toggle('standby', !!o.standby);
     const langs = p.languages || [];
     $('viewers').textContent = OCClients.label(p); // languages nobody is using are left out

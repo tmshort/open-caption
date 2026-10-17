@@ -672,7 +672,13 @@ async function main() {
     // ------------------------------------------------------------------ restart
     section('Restart: logins, control and undo survive');
     const before2 = await cursor();
-    await stopServer(); await sleep(500); await startServer(); await sleep(4500);
+    check('the operator page has a title with the show and its state', /^Run — .+ \((LIVE|STANDBY|NOT LIVE)\)$/.test(await op.title()), await op.title());
+    await stopServer(); await sleep(T(3500));
+    const lost = (pg) => pg.evaluate(() => !document.getElementById('connbar').hidden && /lost/.test(document.getElementById('connbar').textContent) && !document.getElementById('dot').classList.contains('on'));
+    check('when the program cannot be reached, the operator page and Setup both say so (and the dot turns red)', (await lost(op)) && (await lost(guard)));
+    await startServer(); await sleep(T(5000));
+    const back = (pg) => pg.evaluate(() => document.getElementById('connbar').hidden && document.getElementById('dot').classList.contains('on'));
+    check('and the notice goes away by itself once it is back', (await back(op)) && (await back(guard)));
     check('the operator page is still signed in and in control', (await op.evaluate(() => document.getElementById('ctrl').textContent)).includes('in control'), await op.evaluate(() => document.getElementById('ctrl').textContent));
     check('the position is kept', (await cursor()) === before2);
     await op.keyboard.press('Space'); await sleep(500);

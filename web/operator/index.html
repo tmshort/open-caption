@@ -9,16 +9,17 @@
 <link rel="icon" type="image/svg+xml" href="/static/shared/favicon.svg">
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="apple-touch-icon" href="/static/shared/apple-touch-icon.png">
-<title>Operator</title>
+<title>Run</title>
 <link rel="stylesheet" href="/static/shared/ui.css">
 <link rel="stylesheet" href="/static/shared/header.css">
 <link rel="stylesheet" href="/static/operator/operator.css">
 </head>
 <body class="viewonly">
 <main id="login" hidden><form>
-  <h1>Operator</h1>
+  <h1>Open Caption — Run</h1>
+  <p data-t>Enter the <strong>operator</strong> password. The admin password works too.</p>
   <label>Operator password <input id="pw" type="password" name="password" autocomplete="current-password" required></label>
-  <button>Sign in</button>
+  <button class="primary">Sign in</button>
   <p id="loginerr" role="alert"></p>
 </form></main>
 
@@ -40,6 +41,7 @@
     <i id="dot" title="Connection"></i>
     </div>
   </header>
+  <div id="connbar" class="connbar" role="alert" hidden>Connection to the program lost. Reconnecting…</div>
   <main id="stage">
   <h1 class="sr">Operator</h1>
   <div id="banner" hidden></div>

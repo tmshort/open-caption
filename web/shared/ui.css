@@ -40,6 +40,10 @@ button.quiet:hover:not(:disabled):not(.danger) { color: var(--fg); }
 #login input { width: 100%; max-width: 20rem; }
 #loginerr { color: var(--bad); min-height: 1.5em; }
 
+/* the program cannot be reached: shown after a couple of seconds so an ordinary reconnect does not flash it */
+.connbar { padding: .55rem 1rem; background: #b3261e; color: #fff; font-weight: 600; }
+.connbar[hidden] { display: none; }
+
 /* dialogs */
 dialog { background: var(--panel); color: var(--fg); border: 1px solid var(--line); border-radius: 12px; padding: 1.2rem; max-width: 32rem; width: calc(100% - 2rem); }
 dialog::backdrop { background: #0009; }
