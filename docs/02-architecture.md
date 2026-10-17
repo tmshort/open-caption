@@ -207,7 +207,7 @@ https:
   enabled: false
   addr: ":443"
   fallback_addr: ":8443"
-  cert_file: ""                    # supply both, or leave empty with self_signed: true
+  cert_file: ""                    # supply both, or leave empty with self_signed: true; renewed files are picked up without a restart
   key_file: ""
   self_signed: true
 mdns:

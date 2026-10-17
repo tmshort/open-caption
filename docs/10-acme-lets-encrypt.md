@@ -4,7 +4,7 @@ Status: **not built.** This records what automatic certificates would involve, s
 
 ## Today
 
-HTTPS uses a certificate file the venue supplies (`https.cert_file` / `https.key_file`) or a self-signed certificate the program generates in `<data-dir>/tls/`. Plain HTTP stays the default audience address because a self-signed certificate shows a browser warning. A venue that has a real certificate already can use it; renewal is then up to them. The program has no renewal or reload of its own: a new certificate file is read at the next restart.
+HTTPS uses a certificate file the venue supplies (`https.cert_file` / `https.key_file`) or a self-signed certificate the program generates in `<data-dir>/tls/`. Plain HTTP stays the default audience address because a self-signed certificate shows a browser warning. A venue that has a real certificate already can use it; renewal is then up to them. The program watches those files: when the certificate and key are replaced (for example by `certbot` or `lego`), the new pair is used for new connections within about 30 seconds, with no restart (`netinfo.Reloader`). If the new files cannot be used (a half-written pair, a key that does not match) it keeps serving the previous certificate, logs one warning, and tries again when the files change again. The log says when the certificate expires. The program does not renew certificates itself.
 
 ## What a public CA needs
 
@@ -75,6 +75,6 @@ An expired certificate, a CA rate limit, a DNS provider API change or outage, a 
 
 ## Cheaper steps first
 
-1. **Reload without restart:** pick up a renewed `cert_file` / `key_file` while running (a file watcher or a **Reload certificate** button).
+1. ~~**Reload without restart**~~ (built): a renewed `cert_file` / `key_file` is picked up while running.
 2. **A documented recipe** for obtaining the certificate outside the program with `certbot` or `lego` (DNS-01 with EasyDNS), then pointing `cert_file` and `key_file` at it, with a scheduled renewal.
 3. Only then, if there is demand, build the DNS-01 integration above.

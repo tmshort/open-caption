@@ -212,15 +212,17 @@ func main() {
 }
 
 func tlsConfig(cfg config.Config) *tls.Config {
-	var cert tls.Certificate
-	var err error
 	if cfg.HTTPS.CertFile != "" {
-		cert, err = tls.LoadX509KeyPair(cfg.HTTPS.CertFile, cfg.HTTPS.KeyFile)
-	} else {
-		host, _ := os.Hostname()
-		cert, err = netinfo.EnsureSelfSigned(filepath.Join(cfg.DataDir, "tls"), host, netinfo.LocalIPs())
-		logx.Warnf("HTTPS is using a self-signed certificate: browsers will show a warning until it is accepted")
+		// the certificate files are watched: a renewed pair is picked up without a restart
+		rl, err := netinfo.NewReloader(cfg.HTTPS.CertFile, cfg.HTTPS.KeyFile, logx.Infof, logx.Warnf)
+		if err != nil {
+			logx.Fatalf("https: %v", err)
+		}
+		return &tls.Config{GetCertificate: rl.GetCertificate, MinVersion: tls.VersionTLS12}
 	}
+	host, _ := os.Hostname()
+	cert, err := netinfo.EnsureSelfSigned(filepath.Join(cfg.DataDir, "tls"), host, netinfo.LocalIPs())
+	logx.Warnf("HTTPS is using a self-signed certificate: browsers will show a warning until it is accepted")
 	if err != nil {
 		logx.Fatalf("https: %v", err)
 	}
