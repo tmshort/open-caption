@@ -493,6 +493,17 @@ async function main() {
     }
     check('the ON AIR badge in the show list is the same red as the ON AIR pills', await arch.evaluate(() => { const e = document.createElement('span'); e.className = 'badge live'; document.querySelector('.card.show .name').appendChild(e); const c = getComputedStyle(e).backgroundColor; e.remove(); return c === 'rgb(179, 38, 30)'; }));
     check('the name box under Add another show is a little larger than a normal box', await arch.evaluate(() => { const i = document.querySelector('input.newname'), r = i.getBoundingClientRect(); return parseFloat(getComputedStyle(i).fontSize) >= 17 && r.height >= 44 && r.width >= 300; }));
+    // the "More ▾" menu on a show card
+    const menuState = () => arch.evaluate(() => { const m = document.querySelector('.card.show .moremenu .menu'); return { open: !m.hidden, focus: document.activeElement && document.activeElement.textContent.trim().slice(0, 12), expanded: m.parentNode.querySelector('button.more').getAttribute('aria-expanded') }; });
+    await arch.focus('.card.show button.more'); await arch.keyboard.press('Enter'); await sleep(150);
+    let ms = await menuState();
+    check('More opens a menu from the keyboard, with the first action focused', ms.open && ms.expanded === 'true' && /^Rename/.test(ms.focus), ms);
+    await arch.keyboard.press('ArrowDown'); await arch.keyboard.press('ArrowDown'); await sleep(100);
+    check('the arrow keys move through the actions', /^Export/.test((await menuState()).focus), await menuState());
+    await arch.keyboard.press('Escape'); await sleep(150); ms = await menuState();
+    check('Esc closes the menu and returns to the More button', !ms.open && ms.expanded === 'false' && await arch.evaluate(() => document.activeElement.classList.contains('more')), ms);
+    check('the menu lists Rename, Duplicate, Export, Archive and Delete, Delete last and in red', await arch.evaluate(() => { const c = document.querySelector('.card.show'), it = [...c.querySelectorAll('.menu .item')].map((e) => e.textContent.trim()), d = c.querySelector('.menu .item.danger'); return it.length === 5 && /^Rename/.test(it[0]) && /^Delete/.test(it[4]) && !!d && getComputedStyle(d).color !== getComputedStyle(document.body).color; }));
+    check('an action that cannot be done is listed with its reason', await arch.evaluate(() => [...document.querySelectorAll('.card.show .menu .item[aria-disabled=true] small')].every((x) => x.textContent.length > 10)));
     check('Duplicate… is named for the dialog it opens', await arch.evaluate(() => [...document.querySelectorAll('.card.show button')].some((b) => b.textContent === 'Duplicate…') && ![...document.querySelectorAll('.card.show button')].some((b) => b.textContent === 'Duplicate')));
     check('a show to archive is created', made.status === 201 || made.status === 200, made);
     await arch.reload(); await arch.waitForFunction(() => [...document.querySelectorAll('.card.show')].some((x) => x.textContent.includes('Last year')), { timeout: 15000 });

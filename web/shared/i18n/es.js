@@ -627,5 +627,7 @@ OCI18n.add("es", {
  "Item {n} of {total}": "Elemento {n} de {total}",
  "{total} items": "{total} elementos",
  "ANNOUNCEMENT ON SCREEN: “{text}” — Back removes it; the next line replaces it.": "ANUNCIO EN PANTALLA: «{text}» — Atrás lo quita; la siguiente línea lo reemplaza.",
- "Audience screen is blank. Space (NEXT) sends the next line, B shows the earlier lines again, Back undoes.": "La pantalla del público está en blanco. Espacio (SIGUIENTE) envía la línea siguiente, B vuelve a mostrar las líneas anteriores, Atrás deshace."
+ "Audience screen is blank. Space (NEXT) sends the next line, B shows the earlier lines again, Back undoes.": "La pantalla del público está en blanco. Espacio (SIGUIENTE) envía la línea siguiente, B vuelve a mostrar las líneas anteriores, Atrás deshace.",
+ "More": "Más",
+ "More actions for {name}": "Más acciones para {name}"
 });

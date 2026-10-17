@@ -366,11 +366,13 @@
         h('div', { class: 'name' }, s.name, ' ', s.active ? h('span', { class: 'badge active' }, __('ACTIVE')) : null, ' ', s.live ? h('span', { class: 'badge live' }, __('ON AIR')) : null,
           h('div', { class: 'hint' }, __('Updated {when}', { when: new Date(s.updated).toLocaleString(OCI18n.lang) }))),
         h('button', { class: A.cur === s.id ? '' : 'primary', onclick: () => { setCur(s.id); go('showfile'); } }, A.cur === s.id ? __('Continue with this show') : __('Work on this show')),
-        h('button', { class: 'quiet', onclick: () => renameShow(s) }, __('Rename…')),
-        h('button', { class: 'quiet', onclick: () => duplicateShow(s) }, __('Duplicate…')),
-        h('a', { class: 'quiet', href: '/api/admin/shows/' + s.id + '/export', download: s.id + '.zip' }, __('Export')),
-        h('button', { class: 'quiet', disabled: s.active, title: s.active ? __('The show on air cannot be archived. Activate another show first.') : __('Put this show away; you can restore it later'), onclick: () => archiveShow(s, true) }, __('Archive')),
-        h('button', { class: 'danger quiet', title: s.live ? __('This show is on air. Restart it from the Run page, or activate another show first.') : null, onclick: () => deleteShow(s) }, __('Delete…')))));
+        moreMenu(s.name, [
+          { label: __('Rename…'), run: () => renameShow(s) },
+          { label: __('Duplicate…'), run: () => duplicateShow(s) },
+          { label: __('Export'), href: '/api/admin/shows/' + s.id + '/export', download: s.id + '.zip' },
+          { label: __('Archive'), run: () => archiveShow(s, true), why: s.active ? __('The show on air cannot be archived. Activate another show first.') : '', disabled: s.active, hint: __('Put this show away; you can restore it later') },
+          { sep: true },
+          { label: __('Delete…'), run: () => deleteShow(s), danger: true, why: s.live ? __('This show is on air. Restart it from the Run page, or activate another show first.') : '' }])))); 
       p.append(h('h3', {}, __('Add another show')), h('div', { class: 'card row addrow' }, ...newShowForm(), h('button', { onclick: makeSample }, __('Create a sample show')), ...importButton()));
     }
     if (archived.length) {
@@ -380,9 +382,52 @@
         ...archived.map((s) => h('div', { class: 'card show' },
           h('div', { class: 'name' }, s.name, h('div', { class: 'hint' }, __('Updated {when}', { when: new Date(s.updated).toLocaleString(OCI18n.lang) }))),
           h('button', { class: 'primary', onclick: () => archiveShow(s, false) }, __('Restore')),
-          h('a', { class: 'quiet', href: '/api/admin/shows/' + s.id + '/export', download: s.id + '.zip' }, __('Export')),
-          h('button', { class: 'danger quiet', title: s.live ? __('This show is on air. Restart it from the Run page, or activate another show first.') : null, onclick: () => deleteShow(s) }, __('Delete…'))))));
+          moreMenu(s.name, [
+            { label: __('Export'), href: '/api/admin/shows/' + s.id + '/export', download: s.id + '.zip' },
+            { sep: true },
+            { label: __('Delete…'), run: () => deleteShow(s), danger: true, why: s.live ? __('This show is on air. Restart it from the Run page, or activate another show first.') : '' }])))));
     }
+  }
+  // A "More ▾" button with a menu of the less common actions of one thing (a show). items: { label, run | href+download, danger,
+  // disabled, why (shown under a disabled item), hint } or { sep: true }. Keyboard: Enter/Space/Down opens, arrows move, Home/End,
+  // Esc closes and returns to the button, Tab leaves. A disabled item stays in the menu (so it can be found) and says why.
+  let openMenu = null;
+  function closeMenu() { if (openMenu) { openMenu.menu.hidden = true; openMenu.btn.setAttribute('aria-expanded', 'false'); openMenu = null; } }
+  document.addEventListener('click', (e) => { if (openMenu && !openMenu.box.contains(e.target)) closeMenu(); });
+  function moreMenu(forName, items) {
+    const box = h('div', { class: 'moremenu' });
+    const btn = h('button', { type: 'button', class: 'more', 'aria-haspopup': 'menu', 'aria-expanded': 'false', 'aria-label': __('More actions for {name}', { name: forName }) }, __('More'), ' ▾');
+    const menu = h('div', { class: 'menu', role: 'menu', hidden: '' });
+    const live = [];
+    items.forEach((it) => {
+      if (it.sep) { menu.append(h('div', { class: 'sep', role: 'separator' })); return; }
+      const props = { role: 'menuitem', tabindex: '-1', class: 'item' + (it.danger ? ' danger' : '') };
+      if (it.href) { props.href = it.href; props.download = it.download; }
+      const el = h(it.href ? 'a' : 'button', props, h('span', {}, it.label));
+      if (it.disabled) el.setAttribute('aria-disabled', 'true');
+      if (it.why) { const id = 'mw' + Math.random().toString(36).slice(2, 8); el.append(h('small', { id }, it.why)); el.setAttribute('aria-describedby', id); }
+      else if (it.hint) el.title = it.hint;
+      el.addEventListener('click', (e) => {
+        if (it.disabled) { e.preventDefault(); return; }
+        closeMenu(); btn.focus();
+        if (it.run) { e.preventDefault(); it.run(); }
+      });
+      menu.append(el); live.push(el);
+    });
+    const show = (focusIdx) => { closeMenu(); menu.hidden = false; btn.setAttribute('aria-expanded', 'true'); openMenu = { box, menu, btn }; if (live[focusIdx]) live[focusIdx].focus(); };
+    btn.addEventListener('click', () => { if (openMenu && openMenu.menu === menu) { closeMenu(); } else show(0); });
+    btn.addEventListener('keydown', (e) => { if (e.key === 'ArrowDown') { e.preventDefault(); show(0); } else if (e.key === 'ArrowUp') { e.preventDefault(); show(live.length - 1); } });
+    menu.addEventListener('keydown', (e) => {
+      const i = live.indexOf(document.activeElement);
+      if (e.key === 'ArrowDown') { e.preventDefault(); live[(i + 1) % live.length].focus(); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); live[(i + live.length - 1) % live.length].focus(); }
+      else if (e.key === 'Home') { e.preventDefault(); live[0].focus(); }
+      else if (e.key === 'End') { e.preventDefault(); live[live.length - 1].focus(); }
+      else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); closeMenu(); btn.focus(); }
+      else if (e.key === 'Tab') closeMenu();
+    });
+    box.append(btn, menu);
+    return box;
   }
   // Every file chooser in Setup is a button like any other: it opens the browser's chooser through a hidden
   // input, and hands the chosen files to onFiles. Returns [button, input] to put in a row.

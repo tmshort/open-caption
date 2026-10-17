@@ -627,5 +627,7 @@ OCI18n.add("de", {
  "Item {n} of {total}": "Element {n} von {total}",
  "{total} items": "{total} Elemente",
  "ANNOUNCEMENT ON SCREEN: “{text}” — Back removes it; the next line replaces it.": "DURCHSAGE AUF DEM BILDSCHIRM: „{text}“ — Zurück entfernt sie; die nächste Zeile ersetzt sie.",
- "Audience screen is blank. Space (NEXT) sends the next line, B shows the earlier lines again, Back undoes.": "Der Publikumsbildschirm ist leer. Leertaste (WEITER) sendet die nächste Zeile, B zeigt die früheren Zeilen wieder, Zurück macht es rückgängig."
+ "Audience screen is blank. Space (NEXT) sends the next line, B shows the earlier lines again, Back undoes.": "Der Publikumsbildschirm ist leer. Leertaste (WEITER) sendet die nächste Zeile, B zeigt die früheren Zeilen wieder, Zurück macht es rückgängig.",
+ "More": "Mehr",
+ "More actions for {name}": "Weitere Aktionen für {name}"
 });

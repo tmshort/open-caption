@@ -187,3 +187,13 @@ a.quiet { background: none; border: none; color: var(--dim); text-decoration: no
 .nextstep[hidden] { display: none; }
 .urls input[type=radio] { margin: 4px 8px 4px 6px; } /* room around the small radio so each is a comfortable touch target */
 .radiogap { margin-right: 8px; margin-left: 6px; }
+/* the "More ▾" menu on a show card */
+.moremenu { position: relative; display: inline-block; }
+.moremenu .menu { position: absolute; right: 0; top: calc(100% + 4px); z-index: 30; min-width: 14rem; max-width: min(22rem, 90vw); padding: .3rem; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 8px 24px #0005; }
+.moremenu .menu[hidden] { display: none; }
+.moremenu .item { display: block; width: 100%; min-height: 2.4rem; padding: .45rem .8rem; background: none; border: 0; border-radius: 6px; text-align: left; text-decoration: none; color: var(--fg); font: inherit; cursor: pointer; }
+.moremenu .item:hover, .moremenu .item:focus { background: var(--bg); }
+.moremenu .item[aria-disabled=true] { opacity: .6; cursor: not-allowed; }
+.moremenu .item small { display: block; margin-top: .15rem; color: var(--dim); font-size: .85rem; white-space: normal; }
+.moremenu .item.danger { color: var(--bad); }
+.moremenu .sep { height: 1px; margin: .3rem .2rem; background: var(--line); }
