@@ -260,7 +260,6 @@ OCI18n.add("pt", {
  "Unblank": "Desfazer o branco",
  "Blank": "Em branco",
  "LOOP RUNNING — item {n} of {total}. NEXT ends it; STOP blanks the screen.": "LAÇO EM ANDAMENTO — item {n} de {total}. PRÓXIMO o encerra; PARAR deixa a tela em branco.",
- "Audience screen is blank.": "A tela do público está em branco.",
  "End of the show.": "Fim do espetáculo.",
  "Another operator is in control — use Take over": "Outro operador tem o controle — use Assumir",
  "Connection problem — try again": "Problema de conexão — tente de novo",
@@ -627,5 +626,6 @@ OCI18n.add("pt", {
  "Open the Run page": "Abrir a página Conduzir",
  "Item {n} of {total}": "Item {n} de {total}",
  "{total} items": "{total} itens",
- "ANNOUNCEMENT ON SCREEN: “{text}” — Back removes it; the next line replaces it.": "AVISO NA TELA: «{text}» — Voltar o remove; a próxima linha o substitui."
+ "ANNOUNCEMENT ON SCREEN: “{text}” — Back removes it; the next line replaces it.": "AVISO NA TELA: «{text}» — Voltar o remove; a próxima linha o substitui.",
+ "Audience screen is blank. Space (NEXT) sends the next line, B shows the earlier lines again, Back undoes.": "A tela do público está em branco. Espaço (PRÓXIMO) envia a próxima linha, B volta a mostrar as linhas anteriores, Voltar desfaz."
 });

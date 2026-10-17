@@ -260,7 +260,6 @@ OCI18n.add("it", {
  "Unblank": "Riattiva",
  "Blank": "Schermo vuoto",
  "LOOP RUNNING — item {n} of {total}. NEXT ends it; STOP blanks the screen.": "CICLO IN CORSO — elemento {n} di {total}. AVANTI lo termina; STOP svuota lo schermo.",
- "Audience screen is blank.": "Lo schermo del pubblico è vuoto.",
  "End of the show.": "Fine dello spettacolo.",
  "Another operator is in control — use Take over": "Un altro operatore ha il controllo — usa Subentra",
  "Connection problem — try again": "Problema di connessione — riprova",
@@ -627,5 +626,6 @@ OCI18n.add("it", {
  "Open the Run page": "Apri la pagina Conduci",
  "Item {n} of {total}": "Elemento {n} di {total}",
  "{total} items": "{total} elementi",
- "ANNOUNCEMENT ON SCREEN: “{text}” — Back removes it; the next line replaces it.": "ANNUNCIO SULLO SCHERMO: «{text}» — Indietro lo toglie; la riga successiva lo sostituisce."
+ "ANNOUNCEMENT ON SCREEN: “{text}” — Back removes it; the next line replaces it.": "ANNUNCIO SULLO SCHERMO: «{text}» — Indietro lo toglie; la riga successiva lo sostituisce.",
+ "Audience screen is blank. Space (NEXT) sends the next line, B shows the earlier lines again, Back undoes.": "Lo schermo del pubblico è vuoto. Spazio (AVANTI) invia la riga successiva, B mostra di nuovo le righe precedenti, Indietro annulla."
 });

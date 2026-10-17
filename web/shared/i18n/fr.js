@@ -260,7 +260,6 @@ OCI18n.add("fr", {
  "Unblank": "Réafficher",
  "Blank": "Écran vide",
  "LOOP RUNNING — item {n} of {total}. NEXT ends it; STOP blanks the screen.": "BOUCLE EN COURS — élément {n} sur {total}. SUIVANT la termine ; ARRÊT vide l'écran.",
- "Audience screen is blank.": "L'écran du public est vide.",
  "End of the show.": "Fin du spectacle.",
  "Another operator is in control — use Take over": "Un autre opérateur a la main — utilisez Reprendre la main",
  "Connection problem — try again": "Problème de connexion — réessayez",
@@ -627,5 +626,6 @@ OCI18n.add("fr", {
  "Open the Run page": "Ouvrir la page Conduire",
  "Item {n} of {total}": "Élément {n} sur {total}",
  "{total} items": "{total} éléments",
- "ANNOUNCEMENT ON SCREEN: “{text}” — Back removes it; the next line replaces it.": "ANNONCE À L'ÉCRAN : « {text} » — Retour la retire ; la ligne suivante la remplace."
+ "ANNOUNCEMENT ON SCREEN: “{text}” — Back removes it; the next line replaces it.": "ANNONCE À L'ÉCRAN : « {text} » — Retour la retire ; la ligne suivante la remplace.",
+ "Audience screen is blank. Space (NEXT) sends the next line, B shows the earlier lines again, Back undoes.": "L'écran du public est vide. Espace (SUIVANT) envoie la ligne suivante, B réaffiche les lignes précédentes, Retour annule."
 });

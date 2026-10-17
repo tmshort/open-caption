@@ -8,7 +8,7 @@
 | Personensymbol und eine Zahl | Wie viele Publikumsgeräte verbunden sind. Bei mehreren Sprachen folgt auf die Zahl eine Zählung je Sprache, etwa `(en 60 · es 23)` |
 | **Sie haben die Steuerung** | Ihre Tasten steuern die Show |
 | **Ein anderer Operator hat die Steuerung** | Sie können zusehen, aber nichts senden. **Übernehmen** nimmt sie ihm ab |
-| Gelbes Banner **Der Publikumsbildschirm ist leer** | Das Publikum sieht einen leeren Bildschirm (Ausblenden oder Stopp wurde benutzt) |
+| Gelbes Banner **Der Publikumsbildschirm ist leer** | Das Publikum sieht einen leeren Bildschirm (Ausblenden oder Stopp wurde benutzt). **Leertaste** sendet die nächste Zeile, **B** zeigt die früheren wieder, **Rücktaste** macht es rückgängig |
 | Grünes Banner **SCHLEIFE LÄUFT** | Eine Schleife vor der Show oder in der Pause ist auf den Bildschirmen |
 | **Ende der Show.** | Es gibt keine weiteren Zeilen zu senden |
 | **Zuletzt gesendet vor 12 s** | Zeit seit dem letzten Senden durch den Operator. Wird nach zwei Minuten gelb |

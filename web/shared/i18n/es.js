@@ -260,7 +260,6 @@ OCI18n.add("es", {
  "Unblank": "Quitar blanco",
  "Blank": "En blanco",
  "LOOP RUNNING — item {n} of {total}. NEXT ends it; STOP blanks the screen.": "BUCLE EN CURSO — elemento {n} de {total}. SIGUIENTE lo termina; PARAR deja la pantalla en blanco.",
- "Audience screen is blank.": "La pantalla del público está en blanco.",
  "End of the show.": "Fin del espectáculo.",
  "Another operator is in control — use Take over": "Otro operador tiene el control — use Tomar el control",
  "Connection problem — try again": "Problema de conexión — inténtelo de nuevo",
@@ -627,5 +626,6 @@ OCI18n.add("es", {
  "Open the Run page": "Abrir la página Dirigir",
  "Item {n} of {total}": "Elemento {n} de {total}",
  "{total} items": "{total} elementos",
- "ANNOUNCEMENT ON SCREEN: “{text}” — Back removes it; the next line replaces it.": "ANUNCIO EN PANTALLA: «{text}» — Atrás lo quita; la siguiente línea lo reemplaza."
+ "ANNOUNCEMENT ON SCREEN: “{text}” — Back removes it; the next line replaces it.": "ANUNCIO EN PANTALLA: «{text}» — Atrás lo quita; la siguiente línea lo reemplaza.",
+ "Audience screen is blank. Space (NEXT) sends the next line, B shows the earlier lines again, Back undoes.": "La pantalla del público está en blanco. Espacio (SIGUIENTE) envía la línea siguiente, B vuelve a mostrar las líneas anteriores, Atrás deshace."
 });

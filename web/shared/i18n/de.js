@@ -260,7 +260,6 @@ OCI18n.add("de", {
  "Unblank": "Einblenden",
  "Blank": "Ausblenden",
  "LOOP RUNNING — item {n} of {total}. NEXT ends it; STOP blanks the screen.": "SCHLEIFE LÄUFT — Element {n} von {total}. WEITER beendet sie; STOPP leert den Bildschirm.",
- "Audience screen is blank.": "Der Publikumsbildschirm ist leer.",
  "End of the show.": "Ende der Show.",
  "Another operator is in control — use Take over": "Ein anderer Operator hat die Steuerung — nutzen Sie Übernehmen",
  "Connection problem — try again": "Verbindungsproblem — versuchen Sie es erneut",
@@ -627,5 +626,6 @@ OCI18n.add("de", {
  "Open the Run page": "Die Seite „Fahren“ öffnen",
  "Item {n} of {total}": "Element {n} von {total}",
  "{total} items": "{total} Elemente",
- "ANNOUNCEMENT ON SCREEN: “{text}” — Back removes it; the next line replaces it.": "DURCHSAGE AUF DEM BILDSCHIRM: „{text}“ — Zurück entfernt sie; die nächste Zeile ersetzt sie."
+ "ANNOUNCEMENT ON SCREEN: “{text}” — Back removes it; the next line replaces it.": "DURCHSAGE AUF DEM BILDSCHIRM: „{text}“ — Zurück entfernt sie; die nächste Zeile ersetzt sie.",
+ "Audience screen is blank. Space (NEXT) sends the next line, B shows the earlier lines again, Back undoes.": "Der Publikumsbildschirm ist leer. Leertaste (WEITER) sendet die nächste Zeile, B zeigt die früheren Zeilen wieder, Zurück macht es rückgängig."
 });

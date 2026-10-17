@@ -280,7 +280,7 @@
       b.textContent = '🔁 ' + __('LOOP RUNNING — item {n} of {total}. NEXT ends it; STOP blanks the screen.', { n: o.loop.item + 1, total: c ? (c.items || []).length : '?' });
       if (S.timerEnds) { const t = document.createElement('b'); t.id = 'bannertimer'; b.appendChild(document.createTextNode(' ')); b.appendChild(t); paintBannerTimer(); }
     }
-    else if (o.mode === 'blank') { b.hidden = false; b.className = ''; b.textContent = '⬛ ' + __('Audience screen is blank.'); }
+    else if (o.mode === 'blank') { b.hidden = false; b.className = ''; b.textContent = '⬛ ' + __('Audience screen is blank. Space (NEXT) sends the next line, B shows the earlier lines again, Back undoes.'); }
     else if (o.nextIndex < 0 && o.total > 0 && o.cursor >= o.total) { b.hidden = false; b.className = ''; b.textContent = __('End of the show.'); }
     else b.hidden = true;
   }
