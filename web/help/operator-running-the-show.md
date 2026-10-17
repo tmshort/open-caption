@@ -23,6 +23,13 @@ Both leave the audience screens empty, but they are not the same:
 
 A show file can do the same with the `[blank]` and `[clear]` commands; they appear in your list as `BLANK SCREEN` and `CLEAR SCREEN`.
 
+## Words on this page
+
+- **Standby** (**NOT ON AIR**): the show is loaded, but the audience sees only the venue's standby screen.
+- **On air** (**LIVE**): the audience sees the show. **START** puts a show on air; **Go off air…** puts it back in standby, keeping its place.
+- **Restart show…**: back to the first line, and to standby.
+- **Blank** hides the captions but keeps the earlier lines; **Clear** erases them (see above).
+
 ## Before the show
 
 - Sign in to the operator page. You will see "You are in control". If it says another operator is in control, use **Take over** only if you are meant to be the operator.
@@ -36,7 +43,7 @@ A show file can do the same with the `[blank]` and `[clear]` commands; they appe
 - **Songs:** sung lines have music notes (♪) around them and are shown in italics on the audience's screens. A song's title appears as a blue bookmark for you only. Aim to press Space as each phrase begins.
 - **Languages:** if the show has translations, you follow the main language and everything you send goes to every language at once. The audience count in the header lists each language, for example `83 (en 60 · es 23)`.
 - **Several voices at once:** a line marked `TOGETHER` shows two or more singers on the screens at the same time. One press of Space sends all of them.
-- The header shows **Last sent … ago**, so you can see at a glance that the show and your screen are still in step. It turns yellow after two minutes without a line.
+- The strip under the header shows who is in control, **Line n of total**, and **Last sent … ago**, so you can see at a glance that the show and your screen are still in step. It turns yellow after two minutes without a line.
 - **Go to section…** (beside the search box) lists the show file's bookmarks; picking one selects it, and you confirm the jump.
 - To skip ahead or go back, click a line, then confirm "Jump here". You can also search with `/`.
 - A one-off announcement such as "The show will resume shortly" can be sent with **Message…**. Press **Back** to remove it.

@@ -23,6 +23,13 @@ Les deux laissent les écrans du public vides, mais ce n'est pas la même chose 
 
 Un fichier de spectacle peut faire la même chose avec les commandes `[blank]` et `[clear]` ; elles apparaissent dans votre liste sous les noms `ÉCRAN VIDE` et `EFFACER L'ÉCRAN`.
 
+## Les mots de cette page
+
+- **En attente** (**HORS ANTENNE**) : le spectacle est chargé, mais le public ne voit que l'écran d'attente du lieu.
+- **À l'antenne** (**EN DIRECT**) : le public voit le spectacle. **DÉMARRER** (START) le met à l'antenne ; **Couper l'antenne…** le remet en attente en gardant sa position.
+- **Redémarrer le spectacle…** : retour à la première ligne et à l'attente.
+- **Écran vide** masque les sous-titres mais garde les lignes précédentes ; **Effacer** les supprime (voir plus haut).
+
 ## Avant le spectacle
 
 - Connectez-vous à la page de l'opérateur. Vous verrez « Vous avez la main ». Si elle indique qu'un autre opérateur a la main, utilisez **Reprendre la main** seulement si c'est bien vous l'opérateur.
@@ -36,7 +43,7 @@ Un fichier de spectacle peut faire la même chose avec les commandes `[blank]` e
 - **Chansons :** les lignes chantées sont entourées de notes de musique (♪) et s'affichent en italique sur les écrans du public. Le titre d'une chanson apparaît comme un signet bleu pour vous seul. Essayez d'appuyer sur Espace au début de chaque phrase.
 - **Langues :** si le spectacle a des traductions, vous suivez la langue principale et tout ce que vous envoyez part vers toutes les langues à la fois. Le nombre de spectateurs dans l'en-tête liste chaque langue, par exemple `83 (en 60 · es 23)`.
 - **Plusieurs voix à la fois :** une ligne marquée `ENSEMBLE` montre deux chanteurs ou plus sur les écrans en même temps. Une seule pression sur Espace les envoie tous.
-- L'en-tête affiche **Dernier envoi il y a …**, pour voir d'un coup d'œil que le spectacle et votre écran sont toujours synchrones. Il devient jaune après deux minutes sans ligne.
+- La bande sous l'en-tête indique qui a le contrôle, **Ligne n sur total** et **Dernier envoi il y a …**, pour voir d'un coup d'œil que le spectacle et votre écran sont toujours synchrones. Il devient jaune après deux minutes sans ligne.
 - **Aller à la section…** (à côté de la zone de recherche) liste les signets du fichier du spectacle ; en choisir un le sélectionne, et vous confirmez le saut.
 - Pour avancer ou reculer, cliquez sur une ligne, puis confirmez « Sauter ici ». Vous pouvez aussi chercher avec `/`.
 - Une annonce ponctuelle comme « Le spectacle reprendra bientôt » s'envoie avec **Message…**. Appuyez sur **Retour** pour la retirer.

@@ -23,6 +23,13 @@ Ambos dejan vacías las pantallas del público, pero no son lo mismo:
 
 Un archivo del espectáculo puede hacer lo mismo con los comandos `[blank]` y `[clear]`; aparecen en su lista como `PANTALLA EN BLANCO` y `BORRAR PANTALLA`.
 
+## Palabras de esta página
+
+- **En espera** (**FUERA DEL AIRE**): el espectáculo está cargado, pero el público solo ve la pantalla de espera del local.
+- **En el aire** (**EN VIVO**): el público ve el espectáculo. **INICIAR** (START) lo pone en el aire; **Sacar del aire…** lo devuelve a la espera conservando su posición.
+- **Reiniciar espectáculo…**: vuelve a la primera línea y a la espera.
+- **En blanco** oculta los subtítulos pero conserva las líneas anteriores; **Borrar** las elimina (véase arriba).
+
 ## Antes del espectáculo
 
 - Inicie sesión en la página del operador. Verá «Usted tiene el control». Si dice que otro operador tiene el control, use **Asumir el control** solo si le corresponde ser el operador.
@@ -36,7 +43,7 @@ Un archivo del espectáculo puede hacer lo mismo con los comandos `[blank]` y `[
 - **Canciones:** las líneas cantadas llevan notas musicales (♪) alrededor y se muestran en cursiva en las pantallas del público. El título de una canción aparece como marcador azul solo para usted. Intente pulsar Espacio al empezar cada frase.
 - **Idiomas:** si el espectáculo tiene traducciones, usted sigue el idioma principal y todo lo que envía va a todos los idiomas a la vez. El recuento de público en la cabecera enumera cada idioma, por ejemplo `83 (en 60 · es 23)`.
 - **Varias voces a la vez:** una línea marcada `A LA VEZ` muestra dos o más cantantes en las pantallas al mismo tiempo. Una pulsación de Espacio los envía todos.
-- La cabecera muestra **Último envío hace …**, para ver de un vistazo que el espectáculo y su pantalla siguen sincronizados. Se pone amarillo tras dos minutos sin una línea.
+- La franja bajo la cabecera muestra quién tiene el control, **Línea n de total** y **Último envío hace …**, para ver de un vistazo que el espectáculo y su pantalla siguen sincronizados. Se pone amarillo tras dos minutos sin una línea.
 - **Ir a la sección…** (junto al cuadro de búsqueda) enumera los marcadores del archivo del espectáculo; al elegir uno se selecciona, y usted confirma el salto.
 - Para avanzar o retroceder, haga clic en una línea y luego confirme «Saltar aquí». También puede buscar con `/`.
 - Un aviso puntual como «El espectáculo se reanudará en breve» se puede enviar con **Mensaje…**. Pulse **Atrás** para quitarlo.

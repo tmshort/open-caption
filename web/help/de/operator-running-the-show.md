@@ -23,6 +23,13 @@ Beide lassen die Publikumsbildschirme leer, sind aber nicht dasselbe:
 
 Eine Show-Datei kann dasselbe mit den Befehlen `[blank]` und `[clear]` tun; in Ihrer Liste erscheinen sie als `BILDSCHIRM SCHWARZ` und `BILDSCHIRM LEEREN`.
 
+## Begriffe auf dieser Seite
+
+- **Standby** (**NICHT AUF SENDUNG**): Die Show ist geladen, aber das Publikum sieht nur den Standby-Bildschirm des Hauses.
+- **Auf Sendung** (**LIVE**): Das Publikum sieht die Show. **START** schaltet die Show auf Sendung; **Aus der Sendung nehmen …** setzt sie zurück in den Standby und behält ihre Position.
+- **Show neu starten…**: zurück zur ersten Zeile und in den Standby.
+- **Ausblenden** verbirgt die Untertitel, behält aber die früheren Zeilen; **Leeren** löscht sie (siehe oben).
+
 ## Vor der Show
 
 - Melden Sie sich auf der Operator-Seite an. Sie sehen „Sie haben die Steuerung“. Steht dort, dass ein anderer Operator die Steuerung hat, nutzen Sie **Übernehmen** nur, wenn Sie der Operator sein sollen.
@@ -36,7 +43,7 @@ Eine Show-Datei kann dasselbe mit den Befehlen `[blank]` und `[clear]` tun; in I
 - **Lieder:** Gesungene Zeilen sind von Noten (♪) umgeben und werden auf den Publikumsbildschirmen kursiv gezeigt. Der Titel eines Lieds erscheint nur für Sie als blaues Lesezeichen. Drücken Sie die Leertaste möglichst, wenn jede Phrase beginnt.
 - **Sprachen:** Hat die Show Übersetzungen, folgen Sie der Hauptsprache, und alles, was Sie senden, geht gleichzeitig an alle Sprachen. Die Publikumszahl in der Kopfzeile listet jede Sprache auf, zum Beispiel `83 (en 60 · es 23)`.
 - **Mehrere Stimmen gleichzeitig:** Eine mit `GLEICHZEITIG` markierte Zeile zeigt zwei oder mehr Singende zugleich auf den Bildschirmen. Ein Druck auf die Leertaste sendet alle.
-- Die Kopfzeile zeigt **Zuletzt gesendet vor …**, sodass Sie auf einen Blick sehen, dass Show und Bildschirm noch im Gleichschritt sind. Sie wird nach zwei Minuten ohne Zeile gelb.
+- Der Streifen unter der Kopfzeile zeigt, wer die Kontrolle hat, **Zeile n von gesamt** und **Zuletzt gesendet vor …**, sodass Sie auf einen Blick sehen, dass Show und Bildschirm noch im Gleichschritt sind. Sie wird nach zwei Minuten ohne Zeile gelb.
 - **Zum Abschnitt …** (neben dem Suchfeld) listet die Lesezeichen der Show-Datei auf; die Auswahl markiert eines, und Sie bestätigen den Sprung.
 - Um vor- oder zurückzuspringen, klicken Sie eine Zeile an und bestätigen dann „Hierher springen“. Sie können auch mit `/` suchen.
 - Eine einmalige Durchsage wie „Die Show geht gleich weiter“ lässt sich mit **Nachricht …** senden. Mit **Zurück** entfernen Sie sie.
