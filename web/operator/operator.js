@@ -21,6 +21,17 @@
     return { ok: r.ok, status: r.status, data };
   }
 
+  // What to tell the person when the program gave no reason of its own: say what the status means and what to do.
+  function whyFailed(r) {
+    if (r.data && r.data.error) return r.data.error;
+    const s = r.status;
+    if (s === 403) return 'That is not allowed from this device or with this password.';
+    if (s === 413) return 'That file is too large.';
+    if (s === 429) return 'Too many tries. Wait a minute, then try again.';
+    if (s >= 500) return 'The program had a problem. Try again; if it keeps happening, restart the program.';
+    return 'That did not work. Check the connection and try again.';
+  }
+
   let toastTimer;
   function toast(msg, ms) {
     const t = $('toast');
@@ -222,6 +233,10 @@
       li.querySelectorAll('.items li').forEach((it, k) => { it.classList.toggle('playing', k === shown); if (k === shown) it.setAttribute('aria-current', 'true'); else it.removeAttribute('aria-current'); });
     });
     if (scroll) scrollTo(o.nextIndex >= 0 ? o.nextIndex : now);
+    // "Line 34 of 210": the audience-visible lines up to the one on screen (notes and section headings are not counted)
+    let total = 0, at = 0;
+    S.cues.forEach((c, i) => { if (!isOpOnly(c.kind)) { total++; if (i <= now) at++; } });
+    $('progress').textContent = total ? (o.standby ? __('{total} lines', { total }) : __('Line {n} of {total}', { n: at, total })) : '';
   }
 
   function scrollTo(i) {
@@ -278,7 +293,7 @@
       if (r.data.payload) setPayload(r.data.payload);
       if (r.status === 409) toast(__(r.data.error || 'Out of date — refreshed'));
       else if (r.data.notice) toast(__(r.data.notice));
-      else if (!r.ok) toast(__(r.data.error || 'Something went wrong'), 6000); // a problem stays long enough to read
+      else if (!r.ok) toast(__(whyFailed(r)), 6000); // a problem stays long enough to read
       if (r.ok && name !== 'jump') clearSel();
     } catch (e) { toast(__('Connection problem — try again'), 6000); }
     finally { S.inflight = false; }

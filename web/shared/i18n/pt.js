@@ -619,5 +619,16 @@ OCI18n.add("pt", {
  "Enter the <strong>operator</strong> password. The admin password works too.": "Digite a senha do <strong>operador</strong>. A senha do administrador também funciona.",
  "Help (F1)": "Ajuda (F1)",
  "Save (Ctrl+S, or Cmd+S on a Mac)": "Salvar (Ctrl+S, ou Cmd+S no Mac)",
- "Control status": "Estado do controle"
+ "Control status": "Estado do controle",
+ "That is not allowed from this device or with this password.": "Isso não é permitido neste dispositivo ou com esta senha.",
+ "Too many tries. Wait a minute, then try again.": "Muitas tentativas. Aguarde um minuto e tente novamente.",
+ "The program had a problem. Try again; if it keeps happening, restart the program.": "O programa teve um problema. Tente novamente; se continuar, reinicie o programa.",
+ "That did not work. Check the connection and try again.": "Não funcionou. Verifique a conexão e tente novamente.",
+ "Next: {step} →": "Próximo: {step} →",
+ "Line {n} of {total}": "Linha {n} de {total}",
+ "{total} lines": "{total} linhas",
+ "How far through the show the audience is (notes and section headings are not counted)": "Em que ponto do espetáculo o público está (notas e títulos de seção não contam)",
+ "If a phone cannot open this name (some Android phones and guest WiFi networks cannot), give it the numeric address or the QR code instead.": "Se um telefone não conseguir abrir este nome (alguns telefones Android e redes WiFi de visitantes não conseguem), use o endereço numérico ou o código QR.",
+ "Replace the show on air?": "Substituir o espetáculo no ar?",
+ "The audience will see the standby screen, nothing of the show stays on their screens, and the show returns to the beginning.": "O público verá a tela de espera, nada do espetáculo permanece nas telas e o espetáculo volta ao início."
 });

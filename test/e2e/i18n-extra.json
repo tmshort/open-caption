@@ -17,5 +17,14 @@
  "cue index out of range",
  "the show moved on; your view was out of date",
  "Out of date — refreshed",
- "bad request"
+ "bad request",
+ "That is not allowed from this device or with this password.",
+ "That file is too large.",
+ "Too many tries. Wait a minute, then try again.",
+ "The program had a problem. Try again; if it keeps happening, restart the program.",
+ "That did not work. Check the connection and try again.",
+ "Next: {step} →",
+ "Line {n} of {total}",
+ "{total} lines",
+ "How far through the show the audience is (notes and section headings are not counted)"
 ]

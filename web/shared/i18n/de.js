@@ -619,5 +619,16 @@ OCI18n.add("de", {
  "Enter the <strong>operator</strong> password. The admin password works too.": "Geben Sie das <strong>Bediener</strong>-Passwort ein. Das Admin-Passwort funktioniert ebenfalls.",
  "Help (F1)": "Hilfe (F1)",
  "Save (Ctrl+S, or Cmd+S on a Mac)": "Speichern (Strg+S, auf dem Mac Cmd+S)",
- "Control status": "Steuerungsstatus"
+ "Control status": "Steuerungsstatus",
+ "That is not allowed from this device or with this password.": "Das ist von diesem Gerät oder mit diesem Passwort nicht erlaubt.",
+ "Too many tries. Wait a minute, then try again.": "Zu viele Versuche. Warten Sie eine Minute und versuchen Sie es erneut.",
+ "The program had a problem. Try again; if it keeps happening, restart the program.": "Das Programm hatte ein Problem. Versuchen Sie es erneut; falls es weiter auftritt, starten Sie das Programm neu.",
+ "That did not work. Check the connection and try again.": "Das hat nicht funktioniert. Prüfen Sie die Verbindung und versuchen Sie es erneut.",
+ "Next: {step} →": "Weiter: {step} →",
+ "Line {n} of {total}": "Zeile {n} von {total}",
+ "{total} lines": "{total} Zeilen",
+ "How far through the show the audience is (notes and section headings are not counted)": "Wie weit das Publikum in der Show ist (Notizen und Abschnittsüberschriften zählen nicht)",
+ "If a phone cannot open this name (some Android phones and guest WiFi networks cannot), give it the numeric address or the QR code instead.": "Wenn ein Telefon diesen Namen nicht öffnen kann (manche Android-Telefone und Gast-WLANs können es nicht), verwenden Sie die numerische Adresse oder den QR-Code.",
+ "Replace the show on air?": "Die laufende Show ersetzen?",
+ "The audience will see the standby screen, nothing of the show stays on their screens, and the show returns to the beginning.": "Das Publikum sieht den Standby-Bildschirm, nichts von der Show bleibt auf seinen Bildschirmen, und die Show geht zurück zum Anfang."
 });

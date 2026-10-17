@@ -38,7 +38,7 @@
     <i id="dot" title="Connection"></i>
     </div>
   </header>
-  <div id="statusbar" role="region" aria-label="Control status"><span id="ctrl"></span><span id="lastsent" title="How long ago a line was last sent"></span><button id="takeover" hidden>Take over</button></div>
+  <div id="statusbar" role="region" aria-label="Control status"><span id="ctrl"></span><span id="progress" title="How far through the show the audience is (notes and section headings are not counted)"></span><span id="lastsent" title="How long ago a line was last sent"></span><button id="takeover" hidden>Take over</button></div>
   <div id="connbar" class="connbar" role="alert" hidden>Connection to the program lost. Reconnecting…</div>
   <main id="stage">
   <h1 class="sr">Operator</h1>
@@ -93,7 +93,7 @@
 <dialog id="resetdlg">
   <form method="dialog">
     <h2>Restart the show?</h2>
-    <p>The audience will see the standby screen and the show returns to the beginning.</p>
+    <p>The audience will see the standby screen, nothing of the show stays on their screens, and the show returns to the beginning.</p>
     <menu><button value="cancel">Cancel</button><button id="resetgo" value="go" class="primary">Restart</button></menu>
   </form>
 </dialog>

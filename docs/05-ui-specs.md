@@ -65,6 +65,8 @@ Layout (desktop): three columns of the show file as a vertical list.
 
 **Operator status strip.** Who is in control, the Take over button and "last sent" sit in a strip under the operator header, so the header itself stays on one row. The strip turns amber when another operator is in control. Messages about a problem (not in control, out of date, connection trouble) stay on screen for six seconds; ordinary confirmations for two and a half.
 
+**Progress and the way on.** The status strip also shows "Line n of total" (only lines the audience sees; notes and section headings are not counted), or the line count while in standby. Under every Setup step but the last, a **Next: <step> →** button leads on (highlighted when the current step is complete). When the program gives no reason for a failure, both pages say what the status means and what to do (not allowed here, file too large, too many tries, program problem, check the connection) instead of "Something went wrong". The Run step tells people that a phone that cannot open the `.local` name should use the numeric address or the QR code, and the operator help has a short glossary of standby, on air, off air, restart, blank and clear.
+
 **Shortcut hints.** Setup's Help button says F1 and its Save button in the show-file editor says Ctrl+S / Cmd+S in their tooltips, as the operator page's buttons name their keys.
 
 **Connection notice.** If a page cannot reach the program for more than two seconds (the live stream dropped and the retries fail), both Setup and the operator page show a red bar under the header, "Connection to the program lost. Reconnecting…", in addition to the red dot; it goes away by itself when the stream is back. (An ordinary one-second reconnect never flashes it.)

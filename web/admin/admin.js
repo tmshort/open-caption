@@ -31,9 +31,19 @@
     if (r.status === 401) { showLogin(); throw new Error('login'); }
     return { ok: r.ok, status: r.status, data };
   }
+  // What to tell the person when the program gave no reason of its own: say what the status means and what to do.
+  function whyFailed(r) {
+    if (r.data && r.data.error) return r.data.error;
+    const s = r.status;
+    if (s === 403) return 'That is not allowed from this device or with this password.';
+    if (s === 413) return 'That file is too large.';
+    if (s === 429) return 'Too many tries. Wait a minute, then try again.';
+    if (s >= 500) return 'The program had a problem. Try again; if it keeps happening, restart the program.';
+    return 'That did not work. Check the connection and try again.';
+  }
   let toastTimer;
   function toast(msg, ms) { const t = $('toast'); t.textContent = __(msg); t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), ms || 3000); }
-  function fail(r, fallback) { toast((r.data && r.data.error) || fallback || __('Something went wrong')); }
+  function fail(r, fallback) { toast(__((r.data && r.data.error) || fallback || whyFailed(r))); }
 
   // A reusable dialog. body: node; resolves true on OK, false on cancel.
   function ask(title, body, okLabel, opts) {
@@ -328,7 +338,17 @@
     const panel = $('panel'); panel.replaceChildren();
     panel.classList.toggle('wide', A.step === 'showfile'); // the editor uses the whole width of the window
     document.title = __('Setup') + ' — ' + __((STEPS.find((x) => x[0] === A.step) || ['', ''])[1]);
+    nextStep();
     try { await ({ show: stepShow, showfile: stepShowFile, images: stepImages, look: stepLook, test: stepTest, golive: stepGoLive })[A.step](panel); } catch (e) { if (e.message !== 'login') console.error(e); }
+  }
+
+  // Under every step but the last: a button for the next one, so a newcomer is always shown the way on.
+  function nextStep() {
+    const box = $('nextstep'), i = STEPS.findIndex((x) => x[0] === A.step), nx = STEPS[i + 1];
+    box.replaceChildren();
+    box.hidden = !nx || !A.cur;
+    if (box.hidden) return;
+    box.append(h('button', { class: done(A.step) ? 'primary' : '', onclick: () => { go(nx[0]); window.scrollTo(0, 0); } }, __('Next: {step} →', { step: __(nx[1]) })));
   }
 
   // ---- step 1: show ----
@@ -431,7 +451,7 @@
     const ok = await confirmBox(__('Delete “{name}”?', { name: s.name }), s.archived ? __('This archived show, its show file and its images will be permanently deleted. Export it first if you may want it back.') : __('Its show file and images will be permanently deleted. Export it first if you may want it back. (Archive keeps a show without deleting it.)'), __('Delete'), true);
     if (!ok) return;
     const r = await api('DELETE', '/api/admin/shows/' + s.id);
-    if (!r.ok) return refuseDelete(__((r.data && r.data.error) || 'Something went wrong'));
+    if (!r.ok) return refuseDelete(__(whyFailed(r)));
     if (A.cur === s.id) setCur(null);
     await loadShows(); if (!A.cur && unarchived()[0]) setCur(unarchived()[0].id);
     render();
@@ -927,6 +947,7 @@
         h('label', { class: 'row' }, nameU ? radio(nameU) : h('span', { class: 'radiogap', 'aria-hidden': 'true' }), nameU ? link(url) : h('span', { class: 'off' }, url)),
         h('label', { class: 'row nametoggle', title: __('Devices can open this computer by name instead of a number. It needs no router settings, but some guest WiFi networks block it, so keep the numeric address and QR code as the main way in.') }, use, __('Use a name')),
         h('button', { class: 'quiet', onclick: renameName }, __('Rename…')))];
+      if (nameU && !m.error && !m.renamed) out.push(h('div', { class: 'hint namehint' }, __('If a phone cannot open this name (some Android phones and guest WiFi networks cannot), give it the numeric address or the QR code instead.')));
       if (m.error) out.push(h('div', { class: 'check warn' }, __('Could not announce this name: {error}', { error: m.error })));
       else if (m.renamed) out.push(h('div', { class: 'check warn' }, __('Another computer on this network already uses {name}.local, so this one is http://{host}/', { name: m.requested, host: m.host })));
       return out;
@@ -951,7 +972,7 @@
   async function loadShow(show) {
     let r = await api('POST', '/api/admin/shows/' + show.id + '/activate', {});
     if (r.status === 409 && r.data.live) {
-      if (!await confirmBox(__('A show is on air'), __('Another show is on air right now. Loading this one takes it off the air and replaces it. Continue?'), __('Load this show'), true)) return;
+      if (!await confirmBox(__('Replace the show on air?'), __('Another show is on air right now. Loading this one takes it off the air and replaces it. Continue?'), __('Load this show'), true)) return;
       r = await api('POST', '/api/admin/shows/' + show.id + '/activate', { force: true });
     }
     if (!r.ok) return fail(r);
