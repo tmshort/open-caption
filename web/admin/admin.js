@@ -339,7 +339,7 @@
     if (!A.shows.length) {
       p.append(h('div', { class: 'card empty' },
         h('p', { class: 'big' }, __('Welcome! Start by creating a show, importing one, or look around with the sample.')),
-        h('div', { class: 'row' }, ...newShowForm(), h('button', { onclick: makeSample }, __('Create a sample show')), ...importButton())));
+        h('div', { class: 'row addrow' }, ...newShowForm(), h('button', { onclick: makeSample }, __('Create a sample show')), ...importButton())));
     } else {
       if (!current.length) p.append(h('div', { class: 'card empty' }, h('p', { class: 'big' }, __('All your shows are archived. Create a new show below, or restore one from the archive.'))));
       current.forEach((s) => p.append(h('div', { class: 'card show' },
@@ -351,7 +351,7 @@
         h('a', { class: 'quiet', href: '/api/admin/shows/' + s.id + '/export', download: s.id + '.zip' }, __('Export')),
         h('button', { class: 'quiet', disabled: s.active, title: s.active ? __('The show on air cannot be archived. Activate another show first.') : __('Put this show away; you can restore it later'), onclick: () => archiveShow(s, true) }, __('Archive')),
         h('button', { class: 'danger quiet', title: s.live ? __('This show is live. Restart it from the operator page, or activate another show first.') : null, onclick: () => deleteShow(s) }, __('Delete…')))));
-      p.append(h('h3', {}, __('Add another show')), h('div', { class: 'card row' }, ...newShowForm(), h('button', { onclick: makeSample }, __('Sample show')), ...importButton()));
+      p.append(h('h3', {}, __('Add another show')), h('div', { class: 'card row addrow' }, ...newShowForm(), h('button', { onclick: makeSample }, __('Sample show')), ...importButton()));
     }
     if (archived.length) {
       p.append(h('details', { class: 'archive', open: A.showArchive ? '' : null, ontoggle: (e) => { A.showArchive = e.target.open; } },
@@ -376,7 +376,7 @@
     return fileButton(__('Import a show…'), { accept: '.zip,.md,.txt,text/plain,text/markdown', title: __('Choose an exported show (.zip) or a plain .md / .txt show file from this computer') }, (files) => importShow(files[0]));
   }
   function newShowForm() {
-    const inp = h('input', { type: 'text', placeholder: __('Name of the show'), maxlength: '100', 'aria-label': __('Show name') });
+    const inp = h('input', { type: 'text', class: 'newname', placeholder: __('Name of the show'), maxlength: '100', 'aria-label': __('Show name') });
     const create = async () => {
       if (!inp.value.trim()) { inp.focus(); return; }
       const r = await api('POST', '/api/admin/shows', { name: inp.value });

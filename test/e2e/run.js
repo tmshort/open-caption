@@ -491,6 +491,8 @@ async function main() {
       check('the two headers use the same type, spacing and control sizes', JSON.stringify(adLook) === JSON.stringify(opLook), { operator: opLook, setup: adLook });
       check('and the Setup page shows the server is answering (green dot)', await arch.evaluate(() => document.getElementById('dot').classList.contains('on')));
     }
+    check('the LIVE badge in the show list is the same red as the LIVE pills', await arch.evaluate(() => { const e = document.createElement('span'); e.className = 'badge live'; document.querySelector('.card.show .name').appendChild(e); const c = getComputedStyle(e).backgroundColor; e.remove(); return c === 'rgb(179, 38, 30)'; }));
+    check('the name box under Add another show is a little larger than a normal box', await arch.evaluate(() => { const i = document.querySelector('input.newname'), r = i.getBoundingClientRect(); return parseFloat(getComputedStyle(i).fontSize) >= 17 && r.height >= 44 && r.width >= 300; }));
     check('Duplicate… is named for the dialog it opens', await arch.evaluate(() => [...document.querySelectorAll('.card.show button')].some((b) => b.textContent === 'Duplicate…') && ![...document.querySelectorAll('.card.show button')].some((b) => b.textContent === 'Duplicate')));
     check('a show to archive is created', made.status === 201 || made.status === 200, made);
     await arch.reload(); await arch.waitForFunction(() => [...document.querySelectorAll('.card.show')].some((x) => x.textContent.includes('Last year')), { timeout: 15000 });

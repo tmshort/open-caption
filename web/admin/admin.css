@@ -44,7 +44,7 @@ main.wide { max-width: none; } /* the Show file step grows with the window */
 .show { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
 .show .name { font-weight: 600; font-size: 1.05rem; flex: 1 1 14rem; }
 .badge { padding: 0 .5rem; border-radius: 6px; font-size: .75rem; font-weight: 700; background: var(--line); }
-.badge.active { background: var(--ok); color: #fff; } .badge.live { background: var(--bad); color: #fff; }
+.badge.active { background: var(--ok); color: #fff; }  /* .badge.live is in header.css, the same red as the LIVE pill */
 
 /* script editor */
 .langtabs { display: flex; gap: .3rem; flex-wrap: wrap; margin: 0 0 .8rem; align-items: center; }
@@ -212,3 +212,6 @@ dialog menu { flex: none; }
 .radiogap { display: inline-block; width: 13px; margin: 3px 3px 3px 4px; flex: none; } /* the width of a radio button, so rows without one line up */
 .nametoggle { margin-left: .6rem; cursor: pointer; }
 .off { color: var(--dim); }
+/* the show name box: a little larger than an ordinary text box, with the buttons beside it as tall */
+input.newname { font-size: 1.1rem; min-height: 2.8rem; padding: .55rem .8rem; width: 24rem; max-width: 100%; }
+.addrow > button { min-height: 2.8rem; }
