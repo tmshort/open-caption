@@ -39,6 +39,7 @@ async function audit(page, label) {
         await p.goto(B + '/admin'); await p.waitForSelector('#pw'); await audit(p, t + ' setup sign-in');
         await p.type('#pw', PW); await p.keyboard.press('Enter'); await p.waitForSelector('#steps button');
         if (scheme === 'dark' && tag === 'desktop') {
+          await p.waitForFunction(() => [...document.querySelectorAll('button')].some((x) => x.textContent.includes('sample')), { timeout: 20000 });
           await p.evaluate(() => [...document.querySelectorAll('button')].find((x) => x.textContent.includes('sample')).click()); await sleep(1500);
         }
         const steps = await p.$$eval('#steps button', (bs) => bs.length);
