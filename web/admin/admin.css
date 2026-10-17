@@ -21,8 +21,7 @@ main.wide { max-width: none; } /* the Show file step grows with the window */
 .empty .row { justify-content: center; margin-top: 1rem; }
 .show { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
 .show .name { font-weight: 600; font-size: 1.05rem; flex: 1 1 14rem; }
-.badge { padding: 0 .5rem; border-radius: 6px; font-size: .75rem; font-weight: 700; background: var(--line); }
-.badge.active { background: var(--ok); color: #fff; }  /* .badge.live is in header.css, the same red as the LIVE pill */
+.badge.active { background: var(--ok); border-color: var(--ok); color: #fff; font-weight: 700; } /* the shape and size of every badge and pill are in header.css */  /* .badge.live is in header.css, the same red as the LIVE pill */
 
 /* script editor */
 .langtabs { display: flex; gap: .3rem; flex-wrap: wrap; margin: 0 0 .8rem; align-items: center; }
@@ -181,3 +180,4 @@ dialog menu { flex: none; }
 input.newname { font-size: 1.1rem; min-height: 2.8rem; padding: .55rem .8rem; width: 24rem; max-width: 100%; }
 .addrow > button { min-height: 2.8rem; }
 a.quiet { background: none; border: none; color: var(--dim); text-decoration: none; padding: .3rem .5rem; }
+@media (prefers-color-scheme: dark) { .badge.active { color: #08140d; } } /* dark text on the lighter green of the dark theme */
