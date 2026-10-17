@@ -110,10 +110,7 @@ pre.diff .d-add { background: #1f6f3a33; } pre.diff .d-del { background: #b32626
 .setsec h3 { margin: 0 0 .5rem; font-size: 1.05rem; }
 dialog input.netname { width: 14rem; max-width: 60%; }
 /* a link that does something (a download) is drawn like the buttons beside it, not as a blue underlined link */
-a.btn, /* the way on: the next step of Setup, below the step's own content */
-.nextstep { max-width: 60rem; margin: 0 auto; padding: 0 1rem 2rem; display: flex; justify-content: flex-end; }
-.nextstep[hidden] { display: none; }
-a.quiet { display: inline-flex; align-items: center; min-height: 2.4rem; box-sizing: border-box; text-decoration: none; cursor: pointer; }
+a.btn, a.quiet { display: inline-flex; align-items: center; min-height: 2.4rem; box-sizing: border-box; text-decoration: none; cursor: pointer; }
 a.btn { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: .45rem .9rem; color: inherit; }
 a.btn:hover { border-color: var(--accent); } /* a quiet link, like a quiet button, does not change when hovered */
 /* quiet buttons and links (Rename, Export, Operator page, ...) all brighten the same way when hovered */
@@ -185,3 +182,8 @@ input.newname { font-size: 1.1rem; min-height: 2.8rem; padding: .55rem .8rem; wi
 a.quiet { background: none; border: none; color: var(--dim); text-decoration: none; padding: .3rem .5rem; }
 @media (prefers-color-scheme: dark) { .badge.active { color: #08140d; } } /* dark text on the lighter green of the dark theme */
 .namehint { margin: -.2rem 0 .4rem 1.9rem; }
+/* the way on: the next step of Setup, below the step's own content */
+.nextstep { max-width: 60rem; margin: 0 auto; padding: 0 1rem 2rem; display: flex; justify-content: flex-end; }
+.nextstep[hidden] { display: none; }
+.urls input[type=radio] { margin: 4px 8px 4px 6px; } /* room around the small radio so each is a comfortable touch target */
+.radiogap { margin-right: 8px; margin-left: 6px; }

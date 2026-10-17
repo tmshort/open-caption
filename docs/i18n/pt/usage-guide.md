@@ -147,7 +147,7 @@ Abra a página de configuração e siga as seis etapas no alto. O botão **Ajuda
 3. **Imagens.** Envie as imagens que o arquivo do espetáculo usa (PNG, JPG, GIF ou WebP, de preferência com menos de 1 MB cada).
 4. **Aparência.** Escolha cores, fonte e tamanho do texto. Os padrões (branco sobre preto, grande) são os melhores para a maioria das pessoas. Duas fontes de legibilidade vêm embutidas: uma amigável para dislexia (OpenDyslexic) e uma de alta legibilidade (Atkinson Hyperlegible, projetada para baixa visão). Cada espectador também pode escolher qualquer uma para o próprio dispositivo no pequeno controle **Aa**.
 5. **Teste.** Faça um ensaio particular: você aperta Espaço como o operador faria, e vê a tela do público ao lado. Nada chega ao público.
-6. **Conduzir.** Confira a lista de preparação, imprima o cartaz com o QR e pressione **Abrir a página do operador**.
+6. **Conduzir.** Confira a lista de preparação, imprima o cartaz com o QR e pressione **Abrir a página Conduzir**.
 
 Abrir a página do operador carrega o espetáculo **em espera**: o público vê a tela de espera do local (um logotipo e uma mensagem, definidos uma só vez em **Configurações → Tela de espera**) e nada do espetáculo, então você pode preparar, ensaiar e conferir a página do operador com calma. Quando estiver pronto, pressione **Espaço** (o botão diz **INICIAR**) na página do operador para colocar o espetáculo no ar. **Colocar em espera…** o retira de novo sem perder o lugar.
 
@@ -225,7 +225,7 @@ Você pode editar e salvar de novo um arquivo do espetáculo com o espetáculo a
 ### Antes de o público chegar
 
 1. Inicie o servidor e abra a **página do operador**; entre. Ela deve dizer **Você tem o controle**.
-2. Em Configuração → Conduzir, pressione **Abrir a página do operador**. O espetáculo é carregado em espera: o público vê a tela de espera do local. Quando estiver pronto, pressione **Espaço** (INICIAR) na página do operador para colocá-lo no ar. Um laço de pré-espetáculo, se o arquivo do espetáculo tiver um, começa então em todas as telas.
+2. Em Configuração → Conduzir, pressione **Abrir a página Conduzir**. O espetáculo é carregado em espera: o público vê a tela de espera do local. Quando estiver pronto, pressione **Espaço** (INICIAR) na página do operador para colocá-lo no ar. Um laço de pré-espetáculo, se o arquivo do espetáculo tiver um, começa então em todas as telas.
 3. Abra o endereço do público no seu próprio telefone e, se tiver um, no projetor. Confira que a contagem de espectadores na página do operador sobe.
 4. Ponha o cartaz QR onde as pessoas possam vê-lo.
 

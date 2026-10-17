@@ -545,7 +545,6 @@ OCI18n.add("it", {
  "Message saved": "Messaggio salvato",
  "Save message": "Salva il messaggio",
  "Message (optional; empty uses “Captions will begin shortly” in each viewer’s language)": "Messaggio (facoltativo; se vuoto si usa «I sottotitoli inizieranno a breve» nella lingua di ogni spettatore)",
- "Open the operator page": "Apri la pagina dell'operatore",
  "This show is on air now.": "Questo spettacolo è in onda adesso.",
  "This show is loaded and waiting in standby.": "Questo spettacolo è caricato e in attesa.",
  "Opening it loads it in standby: the audience keeps seeing the standby screen until the operator presses START.": "Aprendolo lo carichi in attesa: il pubblico continua a vedere la schermata di attesa finché l'operatore non preme AVVIA.",
@@ -626,5 +625,6 @@ OCI18n.add("it", {
  "Pre-show message": "Messaggio pre-spettacolo",
  "Pre-show message ({name})": "Messaggio pre-spettacolo ({name})",
  "What the audience sees while no show is on air: before the operator presses START, after Go to standby, and when no show is loaded. It belongs to the venue, not to a show.": "Ciò che vede il pubblico finché nessuno spettacolo è in onda: prima che l'operatore prema AVVIA, dopo Metti in attesa e quando non è caricato alcuno spettacolo. Appartiene alla sala, non a uno spettacolo.",
- "A rehearsal runs this show privately: you press the keys as the operator would and see the audience screen beside it. Nothing here reaches real audience devices, and it does not affect a show that is on air.": "Una prova generale esegue questo spettacolo in privato: premi i tasti come farebbe l'operatore e vedi accanto lo schermo del pubblico. Nulla di qui raggiunge i veri dispositivi del pubblico, e non influisce su uno spettacolo in onda."
+ "A rehearsal runs this show privately: you press the keys as the operator would and see the audience screen beside it. Nothing here reaches real audience devices, and it does not affect a show that is on air.": "Una prova generale esegue questo spettacolo in privato: premi i tasti come farebbe l'operatore e vedi accanto lo schermo del pubblico. Nulla di qui raggiunge i veri dispositivi del pubblico, e non influisce su uno spettacolo in onda.",
+ "Open the Run page": "Apri la pagina Conduci"
 });

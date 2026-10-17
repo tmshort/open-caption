@@ -545,7 +545,6 @@ OCI18n.add("fr", {
  "Message saved": "Message enregistré",
  "Save message": "Enregistrer le message",
  "Message (optional; empty uses “Captions will begin shortly” in each viewer’s language)": "Message (facultatif ; s'il est vide, « Les sous-titres vont bientôt commencer » est utilisé dans la langue de chaque spectateur)",
- "Open the operator page": "Ouvrir la page de l'opérateur",
  "This show is on air now.": "Ce spectacle est à l'antenne en ce moment.",
  "This show is loaded and waiting in standby.": "Ce spectacle est chargé et en attente.",
  "Opening it loads it in standby: the audience keeps seeing the standby screen until the operator presses START.": "L'ouvrir le charge en attente : le public continue de voir l'écran d'attente jusqu'à ce que l'opérateur appuie sur DÉMARRER.",
@@ -626,5 +625,6 @@ OCI18n.add("fr", {
  "Pre-show message": "Message d'avant-spectacle",
  "Pre-show message ({name})": "Message d'avant-spectacle ({name})",
  "What the audience sees while no show is on air: before the operator presses START, after Go to standby, and when no show is loaded. It belongs to the venue, not to a show.": "Ce que voit le public tant qu'aucun spectacle n'est à l'antenne : avant que l'opérateur appuie sur DÉMARRER, après Mettre en attente, et quand aucun spectacle n'est chargé. Il appartient au lieu, pas à un spectacle.",
- "A rehearsal runs this show privately: you press the keys as the operator would and see the audience screen beside it. Nothing here reaches real audience devices, and it does not affect a show that is on air.": "Une répétition fait tourner ce spectacle en privé : vous appuyez sur les touches comme l'opérateur et voyez l'écran du public à côté. Rien ici n'atteint les vrais appareils du public, et cela n'affecte pas un spectacle à l'antenne."
+ "A rehearsal runs this show privately: you press the keys as the operator would and see the audience screen beside it. Nothing here reaches real audience devices, and it does not affect a show that is on air.": "Une répétition fait tourner ce spectacle en privé : vous appuyez sur les touches comme l'opérateur et voyez l'écran du public à côté. Rien ici n'atteint les vrais appareils du public, et cela n'affecte pas un spectacle à l'antenne.",
+ "Open the Run page": "Ouvrir la page Conduire"
 });

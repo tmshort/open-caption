@@ -905,8 +905,8 @@
     // the operator presses START there. So there is nothing here that puts a show in front of the audience.
     const onAir = !!((A.shows || []).find((x) => x.id === show.id) || {}).live;
     const startBox = h('div', { class: 'startbox' },
-      isActive ? h('a', { class: 'btn primary big', href: '/operator' }, __('Open the operator page'))
-        : h('button', { class: 'primary big', onclick: () => loadShow(show), disabled: !a.cues.length }, __('Open the operator page')),
+      isActive ? h('a', { class: 'btn primary big', href: '/operator' }, __('Open the Run page'))
+        : h('button', { class: 'primary big', onclick: () => loadShow(show), disabled: !a.cues.length }, __('Open the Run page')),
       h('span', { class: 'hint' }, isActive ? (onAir ? __('This show is on air now.') : __('This show is loaded and waiting in standby.'))
         : __('Opening it loads it in standby: the audience keeps seeing the standby screen until the operator presses START.')),
       isActive ? h('button', { class: 'quiet', disabled: !!((A.shows || []).find((x) => x.id === show.id) || {}).fresh, title: ((A.shows || []).find((x) => x.id === show.id) || {}).fresh ? __('The show is at the start and in standby, so there is nothing to restart') : null, onclick: () => restartShow(show) }, __('Restart show…')) : null);
@@ -954,8 +954,10 @@
     };
     // The projector link: the audience page for a shared screen (big text, no buttons, no pointer), opened on this computer,
     // which is the one the projector is plugged into, so it uses this computer's own address.
-    const projBase = (net.data.urls.find((u) => u.kind === 'http' && !u.public) || httpUrl || net.data.urls[0] || {}).url;
-    const projRow = projBase ? h('div', { class: 'row projrow' }, h('label', { class: 'row' }, h('span', { class: 'radiogap', 'aria-hidden': 'true' }), link(projBase + '?display=projector')),
+    // always the numeric address (never the .local name), so it can be copied, and chosen like the others
+    const projBase = (net.data.urls.find((u) => u.kind === 'http' && !u.name && u.public) || httpUrl || net.data.urls[0] || {}).url;
+    const projU = projBase ? { url: projBase + (projBase.includes('?') ? '&' : '?') + 'display=projector' } : null;
+    const projRow = projU ? h('div', { class: 'row projrow' }, h('label', { class: 'row' }, radio(projU), link(projU.url)),
       h('span', { class: 'hint' }, __('(for a projector or shared screen; open it on that computer)'))) : null;
     const rows = net.data.urls.filter((u) => !u.name).map((u) => h('div', { class: 'row' }, h('label', { class: 'row' }, radio(u), link(u.url), u.public ? '' : __(' (this computer only)'))));
     const list = h('div', { class: 'urls' }, ...rows, ...nameRows(), projRow);

@@ -545,7 +545,6 @@ OCI18n.add("de", {
  "Message saved": "Meldung gespeichert",
  "Save message": "Meldung speichern",
  "Message (optional; empty uses “Captions will begin shortly” in each viewer’s language)": "Meldung (optional; leer verwendet „Die Untertitel beginnen gleich“ in der Sprache jedes Zuschauers)",
- "Open the operator page": "Die Bedienerseite öffnen",
  "This show is on air now.": "Diese Show ist jetzt auf Sendung.",
  "This show is loaded and waiting in standby.": "Diese Show ist geladen und wartet im Standby.",
  "Opening it loads it in standby: the audience keeps seeing the standby screen until the operator presses START.": "Beim Öffnen wird sie im Standby geladen: das Publikum sieht weiter den Standby-Bildschirm, bis der Bediener START drückt.",
@@ -626,5 +625,6 @@ OCI18n.add("de", {
  "Pre-show message": "Nachricht vor der Show",
  "Pre-show message ({name})": "Nachricht vor der Show ({name})",
  "What the audience sees while no show is on air: before the operator presses START, after Go to standby, and when no show is loaded. It belongs to the venue, not to a show.": "Was das Publikum sieht, solange keine Show auf Sendung ist: bevor der Bediener START drückt, nach „In den Standby“ und wenn keine Show geladen ist. Es gehört dem Haus, nicht einer Show.",
- "A rehearsal runs this show privately: you press the keys as the operator would and see the audience screen beside it. Nothing here reaches real audience devices, and it does not affect a show that is on air.": "Eine Probe lässt diese Show privat laufen: Sie drücken die Tasten wie der Operator und sehen daneben den Bildschirm des Publikums. Nichts davon erreicht echte Publikumsgeräte, und eine Show auf Sendung bleibt unberührt."
+ "A rehearsal runs this show privately: you press the keys as the operator would and see the audience screen beside it. Nothing here reaches real audience devices, and it does not affect a show that is on air.": "Eine Probe lässt diese Show privat laufen: Sie drücken die Tasten wie der Operator und sehen daneben den Bildschirm des Publikums. Nichts davon erreicht echte Publikumsgeräte, und eine Show auf Sendung bleibt unberührt.",
+ "Open the Run page": "Die Seite „Fahren“ öffnen"
 });

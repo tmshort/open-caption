@@ -147,7 +147,7 @@ Open the setup page and follow the six steps along the top. The **Help** button 
 3. **Images.** Upload the pictures the show file uses (PNG, JPG, GIF or WebP, ideally under 1 MB each).
 4. **Look.** Choose colors, font and text size. The defaults (white on black, large) are best for most people. Two readability fonts are built in: a dyslexia-friendly one (OpenDyslexic) and a high-legibility one (Atkinson Hyperlegible, designed for low vision). Individual audience members can also pick either for their own device from the small **Aa** control.
 5. **Test.** Run a private rehearsal: you press Space as the operator would, and see the audience screen next to it. Nothing reaches the audience.
-6. **Run.** Check the readiness list, print the QR sign, and press **Open the operator page**.
+6. **Run.** Check the readiness list, print the QR sign, and press **Open the Run page**.
 
 Opening the operator page loads the show in **standby**: the audience sees the venue's standby screen (a logo and a message, set once under **Settings → Standby screen**) and nothing of the show, so you can prepare, rehearse and check the operator page quietly. When you are ready, press **Space** (the button says **START**) on the operator page to put the show on air. **Go to standby…** takes it off again without losing its place.
 
@@ -225,7 +225,7 @@ You can edit and re-save a show file while a show is live (for example to fix a 
 ### Before the audience arrives
 
 1. Start the server and open the **Operator page**; sign in. It should say **You are in control**.
-2. In Setup → Run press **Open the operator page**. The show is loaded in standby: the audience sees the venue's standby screen. When you are ready, press **Space** (START) on the operator page to put the show on air. A pre-show loop, if the show file has one, begins on every screen then.
+2. In Setup → Run press **Open the Run page**. The show is loaded in standby: the audience sees the venue's standby screen. When you are ready, press **Space** (START) on the operator page to put the show on air. A pre-show loop, if the show file has one, begins on every screen then.
 3. Open the audience address on your own phone and, if you have one, on the projector. Check the viewer count on the operator page goes up.
 4. Put the QR sign where people can see it.
 

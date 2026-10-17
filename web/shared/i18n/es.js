@@ -545,7 +545,6 @@ OCI18n.add("es", {
  "Message saved": "Mensaje guardado",
  "Save message": "Guardar el mensaje",
  "Message (optional; empty uses “Captions will begin shortly” in each viewer’s language)": "Mensaje (opcional; si está vacío se usa «Los subtítulos comenzarán en breve» en el idioma de cada espectador)",
- "Open the operator page": "Abrir la página del operador",
  "This show is on air now.": "Este espectáculo está en el aire ahora.",
  "This show is loaded and waiting in standby.": "Este espectáculo está cargado y en espera.",
  "Opening it loads it in standby: the audience keeps seeing the standby screen until the operator presses START.": "Al abrirlo se carga en espera: el público sigue viendo la pantalla de espera hasta que el operador pulse INICIAR.",
@@ -626,5 +625,6 @@ OCI18n.add("es", {
  "Pre-show message": "Mensaje previo al espectáculo",
  "Pre-show message ({name})": "Mensaje previo al espectáculo ({name})",
  "What the audience sees while no show is on air: before the operator presses START, after Go to standby, and when no show is loaded. It belongs to the venue, not to a show.": "Lo que ve el público mientras ningún espectáculo está en el aire: antes de que el operador pulse INICIAR, después de Poner en espera y cuando no hay ningún espectáculo cargado. Es del local, no de un espectáculo.",
- "A rehearsal runs this show privately: you press the keys as the operator would and see the audience screen beside it. Nothing here reaches real audience devices, and it does not affect a show that is on air.": "Un ensayo ejecuta este espectáculo en privado: usted pulsa las teclas como lo haría el operador y ve la pantalla del público al lado. Nada de esto llega a dispositivos reales del público, y no afecta a un espectáculo en el aire."
+ "A rehearsal runs this show privately: you press the keys as the operator would and see the audience screen beside it. Nothing here reaches real audience devices, and it does not affect a show that is on air.": "Un ensayo ejecuta este espectáculo en privado: usted pulsa las teclas como lo haría el operador y ve la pantalla del público al lado. Nada de esto llega a dispositivos reales del público, y no afecta a un espectáculo en el aire.",
+ "Open the Run page": "Abrir la página Dirigir"
 });

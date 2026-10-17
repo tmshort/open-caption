@@ -147,7 +147,7 @@ Hat `config.yaml` einen Fehler (eine falsch geschriebene Einstellung, eine Zahl 
 3. **Bilder.** Laden Sie die Bilder hoch, die die Show-Datei verwendet (PNG, JPG, GIF oder WebP, idealerweise unter 1 MB je Bild).
 4. **Erscheinungsbild.** Wählen Sie Farben, Schrift und Textgröße. Die Voreinstellungen (weiß auf schwarz, groß) sind für die meisten am besten. Zwei Lesbarkeitsschriften sind eingebaut: eine legasthenie-freundliche (OpenDyslexic) und eine mit hoher Lesbarkeit (Atkinson Hyperlegible, für Sehbehinderung entworfen). Einzelne Zuschauer können über das kleine Steuerelement **Aa** auch für ihr eigenes Gerät eine der beiden wählen.
 5. **Test.** Machen Sie eine private Probe: Sie drücken die Leertaste wie der Operator und sehen daneben den Bildschirm des Publikums. Nichts erreicht das Publikum.
-6. **Fahren.** Prüfen Sie die Bereitschaftsliste, drucken Sie das QR-Schild und drücken Sie **Die Bedienerseite öffnen**.
+6. **Fahren.** Prüfen Sie die Bereitschaftsliste, drucken Sie das QR-Schild und drücken Sie **Die Seite „Fahren“ öffnen**.
 
 Das Öffnen der Bedienerseite lädt die Show im **Standby**: Das Publikum sieht den Standby-Bildschirm des Hauses (ein Logo und eine Meldung, einmal unter **Einstellungen → Standby-Bildschirm** festgelegt) und nichts von der Show, sodass Sie in Ruhe vorbereiten, proben und die Bedienerseite prüfen können. Wenn Sie bereit sind, drücken Sie auf der Bedienerseite die **Leertaste** (die Schaltfläche heißt **START**), um die Show auf Sendung zu bringen. **In den Standby …** nimmt sie wieder heraus, ohne ihren Platz zu verlieren.
 
@@ -225,7 +225,7 @@ Sie können eine Show-Datei bearbeiten und erneut speichern, während eine Show 
 ### Bevor das Publikum kommt
 
 1. Starten Sie den Server und öffnen Sie die **Operator-Seite**; melden Sie sich an. Dort sollte **Sie haben die Steuerung** stehen.
-2. Drücken Sie in Einrichtung → Fahren auf **Die Bedienerseite öffnen**. Die Show wird im Standby geladen: Das Publikum sieht den Standby-Bildschirm des Hauses. Wenn Sie bereit sind, drücken Sie auf der Bedienerseite die **Leertaste** (START), um sie auf Sendung zu bringen. Eine Schleife vor der Show, falls die Show-Datei eine hat, beginnt dann auf jedem Bildschirm.
+2. Drücken Sie in Einrichtung → Fahren auf **Die Seite „Fahren“ öffnen**. Die Show wird im Standby geladen: Das Publikum sieht den Standby-Bildschirm des Hauses. Wenn Sie bereit sind, drücken Sie auf der Bedienerseite die **Leertaste** (START), um sie auf Sendung zu bringen. Eine Schleife vor der Show, falls die Show-Datei eine hat, beginnt dann auf jedem Bildschirm.
 3. Öffnen Sie die Publikumsadresse auf Ihrem eigenen Telefon und, falls vorhanden, am Projektor. Prüfen Sie, dass die Zuschauerzahl auf der Operator-Seite steigt.
 4. Stellen Sie das QR-Schild dort auf, wo die Leute es sehen.
 

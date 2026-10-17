@@ -545,7 +545,6 @@ OCI18n.add("pt", {
  "Message saved": "Mensagem salva",
  "Save message": "Salvar a mensagem",
  "Message (optional; empty uses “Captions will begin shortly” in each viewer’s language)": "Mensagem (opcional; se vazia, usa-se «As legendas começarão em breve» no idioma de cada espectador)",
- "Open the operator page": "Abrir a página do operador",
  "This show is on air now.": "Este espetáculo está no ar agora.",
  "This show is loaded and waiting in standby.": "Este espetáculo está carregado e em espera.",
  "Opening it loads it in standby: the audience keeps seeing the standby screen until the operator presses START.": "Abri-lo o carrega em espera: o público continua vendo a tela de espera até o operador pressionar INICIAR.",
@@ -626,5 +625,6 @@ OCI18n.add("pt", {
  "Pre-show message": "Mensagem pré-espetáculo",
  "Pre-show message ({name})": "Mensagem pré-espetáculo ({name})",
  "What the audience sees while no show is on air: before the operator presses START, after Go to standby, and when no show is loaded. It belongs to the venue, not to a show.": "O que o público vê enquanto nenhum espetáculo está no ar: antes de o operador pressionar INICIAR, depois de Colocar em espera e quando nenhum espetáculo está carregado. Pertence ao local, não a um espetáculo.",
- "A rehearsal runs this show privately: you press the keys as the operator would and see the audience screen beside it. Nothing here reaches real audience devices, and it does not affect a show that is on air.": "Um ensaio roda este espetáculo em particular: você aperta as teclas como o operador e vê a tela do público ao lado. Nada daqui chega aos dispositivos reais do público, e não afeta um espetáculo que esteja no ar."
+ "A rehearsal runs this show privately: you press the keys as the operator would and see the audience screen beside it. Nothing here reaches real audience devices, and it does not affect a show that is on air.": "Um ensaio roda este espetáculo em particular: você aperta as teclas como o operador e vê a tela do público ao lado. Nada daqui chega aos dispositivos reais do público, e não afeta um espetáculo que esteja no ar.",
+ "Open the Run page": "Abrir a página Conduzir"
 });

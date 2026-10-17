@@ -147,7 +147,7 @@ Ouvrez la page de configuration et suivez les six étapes en haut. Le bouton **A
 3. **Images.** Téléversez les images utilisées par le fichier du spectacle (PNG, JPG, GIF ou WebP, idéalement de moins de 1 Mo chacune).
 4. **Apparence.** Choisissez les couleurs, la police et la taille du texte. Les valeurs par défaut (blanc sur noir, grand) sont les meilleures pour la plupart des gens. Deux polices de lisibilité sont intégrées : une adaptée à la dyslexie (OpenDyslexic) et une de haute lisibilité (Atkinson Hyperlegible, conçue pour la basse vision). Chaque spectateur peut aussi choisir l'une ou l'autre pour son propre appareil avec le petit contrôle **Aa**.
 5. **Test.** Faites une répétition privée : vous appuyez sur Espace comme le ferait l'opérateur, et voyez l'écran du public à côté. Rien n'atteint le public.
-6. **Conduire.** Vérifiez la liste de préparation, imprimez l'affichette QR et appuyez sur **Ouvrir la page de l'opérateur**.
+6. **Conduire.** Vérifiez la liste de préparation, imprimez l'affichette QR et appuyez sur **Ouvrir la page Conduire**.
 
 Ouvrir la page de l'opérateur charge le spectacle **en attente** : le public voit l'écran d'attente du lieu (un logo et un message, réglés une seule fois sous **Réglages → Écran d'attente**) et rien du spectacle ; vous pouvez donc préparer, répéter et vérifier la page de l'opérateur tranquillement. Quand vous êtes prêt, appuyez sur **Espace** (le bouton indique **DÉMARRER**) sur la page de l'opérateur pour mettre le spectacle à l'antenne. **Mettre en attente…** le retire de nouveau sans perdre sa place.
 
@@ -225,7 +225,7 @@ Vous pouvez modifier et réenregistrer un fichier de spectacle pendant qu'un spe
 ### Avant l'arrivée du public
 
 1. Démarrez le serveur et ouvrez la **page de l'opérateur** ; connectez-vous. Elle doit dire **Vous avez la main**.
-2. Dans Configuration → Conduire, appuyez sur **Ouvrir la page de l'opérateur**. Le spectacle est chargé en attente : le public voit l'écran d'attente du lieu. Quand vous êtes prêt, appuyez sur **Espace** (DÉMARRER) sur la page de l'opérateur pour le mettre à l'antenne. Une boucle d'avant-spectacle, si le fichier du spectacle en a une, commence alors sur tous les écrans.
+2. Dans Configuration → Conduire, appuyez sur **Ouvrir la page Conduire**. Le spectacle est chargé en attente : le public voit l'écran d'attente du lieu. Quand vous êtes prêt, appuyez sur **Espace** (DÉMARRER) sur la page de l'opérateur pour le mettre à l'antenne. Une boucle d'avant-spectacle, si le fichier du spectacle en a une, commence alors sur tous les écrans.
 3. Ouvrez l'adresse du public sur votre propre téléphone et, si vous en avez un, sur le projecteur. Vérifiez que le nombre de spectateurs augmente sur la page de l'opérateur.
 4. Placez l'affiche QR là où les gens peuvent la voir.
 
