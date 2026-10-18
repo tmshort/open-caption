@@ -1,6 +1,6 @@
 # `config.yaml` reference
 
-`config.yaml` holds everything about *this computer and venue*: the passwords, ports, HTTPS, who may open Setup, and the defaults a show uses when its own show file says nothing. Everything about *one show* (title, colours, loop time, pre-show message…) lives in that show's file instead (doc 03, "Show settings"); the layers are explained under "Where a setting is decided" below.
+`config.yaml` holds everything about *this computer and venue*: the passwords, ports, HTTPS, who may open Setup, and the defaults a show uses when its own show file says nothing. Everything about *one show* (title, colours, loop time, pre-show message…) lives in that show's file instead (see [Writing a show file](../web/help/admin-writing-a-show-file.md), "Show settings"); the layers are explained under "Where a setting is decided" below.
 
 ## The file
 
@@ -88,7 +88,7 @@ HTTPS is **off** by default. There are three ways to get a certificate; choose o
 
 ### `https.acme` (automatic certificates)
 
-Off unless `enabled: yes`. Needs `https.enabled: yes`, a public domain name you own, and a DNS provider this program was built with. It cannot be combined with `cert_file`/`key_file`. How to set it up, step by step: the [trusted HTTPS guide](https-certificate-guide.md); the design, the build choices and the sizes: doc 10.
+Off unless `enabled: yes`. Needs `https.enabled: yes`, a public domain name you own, and a DNS provider this program was built with. It cannot be combined with `cert_file`/`key_file`. How to set it up, step by step: the [trusted HTTPS guide](https-certificate-guide.md); the design, the build choices and the sizes: the [design notes](10-acme-lets-encrypt.md) (English only).
 
 | Key | Default | Meaning |
 |---|---|---|
@@ -105,7 +105,7 @@ Off unless `enabled: yes`. Needs `https.enabled: yes`, a public domain name you 
 
 ### `defaults`
 
-What a show uses when its own show file does not say. A show file's `[settings]` block overrides every value here (doc 03). Setup's Look step writes the show file, not these.
+What a show uses when its own show file does not say. A show file's `[settings]` block overrides every value here (see [Writing a show file](../web/help/admin-writing-a-show-file.md)). Setup's Look step writes the show file, not these.
 
 | Key | Default | Meaning |
 |---|---|---|

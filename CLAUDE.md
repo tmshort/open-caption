@@ -33,9 +33,9 @@ Run `gofmt`, `go vet ./...` and `go test -race ./...` before committing (the ful
   - the spec in `docs/` (requirements `01`, architecture `02`, show file `03`, API `04`, UI `05`, deployment `06`, testing `07`, roadmap `08`, open questions `09`) and the specific guides (`10` certificates, `configuration-reference.md`, `usage-guide.md`, `venue-network-guide.md`, `https-certificate-guide.md`);
   - `README.md` (features, quick start, building, the docs table) and this file;
   - the man page `docs/open-caption.1` and the `--help` text for any command-line option (a test checks they agree with `docs/configuration-reference.md`); a new `config.yaml` setting goes in `docs/11` (a test checks every key is described);
-  - the in-app help (`web/help/*.md`) and the **translations**: help topics in `web/help/<lang>/` and guides (usage, venue network, HTTPS certificate) in `docs/i18n/<lang>/` for es, fr, de, it, pt, and on-screen text via `__('…')` in `web/shared/i18n/<lang>.js` (`node test/e2e/check-i18n.js`);
+  - the in-app help (`web/help/*.md`) and the **translations**: help topics in `web/help/<lang>/` and guides (usage, venue network, HTTPS certificate, configuration reference) in `docs/i18n/<lang>/` for es, fr, de, it, pt, and on-screen text via `__('…')` in `web/shared/i18n/<lang>.js` (`node test/e2e/check-i18n.js`);
   - tests, including the browser checks in `test/e2e/run.js` and the accessibility audit when a page changes.
-  If a document is English only by design (`docs/10`, `docs/configuration-reference.md`, the man page), say so where it is linked rather than leaving it untranslated silently.
+  If a document is English only by design (`docs/10`, the man page), say so where it is linked rather than leaving it untranslated silently.
 - **Verify before every commit:** `gofmt`, `go vet ./...`, `go test -race ./...`, and for anything that touches the web pages `make e2e`, `node test/e2e/a11y.js` and `node test/e2e/check-i18n.js`; `make vulncheck` after changing dependencies. Then `git pull --rebase` and push.
 - Don't leave a change half-documented "for a follow-up": if the documentation can't be finished with the change, the change isn't finished.
 

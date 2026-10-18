@@ -397,12 +397,14 @@ var Aliases = map[string]string{
 	"usage-guide.md":             "admin-usage-guide",
 	"venue-network-guide.md":     "admin-venue-network-guide",
 	"https-certificate-guide.md": "admin-https-certificate-guide",
+	"configuration-reference.md": "admin-configuration-reference",
 }
 
 // pathLinks are help topics as GitHub shows them (web/help/<id>.md), so a guide can link to them from either place.
 var pathLinks = map[string]string{
 	"web/help/admin-preparing-a-show-file.md": "admin-preparing-a-show-file",
 	"web/help/admin-getting-started.md":       "admin-getting-started",
+	"web/help/admin-writing-a-show-file.md":   "admin-writing-a-show-file",
 }
 
 // relativeTarget drops the leading "../" of a relative link, so a guide links the same way from docs/ and from

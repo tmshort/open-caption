@@ -1,6 +1,6 @@
 # Configurar um certificado HTTPS confiável (opcional)
 
-Este guia é para a pessoa que cuida do computador das legendas. Ele é **opcional**: as legendas funcionam sem ele. (As configurações que ele usa estão na [referência de configuração](../../configuration-reference.md), e o projeto e os testes no [documento 10](../../10-acme-lets-encrypt.md); ambos existem somente em inglês.)
+Este guia é para a pessoa que cuida do computador das legendas. Ele é **opcional**: as legendas funcionam sem ele. (As configurações que ele usa estão na [referência de configuração](../../configuration-reference.md), e o projeto e os testes no [documento 10](../../10-acme-lets-encrypt.md); este último existe somente em inglês.)
 
 ## Você precisa disto?
 

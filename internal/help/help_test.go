@@ -248,7 +248,7 @@ func TestLinksInsideCodeAreLeftAlone(t *testing.T) {
 // The guides in docs/ ship inside the program, so they must display properly there.
 func TestGuidesRenderCleanlyInTheApp(t *testing.T) {
 	topics := guideTopics(t)
-	if len(topics) != 3 {
+	if len(topics) != 4 {
 		t.Fatalf("guides: %d", len(topics))
 	}
 	all := loadAll(t)
@@ -345,7 +345,7 @@ func shapeOf(md string) docShape {
 	return s
 }
 
-// translatedDocs returns every English document that has to be translated, by id: the help topics and the three guides.
+// translatedDocs returns every English document that has to be translated, by id: the help topics and the four guides.
 func englishDocs(t *testing.T) map[string]string {
 	t.Helper()
 	out := map[string]string{}

@@ -1,6 +1,6 @@
 # Translations of the guides
 
-The guides in the parent folder (`usage-guide.md`, `venue-network-guide.md`) are written in English. The program shows
+The guides in the parent folder (`usage-guide.md`, `venue-network-guide.md`, `https-certificate-guide.md`, `configuration-reference.md`) are written in English. The program shows
 them in its Help in the six languages Setup supports; each translation lives in `docs/i18n/<code>/<guide>.md`
 (`es`, `fr`, `de`, `it`, `pt`). The in-app help topics are translated the same way, in `web/help/<code>/`.
 

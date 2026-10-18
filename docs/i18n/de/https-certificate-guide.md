@@ -1,6 +1,6 @@
 # Ein vertrauenswürdiges HTTPS-Zertifikat einrichten (optional)
 
-Diese Anleitung richtet sich an die Person, die den Untertitel-Computer betreut. Sie ist **optional**: Die Untertitel funktionieren auch ohne sie. (Die Einstellungen, die sie nutzt, stehen in der [Konfigurationsreferenz](../../configuration-reference.md), Entwurf und Tests in [Dokument 10](../../10-acme-lets-encrypt.md); beide gibt es nur auf Englisch.)
+Diese Anleitung richtet sich an die Person, die den Untertitel-Computer betreut. Sie ist **optional**: Die Untertitel funktionieren auch ohne sie. (Die Einstellungen, die sie nutzt, stehen in der [Konfigurationsreferenz](../../configuration-reference.md), Entwurf und Tests in [Dokument 10](../../10-acme-lets-encrypt.md); Letzteres gibt es nur auf Englisch.)
 
 ## Brauchen Sie das?
 

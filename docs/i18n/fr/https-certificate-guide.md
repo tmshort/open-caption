@@ -1,6 +1,6 @@
 # Mettre en place un certificat HTTPS de confiance (facultatif)
 
-Ce guide s'adresse à la personne qui s'occupe de l'ordinateur de sous-titrage. Il est **facultatif** : les sous-titres fonctionnent sans lui. (Les réglages qu'il utilise sont dans la [référence de configuration](../../configuration-reference.md), et la conception et les tests dans le [document 10](../../10-acme-lets-encrypt.md) ; tous deux n'existent qu'en anglais.)
+Ce guide s'adresse à la personne qui s'occupe de l'ordinateur de sous-titrage. Il est **facultatif** : les sous-titres fonctionnent sans lui. (Les réglages qu'il utilise sont dans la [référence de configuration](../../configuration-reference.md), et la conception et les tests dans le [document 10](../../10-acme-lets-encrypt.md) ; ce dernier n'existe qu'en anglais.)
 
 ## En avez-vous besoin ?
 

@@ -1,6 +1,6 @@
 # Configurar un certificado HTTPS de confianza (opcional)
 
-Esta guía es para la persona que cuida del equipo de subtitulado. Es **opcional**: los subtítulos funcionan sin ella. (Los ajustes que usa están en la [referencia de configuración](../../configuration-reference.md), y el diseño y las pruebas en el [documento 10](../../10-acme-lets-encrypt.md); ambos solo están en inglés.)
+Esta guía es para la persona que cuida del equipo de subtitulado. Es **opcional**: los subtítulos funcionan sin ella. (Los ajustes que usa están en la [referencia de configuración](../../configuration-reference.md), y el diseño y las pruebas en el [documento 10](../../10-acme-lets-encrypt.md); este último solo está en inglés.)
 
 ## ¿Lo necesita?
 

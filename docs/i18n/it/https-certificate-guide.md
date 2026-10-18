@@ -1,6 +1,6 @@
 # Configurare un certificato HTTPS attendibile (facoltativo)
 
-Questa guida è per la persona che si occupa del computer dei sottotitoli. È **facoltativa**: i sottotitoli funzionano anche senza. (Le impostazioni che usa sono nel [riferimento della configurazione](../../configuration-reference.md), la progettazione e i test nel [documento 10](../../10-acme-lets-encrypt.md); entrambi esistono solo in inglese.)
+Questa guida è per la persona che si occupa del computer dei sottotitoli. È **facoltativa**: i sottotitoli funzionano anche senza. (Le impostazioni che usa sono nel [riferimento della configurazione](../../configuration-reference.md), la progettazione e i test nel [documento 10](../../10-acme-lets-encrypt.md); quest'ultimo esiste solo in inglese.)
 
 ## Ti serve?
 
