@@ -25,7 +25,12 @@
   async function api(method, path, body, raw) {
     const opt = { method, headers: {} };
     if (raw) opt.body = raw; else if (body !== undefined) { opt.headers['Content-Type'] = 'application/json'; opt.body = JSON.stringify(body); }
-    const r = await fetch(path, opt);
+    let r;
+    try { r = await fetch(path, opt); } catch (e) {
+      // The program is not answering (restarting, or the WiFi dropped): say so rather than leave a blank panel.
+      toast(__('Could not reach the program. Check the connection, then try again.'), 6000);
+      throw new Error('network');
+    }
     let data = {};
     try { data = await r.json(); } catch (e) { /* empty */ }
     if (r.status === 401) { showLogin(); throw new Error('login'); }
@@ -364,8 +369,10 @@
     panel.classList.toggle('wide', A.step === 'showfile'); // the editor uses the whole width of the window
     document.title = __('Setup') + ' — ' + __((STEPS.find((x) => x[0] === A.step) || ['', ''])[1]);
     nextStep();
-    try { await ({ show: stepShow, showfile: stepShowFile, images: stepImages, look: stepLook, test: stepTest, golive: stepGoLive })[A.step](panel); } catch (e) { if (e.message !== 'login') console.error(e); }
+    try { await ({ show: stepShow, showfile: stepShowFile, images: stepImages, look: stepLook, test: stepTest, golive: stepGoLive })[A.step](panel); } catch (e) { if (e.message !== 'login' && e.message !== 'network') console.error(e); }
   }
+  // A button whose request failed for lack of a connection has already told the person (see api()).
+  window.addEventListener('unhandledrejection', (ev) => { if (ev.reason && ev.reason.message === 'network') ev.preventDefault(); });
 
   // Under every step but the last: a button for the next one, so a newcomer is always shown the way on.
   function nextStep() {

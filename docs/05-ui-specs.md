@@ -77,7 +77,7 @@ Layout (desktop): three columns of the show file as a vertical list.
 
 **Shortcut hints.** Setup's Help button says F1 and its Save button in the show-file editor says Ctrl+S / Cmd+S in their tooltips, as the operator page's buttons name their keys.
 
-**Connection notice.** If a page cannot reach the program for more than two seconds (the live stream dropped and the retries fail), both Setup and the operator page show a red bar under the header, "Connection to the program lost. Reconnecting…", in addition to the red dot; it goes away by itself when the stream is back. (An ordinary one-second reconnect never flashes it.)
+**Connection notice.** If a page cannot reach the program for more than two seconds (the live stream dropped and the retries fail), both Setup and the operator page show a red bar under the header, "Connection to the program lost. Reconnecting…", in addition to the red dot; it goes away by itself when the stream is back. (An ordinary one-second reconnect never flashes it.) A button in Setup pressed while the program is not answering shows "Could not reach the program. Check the connection, then try again." (rather than leaving the page unchanged); the operator page, opened while it is not answering, shows the bar and keeps trying.
 
 **Sign-in and titles.** The two sign-in panels have the same layout: language menu, "Open Caption — Setup" / "Open Caption — Run", one sentence saying which password to enter (the admin password works on the operator page too), the password box and a primary **Sign in**. The operator page's tab title is "Run — <show> (ON AIR | STANDBY)" and Setup's is "Setup — <step>". The same action has the same name on both pages: **Restart show…** (it asks first), **Create a sample show**.
 

@@ -43,9 +43,15 @@
 
   // ---- boot / login ----
   async function boot() {
-    const r = await api('GET', API + '/state');
+    let r;
+    try { r = await api('GET', API + '/state'); } catch (e) { r = { ok: false, status: 0, data: {} }; }
     if (r.status === 401 || r.status === 403) { showLogin(); return; }
     if (r.status === 404) { document.body.textContent = __('No rehearsal is running. Start one from the Test step in Setup.'); return; }
+    if (!r.ok) { // not answering (restarting?) or a fault: say so and keep trying rather than fail on missing data
+      $('connbar').hidden = false;
+      setTimeout(boot, 2000);
+      return;
+    }
     if (REHEARSAL) document.title = __('Rehearsal') + ' — ' + __('Operator');
     $('login').hidden = true;
     $('app').hidden = false;

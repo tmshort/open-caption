@@ -262,6 +262,7 @@ OCI18n.add("es", {
  "LOOP RUNNING — item {n} of {total}. NEXT ends it; STOP blanks the screen.": "BUCLE EN CURSO — elemento {n} de {total}. SIGUIENTE lo termina; PARAR deja la pantalla en blanco.",
  "End of the show.": "Fin del espectáculo.",
  "Another operator is in control — use Take over": "Otro operador tiene el control — use Tomar el control",
+ "Could not reach the program. Check the connection, then try again.": "No se pudo contactar con el programa. Compruebe la conexión e inténtelo de nuevo.",
  "Connection problem — try again": "Problema de conexión — inténtelo de nuevo",
  "Jump so that line {n} is next: {text}": "Saltar para que la línea {n} sea la siguiente: {text}",
  "Select and copy": "Seleccionar y copiar",

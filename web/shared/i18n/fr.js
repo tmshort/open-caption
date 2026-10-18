@@ -262,6 +262,7 @@ OCI18n.add("fr", {
  "LOOP RUNNING — item {n} of {total}. NEXT ends it; STOP blanks the screen.": "BOUCLE EN COURS — élément {n} sur {total}. SUIVANT la termine ; ARRÊT vide l'écran.",
  "End of the show.": "Fin du spectacle.",
  "Another operator is in control — use Take over": "Un autre opérateur a la main — utilisez Reprendre la main",
+ "Could not reach the program. Check the connection, then try again.": "Impossible de joindre le programme. Vérifiez la connexion, puis réessayez.",
  "Connection problem — try again": "Problème de connexion — réessayez",
  "Jump so that line {n} is next: {text}": "Sauter pour que la ligne {n} soit la suivante : {text}",
  "Select and copy": "Sélectionner et copier",
