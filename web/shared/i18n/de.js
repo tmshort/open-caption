@@ -375,6 +375,7 @@ OCI18n.add("de", {
  "This show is archived. Restore it from the archive first.": "Diese Show ist archiviert. Stellen Sie sie zuerst aus dem Archiv wieder her.",
  "That upload could not be read. Try choosing the images again.": "Dieser Upload konnte nicht gelesen werden. Wählen Sie die Bilder erneut aus.",
  "That file could not be read. Try choosing it again.": "Diese Datei konnte nicht gelesen werden. Wählen Sie sie erneut aus.",
+ "The show could not be exported. Try again; if it keeps happening, look at the log.": "Die Show konnte nicht exportiert werden. Versuchen Sie es erneut; wenn es weiterhin passiert, sehen Sie im Protokoll nach.",
  "That file is too large.": "Diese Datei ist zu groß.",
  "choose a show .zip file": "wählen Sie eine Show-.zip-Datei",
  "could not read the file": "die Datei konnte nicht gelesen werden",
