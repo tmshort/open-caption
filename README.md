@@ -50,7 +50,23 @@ The first run creates `config.yaml` (in your user config folder; the path is pri
 - **Audience:** the address shown in Setup → Run, or its QR code. Devices must be on the same WiFi.
 - **Help:** the **Help** button on Setup and Operator. Read [Getting started](web/help/admin-getting-started.md) and [Preparing a show file](web/help/admin-preparing-a-show-file.md) (for whoever writes the show file), [docs/usage-guide.md](docs/usage-guide.md) (deployment, checklist) and [docs/venue-network-guide.md](docs/venue-network-guide.md) (the WiFi side).
 
-`make help` lists every target. `make test` runs the tests; `make e2e` runs the browser end-to-end test (needs Node and Chrome); `make dist` builds binaries for macOS, Windows and Linux.
+`make help` lists every target.
+
+## Building and testing
+
+**To run the program you need nothing but the binary.** To build and test it:
+
+| You need | For | Notes |
+|---|---|---|
+| **Go 1.22 or later** | `make build`, `make test`, `make race`, `make vet`, `make dist` | No CGO and no C compiler; `make dist` cross-compiles for macOS, Windows and Linux. |
+| **Node.js 18 or later** (CI uses 22) | `make e2e`, `make a11y`, `make i18n` | The first run downloads the test tools (`puppeteer-core`, `axe-core`, `acorn`) with `npm`; after that the tests need no internet. |
+| **Google Chrome or Chromium** | `make e2e`, `make a11y` | The tests drive a real browser. They look for Chrome in its macOS location; on Linux or Windows set `CHROME` to the browser's path, for example `CHROME=/usr/bin/google-chrome make e2e`. |
+
+- `make test` / `make race` run the Go tests (the race detector is the one to run before committing); `make fuzz` fuzzes the show-file parser.
+- `make e2e` is the browser end-to-end test (about 200 checks). It also runs the browser-compatibility check (the pages must stay inside the old-browser floor) and the translation check.
+- `make a11y` is the accessibility audit (axe-core, reflow and keyboard focus in both colour schemes); keep it at zero violations.
+- `make i18n` checks that every on-screen sentence is translated into all six languages (it needs Node only).
+- More detail is in [test/e2e/README.md](test/e2e/README.md).
 
 **Security note:** anyone who can reach the server can open the Setup and operator sign-in pages, and over plain `http://` passwords cross the WiFi unencrypted. Limit them with `access.admin_allow` / `access.operator_allow` in `config.yaml` (see [docs/usage-guide.md](docs/usage-guide.md#security)).
 
