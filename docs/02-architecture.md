@@ -195,7 +195,7 @@ test/e2e/                browser end-to-end test (Node + Chrome)
 ## Configuration (`config.yaml`)
 
 Everything environment-specific is configurable here; command-line flags and
-`OPEN_CAPTION_*` env vars override it. **The complete reference, every setting with its default and rules, is [doc 11](11-configuration-reference.md);** the sample below is only an overview.
+`OPEN_CAPTION_*` env vars override it. **The complete reference, every setting with its default and rules, is the [configuration reference](configuration-reference.md);** the sample below is only an overview.
 
 ```yaml
 admin_password: "…generated…"

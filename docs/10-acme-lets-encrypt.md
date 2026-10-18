@@ -5,7 +5,7 @@ Status: **built** (REQ-068). This document is the design, the build choices, the
 ## Using it
 
 - **Setting it up, step by step** (what you need, the EasyDNS/Cloudflare/GoDaddy credentials, staging first, checking it, troubleshooting): the [trusted HTTPS guide](https-certificate-guide.md).
-- **Every setting** (`https.acme.*`), with defaults, valid values and the rules checked at start-up: the [configuration reference](11-configuration-reference.md).
+- **Every setting** (`https.acme.*`), with defaults, valid values and the rules checked at start-up: the [configuration reference](configuration-reference.md).
 
 Plain HTTP works with no warning and stays the default audience address; HTTPS matters mostly for features browsers restrict to secure pages (such as the Wake Lock API; the audience page has a fallback). Automatic certificates are for a venue that owns a public domain whose DNS provider is supported.
 

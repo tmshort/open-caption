@@ -1,6 +1,6 @@
 # Set up a trusted HTTPS certificate (optional)
 
-This guide is for the person who looks after the captioning computer. It is **optional**: the captions work without it. (The settings it uses are in the [configuration reference](11-configuration-reference.md), and the design and tests are in [doc 10](10-acme-lets-encrypt.md); both are in English only.)
+This guide is for the person who looks after the captioning computer. It is **optional**: the captions work without it. (The settings it uses are in the [configuration reference](configuration-reference.md), and the design and tests are in [doc 10](10-acme-lets-encrypt.md); both are in English only.)
 
 ## Do you need this?
 
@@ -40,7 +40,7 @@ EASYDNS_KEY=paste-the-key-here
 
 On macOS and Linux make it private: `chmod 600 /etc/open-caption/dns.env`. The program warns if other users can read it.
 
-**4. Edit `config.yaml`** (the first lines the program prints say where it is; every setting is explained in the [reference](11-configuration-reference.md)):
+**4. Edit `config.yaml`** (the first lines the program prints say where it is; every setting is explained in the [reference](configuration-reference.md)):
 
 ```yaml
 https:

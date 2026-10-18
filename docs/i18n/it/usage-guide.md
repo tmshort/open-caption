@@ -134,7 +134,7 @@ In ordine di affidabilità:
 4. La pagina di configurazione si apre nel tuo browser. Se non succede, apri `http://localhost/admin` (o `http://localhost:8080/admin` se la console dice di aver usato la porta 8080).
 5. **Scegli dove stanno i dati (facoltativo).** Per impostazione predefinita, spettacoli e impostazioni sono nella cartella di configurazione del tuo utente (macOS `~/Library/Application Support/open-caption`, Linux `~/.config/open-caption`, Windows `%AppData%\open-caption`). Per tenere tutto in una cartella a tua scelta, avvia con `--data <cartella>`. Usa sempre la stessa cartella.
 
-Opzioni utili: `--data <cartella>`, `--http-addr :8080`, `--https-addr :443`, `--no-browser`, `--log-file <file>`, `--log-level debug|info|warn|error`, `--version`. Tutte le opzioni: `open-caption --help`, la pagina di manuale `docs/open-caption.1` (solo in inglese) o `docs/11-configuration-reference.md`.
+Opzioni utili: `--data <cartella>`, `--http-addr :8080`, `--https-addr :443`, `--no-browser`, `--log-file <file>`, `--log-level debug|info|warn|error`, `--version`. Tutte le opzioni: `open-caption --help`, la pagina di manuale `docs/open-caption.1` (solo in inglese) o `docs/configuration-reference.md`.
 
 Se `config.yaml` ha un errore (un'impostazione scritta male, un numero fuori intervallo, un indirizzo errato), il programma elenca ogni problema con la sua riga o il nome dell'impostazione e si ferma; correggi il file e riavvia. (Un file contrassegnato con un `config_version` più recente di quello che il programma comprende è l'eccezione: le impostazioni sconosciute vengono ignorate con un avviso, così puoi tornare a un programma più vecchio.)
 

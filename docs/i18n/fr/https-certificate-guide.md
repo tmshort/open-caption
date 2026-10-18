@@ -1,6 +1,6 @@
 # Mettre en place un certificat HTTPS de confiance (facultatif)
 
-Ce guide s'adresse à la personne qui s'occupe de l'ordinateur de sous-titrage. Il est **facultatif** : les sous-titres fonctionnent sans lui. (Les réglages qu'il utilise sont dans la [référence de configuration](11-configuration-reference.md), et la conception et les tests dans le [document 10](10-acme-lets-encrypt.md) ; tous deux n'existent qu'en anglais.)
+Ce guide s'adresse à la personne qui s'occupe de l'ordinateur de sous-titrage. Il est **facultatif** : les sous-titres fonctionnent sans lui. (Les réglages qu'il utilise sont dans la [référence de configuration](configuration-reference.md), et la conception et les tests dans le [document 10](10-acme-lets-encrypt.md) ; tous deux n'existent qu'en anglais.)
 
 ## En avez-vous besoin ?
 
@@ -40,7 +40,7 @@ EASYDNS_KEY=paste-the-key-here
 
 Sous macOS et Linux, rendez-le privé : `chmod 600 /etc/open-caption/dns.env`. Le programme avertit si d'autres utilisateurs peuvent le lire.
 
-**4. Modifiez `config.yaml`** (les premières lignes affichées par le programme disent où il se trouve ; chaque réglage est expliqué dans la [référence](11-configuration-reference.md)) :
+**4. Modifiez `config.yaml`** (les premières lignes affichées par le programme disent où il se trouve ; chaque réglage est expliqué dans la [référence](configuration-reference.md)) :
 
 ```yaml
 https:

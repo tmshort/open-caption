@@ -134,7 +134,7 @@ In order of reliability:
 4. The setup page opens in your browser. If it does not, open `http://localhost/admin` (or `http://localhost:8080/admin` if the console says it used port 8080).
 5. **Choose where data lives (optional).** By default, shows and settings are in your user configuration folder (macOS `~/Library/Application Support/open-caption`, Linux `~/.config/open-caption`, Windows `%AppData%\open-caption`). To keep everything in a folder you choose, start with `--data <folder>`. Always use the same folder.
 
-Useful options: `--data <folder>`, `--http-addr :8080`, `--https-addr :443`, `--no-browser`, `--log-file <file>`, `--log-level debug|info|warn|error`, `--version`. Every option: `open-caption --help`, the manual page `docs/open-caption.1` (English only), or `docs/11-configuration-reference.md`.
+Useful options: `--data <folder>`, `--http-addr :8080`, `--https-addr :443`, `--no-browser`, `--log-file <file>`, `--log-level debug|info|warn|error`, `--version`. Every option: `open-caption --help`, the manual page `docs/open-caption.1` (English only), or `docs/configuration-reference.md`.
 
 If `config.yaml` has a mistake (a misspelled setting, a number out of range, a bad address), the program lists every problem with its line or setting name and stops; fix the file and start again. (A file marked `config_version` newer than the program understands is the exception: unknown settings are ignored with a warning, so you can go back to an older program.)
 

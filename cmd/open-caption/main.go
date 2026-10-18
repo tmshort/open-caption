@@ -265,7 +265,7 @@ func tlsConfig(ctx context.Context, cfg config.Config, api *httpapi.Server) *tls
 
 // usage is what --help prints: the options (each may also be written with two dashes), the environment variables that
 // stand in for them, and where the rest is documented. The man page (docs/open-caption.1) and the reference
-// (docs/11-configuration-reference.md) describe the same options; a test keeps the three in step.
+// (docs/configuration-reference.md) describe the same options; a test keeps the three in step.
 func usage() {
 	out := flag.CommandLine.Output()
 	fmt.Fprintf(out, `open-caption %s: open-captioning server for community theater
@@ -289,7 +289,7 @@ Environment variables (a command-line option wins over its variable, and both wi
   OPEN_CAPTION_LOG_LEVEL    same as --log-level
   OPEN_CAPTION_LOG          same as --log-file
 
-More: man open-caption (docs/open-caption.1), docs/11-configuration-reference.md (every setting in config.yaml),
+More: man open-caption (docs/open-caption.1), docs/configuration-reference.md (every setting in config.yaml),
 docs/usage-guide.md, and https://github.com/tmshort/open-caption
 `)
 }

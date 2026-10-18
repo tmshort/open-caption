@@ -1,6 +1,6 @@
 # Configurar um certificado HTTPS confiável (opcional)
 
-Este guia é para a pessoa que cuida do computador das legendas. Ele é **opcional**: as legendas funcionam sem ele. (As configurações que ele usa estão na [referência de configuração](11-configuration-reference.md), e o projeto e os testes no [documento 10](10-acme-lets-encrypt.md); ambos existem somente em inglês.)
+Este guia é para a pessoa que cuida do computador das legendas. Ele é **opcional**: as legendas funcionam sem ele. (As configurações que ele usa estão na [referência de configuração](configuration-reference.md), e o projeto e os testes no [documento 10](10-acme-lets-encrypt.md); ambos existem somente em inglês.)
 
 ## Você precisa disto?
 
@@ -40,7 +40,7 @@ EASYDNS_KEY=paste-the-key-here
 
 No macOS e no Linux, torne-o privado: `chmod 600 /etc/open-caption/dns.env`. O programa avisa se outros usuários puderem lê-lo.
 
-**4. Edite `config.yaml`** (as primeiras linhas que o programa imprime dizem onde ele está; cada configuração é explicada na [referência](11-configuration-reference.md)):
+**4. Edite `config.yaml`** (as primeiras linhas que o programa imprime dizem onde ele está; cada configuração é explicada na [referência](configuration-reference.md)):
 
 ```yaml
 https:

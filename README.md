@@ -62,7 +62,7 @@ For people who use and run the program (the specifications are further down):
 | [docs/usage-guide.md](docs/usage-guide.md) | **Start here:** deployment recommendations, setting up a show, running it, the day-of checklist, troubleshooting |
 | [docs/venue-network-guide.md](docs/venue-network-guide.md) | Whoever manages the venue's WiFi: how audience phones reach the computer |
 | [docs/https-certificate-guide.md](docs/https-certificate-guide.md) | Step by step: a trusted HTTPS certificate with Cloudflare, GoDaddy or EasyDNS |
-| [docs/11-configuration-reference.md](docs/11-configuration-reference.md) | Every `config.yaml` setting, the command-line options and environment variables, checking a show file (English) |
+| [docs/configuration-reference.md](docs/configuration-reference.md) | Every `config.yaml` setting, the command-line options and environment variables, checking a show file (English) |
 | [docs/open-caption.1](docs/open-caption.1) | The manual page (`man ./docs/open-caption.1`): options, environment, files, signals, exit status (English) |
 
 The usage guide, the venue network guide and the HTTPS certificate guide are also available in Spanish, French, German,
@@ -95,7 +95,7 @@ make build ACME_PROVIDERS=all                 # every provider lego has (a much 
 make build ACME_PROVIDERS=none                # no automatic certificates (the smallest binary)
 ```
 
-`./bin/open-caption --version` lists what a binary contains. Building with a provider outside the default list needs internet. To set it up, follow [docs/https-certificate-guide.md](docs/https-certificate-guide.md); every setting is in [docs/11-configuration-reference.md](docs/11-configuration-reference.md); the design, measured sizes and tests are in [docs/10-acme-lets-encrypt.md](docs/10-acme-lets-encrypt.md).
+`./bin/open-caption --version` lists what a binary contains. Building with a provider outside the default list needs internet. To set it up, follow [docs/https-certificate-guide.md](docs/https-certificate-guide.md); every setting is in [docs/configuration-reference.md](docs/configuration-reference.md); the design, measured sizes and tests are in [docs/10-acme-lets-encrypt.md](docs/10-acme-lets-encrypt.md).
 
 **Security note:** anyone who can reach the server can open the Setup and operator sign-in pages, and over plain `http://` passwords cross the WiFi unencrypted. Limit them with `access.admin_allow` / `access.operator_allow` in `config.yaml` (see [docs/usage-guide.md](docs/usage-guide.md#security)).
 

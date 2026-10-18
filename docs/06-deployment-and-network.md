@@ -14,7 +14,7 @@ open-caption --check-show show.md        # check a show file (a lint); no server
 open-caption --help                      # every option
 ```
 Every option, its environment variable (`OPEN_CAPTION_*`) and what it overrides is in the
-[configuration reference](11-configuration-reference.md#command-line-and-environment); the same is in the
+[configuration reference](configuration-reference.md#command-line-and-environment); the same is in the
 manual page, `docs/open-caption.1` (`man ./docs/open-caption.1`, or install it in a `man1` folder).
 Every setting (ports, addresses, TLS, passwords, defaults) lives in
 `config.yaml` (doc 02). Flags and `OPEN_CAPTION_*` environment variables override it.

@@ -24,9 +24,9 @@ func yamlKeys(t reflect.Type, prefix string, out *[]string) {
 	}
 }
 
-// The reference (docs/11) must describe every setting there is, so it cannot fall behind the program.
+// The reference (docs/configuration-reference.md) must describe every setting there is, so it cannot fall behind the program.
 func TestConfigurationReferenceDocumentsEverySetting(t *testing.T) {
-	b, err := os.ReadFile("../../docs/11-configuration-reference.md")
+	b, err := os.ReadFile("../../docs/configuration-reference.md")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -39,7 +39,7 @@ func TestConfigurationReferenceDocumentsEverySetting(t *testing.T) {
 	for _, k := range keys {
 		// a table row starts "| `key`" (or lists several keys in one cell, like cert_file and key_file)
 		if !strings.Contains(doc, "`"+k+"`") {
-			t.Errorf("docs/11-configuration-reference.md does not describe %s", k)
+			t.Errorf("docs/configuration-reference.md does not describe %s", k)
 		}
 	}
 	// ... and the flags and environment variables of the program
@@ -52,7 +52,7 @@ func TestConfigurationReferenceDocumentsEverySetting(t *testing.T) {
 
 // The complete example in the reference must load without a single problem.
 func TestConfigurationReferenceExampleLoads(t *testing.T) {
-	b, err := os.ReadFile("../../docs/11-configuration-reference.md")
+	b, err := os.ReadFile("../../docs/configuration-reference.md")
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -26,7 +26,7 @@ func TestEveryOptionIsDocumentedInTheManPageAndTheReference(t *testing.T) {
 		t.Fatalf("--help should exit 0: %v\n%s", err, out)
 	}
 	help := string(out)
-	for _, w := range []string{"docs/11-configuration-reference.md", "man open-caption", "Usage: open-caption"} {
+	for _, w := range []string{"docs/configuration-reference.md", "man open-caption", "Usage: open-caption"} {
 		if !strings.Contains(help, w) {
 			t.Errorf("--help does not mention %q", w)
 		}
@@ -41,7 +41,7 @@ func TestEveryOptionIsDocumentedInTheManPageAndTheReference(t *testing.T) {
 		t.Fatal(err)
 	}
 	manText := strings.ReplaceAll(string(man), `\-`, "-") // roff writes a hyphen as \-
-	ref, err := os.ReadFile("../../docs/11-configuration-reference.md")
+	ref, err := os.ReadFile("../../docs/configuration-reference.md")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -50,7 +50,7 @@ func TestEveryOptionIsDocumentedInTheManPageAndTheReference(t *testing.T) {
 			t.Errorf("the man page does not describe --%s", f[1])
 		}
 		if !strings.Contains(string(ref), "`--"+f[1]) {
-			t.Errorf("docs/11-configuration-reference.md does not describe --%s", f[1])
+			t.Errorf("docs/configuration-reference.md does not describe --%s", f[1])
 		}
 	}
 	for _, e := range envs {

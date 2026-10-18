@@ -1,6 +1,6 @@
 # Configurar un certificado HTTPS de confianza (opcional)
 
-Esta guía es para la persona que cuida del equipo de subtitulado. Es **opcional**: los subtítulos funcionan sin ella. (Los ajustes que usa están en la [referencia de configuración](11-configuration-reference.md), y el diseño y las pruebas en el [documento 10](10-acme-lets-encrypt.md); ambos solo están en inglés.)
+Esta guía es para la persona que cuida del equipo de subtitulado. Es **opcional**: los subtítulos funcionan sin ella. (Los ajustes que usa están en la [referencia de configuración](configuration-reference.md), y el diseño y las pruebas en el [documento 10](10-acme-lets-encrypt.md); ambos solo están en inglés.)
 
 ## ¿Lo necesita?
 
@@ -40,7 +40,7 @@ EASYDNS_KEY=paste-the-key-here
 
 En macOS y Linux hágalo privado: `chmod 600 /etc/open-caption/dns.env`. El programa avisa si otros usuarios pueden leerlo.
 
-**4. Edite `config.yaml`** (las primeras líneas que imprime el programa dicen dónde está; cada ajuste se explica en la [referencia](11-configuration-reference.md)):
+**4. Edite `config.yaml`** (las primeras líneas que imprime el programa dicen dónde está; cada ajuste se explica en la [referencia](configuration-reference.md)):
 
 ```yaml
 https:
