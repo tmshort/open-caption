@@ -658,3 +658,22 @@ func TestImportRefusesAZipThatUnpacksToTooMuch(t *testing.T) {
 		t.Errorf("%d %v, want 413", code, out)
 	}
 }
+
+// An export that cannot be completed is an error, not a zip with a file missing.
+func TestExportFailsCleanlyWhenAnImageCannotBeRead(t *testing.T) {
+	if os.Geteuid() == 0 {
+		t.Skip("permissions do not stop root")
+	}
+	s, _, c := serverWith(t, nil)
+	id := createShow(t, c, "Broken")
+	if code, _ := c.upload(id, map[string][]byte{"a.png": pngData(t)}); code != 200 {
+		t.Fatal("upload", code)
+	}
+	p := filepath.Join(s.store.AssetsDir(id), "a.png")
+	os.Chmod(p, 0)
+	defer os.Chmod(p, 0o644)
+	code, out := c.do("GET", "/api/admin/shows/"+id+"/export", nil)
+	if code != http.StatusInternalServerError || out == nil {
+		t.Errorf("%d %v, want a 500 with a message", code, out)
+	}
+}

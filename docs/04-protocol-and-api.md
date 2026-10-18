@@ -71,7 +71,7 @@ everywhere an operator session is; the reverse is not true.
 | GET | `/api/admin/shows/{id}/showfile/download` | The show file as a plain `<id>.md` (or `<id>.<lang>.md`) attachment, UTF-8 with a BOM and CRLF line ends so any Windows editor opens it correctly; for editing offline. It goes back through the editor's **Upload a show file** and the normal save |
 | POST | `/api/admin/shows/{id}/archive` | Archive the show (`archived: yes` in its show file); 409 if it is the show on air. Returns the show summary (`archived: true`) |
 | POST | `/api/admin/shows/{id}/unarchive` | Restore an archived show |
-| GET | `/api/admin/shows/{id}/export` | Download the show as a `.zip` (format: doc 06, *Show archive*) |
+| GET | `/api/admin/shows/{id}/export` | Download the show as a `.zip` (format: doc 06, *Show archive*); built completely before it is sent, so a failure is a 500 `{error}` and never a truncated zip |
 | POST | `/api/admin/shows/import` | multipart field `file`: a show `.zip` (creates a show titled `<title> (imported)`, with its images), **or a plain text show file** of any name (anything that does not start with the zip signature; UTF-8, UTF-16 with a mark, or Windows-1252; titled from `[settings]` `title:`, else from the file name). Returns `201 {show, skippedFiles}`; 400 if a zip has no `show.md`, or the file is empty or binary; 413 if the file is over 64 MB or a zip would unpack to more than 200 MB (or hold more than 500 entries) |
 | GET | `/api/admin/shows/{id}/showfile/history` | Earlier versions of a show file (`?lang=`), newest first: `{versions: [{id, time, lines, bytes}]}` |
 | GET | `/api/admin/shows/{id}/showfile/history/{version}` | `{text}` of one earlier version |

@@ -915,14 +915,19 @@ func (s *Server) exportShow(w http.ResponseWriter, r *http.Request) {
 		storeErr(w, err)
 		return
 	}
-	w.Header().Set("Content-Type", "application/zip")
-	w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="%s.zip"`, id))
-	zw := zip.NewWriter(w)
-	defer zw.Close()
+	// Built in memory first, so a failure is an error the person sees rather than a truncated download.
+	var buf bytes.Buffer
+	zw := zip.NewWriter(&buf)
+	var werr error
 	put := func(name string, data []byte) {
-		if f, err := zw.Create(name); err == nil {
-			f.Write(data)
+		if werr != nil {
+			return
 		}
+		f, err := zw.Create(name)
+		if err == nil {
+			_, err = f.Write(data)
+		}
+		werr = err
 	}
 	// The show file(s) hold everything but the images: show.md (main language) and show.<lang>.md.
 	codes, _ := s.store.Languages(id)
@@ -931,15 +936,35 @@ func (s *Server) exportShow(w http.ResponseWriter, r *http.Request) {
 		if i == 0 {
 			name = "show.md"
 		}
-		if text, err := s.store.ReadShowFile(id, code); err == nil {
-			put(name, []byte(text))
+		text, err := s.store.ReadShowFile(id, code)
+		if err != nil {
+			logx.Errorf("export of show %s: could not read %s: %v", id, name, err)
+			writeErr(w, http.StatusInternalServerError, "The show could not be exported. Try again; if it keeps happening, look at the log.")
+			return
 		}
+		put(name, []byte(text))
 	}
 	for _, a := range mustAssets(s.store, id) {
-		if b, err := os.ReadFile(filepath.Join(s.store.AssetsDir(id), a.Name)); err == nil {
-			put("assets/"+a.Name, b)
+		b, err := os.ReadFile(filepath.Join(s.store.AssetsDir(id), a.Name))
+		if err != nil {
+			logx.Errorf("export of show %s: could not read image %s: %v", id, a.Name, err)
+			writeErr(w, http.StatusInternalServerError, "The show could not be exported. Try again; if it keeps happening, look at the log.")
+			return
 		}
+		put("assets/"+a.Name, b)
 	}
+	if err := zw.Close(); werr == nil {
+		werr = err
+	}
+	if werr != nil {
+		logx.Errorf("export of show %s: %v", id, werr)
+		writeErr(w, http.StatusInternalServerError, "The show could not be exported. Try again; if it keeps happening, look at the log.")
+		return
+	}
+	w.Header().Set("Content-Type", "application/zip")
+	w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="%s.zip"`, id))
+	w.Header().Set("Content-Length", strconv.Itoa(buf.Len()))
+	w.Write(buf.Bytes())
 }
 
 func (s *Server) importShow(w http.ResponseWriter, r *http.Request) {
