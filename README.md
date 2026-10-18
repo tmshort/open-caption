@@ -51,7 +51,7 @@ The first run creates `config.yaml` (in your user config folder; the path is pri
 - **Audience:** the address shown in Setup → Run, or its QR code. Devices must be on the same WiFi.
 - **Help:** the **Help** button on Setup and Operator. Read [Getting started](web/help/admin-getting-started.md) and [Preparing a show file](web/help/admin-preparing-a-show-file.md) (for whoever writes the show file), [docs/usage-guide.md](docs/usage-guide.md) (deployment, checklist) and [docs/venue-network-guide.md](docs/venue-network-guide.md) (the WiFi side).
 
-`make help` lists every target.
+`make help` lists every target. `open-caption --help` lists the command-line options; the manual page is `docs/open-caption.1` (`make man` shows it).
 
 ## Building and testing
 
@@ -103,6 +103,7 @@ behavior needs to change, change the spec first (in the same PR).
 | [docs/09-open-questions.md](docs/09-open-questions.md) | Resolved decisions and remaining open questions |
 | [docs/10-acme-lets-encrypt.md](docs/10-acme-lets-encrypt.md) | Automatic HTTPS certificates (ACME DNS-01): design, build choices, sizes, tests |
 | [docs/11-configuration-reference.md](docs/11-configuration-reference.md) | Every `config.yaml` setting, the flags and environment variables |
+| [docs/open-caption.1](docs/open-caption.1) | The manual page (`man ./docs/open-caption.1`): options, environment, files, signals, exit status (English) |
 | [docs/https-certificate-guide.md](docs/https-certificate-guide.md) | Step by step: a trusted HTTPS certificate with Cloudflare, GoDaddy or EasyDNS (English) |
 
 Requirement IDs (`REQ-…`) are referenced from the other docs and should be

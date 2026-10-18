@@ -8,7 +8,13 @@ open-caption --config ~/oc/config.yaml   # config file (default: <data dir>/conf
 open-caption --data ~/oc-data            # data directory
 open-caption --http-addr :80 --https-addr :443   # override listen addresses
 open-caption --no-browser                # don't auto-open the setup page
+open-caption --log-level debug --log-file ~/oc.log   # more detail, also to a file
+open-caption --version                   # the version and the ACME DNS providers built in
+open-caption --help                      # every option
 ```
+Every option, its environment variable (`OPEN_CAPTION_*`) and what it overrides is in the
+[configuration reference](11-configuration-reference.md#command-line-and-environment); the same is in the
+manual page, `docs/open-caption.1` (`man ./docs/open-caption.1`, or install it in a `man1` folder).
 Every setting (ports, addresses, TLS, passwords, defaults) lives in
 `config.yaml` (doc 02). Flags and `OPEN_CAPTION_*` environment variables override it.
 On first run the config is generated with random admin/operator passwords.

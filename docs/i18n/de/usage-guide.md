@@ -134,7 +134,7 @@ In der Reihenfolge der Zuverlässigkeit:
 4. Die Einrichtungsseite öffnet sich in Ihrem Browser. Falls nicht, öffnen Sie `http://localhost/admin` (oder `http://localhost:8080/admin`, wenn die Konsole sagt, dass sie Port 8080 verwendet hat).
 5. **Wählen Sie, wo die Daten liegen (optional).** Standardmäßig liegen Shows und Einstellungen im Konfigurationsordner Ihres Benutzers (macOS `~/Library/Application Support/open-caption`, Linux `~/.config/open-caption`, Windows `%AppData%\open-caption`). Um alles in einem Ordner Ihrer Wahl zu halten, starten Sie mit `--data <Ordner>`. Verwenden Sie immer denselben Ordner.
 
-Nützliche Optionen: `--data <Ordner>`, `--http-addr :8080`, `--https-addr :443`, `--no-browser`, `--log-file <Datei>`, `--log-level debug|info|warn|error`, `--version`.
+Nützliche Optionen: `--data <Ordner>`, `--http-addr :8080`, `--https-addr :443`, `--no-browser`, `--log-file <Datei>`, `--log-level debug|info|warn|error`, `--version`. Alle Optionen: `open-caption --help`, die Handbuchseite `docs/open-caption.1` (nur auf Englisch) oder `docs/11-configuration-reference.md`.
 
 Hat `config.yaml` einen Fehler (eine falsch geschriebene Einstellung, eine Zahl außerhalb des Bereichs, eine fehlerhafte Adresse), listet das Programm jedes Problem mit Zeile oder Einstellungsnamen auf und hält an; beheben Sie die Datei und starten Sie neu. (Eine Datei, die mit einer neueren `config_version` gekennzeichnet ist, als das Programm versteht, ist die Ausnahme: Unbekannte Einstellungen werden mit einer Warnung ignoriert, sodass Sie zu einem älteren Programm zurückgehen können.)
 

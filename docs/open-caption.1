@@ -1,0 +1,294 @@
+.TH OPEN-CAPTION 1 "October 18, 2026" "open-caption" "User Commands"
+.SH NAME
+open-caption \- open-captioning server for community theater
+.SH SYNOPSIS
+.B open-caption
+.RB [ \-\-config
+.IR file ]
+.RB [ \-\-data
+.IR folder ]
+.RB [ \-\-http\-addr
+.IR addr ]
+.RB [ \-\-https\-addr
+.IR addr ]
+.RB [ \-\-log\-level
+.IR level ]
+.RB [ \-\-log\-file
+.IR file ]
+.RB [ \-\-no\-browser ]
+.br
+.B open-caption \-\-version
+.SH DESCRIPTION
+.B open-caption
+is a single program that shows live captions on the audience's own phones, tablets and screens during a play
+or musical.
+One computer runs it; everyone else uses a web browser on the same network.
+The same program serves three pages:
+.TP
+.B /admin
+Setup: create a show, edit its show file, upload images, choose the look, rehearse, and share the address
+(a QR code).
+It asks for the admin password.
+.TP
+.B /operator
+The operator page: the person following the show presses the space bar for each line.
+It asks for the operator password (the admin password also works).
+.TP
+.B /
+The audience page: open to everyone on the network.
+.PP
+Everything about the computer and the venue is set in
+.IR config.yaml
+(see
+.B FILES
+and
+.BR "SEE ALSO" ).
+On the first run the program writes that file with random admin and operator passwords and prints them
+once in the console, then prints the addresses to open.
+Anything on the command line, or in the matching environment variable, overrides the file for that run
+without changing it.
+.PP
+The program runs until it is interrupted.
+Each option below may be written with one or two leading dashes
+.RB ( \-data
+or
+.BR \-\-data ).
+.SH OPTIONS
+.TP
+.BI \-\-config " file"
+Use this settings file instead of
+.IR data-folder /config.yaml.
+.TP
+.BI \-\-data " folder"
+The data folder: shows, saved sessions, the saved live position and certificates.
+Overrides
+.B data_dir
+in the settings file.
+The default is
+.I open-caption
+in the user's configuration folder
+(on macOS
+.IR ~/Library/Application\ Support/open-caption ,
+on Windows
+.IR %AppData%\eopen-caption ,
+on Linux
+.IR ~/.config/open-caption ).
+.TP
+.BI \-\-http\-addr " addr"
+Listen for plain HTTP on this address, for example
+.B :80
+or
+.BR 127.0.0.1:8080 .
+Overrides
+.BR http.addr .
+If the address cannot be used the program falls back to
+.B http.fallback_addr
+(default
+.BR :8080 )
+and says so.
+.TP
+.BI \-\-https\-addr " addr"
+Turn HTTPS on, listening on this address, for example
+.BR :443 .
+Overrides
+.B https.enabled
+and
+.BR https.addr .
+The certificate comes from
+.BR https.cert_file ,
+from the automatic certificate settings
+.RB ( https.acme ),
+or is a self-signed one the program makes (browsers warn about it).
+.TP
+.BI \-\-log\-level " level"
+How much to log:
+.BR debug ,
+.BR info ,
+.B warn
+or
+.BR error .
+Overrides
+.B log.level
+every time the program starts.
+.TP
+.BI \-\-log\-file " file"
+Also append the log to this file.
+It starts a new file at about 5 MB and keeps three old ones.
+.TP
+.B \-\-no\-browser
+Do not open Setup in a browser at start-up (the same as
+.B defaults.open_browser: no
+for one run).
+.TP
+.B \-\-version
+Print the version, and the DNS providers built into this program for automatic certificates, then exit.
+.TP
+.B \-\-help
+Print a summary of the options and exit.
+.TP
+.B \-\-dev
+For developers only.
+Enables unauthenticated
+.B /dev/*
+control endpoints and puts a show on air at once; the program then listens on this computer only.
+Never use it at a venue.
+.TP
+.BI \-\-show\-file " file"
+With
+.BR \-\-dev :
+load this show file as the active show.
+.TP
+.BI \-\-assets " folder"
+With
+.BR \-\-dev :
+the folder of images for
+.BR \-\-show\-file .
+.SH ENVIRONMENT
+.TP
+.B OPEN_CAPTION_CONFIG
+Same as
+.BR \-\-config .
+.TP
+.B OPEN_CAPTION_DATA
+Same as
+.BR \-\-data .
+.TP
+.B OPEN_CAPTION_HTTP_ADDR
+Same as
+.BR \-\-http\-addr .
+.TP
+.B OPEN_CAPTION_HTTPS_ADDR
+Same as
+.BR \-\-https\-addr .
+.TP
+.B OPEN_CAPTION_LOG_LEVEL
+Same as
+.BR \-\-log\-level .
+.TP
+.B OPEN_CAPTION_LOG
+Same as
+.BR \-\-log\-file .
+.PP
+A command-line option wins over its variable, and either wins over the settings file.
+.PP
+With automatic certificates the DNS provider's own settings are also read from the environment, for example
+.B EASYDNS_TOKEN
+and
+.BR EASYDNS_KEY ,
+or
+.B CLOUDFLARE_DNS_API_TOKEN ;
+a variable
+.B NAME_FILE
+names a file that holds the value of
+.BR NAME .
+They win over
+.B https.acme.dns.credentials_file
+and
+.BR https.acme.dns.credentials .
+.SH FILES
+.TP
+.IR data-folder /config.yaml
+The settings: passwords (plain text, so the file is created readable by its owner only), listening ports, HTTPS,
+who may open Setup, and the defaults for a show.
+Every setting is described in the configuration reference.
+Setup rewrites a few keys (passwords, the
+.B .local
+name, the standby message, the log detail) and keeps the rest and any comments.
+Other changes need the program to be restarted.
+.TP
+.IR data-folder /shows/ <id>/
+One folder per show: the show file
+.RB ( show.md ),
+translations
+.RB ( show.<language>.md )
+and
+.BR assets/ .
+.TP
+.IR data-folder /sessions.json ", " live.json
+Saved sign-ins (stored hashed) and the saved position of the show on air, so a restart carries on where it was.
+.TP
+.IR data-folder /tls/
+The self-signed certificate, or the certificate and account kept by automatic certificates.
+.TP
+.IR data-folder /standby\-logo.<ext>
+The logo shown on the standby screen, if one was chosen in Setup.
+.SH SIGNALS
+.BR SIGINT ,
+.B SIGTERM
+and
+.B SIGHUP
+(and Ctrl+C or Ctrl+Break on Windows) make the program save its position and exit with status 0.
+.SH EXIT STATUS
+.TP
+.B 0
+Normal exit, or
+.B \-\-version
+or
+.BR \-\-help .
+.TP
+.B non-zero
+The settings file has problems (all of them are printed, each naming the setting),
+a port or file cannot be used, or the program was started in a way it does not allow.
+.SH EXAMPLES
+Start with the defaults and open Setup:
+.PP
+.RS
+.nf
+open-caption
+.fi
+.RE
+.PP
+Use a settings file and data folder of your own, on port 8080, without opening a browser:
+.PP
+.RS
+.nf
+open-caption \-\-config ~/oc/config.yaml \-\-data ~/oc\-data \e
+    \-\-http\-addr :8080 \-\-no\-browser
+.fi
+.RE
+.PP
+Serve HTTPS as well, and keep a log file:
+.PP
+.RS
+.nf
+open-caption \-\-https\-addr :443 \-\-log\-file /var/log/open-caption.log
+.fi
+.RE
+.PP
+See what a build contains:
+.PP
+.RS
+.nf
+open-caption \-\-version
+.fi
+.RE
+.SH SECURITY
+Anyone who can reach the server can open the Setup and operator sign-in pages, and over plain HTTP passwords cross
+the network unencrypted.
+Limit them with
+.B access.admin_allow
+and
+.B access.operator_allow
+in the settings file, for example
+.BR "admin_allow: [localhost]" .
+A browser on the computer that runs the program is signed in as admin without a password unless
+.B access.local_auto_login
+is turned off.
+.SH SEE ALSO
+.TP
+.I docs/11-configuration-reference.md
+Every setting, with defaults and rules.
+.TP
+.I docs/usage-guide.md
+Installing, setting up a show, running it, and the day-of checklist.
+.TP
+.I docs/venue-network-guide.md
+The WiFi side: how audience phones reach the computer.
+.TP
+.I docs/https-certificate-guide.md
+Step by step: a trusted HTTPS certificate with automatic renewal.
+.TP
+.B https://github.com/tmshort/open-caption
+The source and the rest of the documentation.
+.SH LICENSE
+Apache License 2.0.

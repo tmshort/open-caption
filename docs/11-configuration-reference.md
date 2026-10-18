@@ -13,7 +13,7 @@
 
 ## Command line and environment
 
-A flag, or its environment variable, overrides the file for that run. (The file is not changed.)
+A flag, or its environment variable, overrides the file for that run. (The file is not changed.) A flag may be written with one or two dashes (`-data` or `--data`). `open-caption --help` prints this list, and the **man page** (`docs/open-caption.1`; read it with `man ./docs/open-caption.1`, or copy it to a `man1` folder such as `/usr/local/share/man/man1/`) describes the same options, files, signals and exit status.
 
 | Flag | Environment | Effect |
 |---|---|---|
@@ -25,6 +25,7 @@ A flag, or its environment variable, overrides the file for that run. (The file 
 | `--log-file FILE` | `OPEN_CAPTION_LOG` | Also append the log to this file |
 | `--no-browser` | | Do not open Setup in a browser at start-up (like `defaults.open_browser: no`) |
 | `--version` | | Print the version and the DNS providers built in for automatic certificates, then exit |
+| `--help` | | Print the options and the environment variables, and where to read more, then exit |
 | `--dev`, `--show-file`, `--assets` | | **Developers only**: unauthenticated test endpoints on this computer, no standby; never use them at a venue |
 
 ## Settings

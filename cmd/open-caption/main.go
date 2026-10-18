@@ -46,6 +46,7 @@ func main() {
 		devShow   = flag.String("show-file", "", "with --dev: load this show file as the active show")
 		devAsset  = flag.String("assets", "", "with --dev: directory of images for --show-file")
 	)
+	flag.Usage = usage
 	flag.Parse()
 	if *showVer {
 		fmt.Println("open-caption", version)
@@ -253,6 +254,35 @@ func tlsConfig(ctx context.Context, cfg config.Config, api *httpapi.Server) *tls
 	}
 	logx.Warnf("HTTPS is using a self-signed certificate: browsers will show a warning until it is accepted")
 	return &tls.Config{Certificates: []tls.Certificate{cert}, MinVersion: tls.VersionTLS12}
+}
+
+// usage is what --help prints: the options (each may also be written with two dashes), the environment variables that
+// stand in for them, and where the rest is documented. The man page (docs/open-caption.1) and the reference
+// (docs/11-configuration-reference.md) describe the same options; a test keeps the three in step.
+func usage() {
+	out := flag.CommandLine.Output()
+	fmt.Fprintf(out, `open-caption %s: open-captioning server for community theater
+
+Usage: open-caption [options]
+
+Run with no options to start with the defaults: the first run writes config.yaml with random passwords and prints
+them, then prints the addresses to open (Setup at /admin, the operator page at /operator, the audience page at /).
+
+Options (one or two leading dashes both work, for example -data or --data):
+`, version)
+	flag.PrintDefaults()
+	fmt.Fprint(out, `
+Environment variables (a command-line option wins over its variable, and both win over config.yaml):
+  OPEN_CAPTION_CONFIG       same as --config
+  OPEN_CAPTION_DATA         same as --data
+  OPEN_CAPTION_HTTP_ADDR    same as --http-addr
+  OPEN_CAPTION_HTTPS_ADDR   same as --https-addr
+  OPEN_CAPTION_LOG_LEVEL    same as --log-level
+  OPEN_CAPTION_LOG          same as --log-file
+
+More: man open-caption (docs/open-caption.1), docs/11-configuration-reference.md (every setting in config.yaml),
+docs/usage-guide.md, and https://github.com/tmshort/open-caption
+`)
 }
 
 // acmeProviders is the list of DNS providers built into this program, for --version and the log.

@@ -5,7 +5,7 @@ LDFLAGS := -s -w -X main.version=$(VERSION)
 ACME_PROVIDERS ?= cloudflare godaddy easydns
 
 .DEFAULT_GOAL := help
-.PHONY: help build test race fuzz vet vulncheck tidy e2e a11y i18n dist acme-variants clean
+.PHONY: help build test race fuzz vet vulncheck tidy e2e a11y i18n dist man acme-variants clean
 
 help: ## Show this list of targets
 	@echo "open-caption: make <target>"; echo
@@ -33,11 +33,14 @@ i18n: ## Check every sentence is translated into all six languages (needs Node)
 	cd test/e2e && npm install --no-audit --no-fund && node check-i18n.js
 dist: ## Cross-compile release binaries into dist/ (no CGO; same ACME_PROVIDERS choice as build)
 	mkdir -p dist
+	cp docs/open-caption.1 dist/
 	CGO_ENABLED=0 GOOS=darwin  GOARCH=arm64 tools/acme-go.sh "$(ACME_PROVIDERS)" build -ldflags "$(LDFLAGS)" -o dist/open-caption-darwin-arm64 ./cmd/open-caption
 	CGO_ENABLED=0 GOOS=darwin  GOARCH=amd64 tools/acme-go.sh "$(ACME_PROVIDERS)" build -ldflags "$(LDFLAGS)" -o dist/open-caption-darwin-amd64 ./cmd/open-caption
 	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 tools/acme-go.sh "$(ACME_PROVIDERS)" build -ldflags "$(LDFLAGS)" -o dist/open-caption-windows-amd64.exe ./cmd/open-caption
 	CGO_ENABLED=0 GOOS=linux   GOARCH=amd64 tools/acme-go.sh "$(ACME_PROVIDERS)" build -ldflags "$(LDFLAGS)" -o dist/open-caption-linux-amd64 ./cmd/open-caption
 	CGO_ENABLED=0 GOOS=linux   GOARCH=arm64 tools/acme-go.sh "$(ACME_PROVIDERS)" build -ldflags "$(LDFLAGS)" -o dist/open-caption-linux-arm64 ./cmd/open-caption
+man: ## Show the manual page (docs/open-caption.1)
+	man ./docs/open-caption.1
 acme-variants: ## Check that the ACME build choices compile: none, the default, one provider, a custom list, and all (needs internet)
 	@for v in none "" "easydns" "easydns route53" all; do \
 	  echo "== ACME_PROVIDERS=$${v:-default}"; tools/acme-go.sh "$$v" build -o /dev/null ./cmd/open-caption || exit 1; \
