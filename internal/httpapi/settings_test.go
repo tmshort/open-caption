@@ -1,9 +1,11 @@
 package httpapi
 
 import (
+	"archive/zip"
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/tmshort/open-caption/internal/logbuf"
 	"github.com/tmshort/open-caption/internal/logx"
 	"io"
@@ -631,5 +633,28 @@ func TestNamingAndKeepingVersionsOverTheAPI(t *testing.T) {
 	}
 	if code, _ := c.do("PUT", "/api/admin/shows/"+id+"/showfile/history/20260101T000000.000Z/label", map[string]string{"label": "x"}); code != 404 {
 		t.Errorf("unknown version: %d", code)
+	}
+}
+
+// A small zip can unpack to a great deal; an import whose files together are too big is refused.
+func TestImportRefusesAZipThatUnpacksToTooMuch(t *testing.T) {
+	_, ts, c := serverWith(t, nil)
+	var zb bytes.Buffer
+	zw := zip.NewWriter(&zb)
+	chunk := make([]byte, 1<<20)
+	for i := 0; i < 21; i++ {
+		f, _ := zw.Create(fmt.Sprintf("assets/big%d.png", i))
+		for j := 0; j < 10; j++ {
+			f.Write(chunk)
+		}
+	}
+	zw.Close()
+	if zb.Len() > maxZipBody {
+		t.Fatalf("test zip is not small: %d", zb.Len())
+	}
+	body, ctype := multipartZip(t, zb.Bytes())
+	code, out := postRaw(t, c, ts.URL+"/api/admin/shows/import", ctype, body)
+	if code != http.StatusRequestEntityTooLarge {
+		t.Errorf("%d %v, want 413", code, out)
 	}
 }

@@ -40,9 +40,10 @@ import (
 )
 
 const (
-	maxUploadBody = 48 << 20
-	maxZipBody    = 64 << 20
-	maxZipEntries = 500
+	maxUploadBody  = 48 << 20
+	maxZipBody     = 64 << 20
+	maxZipEntries  = 500
+	maxZipUnpacked = 200 << 20 // all the files of an import together, once unpacked (a small zip can hold a great deal)
 )
 
 // Listeners records what the server actually bound (set by main) for the network panel.
@@ -971,6 +972,15 @@ func (s *Server) importShow(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, http.StatusBadRequest, "That is not a show export (.zip).")
 		return
 	}
+	var declared uint64
+	for _, f := range zr.File {
+		declared += f.UncompressedSize64
+	}
+	if declared > maxZipUnpacked {
+		writeErr(w, http.StatusRequestEntityTooLarge, "That file is too large.")
+		return
+	}
+	var unpacked int64
 	read := func(f *zip.File, limit int64) ([]byte, error) {
 		rc, err := f.Open()
 		if err != nil {
@@ -978,7 +988,7 @@ func (s *Server) importShow(w http.ResponseWriter, r *http.Request) {
 		}
 		defer rc.Close()
 		b, err := io.ReadAll(io.LimitReader(rc, limit+1))
-		if int64(len(b)) > limit {
+		if unpacked += int64(len(b)); int64(len(b)) > limit || unpacked > maxZipUnpacked {
 			return nil, show.ErrTooLarge
 		}
 		return b, err
