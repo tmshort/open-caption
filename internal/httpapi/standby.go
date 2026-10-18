@@ -106,7 +106,7 @@ func (s *Server) setStandbyLogo(w http.ResponseWriter, r *http.Request) {
 	}
 	r.Body = http.MaxBytesReader(w, r.Body, maxStandbyLogo+(64<<10))
 	if err := r.ParseMultipartForm(maxStandbyLogo); err != nil {
-		writeErr(w, http.StatusRequestEntityTooLarge, "The logo can be up to 2 MB.")
+		uploadErr(w, err, "The logo can be up to 2 MB.", "That file could not be read. Try choosing it again.")
 		return
 	}
 	fh, _, err := r.FormFile("file")

@@ -81,7 +81,7 @@ everywhere an operator session is; the reverse is not true.
 | GET | `/api/admin/shows/{id}/languages` | The show's languages (main first) with cue/error/warning counts, `available` (false when a translation does not match the main show file) and the `structure` problems; plus the `known` language names offered in Setup |
 | POST | `/api/admin/shows/{id}/languages` | `{code, name?, copyFromMain}`: start a translation (409 if it exists) |
 | DELETE | `/api/admin/shows/{id}/languages/{lang}` | Remove a translation (not the main language; not while live) |
-| POST | `/api/admin/shows/{id}/assets` | multipart image upload: png/jpg/gif/webp only (SVG rejected); 10 MB limit; stored as-is (no server-side scaling); response includes a `large: true` flag above 1 MB |
+| POST | `/api/admin/shows/{id}/assets` | multipart image upload: png/jpg/gif/webp only (SVG rejected); 10 MB limit; stored as-is (no server-side scaling); response includes a `large: true` flag above 1 MB; 413 if the upload is over the limit, 400 if the body cannot be read as a form |
 | GET/DELETE | `/api/admin/shows/{id}/assets/{file}` | |
 | POST | `/api/admin/shows/{id}/activate` | `{force?, start?}`: load the show **in standby** (blocked if a show is on air unless `force`; 409 if the show is archived). `start: true` also puts it on air at once (automation and tests; Setup never does) |
 | POST | `/api/admin/rehearsal/start` | Create an isolated rehearsal engine for this session (doc 02) |

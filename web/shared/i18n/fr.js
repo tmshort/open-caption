@@ -373,6 +373,8 @@ OCI18n.add("fr", {
  "The language name cannot contain | [ ] or line breaks, and must be under 40 characters.": "Le nom de la langue ne peut pas contenir | [ ] ni saut de ligne, et doit faire moins de 40 caractères.",
  "That upload was too large. Images can be up to 10 MB each.": "Ce téléversement était trop volumineux. Les images peuvent faire jusqu'à 10 Mo chacune.",
  "This show is archived. Restore it from the archive first.": "Ce spectacle est archivé. Restaurez-le d'abord depuis l'archive.",
+ "That upload could not be read. Try choosing the images again.": "Ce téléversement n'a pas pu être lu. Essayez de choisir à nouveau les images.",
+ "That file could not be read. Try choosing it again.": "Ce fichier n'a pas pu être lu. Essayez de le choisir à nouveau.",
  "That file is too large.": "Ce fichier est trop volumineux.",
  "choose a show .zip file": "choisissez un fichier .zip de spectacle",
  "could not read the file": "impossible de lire le fichier",

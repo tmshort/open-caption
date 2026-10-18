@@ -632,3 +632,19 @@ func TestPlainShowFileDownloadAndImport(t *testing.T) {
 		t.Errorf("binary: %d", code)
 	}
 }
+
+// A body that is not a form is a bad request, not "too large".
+func TestUnreadableUploadIsABadRequest(t *testing.T) {
+	_, _, c := adminServer(t)
+	id := createShow(t, c, "Up")
+	req, _ := http.NewRequest("POST", c.base+"/api/admin/shows/"+id+"/assets", strings.NewReader("not a form"))
+	req.Header.Set("Content-Type", "multipart/form-data; boundary=x")
+	resp, err := c.hc.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	resp.Body.Close()
+	if resp.StatusCode != http.StatusBadRequest {
+		t.Errorf("malformed upload: %d, want 400", resp.StatusCode)
+	}
+}

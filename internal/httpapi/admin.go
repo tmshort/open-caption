@@ -807,7 +807,7 @@ func (s *Server) uploadAssets(w http.ResponseWriter, r *http.Request) {
 	}
 	r.Body = http.MaxBytesReader(w, r.Body, maxUploadBody)
 	if err := r.ParseMultipartForm(8 << 20); err != nil {
-		writeErr(w, http.StatusRequestEntityTooLarge, "That upload was too large. Images can be up to 10 MB each.")
+		uploadErr(w, err, "That upload was too large. Images can be up to 10 MB each.", "That upload could not be read. Try choosing the images again.")
 		return
 	}
 	type fail struct {
@@ -834,6 +834,16 @@ func (s *Server) uploadAssets(w http.ResponseWriter, r *http.Request) {
 		s.rt.refreshPreload()
 	}
 	writeJSON(w, http.StatusOK, map[string]any{"saved": saved, "failed": failed})
+}
+
+// uploadErr answers a form that could not be read: 413 if the body went over its limit, otherwise 400.
+func uploadErr(w http.ResponseWriter, err error, tooLarge, unreadable string) {
+	var big *http.MaxBytesError
+	if errors.As(err, &big) {
+		writeErr(w, http.StatusRequestEntityTooLarge, tooLarge)
+		return
+	}
+	writeErr(w, http.StatusBadRequest, unreadable)
 }
 
 func (s *Server) getAsset(w http.ResponseWriter, r *http.Request) {
@@ -934,7 +944,7 @@ func (s *Server) exportShow(w http.ResponseWriter, r *http.Request) {
 func (s *Server) importShow(w http.ResponseWriter, r *http.Request) {
 	r.Body = http.MaxBytesReader(w, r.Body, maxZipBody)
 	if err := r.ParseMultipartForm(8 << 20); err != nil {
-		writeErr(w, http.StatusRequestEntityTooLarge, "That file is too large.")
+		uploadErr(w, err, "That file is too large.", "That file could not be read. Try choosing it again.")
 		return
 	}
 	fh, hdr, err := r.FormFile("file")
