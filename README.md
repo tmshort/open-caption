@@ -79,7 +79,7 @@ make build ACME_PROVIDERS=all                 # every provider lego has (a much 
 make build ACME_PROVIDERS=none                # no automatic certificates (the smallest binary)
 ```
 
-`./bin/open-caption --version` lists what a binary contains. Building with a provider outside the default list needs internet. How to configure it (`https.acme` in `config.yaml`, credentials from the environment, a file or the settings file), the measured sizes and the tests are in [docs/10-acme-lets-encrypt.md](docs/10-acme-lets-encrypt.md).
+`./bin/open-caption --version` lists what a binary contains. Building with a provider outside the default list needs internet. To set it up, follow [docs/https-certificate-guide.md](docs/https-certificate-guide.md); every setting is in [docs/11-configuration-reference.md](docs/11-configuration-reference.md); the design, measured sizes and tests are in [docs/10-acme-lets-encrypt.md](docs/10-acme-lets-encrypt.md).
 
 **Security note:** anyone who can reach the server can open the Setup and operator sign-in pages, and over plain `http://` passwords cross the WiFi unencrypted. Limit them with `access.admin_allow` / `access.operator_allow` in `config.yaml` (see [docs/usage-guide.md](docs/usage-guide.md#security)).
 
@@ -101,7 +101,9 @@ behavior needs to change, change the spec first (in the same PR).
 | [docs/07-testing-and-acceptance.md](docs/07-testing-and-acceptance.md) | Test strategy, load target, acceptance checklist |
 | [docs/08-roadmap.md](docs/08-roadmap.md) | Milestones and task breakdown |
 | [docs/09-open-questions.md](docs/09-open-questions.md) | Resolved decisions and remaining open questions |
-| [docs/10-acme-lets-encrypt.md](docs/10-acme-lets-encrypt.md) | Design notes for automatic certificates (not built) |
+| [docs/10-acme-lets-encrypt.md](docs/10-acme-lets-encrypt.md) | Automatic HTTPS certificates (ACME DNS-01): design, build choices, sizes, tests |
+| [docs/11-configuration-reference.md](docs/11-configuration-reference.md) | Every `config.yaml` setting, the flags and environment variables |
+| [docs/https-certificate-guide.md](docs/https-certificate-guide.md) | Step by step: a trusted HTTPS certificate with Cloudflare, GoDaddy or EasyDNS (English) |
 
 Requirement IDs (`REQ-…`) are referenced from the other docs and should be
 referenced from tests and commits.

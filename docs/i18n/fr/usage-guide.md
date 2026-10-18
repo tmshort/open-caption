@@ -106,7 +106,7 @@ Par ordre de fiabilité :
 
 - Par défaut, le serveur écoute sur le **port 80**, de sorte que l'adresse du public n'a pas besoin de numéro de port, par exemple `http://192.168.1.10/`. Si autre chose utilise le port 80, ou si le système d'exploitation ne l'autorise pas, le serveur vous le dit et utilise le **port 8080** ; l'adresse du public se termine alors par `:8080`. Sous Linux, le port 80 demande une autorisation (`sudo setcap 'cap_net_bind_service=+ep' ./open-caption`) sauf si vous utilisez le fichier systemd, qui l'accorde.
 - Vous pouvez choisir vous-même les ports avec `--http-addr :8081`, ou dans `config.yaml`.
-- **HTTPS est facultatif.** Le `http://` simple fonctionne sur tous les appareils sans avertissement et est l'adresse recommandée pour le public. Une adresse HTTPS auto-signée fait afficher un avertissement de sécurité à chaque appareil. N'activez HTTPS que si vous pouvez installer un certificat auquel vos appareils font confiance.
+- **HTTPS est facultatif.** Le `http://` simple fonctionne sur tous les appareils sans avertissement et est l'adresse recommandée pour le public. Une adresse HTTPS auto-signée fait afficher un avertissement de sécurité à chaque appareil. N'activez HTTPS que si vous pouvez installer un certificat auquel vos appareils font confiance. Si le lieu possède un nom de domaine, le programme peut obtenir et renouveler lui-même un certificat de confiance ; voir `docs/https-certificate-guide.md` (en anglais).
 
 ### Sécurité
 

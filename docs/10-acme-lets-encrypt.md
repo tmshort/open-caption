@@ -1,12 +1,13 @@
 # Automatic HTTPS certificates (ACME, DNS-01)
 
-Status: **built** (REQ-068). The program can get and renew a certificate from Let's Encrypt (or another ACME certificate authority) by itself, using the **DNS-01** challenge, so a venue computer that is only on a private network can still have a certificate that every browser trusts. It is optional and off by default; plain HTTP and the self-signed certificate keep working as before (REQ-006).
+Status: **built** (REQ-068). This document is the design, the build choices, the sizes and the tests; to **use** it, start with the [trusted HTTPS guide](https-certificate-guide.md). The program can get and renew a certificate from Let's Encrypt (or another ACME certificate authority) by itself, using the **DNS-01** challenge, so a venue computer that is only on a private network can still have a certificate that every browser trusts. It is optional and off by default; plain HTTP and the self-signed certificate keep working as before (REQ-006).
 
-## When to use it
+## Using it
 
-Plain HTTP works with no warning, and it is the default audience address. HTTPS matters mostly for features browsers restrict to secure pages, such as the Wake Lock API that keeps phone screens on (the audience page falls back to a tiny looping video without it). A self-signed certificate shows a browser warning on every device. Use automatic certificates if you **own a public domain name** (for example `mytheater.org`), **host its DNS with a provider whose API this program supports** (EasyDNS, Cloudflare and GoDaddy by default), and want audiences to open `https://captions.mytheater.org` without a warning.
+- **Setting it up, step by step** (what you need, the EasyDNS/Cloudflare/GoDaddy credentials, staging first, checking it, troubleshooting): the [trusted HTTPS guide](https-certificate-guide.md).
+- **Every setting** (`https.acme.*`), with defaults, valid values and the rules checked at start-up: the [configuration reference](11-configuration-reference.md).
 
-You do not need it if the venue has no domain, or HTTP is fine.
+Plain HTTP works with no warning and stays the default audience address; HTTPS matters mostly for features browsers restrict to secure pages (such as the Wake Lock API; the audience page has a fallback). Automatic certificates are for a venue that owns a public domain whose DNS provider is supported.
 
 ## How it works
 
@@ -17,55 +18,13 @@ Let's Encrypt must see that you control the name before it issues a certificate.
 3. It waits for the record to spread, and the CA looks it up in public DNS.
 4. The CA issues the certificate; the program deletes the record, keeps the certificate in `<data-dir>/tls/acme/` and starts serving it, with no restart.
 
-Renewal is automatic: the program checks about every 12 hours and renews when 30 days (`renew_before_days`) or fewer remain. If a try fails it tries again an hour later (CAs limit failed attempts), and **keeps serving the previous certificate**; before the first certificate arrives, connections get the self-signed one, so HTTPS is never down. The state is shown in **Setup → Settings → Security → Certificate**, with a **Renew now** button.
+Renewal is automatic: the program checks about every 12 hours (with a little random spread) and renews when `renew_before_days` (default 30) or fewer remain. A failed try is retried an hour later (CAs limit failed attempts) and **the previous certificate keeps serving**; before the first one arrives, connections get the self-signed certificate, so HTTPS is never down. The state is in Setup → Settings → Security → Certificate, with **Renew now**.
 
-What the venue's network needs: **outbound** access from the computer to the CA (`acme-v02.api.letsencrypt.org`), to the DNS provider's API, and to public DNS. Nothing inbound. The public name must resolve, from the audience's phones, to the computer's address on the venue network (an `A` record such as `captions.mytheater.org → 192.168.1.20`; a certificate is valid even when the name points at a private address). Some networks refuse public names that answer with private addresses ("DNS rebinding protection"); the numeric address and QR code must stay the main way in.
-
-## Configuration (`config.yaml`)
-
-```yaml
-https:
-  enabled: true                           # automatic certificates need HTTPS on
-  acme:
-    enabled: true
-    domain: captions.mytheater.org        # the public name; one name only (no wildcard, not .local, not an IP address)
-    email: webmaster@mytheater.org        # the CA sends expiry notices here
-    agree_to_terms: true                  # required: you accept the CA's terms of service
-    directory: letsencrypt                # letsencrypt (default) | letsencrypt-staging | an https:// ACME directory address
-    renew_before_days: 30                 # optional, 1 to 60
-    dns:
-      provider: easydns                   # a provider built into this program (see "Choosing the DNS providers")
-      credentials:                        # optional: the provider's own settings, named as the lego library documents them
-        EASYDNS_TOKEN: "…"
-        EASYDNS_KEY: "…"
-      credentials_file: /etc/open-caption/dns.env   # optional: NAME=value lines, read at every attempt
-      propagation_wait: 2m                # optional: wait this long for the TXT record instead of checking for it
-```
-
-Rules: `acme` cannot be used together with `cert_file`/`key_file` (choose one way to get the certificate). Unknown keys, a provider that is not built in, and every other mistake are reported together at start-up, naming the setting.
+The venue network needs **outbound** access only: to the CA (`acme-v02.api.letsencrypt.org`), to the DNS provider's API, and to public DNS. The public name must resolve, from the audience's phones, to the computer's address (an `A` record such as `captions.mytheater.org → 192.168.1.20`; a certificate is valid even when the name points at a private address). Some networks refuse public names that answer with private addresses ("DNS rebinding protection"), so the numeric address and QR code stay the main way in.
 
 ### Credentials
 
-Each DNS provider reads its own settings (for EasyDNS: `EASYDNS_TOKEN` and `EASYDNS_KEY`; the names for every provider are in the [lego documentation](https://go-acme.github.io/lego/dns/)). They can come from **three places**; highest first:
-
-1. **The environment of the program**, including `NAME_FILE` variables: `EASYDNS_TOKEN_FILE=/etc/open-caption/easydns-token` makes the library read the value from that file. Nothing about credentials then appears in `config.yaml`.
-2. **`dns.credentials_file`**: a file of `NAME=value` lines (blank lines and `#` comments allowed, an optional `export`, and quotes around the value). It is read again at every attempt, so a rotated token needs no restart. The program warns if other users can read the file; `chmod 600` it.
-3. **`dns.credentials`** in `config.yaml` (the file is mode 0600, like the passwords).
-
-Prefer 1 or 2: a DNS token can usually change **every** record in the zone. Give it as little scope as the provider allows, or use CNAME delegation: add a permanent record `_acme-challenge.captions.mytheater.org  CNAME  _acme-challenge.some-small-zone.example` and the library follows it, so the token only needs access to that small, otherwise empty zone. Credentials are never logged, never put in the support bundle and never sent to Setup.
-
-### Example: EasyDNS
-
-1. In your EasyDNS account, enable API access and create an API **token and key** (see EasyDNS's API documentation for the current steps and for a sandbox to try it in).
-2. Add the `A` record `captions.mytheater.org → <the computer's address>` in EasyDNS (give the computer a fixed address or a DHCP reservation).
-3. Put the secrets in a file only the program's account can read, `/etc/open-caption/dns.env`:
-   ```
-   EASYDNS_TOKEN=…
-   EASYDNS_KEY=…
-   ```
-4. In `config.yaml` set `https.enabled: yes` and the `acme` block above with `provider: easydns` and `credentials_file`. **Start with `directory: letsencrypt-staging`**: the certificate is not trusted by browsers, but it proves the whole chain works without using the real CA's limits.
-5. Start the program, open Setup → Settings → Security → Certificate, and wait for the state **Valid** (a few minutes at most). The log says `HTTPS: got a certificate for … valid until …`.
-6. Change `directory` to `letsencrypt` (or delete the line) and restart; the real certificate arrives the same way. Open `https://captions.mytheater.org:<port>/`.
+Each provider reads its own settings (EasyDNS: `EASYDNS_TOKEN` and `EASYDNS_KEY`; every provider's names are in the [lego documentation](https://go-acme.github.io/lego/dns/)). Sources, highest first: the **environment** (including `NAME_FILE` variables), **`dns.credentials_file`** (read again at every attempt, so a rotated token needs no restart; a warning if other users can read it), **`dns.credentials`** in `config.yaml`. A DNS token can usually change every record in the zone, so give it as little scope as the provider allows, or use **CNAME delegation**: a permanent `_acme-challenge.<name>  CNAME  _acme-challenge.<small zone>` makes the library write its record in a small, otherwise empty zone. Credentials are never logged, never in the support bundle (`Config.Redacted`) and never sent to Setup.
 
 ## Choosing the DNS providers
 

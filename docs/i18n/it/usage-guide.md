@@ -106,7 +106,7 @@ In ordine di affidabilità:
 
 - Per impostazione predefinita il server ascolta sulla **porta 80**, così l'indirizzo del pubblico non ha bisogno di un numero di porta, per esempio `http://192.168.1.10/`. Se qualcos'altro usa la porta 80, o il sistema operativo non la consente, il server te lo dice e usa la **porta 8080**; l'indirizzo del pubblico finisce allora con `:8080`. Su Linux la porta 80 richiede un permesso (`sudo setcap 'cap_net_bind_service=+ep' ./open-caption`) a meno che tu non usi il file systemd, che lo concede.
 - Puoi scegliere tu le porte con `--http-addr :8081`, o in `config.yaml`.
-- **HTTPS è facoltativo.** L'`http://` semplice funziona su ogni dispositivo senza avvisi ed è l'indirizzo consigliato per il pubblico. Un indirizzo HTTPS autofirmato fa mostrare a ogni dispositivo un avviso di sicurezza. Attiva HTTPS solo se puoi installare un certificato di cui i tuoi dispositivi si fidano.
+- **HTTPS è facoltativo.** L'`http://` semplice funziona su ogni dispositivo senza avvisi ed è l'indirizzo consigliato per il pubblico. Un indirizzo HTTPS autofirmato fa mostrare a ogni dispositivo un avviso di sicurezza. Attiva HTTPS solo se puoi installare un certificato di cui i tuoi dispositivi si fidano. Se la sala possiede un nome di dominio, il programma può ottenere e rinnovare da solo un certificato attendibile; vedi `docs/https-certificate-guide.md` (solo in inglese).
 
 ### Sicurezza
 
