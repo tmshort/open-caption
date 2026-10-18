@@ -27,12 +27,13 @@ const (
 )
 
 const (
-	cookieName     = "oc_session"
-	sessionTTL     = 12 * time.Hour
-	loginAttempts  = 5 // per IP per minute
-	loginWindow    = time.Minute
-	maxLoginBody   = 4 << 10
-	maxSessionKeep = 1000
+	cookieName      = "oc_session"
+	sessionTTL      = 12 * time.Hour
+	loginAttempts   = 5 // per IP per minute
+	loginWindow     = time.Minute
+	maxLoginBody    = 4 << 10
+	maxSessionKeep  = 1000
+	maxAutoSessions = 20 // sessions made without a password (a cookieless script on this computer makes one per call)
 )
 
 type session struct {
@@ -113,7 +114,7 @@ func (a *auth) saveLocked() {
 	}
 	sv := savedSessions{Fingerprint: a.fp, Sessions: map[string]savedSession{}}
 	for k, s := range a.sessions {
-		if time.Now().Before(s.expires) {
+		if time.Now().Before(s.expires) && !s.auto {
 			sv.Sessions[k] = savedSession{Role: s.role, Expires: s.expires.Unix(), Auto: s.auto}
 		}
 	}
@@ -185,9 +186,35 @@ func (a *auth) issue(role string, auto bool) (string, bool) {
 			}
 		}
 	}
+	if auto {
+		a.dropOldestAutoLocked()
+	}
 	a.sessions[tokenKey(token)] = session{role: role, expires: time.Now().Add(sessionTTL), auto: auto}
-	a.saveLocked()
+	if !auto { // an automatic sign-in is made again on demand, so it is not worth a disk write (or saving)
+		a.saveLocked()
+	}
 	return token, true
+}
+
+// dropOldestAutoLocked makes room for one more automatic session (caller holds a.mu).
+func (a *auth) dropOldestAutoLocked() {
+	for {
+		n, oldest, ok := 0, "", false
+		var first time.Time
+		for k, s := range a.sessions {
+			if !s.auto {
+				continue
+			}
+			n++
+			if !ok || s.expires.Before(first) {
+				oldest, first, ok = k, s.expires, true
+			}
+		}
+		if n < maxAutoSessions {
+			return
+		}
+		delete(a.sessions, oldest)
+	}
 }
 
 func (a *auth) lookup(token string) (session, bool) {
