@@ -37,7 +37,7 @@ Each milestone is shippable and ends with a demoable result. Tasks reference req
 - [x] Export/import show zip
 
 ## M5 — Polish and hardening
-- [x] Wake-lock handling with a one-time tip when unavailable; optional per-device text size and light/dark controls; projector mode (REQ-043, 044, 045). *(The hidden-video fallback for iOS is not implemented.)*
+- [x] Wake-lock handling with a one-time tip when unavailable; optional per-device text size and light/dark controls; projector mode (REQ-043, 044, 045). The hidden-video fallback keeps older iPhones awake where the Wake Lock API is missing (untested on real iPhones).
 - [x] Help viewer and topics for admins and operators, incl. show file conventions and sample show file; help-coverage tests (REQ-037)
 - [~] Accessibility pass (REQ-063): readable dimming floor, focus outlines, labelled controls, reduced motion; a screen-reader and contrast audit with real devices is still to do
 - [x] `/captive-api`, venue network guide (`docs/venue-network-guide.md`)
@@ -51,7 +51,7 @@ Each milestone is shippable and ends with a demoable result. Tasks reference req
 - [ ] Screen-reader and contrast audit
 
 ## Housekeeping after M5
-- [x] Help ships the guides (`docs/usage-guide.md`, `docs/venue-network-guide.md`) inside the program, rendered with nested lists and in-page links
+- [x] Help ships the guides (the usage guide, the venue network guide, the HTTPS certificate guide and the `config.yaml` reference) inside the program, translated into five more languages, under a **Guides and reference** heading
 - [x] Rename and duplicate shows
 - [x] Per-character speaker colors; right-to-left caption direction
 - [x] Logins survive a restart; the operator page takes control back automatically
@@ -63,12 +63,17 @@ Each milestone is shippable and ends with a demoable result. Tasks reference req
 
 - [x] Automatic HTTPS certificates (REQ-068): ACME DNS-01 with build-time choice of DNS providers, credentials from the environment/file/config, Setup status and renew-now, a Pebble end-to-end test (doc 10)
 - [x] A supplied HTTPS certificate is watched and a renewed one used without a restart
+- [x] Standby and on air (REQ-066): a loaded show waits in standby until the operator starts it; Go to standby…, Restart show…
+- [x] Loop countdown timers (REQ-065); announcements for the operator's one-off notice
+- [x] Local automatic sign-in on the computer that runs the program (REQ-067)
+- [x] One interface for Setup and the operator page (`web/shared/ui.css`, `header.css`), a connection-lost notice, the show list's More menu, the status strip
+- [x] Command line: `--check-show` (a lint for show files, sharing its analysis with Setup's editor), `--help`, the man page (`docs/open-caption.1`), the configuration reference (`docs/configuration-reference.md`)
 
 ## Stretch / Later
 - Signed/notarized macOS build; Windows installer
 - Markdown headings as section markers
 - Hashed passwords in config
-- Cue timing hints / countdowns for operator; stage-manager "standby" cues
+- Cue timing hints for the operator (loops already have a countdown timer)
 - Remote operator via second device with restricted view
 - Optional auto-follow (speech recognition) as an assistant to operator
 - Print-friendly show file/cue sheet export
