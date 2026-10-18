@@ -38,7 +38,7 @@ Das Programm betreibt absichtlich keinen eigenen DHCP- oder DNS-Server: Er würd
 
 ## HTTP und HTTPS
 
-Verwenden Sie für das Publikum einfaches `http://`. Ein selbstsigniertes HTTPS-Zertifikat lässt jedes Gerät eine Sicherheitswarnung zeigen. HTTPS ist verfügbar (`https.enabled: true` in `config.yaml`) für Standorte, die ein Zertifikat installieren können, dem ihre Geräte vertrauen. Besitzt das Haus einen eigenen Domainnamen, kann das Programm ein vertrauenswürdiges Zertifikat selbst holen und erneuern; siehe `docs/https-certificate-guide.md` (nur auf Englisch).
+Verwenden Sie für das Publikum einfaches `http://`. Ein selbstsigniertes HTTPS-Zertifikat lässt jedes Gerät eine Sicherheitswarnung zeigen. HTTPS ist verfügbar (`https.enabled: true` in `config.yaml`) für Standorte, die ein Zertifikat installieren können, dem ihre Geräte vertrauen. Besitzt das Haus einen eigenen Domainnamen, kann das Programm ein vertrauenswürdiges Zertifikat selbst holen und erneuern; siehe die [Anleitung für ein vertrauenswürdiges HTTPS-Zertifikat](https-certificate-guide.md) (`docs/https-certificate-guide.md`, nur auf Englisch).
 
 Ein kleiner Nachteil von einfachem HTTP: Browser erlauben „Bildschirm anlassen“ nur auf sicheren Seiten. Bei HTTP hält die Seite den Telefonbildschirm stattdessen mit einem winzigen, stillen, unsichtbaren Endlosvideo an. Ein Telefon im Energiesparmodus lehnt es womöglich ab; die Seite zeigt dann einmalig einen Hinweis, die automatische Sperre auszuschalten.
 

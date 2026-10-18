@@ -38,7 +38,7 @@ The program does not run its own DHCP or DNS server, on purpose: it would clash 
 
 ## HTTP and HTTPS
 
-Use plain `http://` for the audience. A self-signed HTTPS certificate makes every device show a security warning. HTTPS is available (`https.enabled: true` in `config.yaml`) for sites that can install a certificate their devices trust. If the venue owns a domain name, the program can get and renew a trusted certificate by itself; see `docs/https-certificate-guide.md` (English only).
+Use plain `http://` for the audience. A self-signed HTTPS certificate makes every device show a security warning. HTTPS is available (`https.enabled: true` in `config.yaml`) for sites that can install a certificate their devices trust. If the venue owns a domain name, the program can get and renew a trusted certificate by itself; see the [trusted HTTPS certificate guide](https-certificate-guide.md) (`docs/https-certificate-guide.md`, English only).
 
 One small cost of plain HTTP: browsers only allow "keep the screen awake" on secure pages. On HTTP the page keeps a phone's screen on with a tiny, silent, invisible looping video instead. A phone in low-power mode may refuse it; the page then shows a one-time tip asking people to turn off auto-lock.
 
