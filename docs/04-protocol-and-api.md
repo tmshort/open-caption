@@ -90,8 +90,10 @@ everywhere an operator session is; the reverse is not true.
 | GET | `/api/admin/network` | Host IPs, ports, audience URL(s); QR PNG at `/api/admin/network/qr.png` |
 | PUT | `/api/admin/settings/mdns` | `{enabled, name}`: announce this computer as `<name>.local` (name: letters, digits, hyphens; a trailing `.local` is accepted). Applies at once (waits up to 6 s for the name to be claimed), is saved in `config.yaml` (`mdns.enabled`, `mdns.name`), and returns `{mdns: {enabled, requested, name, host, active, renamed, error}, saved}`. `GET /api/admin/settings` includes `mdns`; `GET /api/admin/network` lists the name first (`name: true`) |
 | PUT | `/api/admin/settings/log-level` | `{level}`: debug, info, warn or error; applies at once and is written to `log.level` in config.yaml (edited in place). `GET /api/admin/settings` includes `logLevel` and `logLevelPinned` (the `--log-level` / `OPEN_CAPTION_LOG_LEVEL` value, if given, which overrides the file at each start; the PUT response then carries a `note` saying so) |
+| GET | `/api/admin/settings/certificate` | Where HTTPS gets its certificate: `source` is `none`, `self-signed`, `file` or `acme`; for `acme` also `status` (domain, state `waiting`/`ok`/`renewing`/`failed`, expiry, issuer, last attempt and last problem). Never contains credentials (doc 10) |
+| POST | `/api/admin/settings/certificate/renew` | Get a new certificate now (it runs in the background); 409 if a fetch is already running or automatic certificates are off |
 | GET | `/api/admin/log` | The recent in-memory log for the viewer in Setup: `?level=` (lowest severity: debug, info, warn, error; a line with no level counts as info) and `?lines=` (newest N, default 300, at most 1000). Returns `{lines, level}`. Admin only |
-| GET | `/api/admin/support-bundle` | Zip: `info.txt`, `config.redacted.yaml`, `log.txt` (last 1000 lines), `shows.txt`. Passwords are never included |
+| GET | `/api/admin/support-bundle` | Zip: `info.txt`, `config.redacted.yaml`, `log.txt` (last 1000 lines), `shows.txt`. Passwords and DNS credentials are never included |
 
 ### Live control API — operator or admin session
 

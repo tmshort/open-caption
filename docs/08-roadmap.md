@@ -61,9 +61,11 @@ Each milestone is shippable and ends with a demoable result. Tasks reference req
 
 - [x] mDNS: the server announces itself as `open-caption.local` (or a name chosen in Setup)
 
+- [x] Automatic HTTPS certificates (REQ-068): ACME DNS-01 with build-time choice of DNS providers, credentials from the environment/file/config, Setup status and renew-now, a Pebble end-to-end test (doc 10)
+- [x] A supplied HTTPS certificate is watched and a renewed one used without a restart
+
 ## Stretch / Later
 - Signed/notarized macOS build; Windows installer
-- ACME/Let's Encrypt certificates (needs Internet + public name)
 - Markdown headings as section markers
 - Hashed passwords in config
 - Cue timing hints / countdowns for operator; stage-manager "standby" cues

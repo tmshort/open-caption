@@ -27,6 +27,7 @@ browser on a projector) shows the captions live, with no interaction required.
 - A show is one plain-text Markdown file (plus images): title, colours, fonts and options live in it, layered over `config.yaml` defaults. Earlier versions are kept, can be named and compared, and shows can be exported, imported, duplicated and archived.
 - Setup, the operator page, Help and all the built-in documentation are available in English, Spanish, French, German, Italian and Portuguese.
 - Built-in help, a recent-log viewer, a support bundle, and a validated `config.yaml` that reports every mistake at once.
+- Optional trusted HTTPS: a renewed certificate file is picked up without a restart, or the program can get and renew a Let's Encrypt certificate itself (DNS-01, with Cloudflare, GoDaddy and EasyDNS built in by default; see below).
 - Screen-reader friendly pages, checked automatically with axe-core in both colour schemes.
 
 **Under the hood**
@@ -67,7 +68,18 @@ The first run creates `config.yaml` (in your user config folder; the path is pri
 - `make e2e` is the browser end-to-end test (about 200 checks). It also runs the browser-compatibility check (the pages must stay inside the old-browser floor) and the translation check.
 - `make a11y` is the accessibility audit (axe-core, reflow and keyboard focus in both colour schemes); keep it at zero violations.
 - `make i18n` checks that every on-screen sentence is translated into all six languages (it needs Node only).
+- `make acme-variants` checks that every automatic-certificate build choice still compiles (below); it needs internet.
 - More detail is in [test/e2e/README.md](test/e2e/README.md).
+
+**Automatic HTTPS certificates (optional).** If you own a public domain name, the program can get and renew a Let's Encrypt certificate itself with the DNS-01 challenge, without being reachable from the Internet. It needs the DNS provider's API credentials, and the provider must be built in. The default build includes **Cloudflare, GoDaddy and EasyDNS** (about 1.7 MB more than a build without ACME). Choose others when you build:
+
+```
+make build ACME_PROVIDERS="easydns route53"   # exactly these (names are lego's provider names)
+make build ACME_PROVIDERS=all                 # every provider lego has (a much larger binary, about 61 MB)
+make build ACME_PROVIDERS=none                # no automatic certificates (the smallest binary)
+```
+
+`./bin/open-caption --version` lists what a binary contains. Building with a provider outside the default list needs internet. How to configure it (`https.acme` in `config.yaml`, credentials from the environment, a file or the settings file), the measured sizes and the tests are in [docs/10-acme-lets-encrypt.md](docs/10-acme-lets-encrypt.md).
 
 **Security note:** anyone who can reach the server can open the Setup and operator sign-in pages, and over plain `http://` passwords cross the WiFi unencrypted. Limit them with `access.admin_allow` / `access.operator_allow` in `config.yaml` (see [docs/usage-guide.md](docs/usage-guide.md#security)).
 

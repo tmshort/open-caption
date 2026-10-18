@@ -210,6 +210,10 @@ https:
   cert_file: ""                    # supply both, or leave empty with self_signed: true; renewed files are picked up without a restart
   key_file: ""
   self_signed: true
+  acme:                            # automatic certificates (docs/10-acme-lets-encrypt.md); off unless enabled: true
+    enabled: false
+    domain: captions.example.org   # a public name you own; email, agree_to_terms, directory, renew_before_days and dns {provider, credentials,
+                                   # credentials_file, propagation_wait} are described in doc 10
 mdns:
   enabled: true                    # announce <name>.local on the local network
   name: open-caption

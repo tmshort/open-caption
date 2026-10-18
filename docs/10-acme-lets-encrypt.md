@@ -1,90 +1,127 @@
-# ACME / Let's Encrypt: design notes
+# Automatic HTTPS certificates (ACME, DNS-01)
 
-Status: **not built.** This records what automatic certificates would involve, so the decision can be made later without redoing the research. It is not a requirement (see REQ-006 and doc 06, "Security posture").
+Status: **built** (REQ-068). The program can get and renew a certificate from Let's Encrypt (or another ACME certificate authority) by itself, using the **DNS-01** challenge, so a venue computer that is only on a private network can still have a certificate that every browser trusts. It is optional and off by default; plain HTTP and the self-signed certificate keep working as before (REQ-006).
 
-## Today
+## When to use it
 
-HTTPS uses a certificate file the venue supplies (`https.cert_file` / `https.key_file`) or a self-signed certificate the program generates in `<data-dir>/tls/`. Plain HTTP stays the default audience address because a self-signed certificate shows a browser warning. A venue that has a real certificate already can use it; renewal is then up to them. The program watches those files: when the certificate and key are replaced (for example by `certbot` or `lego`), the new pair is used for new connections within about 30 seconds, with no restart (`netinfo.Reloader`). If the new files cannot be used (a half-written pair, a key that does not match) it keeps serving the previous certificate, logs one warning, and tries again when the files change again. The log says when the certificate expires. The program does not renew certificates itself.
+Plain HTTP works with no warning, and it is the default audience address. HTTPS matters mostly for features browsers restrict to secure pages, such as the Wake Lock API that keeps phone screens on (the audience page falls back to a tiny looping video without it). A self-signed certificate shows a browser warning on every device. Use automatic certificates if you **own a public domain name** (for example `mytheater.org`), **host its DNS with a provider whose API this program supports** (EasyDNS, Cloudflare and GoDaddy by default), and want audiences to open `https://captions.mytheater.org` without a warning.
 
-## What a public CA needs
+You do not need it if the venue has no domain, or HTTP is fine.
 
-A certificate authority such as Let's Encrypt must see that you control the name before it issues a certificate. For this program that rules out the easy cases:
+## How it works
 
-- The name must be a **public DNS name** the venue owns (for example `captions.mytheater.org`). `open-caption.local` can never get a certificate, and a bare IP address cannot get a normal one.
-- The program (or something beside it) needs **Internet access** when the certificate is issued and again at each renewal, about every 60 to 90 days.
+Let's Encrypt must see that you control the name before it issues a certificate. With DNS-01 it checks a TXT record in your public DNS, so **the computer never has to be reachable from the Internet**:
 
-## Challenge types
+1. The program asks the CA for a certificate for `captions.mytheater.org`.
+2. It publishes `_acme-challenge.captions.mytheater.org` as a TXT record with a value from the CA. **This is what the DNS provider credentials are for:** they let the program add and delete that one record through the provider's API.
+3. It waits for the record to spread, and the CA looks it up in public DNS.
+4. The CA issues the certificate; the program deletes the record, keeps the certificate in `<data-dir>/tls/acme/` and starts serving it, with no restart.
 
-| Challenge | How control is proved | Fit |
+Renewal is automatic: the program checks about every 12 hours and renews when 30 days (`renew_before_days`) or fewer remain. If a try fails it tries again an hour later (CAs limit failed attempts), and **keeps serving the previous certificate**; before the first certificate arrives, connections get the self-signed one, so HTTPS is never down. The state is shown in **Setup → Settings → Security → Certificate**, with a **Renew now** button.
+
+What the venue's network needs: **outbound** access from the computer to the CA (`acme-v02.api.letsencrypt.org`), to the DNS provider's API, and to public DNS. Nothing inbound. The public name must resolve, from the audience's phones, to the computer's address on the venue network (an `A` record such as `captions.mytheater.org → 192.168.1.20`; a certificate is valid even when the name points at a private address). Some networks refuse public names that answer with private addresses ("DNS rebinding protection"); the numeric address and QR code must stay the main way in.
+
+## Configuration (`config.yaml`)
+
+```yaml
+https:
+  enabled: true                           # automatic certificates need HTTPS on
+  acme:
+    enabled: true
+    domain: captions.mytheater.org        # the public name; one name only (no wildcard, not .local, not an IP address)
+    email: webmaster@mytheater.org        # the CA sends expiry notices here
+    agree_to_terms: true                  # required: you accept the CA's terms of service
+    directory: letsencrypt                # letsencrypt (default) | letsencrypt-staging | an https:// ACME directory address
+    renew_before_days: 30                 # optional, 1 to 60
+    dns:
+      provider: easydns                   # a provider built into this program (see "Choosing the DNS providers")
+      credentials:                        # optional: the provider's own settings, named as the lego library documents them
+        EASYDNS_TOKEN: "…"
+        EASYDNS_KEY: "…"
+      credentials_file: /etc/open-caption/dns.env   # optional: NAME=value lines, read at every attempt
+      propagation_wait: 2m                # optional: wait this long for the TXT record instead of checking for it
+```
+
+Rules: `acme` cannot be used together with `cert_file`/`key_file` (choose one way to get the certificate). Unknown keys, a provider that is not built in, and every other mistake are reported together at start-up, naming the setting.
+
+### Credentials
+
+Each DNS provider reads its own settings (for EasyDNS: `EASYDNS_TOKEN` and `EASYDNS_KEY`; the names for every provider are in the [lego documentation](https://go-acme.github.io/lego/dns/)). They can come from **three places**; highest first:
+
+1. **The environment of the program**, including `NAME_FILE` variables: `EASYDNS_TOKEN_FILE=/etc/open-caption/easydns-token` makes the library read the value from that file. Nothing about credentials then appears in `config.yaml`.
+2. **`dns.credentials_file`**: a file of `NAME=value` lines (blank lines and `#` comments allowed, an optional `export`, and quotes around the value). It is read again at every attempt, so a rotated token needs no restart. The program warns if other users can read the file; `chmod 600` it.
+3. **`dns.credentials`** in `config.yaml` (the file is mode 0600, like the passwords).
+
+Prefer 1 or 2: a DNS token can usually change **every** record in the zone. Give it as little scope as the provider allows, or use CNAME delegation: add a permanent record `_acme-challenge.captions.mytheater.org  CNAME  _acme-challenge.some-small-zone.example` and the library follows it, so the token only needs access to that small, otherwise empty zone. Credentials are never logged, never put in the support bundle and never sent to Setup.
+
+### Example: EasyDNS
+
+1. In your EasyDNS account, enable API access and create an API **token and key** (see EasyDNS's API documentation for the current steps and for a sandbox to try it in).
+2. Add the `A` record `captions.mytheater.org → <the computer's address>` in EasyDNS (give the computer a fixed address or a DHCP reservation).
+3. Put the secrets in a file only the program's account can read, `/etc/open-caption/dns.env`:
+   ```
+   EASYDNS_TOKEN=…
+   EASYDNS_KEY=…
+   ```
+4. In `config.yaml` set `https.enabled: yes` and the `acme` block above with `provider: easydns` and `credentials_file`. **Start with `directory: letsencrypt-staging`**: the certificate is not trusted by browsers, but it proves the whole chain works without using the real CA's limits.
+5. Start the program, open Setup → Settings → Security → Certificate, and wait for the state **Valid** (a few minutes at most). The log says `HTTPS: got a certificate for … valid until …`.
+6. Change `directory` to `letsencrypt` (or delete the line) and restart; the real certificate arrives the same way. Open `https://captions.mytheater.org:<port>/`.
+
+## Choosing the DNS providers
+
+Every provider the program can use is compiled in. The default build includes **Cloudflare, GoDaddy and EasyDNS**. A builder can choose another list when building:
+
+```
+make build                                          # the default: cloudflare godaddy easydns
+make build ACME_PROVIDERS="easydns"                 # exactly one
+make build ACME_PROVIDERS="easydns route53 ovh"     # a short list
+make build ACME_PROVIDERS=all                       # every provider the lego library has
+make build ACME_PROVIDERS=none                      # no automatic certificates at all
+ACME_PROVIDERS="cloudflare porkbun" make dist      # the same choice for the release binaries
+```
+
+Provider names are the directory names under [`providers/dns`](https://github.com/go-acme/lego/tree/master/providers/dns) in lego (for example `route53`, `gcloud`, `azuredns`, `digitalocean`, `namecheap`, `ovh`, `hetzner`, `porkbun`, `duckdns`; `exec` runs a script of yours and `httpreq` calls a URL, which covers a provider nobody supports). `./bin/open-caption --version` lists what a binary was built with. A plain `go build ./cmd/open-caption` gives the default list, and `go test ./...` needs nothing special.
+
+How it works: `tools/acme-go.sh` (which the Makefile calls) writes `internal/acme/zz_providers_gen.go`, a file that imports exactly the chosen providers, builds, and removes the file. Providers outside the default list need Go modules that `go.mod` does not list, so for them the build uses a copy of `go.mod`/`go.sum` (`go.acme.mod`) that Go fills in: the repository's `go.mod` stays small. **A build with such a provider, or `all`, needs internet.** `make acme-variants` builds none, the default, one provider, a custom list and `all`, to check they all still compile. A configuration that names a provider the binary does not have stops at start-up with a message that lists what is built in.
+
+### What it costs in size
+
+Measured on macOS/arm64 with the release flags (`-s -w`) on 2026-10-18, for the program as built:
+
+| Build | Binary | Change |
 |---|---|---|
-| HTTP-01 | The CA connects to port 80 of the server from the Internet | Poor: the server is on a private venue network |
-| TLS-ALPN-01 | The same, on port 443 | Poor, for the same reason |
-| **DNS-01** | A TXT record is published in the public DNS zone | **The realistic choice**: the server never has to be reachable from outside |
+| `ACME_PROVIDERS=none` | 10,931,122 bytes (10.4 MiB) | n/a |
+| `easydns` only | 12,541,842 bytes | +1.6 MB |
+| **default** (cloudflare, godaddy, easydns) | **12,610,098 bytes** | **+1.7 MB (+15%)** |
+| `easydns route53` | 14,991,170 bytes | +4.1 MB |
+| `all` | 60,916,482 bytes | **+50 MB** |
 
-With DNS-01 the public name can point at a private address (`captions.mytheater.org` → `192.168.1.20`) and the certificate is still valid.
+Almost all of the default's cost is the ACME library itself (about 1.6 MB); each small provider adds tens of kilobytes. Route 53 is expensive because it brings the AWS SDK (about 2.4 MB); Google Cloud DNS and Azure are similar or worse. `all` links 196 providers and their SDKs and is for builders who need it, not a default. (An earlier draft of these notes estimated 0.2 to 0.3 MB; that was wrong, because the throwaway programs measured then let the linker drop most of the library.)
 
-### What the DNS provider token is for
+## Design
 
-During DNS-01 the program must publish, then remove, one TXT record:
+- `internal/acme`: `Manager` keeps one certificate current (check, renew inside the window, retry after a failure, atomic files with the key at 0600, `GetCertificate` with a fallback, `RenewNow`, `Status`). It knows nothing of the protocol: an `Issuer` does that. The real `Issuer` (`issuer.go`) uses the lego library: an account per CA (an EC P-256 key and the registration, kept in `tls/acme/`), an EC P-256 certificate key, the DNS-01 solver with the chosen provider, and `propagation_wait` as a fixed wait. A CNAME at `_acme-challenge` is followed by the library automatically.
+- Build tags choose the providers (`internal/acme/providers.go`): no tags is the default list (`prov_*.go`), `acme_off` leaves lego out, `acme_custom` uses the generated file.
+- `config.HTTPS.ACME` with validation (`checkACME`); `cmd/open-caption` wires the `Manager` into the HTTPS listener and `httpapi.Server.SetCertificates` for Setup; `GET /api/admin/settings/certificate` and `POST …/certificate/renew` (admin only; doc 04).
+- A certificate you supply yourself (`cert_file`/`key_file`) is a separate path and is watched for replacement (`netinfo.Reloader`): useful if you prefer `certbot` or `lego` outside the program.
 
-1. It asks the CA for a challenge for `captions.mytheater.org`.
-2. It creates `_acme-challenge.captions.mytheater.org` as a TXT record holding a value the CA gave it. This is the only thing the DNS credentials are used for, and it is done through the provider's API.
-3. It waits for the record to appear, then tells the CA, which looks the record up in public DNS.
-4. The CA issues the certificate and the program deletes the TXT record.
+## Testing
 
-So the **API token (and key) is the password the program uses to add and delete DNS records in the venue's zone.** Without it the program cannot answer the challenge on its own. Consequences:
+- Unit tests with a fake `Issuer` (no network): first issue, the files and their permissions, restart reuse, the renew window, a failed renewal keeping the old certificate, wrong-name and unusable certificates, `RenewNow` once at a time; the credentials precedence and the credentials file; the configuration rules; the Setup endpoints (and that credentials are never sent).
+- An **end-to-end test against Pebble**, Let's Encrypt's test CA, with its test DNS server standing in for the provider (so lego, the DNS-01 challenge and our `Manager` run for real, on this computer only). It is off unless asked for, because it needs two programs:
+  ```
+  go install github.com/letsencrypt/pebble/v2/cmd/pebble@latest github.com/letsencrypt/pebble/v2/cmd/pebble-challtestsrv@latest
+  PEBBLE_BIN=$(go env GOPATH)/bin PEBBLE_DIR=$(ls -d $(go env GOMODCACHE)/github.com/letsencrypt/pebble/v2@* | tail -1) go test -tags pebble -run Pebble ./internal/acme
+  ```
+- **Not tested here:** a real provider's API (EasyDNS, Cloudflare, GoDaddy) and the real Let's Encrypt. Those are the library's code and the providers' services; the first run on a real venue should use `letsencrypt-staging`, as in the example above.
 
-- Treat it like the other secrets: keep it in `config.yaml` (mode 0600) or an environment variable, never in a show file, never in the support bundle or the log.
-- A DNS token can usually change **every** record in the zone, not just `_acme-challenge`. Give it as little scope as the provider allows, or use the delegation trick below.
-- **Delegation (limits the damage).** Add a permanent CNAME `_acme-challenge.captions.mytheater.org` → `_acme-challenge.some-small-zone.example`, in a different zone that holds nothing else. The program's token then only needs access to that small zone. Most ACME clients support this ("DNS alias" mode).
+## Limits and ideas not built
 
-### EasyDNS (this venue's provider)
+- One name per certificate: no wildcard, no extra names, no HTTP-01 or TLS-ALPN-01 challenge (they need the computer reachable from the Internet).
+- Setup's Run step still lists the numeric addresses and the `.local` name; it does not yet list `https://<your domain>/`. Give people that address yourself or put it on the QR sign.
+- No OCSP stapling, no certificate transparency check, no revocation.
+- The credentials can not be edited from Setup (by design: the settings file or the environment); Setup only shows the state.
 
-- EasyDNS has a REST API, enabled per account, authenticated with an **API token and key** pair created in the EasyDNS account; there is a sandbox for testing. (Check EasyDNS's current API documentation before building: account settings and token scopes change.)
-- The ACME client library `lego` has an `easydns` DNS provider, configured with `EASYDNS_TOKEN` and `EASYDNS_KEY` (and an optional endpoint). Verify the provider is still current in the library's list when the work starts. Whether `certmagic` (through `libdns`) has an EasyDNS provider is not known and would have to be checked; if not, a small provider would have to be written against EasyDNS's REST API.
-- Propagation matters: EasyDNS must publish the TXT record to its public name servers before the CA checks, so the client should poll and wait rather than assume a fixed delay.
+## Failure cases
 
-## What it would look like
-
-1. **Configuration:** an `https.acme` block in `config.yaml`: domain, contact email, provider (`easydns`), credentials (or `*_FILE` references to files), and an optional challenge alias. Setup's Settings would get a read-only "Certificate" panel: the name, who issued it, when it expires, the last renewal result, and a **Renew now** button. The credentials are never sent back to the browser.
-2. **Library.** `golang.org/x/crypto/acme/autocert` is the standard choice but **does not do DNS-01**, only HTTP-01 and TLS-ALPN-01. DNS-01 needs `lego` or `certmagic`.
-3. **Storage and renewal.** Keep the account key and certificates in `<data-dir>/tls/`, renew about 30 days before expiry in the background, and swap the certificate into running listeners through `tls.Config.GetCertificate`, so no restart is needed.
-4. **Failure behaviour.** If issuance or renewal fails (for example the venue computer has no Internet that week), keep serving the last good certificate, or the self-signed one, and show a warning in Setup. A show must never fail because the Internet was down.
-5. **Name resolution for audiences.** Phones open `https://captions.mytheater.org`. They resolve it through public DNS, so the name must point at the computer's private address. Some networks refuse public names that answer with private addresses ("DNS rebinding protection"); guest WiFi with filtering can break it. The numeric address and QR code must remain the primary way in.
-6. **Testing.** Use the CA's staging environment and EasyDNS's sandbox. Unit tests must never touch the Internet (the rule already used for mDNS: the real network is only touched from `main`), so the DNS provider and the CA sit behind small interfaces with fakes.
-
-## What "compatible but not free" means
-
-The project is one binary with no CGO and very few dependencies (today only `yaml.v3` and `golang.org/x/net`). Any ACME library is compatible with that (pure Go, cross-compiles with `make dist`), but each one has a cost (not in megabytes, as the measurement below shows):
-
-- `autocert` is tiny, but it is in `golang.org/x/crypto`, a **new module** the project does not use today, and it cannot do DNS-01.
-- `lego` can do DNS-01 (and `certmagic` can, through its own provider packages), but it brings **more dependencies** (a JOSE library, a DNS library, `golang.org/x/crypto` and `x/text`, plus the one provider's package). That lengthens builds and widens the supply-chain surface: more code whose security updates must be followed. Only the providers you import are linked, so supporting EasyDNS alone does not pull in the dozens of others.
-
-**Measured size** (2026-10-18; `go build -ldflags="-s -w"` on macOS/arm64, a throwaway copy of the repo that only references the library, not a working feature):
-
-| Build | Binary | Change | Go modules linked |
-|---|---|---|---|
-| Today | 10,847,410 bytes (10.3 MiB) | n/a | 5 (this program, `go-qrcode`, `x/net`, `x/sys`, `yaml.v3`) |
-| + `autocert` (HTTP-01 / TLS-ALPN-01 only) | 10,897,378 bytes | +50 KB (+0.5%) | +1 (`x/crypto`) |
-| + `lego` with the EasyDNS provider (DNS-01) | 11,056,818 bytes | **+209 KB (+1.9%)** | +6 (`lego`, `go-jose`, `miekg/dns`, `backoff`, `x/crypto`, `x/text`) |
-
-The real feature's own code (configuration, storage, renewal loop, the Setup panel) would add a little more, but the library is the larger part and is small. So **size is not the cost**; the cost is the extra modules to keep up to date and the maintenance of the failure cases below.
-- Either way the project takes on code to maintain, a test suite for failure cases, and a dependency whose provider list can break when a DNS company changes its API.
-
-So "compatible" means it fits the single-binary, no-CGO rules; "not free" means it adds size, dependencies and maintenance.
-
-## Failure cases to design for
-
-An expired certificate, a CA rate limit, a DNS provider API change or outage, a computer that was off or offline when renewal was due, and a clock that is wrong (certificate validity is time-based).
-
-## Why it may not be worth it
-
-- Plain HTTP works with no warning. HTTPS mostly matters for features browsers restrict to secure pages, such as the Wake Lock API; the audience page already falls back to a tiny looping video where Wake Lock is missing.
-- It needs a domain and DNS credentials, which many community venues don't have or want to manage.
-- The failure modes above are awkward for volunteers.
-
-## Cheaper steps first
-
-1. ~~**Reload without restart**~~ (built): a renewed `cert_file` / `key_file` is picked up while running.
-2. **A documented recipe** for obtaining the certificate outside the program with `certbot` or `lego` (DNS-01 with EasyDNS), then pointing `cert_file` and `key_file` at it, with a scheduled renewal.
-3. Only then, if there is demand, build the DNS-01 integration above.
+An expired certificate (the program warns in the log and Setup; the self-signed one still serves), a CA rate limit (use staging while testing), a DNS provider outage or API change (the next hourly try may succeed; a newer lego release fixes API changes), a computer that was off or offline when renewal was due (it renews as soon as it is running again, as long as the certificate has not yet expired), a wrong clock (certificate validity is time-based), a record that does not spread in time (set `propagation_wait`), and a CNAME for `_acme-challenge` pointing at a zone the credentials cannot change.

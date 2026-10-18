@@ -9,7 +9,7 @@ that reflect it. Add new questions at the bottom.
 |---|----------|----------|------|
 | Q1 | Setup and Operator: one app or separate URLs? | Separate: `/admin` (setup) and `/operator` (live) | 04, 05 |
 | Q2 | Caption granularity? | One show file line = one cue; long lines wrap; the author splits lines to match the performance style. No auto-splitting | 03 |
-| Q3 | HTTP vs HTTPS? | Support both side by side, no redirect. ACME/Let's Encrypt is a possible later feature (needs Internet + public name) | 01 (REQ-006), 06 |
+| Q3 | HTTP vs HTTPS? | Support both side by side, no redirect. ACME/Let's Encrypt is built as an option (DNS-01; doc 10) | 01 (REQ-006), 06 |
 | Q4 | Authentication? | Separate passwords for `/admin` and `/operator`, plaintext in `config.yaml` for now, login form + session cookie, **no HTTP Basic auth**. Config generated on first run with random passwords; admin session also opens `/operator` | 01, 02, 04 |
 | Q5 | SVG? | Not supported. PNG/JPG/GIF/WebP; browser scales; server doesn't rescale. Mitigations: prefetch upcoming images, warn on files > 1 MB | 04, 05, 06 |
 | Q6 | Audience scrollback? | Rolling, dimmed with age, bounded (200) | 02, 05 |
