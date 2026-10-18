@@ -16,14 +16,14 @@ browser on a projector) shows the captions live, with no interaction required.
 - Runs on older phones (about iOS 12 and up) and tells people clearly when a browser is too old.
 
 **For the operator**
-- One key does it all: Space sends the next line, Backspace undoes it, B blanks, C clears; jump to any line or section, search, and send a one-off message.
+- One key does it all: Space sends the next line, Backspace undoes it, B blanks, C clears; jump to any line or section, search, and send a one-off announcement.
 - A loaded show waits in **standby**: the audience sees your venue's own screen (a logo and a message you set once) until the operator presses START; **Go to standby** returns to it at any time without losing the place.
 - Operator notes and bookmarks the audience never sees; loops for pre-show and intermission; songs, lyrics and two voices shown at once for musicals.
 - Survives a restart: the position, sign-ins and last few undo steps are kept.
 
 **For whoever sets it up**
 - A guided Setup page: show file editor with problems listed by line, image upload, look, a private rehearsal, then a Run step with the audience address, a printable QR sign and the way into the operator page.
-- Edit the show file in any program you like: download it as a plain `.md`, edit it offline, and open it again to save over the show (or import any `.md` / `.txt` file as a new show). A guide for the person preparing the show file is [Preparing a show file](web/help/admin-preparing-a-show-file.md); [Getting started](web/help/admin-getting-started.md) walks through the six steps of Setup. Both are in the app's Help too.
+- Edit the show file in any program you like: download it as a plain `.md`, edit it offline, and open it again to save over the show (or import any `.md` / `.txt` file as a new show). A guide for the person preparing the show file is [Preparing a show file](web/help/admin-preparing-a-show-file.md); [Getting started](web/help/admin-getting-started.md) walks through the six steps of Setup. Both are in the app's Help too. `open-caption --check-show show.md` checks a show file from the command line, like a lint, without starting anything.
 - A show is one plain-text Markdown file (plus images): title, colours, fonts and options live in it, layered over `config.yaml` defaults. Earlier versions are kept, can be named and compared, and shows can be exported, imported, duplicated and archived.
 - Setup, the operator page, Help and all the built-in documentation are available in English, Spanish, French, German, Italian and Portuguese.
 - Built-in help, a recent-log viewer, a support bundle, and a validated `config.yaml` that reports every mistake at once.
