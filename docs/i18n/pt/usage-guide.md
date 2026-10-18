@@ -12,7 +12,7 @@ Conteúdo: [As peças](#as-pecas) · [Recomendações de instalação](#recomend
 |------|---------|
 | **O servidor** | O programa `open-caption`, rodando em um computador (macOS, Windows ou Linux). Guarda o arquivo do espetáculo e envia as linhas a todos. |
 | **Página de Configuração** (`/admin`) | Onde os voluntários preparam um espetáculo: arquivo do espetáculo, imagens, aparência, ensaio. Senha de administrador. |
-| **Página do operador** (`/operator`) | Onde o operador acompanha o espetáculo e envia as linhas. Senha de operador. |
+| **Página do operador** (`/operator`) | Onde o operador acompanha o espetáculo e envia as linhas. Senha de operador. A etapa **Conduzir** da configuração e o seu link no menu a abrem. |
 | **Página do público** (`/`) | O que o público abre nos seus dispositivos. Sem senha. Um navegador num projetor ou monitor grande pode mostrar a mesma página para a sala toda. |
 
 Tudo roda em um computador. O público, o operador e os voluntários da configuração usam navegadores web comuns.

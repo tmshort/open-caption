@@ -12,7 +12,7 @@ Inhalt: [Die Bestandteile](#die-bestandteile) · [Aufbau-Empfehlungen](#aufbau-e
 |-------------|------------|
 | **Der Server** | Das Programm `open-caption`, das auf einem Computer läuft (macOS, Windows oder Linux). Es verwaltet die Show-Datei und sendet die Zeilen an alle. |
 | **Einrichtungsseite** (`/admin`) | Wo Freiwillige eine Show vorbereiten: Show-Datei, Bilder, Erscheinungsbild, Probe. Administrator-Passwort. |
-| **Operator-Seite** (`/operator`) | Wo der Operator der Show folgt und Zeilen sendet. Operator-Passwort. |
+| **Operator-Seite** (`/operator`) | Wo der Operator der Show folgt und Zeilen sendet. Operator-Passwort. Der Schritt **Fahren** der Einrichtung und sein Menülink öffnen sie. |
 | **Publikumsseite** (`/`) | Was das Publikum auf seinen Geräten öffnet. Kein Passwort. Ein Browser an einem Projektor oder großen Monitor kann dieselbe Seite für den ganzen Saal zeigen. |
 
 Alles läuft auf einem Computer. Publikum, Operator und die Freiwilligen der Einrichtung verwenden gewöhnliche Webbrowser.
