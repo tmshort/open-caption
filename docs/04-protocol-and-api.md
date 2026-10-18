@@ -15,6 +15,8 @@ All JSON is UTF-8.
 | GET | `/events` | SSE stream of live state (below) |
 | GET | `/assets/{showId}/{file}` | Image assets of the active show (cacheable) |
 | GET | `/healthz` | `200 ok` |
+| GET | `/standby-logo` | The venue's standby logo image (PNG, JPEG, GIF or WebP) if one was uploaded in Setup (`404` otherwise; the audience page then shows the built-in `[oc]` mark, `/static/shared/favicon.svg`). The address carries `?v=<modified time>` so a new logo is fetched at once |
+| GET | `/favicon.ico` | The browser tab icon (browsers ask for it at the root) |
 | GET | `/captive-api` | RFC 8908 captive-portal API: `application/captive+json` `{"captive": false, "user-portal-url": "<scheme>://<host>/"}`. Always reports not captive; clients require HTTPS with a trusted certificate (doc 06) |
 
 Query parameters on `/` and `/events`: `?display=projector`, `?size=<pct>`,
@@ -54,6 +56,7 @@ everywhere an operator session is; the reverse is not true.
 |--------|------|-------------|
 | POST | `/api/login` | `{role: "admin"\|"operator", password}` → sets cookie; role `operator` accepts the operator **or** admin password, role `admin` only the admin password; rate-limited (5 attempts/min/IP) |
 | POST | `/api/logout` | Clears the session |
+| GET | `/api/me` | `{role, sid}` of the signed-in session (operator or admin), where `sid` is the session's public identifier (a hash of the token, safe to send to browsers) that the operator page compares with the controller's to know whether it is in control (REQ-034). `401` without a session |
 
 ### Setup API — admin session required
 
@@ -90,6 +93,9 @@ everywhere an operator session is; the reverse is not true.
 | GET | `/api/admin/network` | Host IPs, ports, audience URL(s); QR PNG at `/api/admin/network/qr.png` |
 | PUT | `/api/admin/settings/mdns` | `{enabled, name}`: announce this computer as `<name>.local` (name: letters, digits, hyphens; a trailing `.local` is accepted). Applies at once (waits up to 6 s for the name to be claimed), is saved in `config.yaml` (`mdns.enabled`, `mdns.name`), and returns `{mdns: {enabled, requested, name, host, active, renamed, error}, saved}`. `GET /api/admin/settings` includes `mdns`; `GET /api/admin/network` lists the name first (`name: true`) |
 | PUT | `/api/admin/settings/log-level` | `{level}`: debug, info, warn or error; applies at once and is written to `log.level` in config.yaml (edited in place). `GET /api/admin/settings` includes `logLevel` and `logLevelPinned` (the `--log-level` / `OPEN_CAPTION_LOG_LEVEL` value, if given, which overrides the file at each start; the PUT response then carries a `note` saying so) |
+| PUT | `/api/admin/settings/standby` | `{message}`: the venue's standby message (one line, up to 200 characters; `""` for the built-in words in each viewer's language); written to `standby.message` in `config.yaml` and applied to the show on air and every rehearsal at once |
+| POST | `/api/admin/settings/standby-logo` | `multipart/form-data` with a `file` (PNG, JPEG, GIF or WebP, up to 2 MB; SVG is refused) replaces the standby logo (a file `standby-logo.<ext>` in the data folder) |
+| DELETE | `/api/admin/settings/standby-logo` | Removes the logo; the built-in `[oc]` mark is shown again |
 | GET | `/api/admin/settings/certificate` | Where HTTPS gets its certificate: `source` is `none`, `self-signed`, `file` or `acme`; for `acme` also `status` (domain, state `waiting`/`ok`/`renewing`/`failed`, expiry, issuer, last attempt and last problem). Never contains credentials (doc 10) |
 | POST | `/api/admin/settings/certificate/renew` | Get a new certificate now (it runs in the background); 409 if a fetch is already running or automatic certificates are off |
 | GET | `/api/admin/log` | The recent in-memory log for the viewer in Setup: `?level=` (lowest severity: debug, info, warn, error; a line with no level counts as info) and `?lines=` (newest N, default 300, at most 1000). Returns `{lines, level}`. Admin only |
@@ -122,6 +128,10 @@ Operator state is pushed on `/api/operator/stream` as `opstate` events carrying 
 
 Responses: `200` with the new `OperatorState` and, for harmless no-ops, a `notice` ("End of the show", "Nothing to undo", "No loop is running"); `409` with current state if
 `rev` is stale or the caller isn't the controller; `401` if not logged in.
+
+### Development endpoints (`--dev` only)
+
+With `open-caption --dev` (never at a venue: the program then listens on this computer only, has no standby and no passwords) there are unauthenticated `POST /dev/next`, `/dev/back`, `/dev/stop` and `/dev/reset`, answering `{state, error}`. They exist for tests and for the load generator (`cmd/loadtest`).
 
 ## Audience event stream — `GET /events`
 
