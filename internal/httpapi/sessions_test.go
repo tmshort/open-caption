@@ -4,6 +4,7 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 )
 
 // A script on this computer that keeps no cookies is signed in again on every call; that must not pile up
@@ -28,5 +29,18 @@ func TestAutomaticSessionsAreCappedAndNotSaved(t *testing.T) {
 	}
 	if _, err := os.Stat(path); err != nil {
 		t.Errorf("password session not saved: %v", err)
+	}
+}
+
+func TestPruneForgetsOldLoginAttempts(t *testing.T) {
+	a := newAuth("a", "o", "")
+	a.attempts["10.0.0.1"] = []time.Time{time.Now().Add(-2 * loginWindow)}
+	a.attempts["10.0.0.2"] = []time.Time{time.Now()}
+	a.prune()
+	if _, ok := a.attempts["10.0.0.1"]; ok {
+		t.Error("an address that stopped trying is still remembered")
+	}
+	if _, ok := a.attempts["10.0.0.2"]; !ok {
+		t.Error("a recent attempt was forgotten")
 	}
 }

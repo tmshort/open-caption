@@ -256,6 +256,11 @@ func (a *auth) setPasswords(adminPW, operatorPW, keep string) {
 func (a *auth) prune() {
 	a.mu.Lock()
 	defer a.mu.Unlock()
+	for ip, ts := range a.attempts { // addresses that stopped trying need not be remembered
+		if len(ts) == 0 || time.Since(ts[len(ts)-1]) >= loginWindow {
+			delete(a.attempts, ip)
+		}
+	}
 	changed := false
 	for k, s := range a.sessions {
 		if time.Now().After(s.expires) {
