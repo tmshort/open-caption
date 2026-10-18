@@ -11,7 +11,7 @@ Preparare uno spettacolo richiede sei passi. La fila di pulsanti in alto nella p
 
 ## Attesa e messa in onda
 
-Aprire la pagina dell'operatore carica lo spettacolo **in attesa**: il pubblico vede la schermata di attesa della sala (un logo e un messaggio, impostati una sola volta in **Impostazioni → Schermata di attesa**) e nulla dello spettacolo. L'operatore preme **Spazio** (il pulsante dice **AVVIA**) per mettere lo spettacolo in onda, e **Metti in attesa…** lo ritira senza perdere il punto. Preparazione, prova e modifica non sono mai davanti al pubblico mentre lo spettacolo è in attesa, e uno spettacolo in attesa può essere eliminato.
+Aprire la pagina dell'operatore carica lo spettacolo **in attesa**: il pubblico vede la schermata di attesa della sala (un logo e un messaggio, impostati una sola volta in **Impostazioni → Schermo del pubblico**) e nulla dello spettacolo. L'operatore preme **Spazio** (il pulsante dice **AVVIA**) per mettere lo spettacolo in onda, e **Metti in attesa…** lo ritira senza perdere il punto. Preparazione, prova e modifica non sono mai davanti al pubblico mentre lo spettacolo è in attesa, e uno spettacolo in attesa può essere eliminato.
 
 ## Dove viene conservato tutto
 
@@ -26,7 +26,7 @@ Rinomina, Duplica, Esporta, Archivia ed Elimina sono nel menu **Altro ▾** di o
 - Questo computer deve essere nella stessa rete WiFi dei telefoni e tablet del pubblico. Vedi [Rete e connessione](topic:admin-network).
 - La password amministratore e la password operatore sono in `config.yaml`; sono state anche mostrate nella console al primo avvio del programma. La pagina dell'operatore ha una password propria, così puoi darla a un'altra persona senza concederle l'accesso alla configurazione. Sul computer che esegue il programma, Configurazione e la pagina dell'operatore si aprono **senza password** quando l'indirizzo inizia con `localhost`, `127.0.0.1` o `[::1]` (la persona a quel computer è considerata amministratore). Gli altri computer, e qualsiasi richiesta inoltrata da un proxy, accedono ancora con una password. Imposta `access.local_auto_login: false` in `config.yaml` se altre persone possono accedere a questo computer.
 - La configurazione, la pagina dell'operatore e questo aiuto sono disponibili in inglese, spagnolo, francese, tedesco, italiano e portoghese. Usa il menu della lingua in alto in ogni pagina; la scelta viene ricordata in quel browser.
-- Il tuo lavoro viene salvato su questo computer. Usa **Esporta** nel passo Spettacoli per fare una copia di sicurezza da portare su un altro computer. L'esportazione è uno `.zip` che contiene `show.md` (il file dello spettacolo, con titolo e aspetto), un `show.<lingua>.md` per ogni traduzione e una cartella `assets` con le immagini; **Importa** trasforma uno zip così in un nuovo spettacolo, e accetta anche un file dello spettacolo di testo semplice (`.md` o `.txt`, con qualsiasi nome) come nuovo spettacolo.
+- Il tuo lavoro viene salvato su questo computer. Usa **Esporta** (menu **Altro ▾** di uno spettacolo) nel passo Spettacoli per fare una copia di sicurezza da portare su un altro computer. L'esportazione è uno `.zip` che contiene `show.md` (il file dello spettacolo, con titolo e aspetto), un `show.<lingua>.md` per ogni traduzione e una cartella `assets` con le immagini; **Importa** trasforma uno zip così in un nuovo spettacolo, e accetta anche un file dello spettacolo di testo semplice (`.md` o `.txt`, con qualsiasi nome) come nuovo spettacolo.
 
 ## Sei nuovo ai file dello spettacolo?
 

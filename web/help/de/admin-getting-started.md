@@ -11,7 +11,7 @@ Eine Show einzurichten dauert sechs Schritte. Die Schaltflächenreihe oben auf d
 
 ## Standby und auf Sendung gehen
 
-Das Öffnen der Bedienerseite lädt die Show im **Standby**: Das Publikum sieht den Standby-Bildschirm des Hauses (ein Logo und eine Meldung, einmal unter **Einstellungen → Standby-Bildschirm** festgelegt) und nichts von der Show. Der Bediener drückt die **Leertaste** (die Schaltfläche heißt **START**), um die Show auf Sendung zu bringen, und **In den Standby …** nimmt sie wieder heraus, ohne ihren Platz zu verlieren. Einrichtung, Probe und Bearbeitung sind nie vor dem Publikum, solange die Show im Standby ist, und eine Show im Standby kann gelöscht werden.
+Das Öffnen der Bedienerseite lädt die Show im **Standby**: Das Publikum sieht den Standby-Bildschirm des Hauses (ein Logo und eine Meldung, einmal unter **Einstellungen → Publikumsbildschirm** festgelegt) und nichts von der Show. Der Bediener drückt die **Leertaste** (die Schaltfläche heißt **START**), um die Show auf Sendung zu bringen, und **In den Standby …** nimmt sie wieder heraus, ohne ihren Platz zu verlieren. Einrichtung, Probe und Bearbeitung sind nie vor dem Publikum, solange die Show im Standby ist, und eine Show im Standby kann gelöscht werden.
 
 ## Wo alles gespeichert wird
 
@@ -26,7 +26,7 @@ Umbenennen, Duplizieren, Exportieren, Archivieren und Löschen finden Sie im Men
 - Dieser Computer muss im selben WLAN sein wie die Telefone und Tablets des Publikums. Siehe [Netzwerk und Verbindung](topic:admin-network).
 - Das Administrator- und das Operator-Passwort stehen in `config.yaml`; sie wurden auch beim ersten Start des Programms in der Konsole ausgegeben. Die Operator-Seite hat ein eigenes Passwort, damit Sie es jemand anderem geben können, ohne Zugang zur Einrichtung zu gewähren. Auf dem Computer, auf dem das Programm läuft, öffnen sich Einrichtung und Bedienerseite **ohne Passwort**, wenn die Adresse mit `localhost`, `127.0.0.1` oder `[::1]` beginnt (der Person an diesem Computer wird als Admin vertraut). Andere Computer und jede über einen Proxy weitergeleitete Anfrage melden sich weiterhin mit Passwort an. Setzen Sie `access.local_auto_login: false` in `config.yaml`, wenn sich andere Personen an diesem Computer anmelden können.
 - Die Einrichtung, die Operator-Seite und diese Hilfe gibt es auf Englisch, Spanisch, Französisch, Deutsch, Italienisch und Portugiesisch. Verwenden Sie das Sprachmenü oben auf jeder Seite; die Wahl wird in diesem Browser gemerkt.
-- Ihre Arbeit wird auf diesem Computer gespeichert. Mit **Exportieren** im Schritt Shows machen Sie eine Sicherung, die Sie auf einen anderen Computer mitnehmen können. Der Export ist eine `.zip`-Datei mit `show.md` (der Show-Datei samt Titel und Erscheinungsbild), je einer `show.<Sprache>.md` pro Übersetzung und einem Ordner `assets` mit den Bildern; **Importieren** macht aus einem solchen Zip eine neue Show und nimmt auch eine einfache Show-Textdatei (`.md` oder `.txt`, mit beliebigem Namen) als neue Show.
+- Ihre Arbeit wird auf diesem Computer gespeichert. Mit **Exportieren** (Menü **Mehr ▾** einer Show) im Schritt Shows machen Sie eine Sicherung, die Sie auf einen anderen Computer mitnehmen können. Der Export ist eine `.zip`-Datei mit `show.md` (der Show-Datei samt Titel und Erscheinungsbild), je einer `show.<Sprache>.md` pro Übersetzung und einem Ordner `assets` mit den Bildern; **Importieren** macht aus einem solchen Zip eine neue Show und nimmt auch eine einfache Show-Textdatei (`.md` oder `.txt`, mit beliebigem Namen) als neue Show.
 
 ## Neu bei Show-Dateien?
 

@@ -91,7 +91,7 @@ The app should not run its own DHCP/DNS in v1 (conflicts, privileges, scope).
 
 ## Backups
 
-Data directory is plain files; "Export" and "Import" on the Show step of Setup move a show between machines or share it with other volunteers.
+Data directory is plain files; "Export" and "Import" on the Shows step of Setup move a show between machines or share it with other volunteers.
 
 ### Show archive (.zip)
 

@@ -149,7 +149,7 @@ Hat `config.yaml` einen Fehler (eine falsch geschriebene Einstellung, eine Zahl 
 5. **Test.** Machen Sie eine private Probe: Sie drücken die Leertaste wie der Operator und sehen daneben den Bildschirm des Publikums. Nichts erreicht das Publikum.
 6. **Fahren.** Prüfen Sie die Bereitschaftsliste, drucken Sie das QR-Schild und drücken Sie **Die Seite „Fahren“ öffnen**.
 
-Das Öffnen der Bedienerseite lädt die Show im **Standby**: Das Publikum sieht den Standby-Bildschirm des Hauses (ein Logo und eine Meldung, einmal unter **Einstellungen → Standby-Bildschirm** festgelegt) und nichts von der Show, sodass Sie in Ruhe vorbereiten, proben und die Bedienerseite prüfen können. Wenn Sie bereit sind, drücken Sie auf der Bedienerseite die **Leertaste** (die Schaltfläche heißt **START**), um die Show auf Sendung zu bringen. **In den Standby …** nimmt sie wieder heraus, ohne ihren Platz zu verlieren.
+Das Öffnen der Bedienerseite lädt die Show im **Standby**: Das Publikum sieht den Standby-Bildschirm des Hauses (ein Logo und eine Meldung, einmal unter **Einstellungen → Publikumsbildschirm** festgelegt) und nichts von der Show, sodass Sie in Ruhe vorbereiten, proben und die Bedienerseite prüfen können. Wenn Sie bereit sind, drücken Sie auf der Bedienerseite die **Leertaste** (die Schaltfläche heißt **START**), um die Show auf Sendung zu bringen. **In den Standby …** nimmt sie wieder heraus, ohne ihren Platz zu verlieren.
 
 ### Die Show-Datei schreiben
 
@@ -241,13 +241,13 @@ Sie können eine Show-Datei bearbeiten und erneut speichern, während eine Show 
 
 ### Wenn die Show endet
 
-Drücken Sie `Strg+C` im Fenster des Programms (oder beenden Sie den Dienst). Die Position wird gespeichert. Um die Show wieder von vorn laufen zu lassen, verwenden Sie **Show neu starten …** auf der Bedienerseite oder **Show neu starten** in Einrichtung → Fahren. Beides bringt die Show zurück in den Standby.
+Drücken Sie `Strg+C` im Fenster des Programms (oder beenden Sie den Dienst). Die Position wird gespeichert. Um die Show wieder von vorn laufen zu lassen, verwenden Sie **Show neu starten …** auf der Bedienerseite oder **Show neu starten …** in Einrichtung → Fahren. Beides bringt die Show zurück in den Standby.
 
 ## Checkliste für den Vorstellungstag
 
 **Ein paar Tage vorher**
 - [ ] Proben Sie mit der echten Show-Datei und ein paar echten Telefonen im echten Netzwerk im echten Saal.
-- [ ] Exportieren Sie die Show (Einrichtung → Shows → **Exportieren**) und bewahren Sie das `.zip` an einem sicheren Ort auf, etwa auf einem USB-Stick.
+- [ ] Exportieren Sie die Show (Einrichtung → Shows → **Mehr ▾** → **Exportieren**) und bewahren Sie das `.zip` an einem sicheren Ort auf, etwa auf einem USB-Stick.
 - [ ] Bestätigen Sie, dass die Adresse des Untertitel-Computers reserviert ist und das QR-Schild sie zeigt.
 
 **Im Haus, eine Stunde vorher**
@@ -283,7 +283,7 @@ Drücken Sie `Strg+C` im Fenster des Programms (oder beenden Sie den Dienst). Di
 
 ## Wartung
 
-- **Sicherungen:** *Exportieren* unter Einrichtung → Shows speichert eine Show (Show-Datei, Bilder, Erscheinungsbild) als `.zip`. *Importieren* stellt sie wieder her, auf diesem oder einem anderen Computer. Sie können auch den ganzen Datenordner kopieren.
+- **Sicherungen:** *Exportieren* (Menü **Mehr ▾**) unter Einrichtung → Shows speichert eine Show (Show-Datei, Bilder, Erscheinungsbild) als `.zip`. *Importieren* stellt sie wieder her, auf diesem oder einem anderen Computer. Sie können auch den ganzen Datenordner kopieren.
 - **Auf einen anderen Computer umziehen:** Installieren Sie das Programm, importieren Sie die exportierten Shows, stellen Sie die Adresse des neuen Computers ein und kopieren Sie, wenn Sie die alten Passwörter behalten wollen, `config.yaml`.
 - **Das Programm aktualisieren:** Beenden Sie es (`Strg+C`), ersetzen Sie die Programmdatei durch die neuere und starten Sie es mit demselben `--data`-Ordner erneut. Aktualisieren Sie nicht kurz vor einer Show.
 - **Eine Show wiederverwenden:** Einrichtung → Shows hat **Umbenennen …** und **Duplizieren**. Duplizieren erstellt eine Kopie der Show-Datei, der Bilder und des Erscheinungsbilds zum Anpassen für die nächste Serie und lässt das Original unberührt. Umbenennen, Duplizieren, Exportieren, Archivieren und Löschen finden Sie im Menü **Mehr ▾** jeder Show.

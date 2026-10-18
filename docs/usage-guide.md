@@ -142,14 +142,14 @@ If `config.yaml` has a mistake (a misspelled setting, a number out of range, a b
 
 Open the setup page and follow the six steps along the top. The **Help** button explains each one.
 
-1. **Show.** Create a show (or the sample show, to try things out).
+1. **Shows.** Create a show (or the sample show, to try things out).
 2. **Show file.** Paste the show file or drop in a `.txt` or `.md` file. Each line becomes one caption. Fix anything listed under *Problems and notes*; click one to jump to its line. Save.
 3. **Images.** Upload the pictures the show file uses (PNG, JPG, GIF or WebP, ideally under 1 MB each).
 4. **Look.** Choose colors, font and text size. The defaults (white on black, large) are best for most people. Two readability fonts are built in: a dyslexia-friendly one (OpenDyslexic) and a high-legibility one (Atkinson Hyperlegible, designed for low vision). Individual audience members can also pick either for their own device from the small **Aa** control.
 5. **Test.** Run a private rehearsal: you press Space as the operator would, and see the audience screen next to it. Nothing reaches the audience.
 6. **Run.** Check the readiness list, print the QR sign, and press **Open the Run page**.
 
-Opening the operator page loads the show in **standby**: the audience sees the venue's standby screen (a logo and a message, set once under **Settings → Standby screen**) and nothing of the show, so you can prepare, rehearse and check the operator page quietly. When you are ready, press **Space** (the button says **START**) on the operator page to put the show on air. **Go to standby…** takes it off again without losing its place.
+Opening the operator page loads the show in **standby**: the audience sees the venue's standby screen (a logo and a message, set once under **Settings → Audience screen**) and nothing of the show, so you can prepare, rehearse and check the operator page quietly. When you are ready, press **Space** (the button says **START**) on the operator page to put the show on air. **Go to standby…** takes it off again without losing its place.
 
 ### Writing the show file
 
@@ -241,13 +241,13 @@ You can edit and re-save a show file while a show is live (for example to fix a 
 
 ### When the show ends
 
-Press `Ctrl+C` in the program's window (or stop the service). The position is saved. To run the show again from the beginning, use **Restart show…** on the operator page, or **Restart the show** in Setup → Run. Either returns the show to standby.
+Press `Ctrl+C` in the program's window (or stop the service). The position is saved. To run the show again from the beginning, use **Restart show…** on the operator page, or **Restart show…** in Setup → Run. Either returns the show to standby.
 
 ## Day-of checklist
 
 **A few days before**
 - [ ] Rehearse with the real show file and a few real phones on the real network in the real room.
-- [ ] Export the show (Setup → Show → **Export**) and keep the `.zip` somewhere safe, such as a USB stick.
+- [ ] Export the show (Setup → Shows → **More ▾** → **Export**) and keep the `.zip` somewhere safe, such as a USB stick.
 - [ ] Confirm the captioning computer's address is reserved and the QR sign shows it.
 
 **At the venue, an hour before**
@@ -283,13 +283,13 @@ Press `Ctrl+C` in the program's window (or stop the service). The position is sa
 
 ## Maintenance
 
-- **Backups:** *Export* in Setup → Show saves a show (show file, images, look) as a `.zip`. *Import* restores it, on this or another computer. You can also copy the whole data folder.
+- **Backups:** *Export* in Setup → Shows (in a show's **More ▾** menu) saves a show (show file, images, look) as a `.zip`. *Import* restores it, on this or another computer. You can also copy the whole data folder.
 - **Moving to another computer:** install the program, import the exported shows, set the new computer's address and, if you want to keep the old passwords, copy `config.yaml`.
 - **Updating the program:** stop it (`Ctrl+C`), replace the program file with the newer one, and start it again with the same `--data` folder. Do not update right before a show.
-- **Reusing a show:** Setup → Show has **Rename…** and **Duplicate**. Duplicating makes a copy of the show file, images and look to adapt for the next run, and leaves the original alone. Rename, Duplicate, Export, Archive and Delete are in the **More ▾** menu on each show.
-- **Cleaning up:** delete shows you no longer need from Setup → Show. Exported `.zip` files are your archive.
+- **Reusing a show:** Setup → Shows has **Rename…** and **Duplicate…**. Duplicating makes a copy of the show file, images and look to adapt for the next run, and leaves the original alone. Rename, Duplicate, Export, Archive and Delete are in the **More ▾** menu on each show.
+- **Cleaning up:** delete shows you no longer need from Setup → Shows. Exported `.zip` files are your archive.
 - **Logs:** Setup → Run → **Recent log…** shows what the program has logged lately, filtered by level (choose *Problems only* to see warnings and errors); recent log lines are also in the support bundle; add `--log-file` to keep a file. Each line starts with its level (`INFO`, `WARN`, `ERROR`, or `DEBUG`). The default `info` records sign-ins, who took control of the operator page, shows activated and similar events; `warn` keeps only problems; `debug` also records every request, which helps when something odd is happening. Set it with `log: {level: debug}` in `config.yaml`, `--log-level debug`, or while the program is running from Setup → Settings → *Log detail*. If the program was started with `--log-level`, that flag wins at every start: Setup says so, a change made there lasts only until the next restart, and the start-up log warns when the flag and the file disagree. A log file kept with `--log-file` starts a new file at 5 MB and keeps three older ones (`open-caption.log.1` to `.3`), so it never fills the disk.
-- **Archiving:** in Setup → Show, **Archive** puts a finished show away (it is kept, listed under "Archived shows", and cannot go on air) and **Restore** brings it back. **Delete** removes a show for good.
+- **Archiving:** in Setup → Shows, **Archive** puts a finished show away (it is kept, listed under "Archived shows", and cannot go on air) and **Restore** brings it back. **Delete** removes a show for good.
 
 ## Operator quick card
 

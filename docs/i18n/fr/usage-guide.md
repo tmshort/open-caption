@@ -149,7 +149,7 @@ Ouvrez la page de configuration et suivez les six étapes en haut. Le bouton **A
 5. **Test.** Faites une répétition privée : vous appuyez sur Espace comme le ferait l'opérateur, et voyez l'écran du public à côté. Rien n'atteint le public.
 6. **Conduire.** Vérifiez la liste de préparation, imprimez l'affichette QR et appuyez sur **Ouvrir la page Conduire**.
 
-Ouvrir la page de l'opérateur charge le spectacle **en attente** : le public voit l'écran d'attente du lieu (un logo et un message, réglés une seule fois sous **Réglages → Écran d'attente**) et rien du spectacle ; vous pouvez donc préparer, répéter et vérifier la page de l'opérateur tranquillement. Quand vous êtes prêt, appuyez sur **Espace** (le bouton indique **DÉMARRER**) sur la page de l'opérateur pour mettre le spectacle à l'antenne. **Mettre en attente…** le retire de nouveau sans perdre sa place.
+Ouvrir la page de l'opérateur charge le spectacle **en attente** : le public voit l'écran d'attente du lieu (un logo et un message, réglés une seule fois sous **Réglages → Écran du public**) et rien du spectacle ; vous pouvez donc préparer, répéter et vérifier la page de l'opérateur tranquillement. Quand vous êtes prêt, appuyez sur **Espace** (le bouton indique **DÉMARRER**) sur la page de l'opérateur pour mettre le spectacle à l'antenne. **Mettre en attente…** le retire de nouveau sans perdre sa place.
 
 ### Écrire le fichier du spectacle
 
@@ -241,13 +241,13 @@ Vous pouvez modifier et réenregistrer un fichier de spectacle pendant qu'un spe
 
 ### Quand le spectacle se termine
 
-Appuyez sur `Ctrl+C` dans la fenêtre du programme (ou arrêtez le service). La position est enregistrée. Pour relancer le spectacle depuis le début, utilisez **Redémarrer le spectacle…** sur la page de l'opérateur, ou **Redémarrer le spectacle** dans Configuration → Conduire. Les deux le remettent en attente.
+Appuyez sur `Ctrl+C` dans la fenêtre du programme (ou arrêtez le service). La position est enregistrée. Pour relancer le spectacle depuis le début, utilisez **Redémarrer le spectacle…** sur la page de l'opérateur, ou **Redémarrer le spectacle…** dans Configuration → Conduire. Les deux le remettent en attente.
 
 ## Liste de vérification du jour J
 
 **Quelques jours avant**
 - [ ] Répétez avec le vrai fichier du spectacle et quelques vrais téléphones sur le vrai réseau dans la vraie salle.
-- [ ] Exportez le spectacle (Configuration → Spectacles → **Exporter**) et gardez le `.zip` en lieu sûr, comme une clé USB.
+- [ ] Exportez le spectacle (Configuration → Spectacles → **Plus ▾** → **Exporter**) et gardez le `.zip` en lieu sûr, comme une clé USB.
 - [ ] Confirmez que l'adresse de l'ordinateur de sous-titrage est réservée et que l'affiche QR l'indique.
 
 **À la salle, une heure avant**
@@ -283,7 +283,7 @@ Appuyez sur `Ctrl+C` dans la fenêtre du programme (ou arrêtez le service). La 
 
 ## Maintenance
 
-- **Sauvegardes :** *Exporter* dans Configuration → Spectacles enregistre un spectacle (fichier du spectacle, images, apparence) sous forme de `.zip`. *Importer* le restaure, sur cet ordinateur ou un autre. Vous pouvez aussi copier tout le dossier de données.
+- **Sauvegardes :** *Exporter* (menu **Plus ▾**) dans Configuration → Spectacles enregistre un spectacle (fichier du spectacle, images, apparence) sous forme de `.zip`. *Importer* le restaure, sur cet ordinateur ou un autre. Vous pouvez aussi copier tout le dossier de données.
 - **Passer à un autre ordinateur :** installez le programme, importez les spectacles exportés, réglez l'adresse du nouvel ordinateur et, si vous voulez garder les anciens mots de passe, copiez `config.yaml`.
 - **Mettre à jour le programme :** arrêtez-le (`Ctrl+C`), remplacez le fichier du programme par le plus récent et relancez-le avec le même dossier `--data`. Ne mettez pas à jour juste avant un spectacle.
 - **Réutiliser un spectacle :** Configuration → Spectacles propose **Renommer…** et **Dupliquer**. Dupliquer fait une copie du fichier du spectacle, des images et de l'apparence à adapter pour la prochaine série, et laisse l'original intact. Renommer, Dupliquer, Exporter, Archiver et Supprimer se trouvent dans le menu **Plus ▾** de chaque spectacle.

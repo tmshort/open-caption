@@ -149,7 +149,7 @@ Abra la página de configuración y siga los seis pasos de la parte superior. El
 5. **Prueba.** Haga un ensayo privado: usted pulsa Espacio como lo haría el operador, y ve la pantalla del público al lado. Nada llega al público.
 6. **Dirigir.** Revise la lista de preparación, imprima el cartel QR y pulse **Abrir la página Dirigir**.
 
-Al abrir la página del operador, el espectáculo se carga **en espera**: el público ve la pantalla de espera del local (un logotipo y un mensaje, que se fijan una sola vez en **Ajustes → Pantalla de espera**) y nada del espectáculo, así que puede preparar, ensayar y revisar la página del operador con tranquilidad. Cuando esté listo, pulse **Espacio** (el botón dice **INICIAR**) en la página del operador para poner el espectáculo en el aire. **Poner en espera…** lo retira de nuevo sin perder su lugar.
+Al abrir la página del operador, el espectáculo se carga **en espera**: el público ve la pantalla de espera del local (un logotipo y un mensaje, que se fijan una sola vez en **Ajustes → Pantalla del público**) y nada del espectáculo, así que puede preparar, ensayar y revisar la página del operador con tranquilidad. Cuando esté listo, pulse **Espacio** (el botón dice **INICIAR**) en la página del operador para poner el espectáculo en el aire. **Poner en espera…** lo retira de nuevo sin perder su lugar.
 
 ### Escribir el archivo del espectáculo
 
@@ -241,13 +241,13 @@ Puede editar y volver a guardar un archivo del espectáculo con el espectáculo 
 
 ### Cuando termina el espectáculo
 
-Pulse `Ctrl+C` en la ventana del programa (o detenga el servicio). La posición se guarda. Para volver a dirigir el espectáculo desde el principio, use **Reiniciar espectáculo…** en la página del operador, o **Reiniciar el espectáculo** en Configuración → Dirigir. Ambos lo devuelven a la espera.
+Pulse `Ctrl+C` en la ventana del programa (o detenga el servicio). La posición se guarda. Para volver a dirigir el espectáculo desde el principio, use **Reiniciar espectáculo…** en la página del operador, o **Reiniciar espectáculo…** en Configuración → Dirigir. Ambos lo devuelven a la espera.
 
 ## Lista de comprobación del día
 
 **Unos días antes**
 - [ ] Ensaye con el archivo real del espectáculo y unos cuantos teléfonos reales en la red real y en la sala real.
-- [ ] Exporte el espectáculo (Configuración → Espectáculos → **Exportar**) y guarde el `.zip` en un lugar seguro, como una memoria USB.
+- [ ] Exporte el espectáculo (Configuración → Espectáculos → **Más ▾** → **Exportar**) y guarde el `.zip` en un lugar seguro, como una memoria USB.
 - [ ] Confirme que la dirección del equipo de subtitulado está reservada y que el cartel QR la muestra.
 
 **En el local, una hora antes**
@@ -283,7 +283,7 @@ Pulse `Ctrl+C` en la ventana del programa (o detenga el servicio). La posición 
 
 ## Mantenimiento
 
-- **Copias de seguridad:** *Exportar* en Configuración → Espectáculos guarda un espectáculo (archivo del espectáculo, imágenes, aspecto) como un `.zip`. *Importar* lo restaura, en este equipo o en otro. También puede copiar toda la carpeta de datos.
+- **Copias de seguridad:** *Exportar* (menú **Más ▾**) en Configuración → Espectáculos guarda un espectáculo (archivo del espectáculo, imágenes, aspecto) como un `.zip`. *Importar* lo restaura, en este equipo o en otro. También puede copiar toda la carpeta de datos.
 - **Cambiar a otro equipo:** instale el programa, importe los espectáculos exportados, ajuste la dirección del equipo nuevo y, si quiere conservar las contraseñas antiguas, copie `config.yaml`.
 - **Actualizar el programa:** deténgalo (`Ctrl+C`), sustituya el archivo del programa por el más nuevo y arránquelo de nuevo con la misma carpeta `--data`. No actualice justo antes de un espectáculo.
 - **Reutilizar un espectáculo:** Configuración → Espectáculos tiene **Renombrar…** y **Duplicar**. Duplicar hace una copia del archivo del espectáculo, las imágenes y el aspecto para adaptarla a la próxima temporada, y deja el original intacto. Renombrar, Duplicar, Exportar, Archivar y Eliminar están en el menú **Más ▾** de cada espectáculo.

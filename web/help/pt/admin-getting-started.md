@@ -11,7 +11,7 @@ Preparar um espetáculo leva seis etapas. A fileira de botões no alto da págin
 
 ## Espera e entrada no ar
 
-Abrir a página do operador carrega o espetáculo **em espera**: o público vê a tela de espera do local (um logotipo e uma mensagem, definidos uma só vez em **Configurações → Tela de espera**) e nada do espetáculo. O operador pressiona **Espaço** (o botão diz **INICIAR**) para colocar o espetáculo no ar, e **Colocar em espera…** o retira de novo sem perder o lugar. Preparação, ensaio e edição nunca ficam diante do público enquanto o espetáculo está em espera, e um espetáculo em espera pode ser excluído.
+Abrir a página do operador carrega o espetáculo **em espera**: o público vê a tela de espera do local (um logotipo e uma mensagem, definidos uma só vez em **Configurações → Tela do público**) e nada do espetáculo. O operador pressiona **Espaço** (o botão diz **INICIAR**) para colocar o espetáculo no ar, e **Colocar em espera…** o retira de novo sem perder o lugar. Preparação, ensaio e edição nunca ficam diante do público enquanto o espetáculo está em espera, e um espetáculo em espera pode ser excluído.
 
 ## Onde fica tudo guardado
 
@@ -26,7 +26,7 @@ Renomear, Duplicar, Exportar, Arquivar e Excluir estão no menu **Mais ▾** de 
 - Este computador precisa estar na mesma rede WiFi dos telefones e tablets do público. Veja [Rede e conexão](topic:admin-network).
 - A senha de administrador e a de operador estão em `config.yaml`; elas também apareceram no console na primeira vez que o programa iniciou. A página do operador tem a sua própria senha, para que você possa entregá-la a outra pessoa sem dar acesso à configuração. No computador que executa o programa, Configuração e a página do operador abrem **sem senha** quando o endereço começa com `localhost`, `127.0.0.1` ou `[::1]` (a pessoa nesse computador é tratada como administrador). Os outros computadores, e qualquer requisição retransmitida por um proxy, continuam entrando com senha. Defina `access.local_auto_login: false` em `config.yaml` se outras pessoas puderem entrar neste computador.
 - A configuração, a página do operador e esta ajuda estão disponíveis em inglês, espanhol, francês, alemão, italiano e português. Use o menu de idioma no alto de cada página; a escolha fica lembrada nesse navegador.
-- Seu trabalho fica salvo neste computador. Use **Exportar** na etapa Espetáculos para fazer uma cópia de segurança que você possa levar a outro computador. A exportação é um `.zip` com `show.md` (o arquivo do espetáculo, com título e aparência), um `show.<idioma>.md` para cada tradução e uma pasta `assets` com as imagens; **Importar** transforma um zip desses em um novo espetáculo, e também aceita um arquivo de espetáculo de texto simples (`.md` ou `.txt`, com qualquer nome) como novo espetáculo.
+- Seu trabalho fica salvo neste computador. Use **Exportar** (menu **Mais ▾** de um espetáculo) na etapa Espetáculos para fazer uma cópia de segurança que você possa levar a outro computador. A exportação é um `.zip` com `show.md` (o arquivo do espetáculo, com título e aparência), um `show.<idioma>.md` para cada tradução e uma pasta `assets` com as imagens; **Importar** transforma um zip desses em um novo espetáculo, e também aceita um arquivo de espetáculo de texto simples (`.md` ou `.txt`, com qualquer nome) como novo espetáculo.
 
 ## Novo nos arquivos de espetáculo?
 

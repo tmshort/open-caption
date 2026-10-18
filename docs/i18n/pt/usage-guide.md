@@ -149,7 +149,7 @@ Abra a página de configuração e siga as seis etapas no alto. O botão **Ajuda
 5. **Teste.** Faça um ensaio particular: você aperta Espaço como o operador faria, e vê a tela do público ao lado. Nada chega ao público.
 6. **Conduzir.** Confira a lista de preparação, imprima o cartaz com o QR e pressione **Abrir a página Conduzir**.
 
-Abrir a página do operador carrega o espetáculo **em espera**: o público vê a tela de espera do local (um logotipo e uma mensagem, definidos uma só vez em **Configurações → Tela de espera**) e nada do espetáculo, então você pode preparar, ensaiar e conferir a página do operador com calma. Quando estiver pronto, pressione **Espaço** (o botão diz **INICIAR**) na página do operador para colocar o espetáculo no ar. **Colocar em espera…** o retira de novo sem perder o lugar.
+Abrir a página do operador carrega o espetáculo **em espera**: o público vê a tela de espera do local (um logotipo e uma mensagem, definidos uma só vez em **Configurações → Tela do público**) e nada do espetáculo, então você pode preparar, ensaiar e conferir a página do operador com calma. Quando estiver pronto, pressione **Espaço** (o botão diz **INICIAR**) na página do operador para colocar o espetáculo no ar. **Colocar em espera…** o retira de novo sem perder o lugar.
 
 ### Escrever o arquivo do espetáculo
 
@@ -241,13 +241,13 @@ Você pode editar e salvar de novo um arquivo do espetáculo com o espetáculo a
 
 ### Quando o espetáculo termina
 
-Pressione `Ctrl+C` na janela do programa (ou pare o serviço). A posição é salva. Para refazer o espetáculo desde o início, use **Reiniciar espetáculo…** na página do operador, ou **Reiniciar o espetáculo** em Configuração → Conduzir. Ambos o devolvem à espera.
+Pressione `Ctrl+C` na janela do programa (ou pare o serviço). A posição é salva. Para refazer o espetáculo desde o início, use **Reiniciar espetáculo…** na página do operador, ou **Reiniciar espetáculo…** em Configuração → Conduzir. Ambos o devolvem à espera.
 
 ## Lista de verificação do dia
 
 **Alguns dias antes**
 - [ ] Ensaie com o arquivo do espetáculo de verdade e alguns telefones de verdade na rede de verdade na sala de verdade.
-- [ ] Exporte o espetáculo (Configuração → Espetáculos → **Exportar**) e guarde o `.zip` em local seguro, como um pen drive.
+- [ ] Exporte o espetáculo (Configuração → Espetáculos → **Mais ▾** → **Exportar**) e guarde o `.zip` em local seguro, como um pen drive.
 - [ ] Confirme que o endereço do computador das legendas está reservado e que o cartaz QR o mostra.
 
 **No local, uma hora antes**
@@ -283,7 +283,7 @@ Pressione `Ctrl+C` na janela do programa (ou pare o serviço). A posição é sa
 
 ## Manutenção
 
-- **Cópias de segurança:** *Exportar* em Configuração → Espetáculos salva um espetáculo (arquivo do espetáculo, imagens, aparência) como um `.zip`. *Importar* o restaura, neste ou em outro computador. Você também pode copiar a pasta de dados inteira.
+- **Cópias de segurança:** *Exportar* (menu **Mais ▾**) em Configuração → Espetáculos salva um espetáculo (arquivo do espetáculo, imagens, aparência) como um `.zip`. *Importar* o restaura, neste ou em outro computador. Você também pode copiar a pasta de dados inteira.
 - **Mudar para outro computador:** instale o programa, importe os espetáculos exportados, ajuste o endereço do computador novo e, se quiser manter as senhas antigas, copie `config.yaml`.
 - **Atualizar o programa:** pare-o (`Ctrl+C`), substitua o arquivo do programa pelo mais novo e inicie-o de novo com a mesma pasta `--data`. Não atualize logo antes de um espetáculo.
 - **Reutilizar um espetáculo:** Configuração → Espetáculos tem **Renomear…** e **Duplicar**. Duplicar faz uma cópia do arquivo do espetáculo, das imagens e da aparência para adaptar à próxima temporada, e deixa o original intacto. Renomear, Duplicar, Exportar, Arquivar e Excluir estão no menu **Mais ▾** de cada espetáculo.

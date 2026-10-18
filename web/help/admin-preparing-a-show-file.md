@@ -50,7 +50,7 @@ You never have to type in the editor on the Show file step. Instead:
 
 The same works for a translation: choose the language tab first, then download and open the file for that language. You can also drop a file onto the editor.
 
-To start a **new show** from a file, use **Import a show** on the Show step and choose the file. It becomes a new show, named by the `title:` line in its `[settings]` block, or by the file's name if there is none. Pictures are not part of a plain text file; upload them on the Images step, using the same names as in your `[image: ...]` lines.
+To start a **new show** from a file, use **Import a show** on the Shows step and choose the file. It becomes a new show, named by the `title:` line in its `[settings]` block, or by the file's name if there is none. Pictures are not part of a plain text file; upload them on the Images step, using the same names as in your `[image: ...]` lines.
 
 ## Checking your work
 

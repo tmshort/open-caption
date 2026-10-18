@@ -149,7 +149,7 @@ Apri la pagina di configurazione e segui i sei passi in alto. Il pulsante **Aiut
 5. **Prova.** Fai una prova privata: premi Spazio come farebbe l'operatore, e vedi accanto lo schermo del pubblico. Nulla raggiunge il pubblico.
 6. **Conduci.** Controlla l'elenco di preparazione, stampa il cartello QR e premi **Apri la pagina Conduci**.
 
-Aprire la pagina dell'operatore carica lo spettacolo **in attesa**: il pubblico vede la schermata di attesa della sala (un logo e un messaggio, impostati una sola volta in **Impostazioni → Schermata di attesa**) e nulla dello spettacolo, così puoi preparare, provare e controllare la pagina dell'operatore con calma. Quando sei pronto, premi **Spazio** (il pulsante dice **AVVIA**) nella pagina dell'operatore per mettere lo spettacolo in onda. **Metti in attesa…** lo ritira di nuovo senza perdere il punto.
+Aprire la pagina dell'operatore carica lo spettacolo **in attesa**: il pubblico vede la schermata di attesa della sala (un logo e un messaggio, impostati una sola volta in **Impostazioni → Schermo del pubblico**) e nulla dello spettacolo, così puoi preparare, provare e controllare la pagina dell'operatore con calma. Quando sei pronto, premi **Spazio** (il pulsante dice **AVVIA**) nella pagina dell'operatore per mettere lo spettacolo in onda. **Metti in attesa…** lo ritira di nuovo senza perdere il punto.
 
 ### Scrivere il file dello spettacolo
 
@@ -241,13 +241,13 @@ Puoi modificare e risalvare un file dello spettacolo mentre uno spettacolo è in
 
 ### Quando lo spettacolo finisce
 
-Premi `Ctrl+C` nella finestra del programma (o ferma il servizio). La posizione viene salvata. Per rifare lo spettacolo dall'inizio, usa **Riavvia lo spettacolo…** nella pagina dell'operatore, oppure **Riavvia lo spettacolo** in Configurazione → Conduci. Entrambi lo riportano in attesa.
+Premi `Ctrl+C` nella finestra del programma (o ferma il servizio). La posizione viene salvata. Per rifare lo spettacolo dall'inizio, usa **Riavvia lo spettacolo…** nella pagina dell'operatore, oppure **Riavvia lo spettacolo…** in Configurazione → Conduci. Entrambi lo riportano in attesa.
 
 ## Lista di controllo del giorno dello spettacolo
 
 **Alcuni giorni prima**
 - [ ] Prova con il vero file dello spettacolo e alcuni telefoni veri sulla rete vera nella sala vera.
-- [ ] Esporta lo spettacolo (Configurazione → Spettacoli → **Esporta**) e conserva lo `.zip` in un posto sicuro, come una chiavetta USB.
+- [ ] Esporta lo spettacolo (Configurazione → Spettacoli → **Altro ▾** → **Esporta**) e conserva lo `.zip` in un posto sicuro, come una chiavetta USB.
 - [ ] Conferma che l'indirizzo del computer dei sottotitoli sia riservato e che il cartello QR lo mostri.
 
 **Al locale, un'ora prima**
@@ -283,7 +283,7 @@ Premi `Ctrl+C` nella finestra del programma (o ferma il servizio). La posizione 
 
 ## Manutenzione
 
-- **Copie di sicurezza:** *Esporta* in Configurazione → Spettacoli salva uno spettacolo (file dello spettacolo, immagini, aspetto) come `.zip`. *Importa* lo ripristina, su questo o su un altro computer. Puoi anche copiare l'intera cartella dati.
+- **Copie di sicurezza:** *Esporta* (menu **Altro ▾**) in Configurazione → Spettacoli salva uno spettacolo (file dello spettacolo, immagini, aspetto) come `.zip`. *Importa* lo ripristina, su questo o su un altro computer. Puoi anche copiare l'intera cartella dati.
 - **Passare a un altro computer:** installa il programma, importa gli spettacoli esportati, imposta l'indirizzo del nuovo computer e, se vuoi mantenere le vecchie password, copia `config.yaml`.
 - **Aggiornare il programma:** fermalo (`Ctrl+C`), sostituisci il file del programma con quello più recente e riavvialo con la stessa cartella `--data`. Non aggiornare subito prima di uno spettacolo.
 - **Riutilizzare uno spettacolo:** Configurazione → Spettacoli ha **Rinomina…** e **Duplica**. Duplicare crea una copia del file dello spettacolo, delle immagini e dell'aspetto da adattare alla prossima replica, e lascia intatto l'originale. Rinomina, Duplica, Esporta, Archivia ed Elimina sono nel menu **Altro ▾** di ogni spettacolo.
