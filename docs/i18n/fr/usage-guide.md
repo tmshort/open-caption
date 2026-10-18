@@ -91,7 +91,7 @@ Le programme se moque du réseau sur lequel il est, tant que les appareils du pu
 
 Pour la plupart des théâtres, la façon la plus simple est la meilleure : lancez le programme à la main avant chaque spectacle, laissez sa fenêtre ouverte et appuyez sur `Ctrl+C` (ou fermez-la) ensuite. La position du spectacle est enregistrée en continu, redémarrer au milieu d'un spectacle est donc sans risque (voir [Dépannage](#depannage)).
 
-Si l'ordinateur doit démarrer le serveur tout seul après un redémarrage, le dossier [`deploy/`](../deploy/) contient des fichiers prêts à l'emploi pour Linux (systemd), macOS (launchd) et Windows (Planificateur de tâches). Chacun commence par ses propres étapes d'installation.
+Si l'ordinateur doit démarrer le serveur tout seul après un redémarrage, le dossier [`deploy/`](../../../deploy/) contient des fichiers prêts à l'emploi pour Linux (systemd), macOS (launchd) et Windows (Planificateur de tâches). Chacun commence par ses propres étapes d'installation.
 
 ### Amener les gens à la page
 
@@ -153,7 +153,7 @@ Ouvrir la page de l'opérateur charge le spectacle **en attente** : le public vo
 
 ### Écrire le fichier du spectacle
 
-La personne qui prépare le fichier du spectacle n'a pas besoin de lire le reste de ce guide : [Préparer un fichier de spectacle](../web/help/admin-preparing-a-show-file.md) couvre le travail du texte au fichier terminé, y compris la modification dans votre propre programme, et [Premiers pas](../web/help/admin-getting-started.md) parcourt les six étapes de la Configuration.
+La personne qui prépare le fichier du spectacle n'a pas besoin de lire le reste de ce guide : [Préparer un fichier de spectacle](../../../web/help/admin-preparing-a-show-file.md) couvre le travail du texte au fichier terminé, y compris la modification dans votre propre programme, et [Premiers pas](../../../web/help/admin-getting-started.md) parcourt les six étapes de la Configuration.
 
 Un fichier du spectacle est du texte simple. La version courte :
 

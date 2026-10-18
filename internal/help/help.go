@@ -371,8 +371,17 @@ var Aliases = map[string]string{
 
 // pathLinks are help topics as GitHub shows them (web/help/<id>.md), so a guide can link to them from either place.
 var pathLinks = map[string]string{
-	"../web/help/admin-preparing-a-show-file.md": "admin-preparing-a-show-file",
-	"../web/help/admin-getting-started.md":       "admin-getting-started",
+	"web/help/admin-preparing-a-show-file.md": "admin-preparing-a-show-file",
+	"web/help/admin-getting-started.md":       "admin-getting-started",
+}
+
+// relativeTarget drops the leading "../" of a relative link, so a guide links the same way from docs/ and from
+// docs/i18n/<code>/ (where the right number of "../" differs but the target is the same file).
+func relativeTarget(base string) string {
+	for strings.HasPrefix(base, "../") {
+		base = base[3:]
+	}
+	return base
 }
 
 // link resolves an href to a safe anchor, or returns just the text when the target is not available.
@@ -387,13 +396,14 @@ func link(text, href string) string {
 	if frag != "" && !strings.ContainsAny(frag, `"'<>& `) {
 		fragAttr = ` data-anchor="` + frag + `"`
 	}
+	rel := relativeTarget(base)
 	switch {
 	case strings.HasPrefix(base, "topic:") && topicHref.MatchString(base[6:]):
 		return `<a href="#` + base[6:] + `" data-topic="` + base[6:] + `"` + fragAttr + `>` + label + "</a>"
-	case pathLinks[base] != "":
-		return `<a href="#` + pathLinks[base] + `" data-topic="` + pathLinks[base] + `"` + fragAttr + `>` + label + "</a>"
-	case Aliases[base] != "":
-		return `<a href="#` + Aliases[base] + `" data-topic="` + Aliases[base] + `"` + fragAttr + `>` + label + "</a>"
+	case pathLinks[rel] != "":
+		return `<a href="#` + pathLinks[rel] + `" data-topic="` + pathLinks[rel] + `"` + fragAttr + `>` + label + "</a>"
+	case Aliases[rel] != "":
+		return `<a href="#` + Aliases[rel] + `" data-topic="` + Aliases[rel] + `"` + fragAttr + `>` + label + "</a>"
 	case base == "" && fragAttr != "":
 		return `<a href="#` + frag + `"` + fragAttr + `>` + label + "</a>"
 	case strings.HasPrefix(base, "/") && !strings.HasPrefix(base, "//") && !strings.ContainsAny(href, `"'<>`):

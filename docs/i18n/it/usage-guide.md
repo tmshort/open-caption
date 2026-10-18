@@ -91,7 +91,7 @@ Al programma non importa su quale rete sia, purché i dispositivi del pubblico p
 
 Per la maggior parte dei teatri, il modo più semplice è il migliore: avvia il programma a mano prima di ogni spettacolo, lascia aperta la sua finestra e premi `Ctrl+C` (o chiudila) dopo. La posizione dello spettacolo viene salvata di continuo, quindi riavviare a metà spettacolo è sicuro (vedi [Risoluzione dei problemi](#risoluzione-dei-problemi)).
 
-Se il computer deve avviare il server da solo dopo un riavvio, la cartella [`deploy/`](../deploy/) contiene file pronti per Linux (systemd), macOS (launchd) e Windows (Utilità di pianificazione). Ognuno comincia con i propri passi di installazione.
+Se il computer deve avviare il server da solo dopo un riavvio, la cartella [`deploy/`](../../../deploy/) contiene file pronti per Linux (systemd), macOS (launchd) e Windows (Utilità di pianificazione). Ognuno comincia con i propri passi di installazione.
 
 ### Portare la gente alla pagina
 
@@ -153,7 +153,7 @@ Aprire la pagina dell'operatore carica lo spettacolo **in attesa**: il pubblico 
 
 ### Scrivere il file dello spettacolo
 
-Chi prepara il file dello spettacolo non ha bisogno di leggere il resto di questa guida: [Preparare un file dello spettacolo](../web/help/admin-preparing-a-show-file.md) copre il lavoro dal copione al file finito, compresa la modifica nel tuo programma, e [Primi passi](../web/help/admin-getting-started.md) percorre i sei passaggi della Configurazione.
+Chi prepara il file dello spettacolo non ha bisogno di leggere il resto di questa guida: [Preparare un file dello spettacolo](../../../web/help/admin-preparing-a-show-file.md) copre il lavoro dal copione al file finito, compresa la modifica nel tuo programma, e [Primi passi](../../../web/help/admin-getting-started.md) percorre i sei passaggi della Configurazione.
 
 Un file dello spettacolo è testo semplice. La versione breve:
 

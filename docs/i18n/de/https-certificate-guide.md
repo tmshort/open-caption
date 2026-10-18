@@ -1,6 +1,6 @@
 # Ein vertrauenswürdiges HTTPS-Zertifikat einrichten (optional)
 
-Diese Anleitung richtet sich an die Person, die den Untertitel-Computer betreut. Sie ist **optional**: Die Untertitel funktionieren auch ohne sie. (Die Einstellungen, die sie nutzt, stehen in der [Konfigurationsreferenz](configuration-reference.md), Entwurf und Tests in [Dokument 10](10-acme-lets-encrypt.md); beide gibt es nur auf Englisch.)
+Diese Anleitung richtet sich an die Person, die den Untertitel-Computer betreut. Sie ist **optional**: Die Untertitel funktionieren auch ohne sie. (Die Einstellungen, die sie nutzt, stehen in der [Konfigurationsreferenz](../../configuration-reference.md), Entwurf und Tests in [Dokument 10](../../10-acme-lets-encrypt.md); beide gibt es nur auf Englisch.)
 
 ## Brauchen Sie das?
 
@@ -40,7 +40,7 @@ EASYDNS_KEY=paste-the-key-here
 
 Machen Sie sie unter macOS und Linux privat: `chmod 600 /etc/open-caption/dns.env`. Das Programm warnt, wenn andere Benutzer sie lesen können.
 
-**4. Bearbeiten Sie `config.yaml`** (die ersten Zeilen, die das Programm ausgibt, nennen den Ort; jede Einstellung ist in der [Referenz](configuration-reference.md) erklärt):
+**4. Bearbeiten Sie `config.yaml`** (die ersten Zeilen, die das Programm ausgibt, nennen den Ort; jede Einstellung ist in der [Referenz](../../configuration-reference.md) erklärt):
 
 ```yaml
 https:
@@ -100,4 +100,4 @@ Die Zugangsdaten werden nie ins Protokoll, ins Support-Paket oder in die Einrich
 
 ## Ein anderer DNS-Anbieter
 
-Das Programm enthält nur die DNS-Anbieter, mit denen es gebaut wurde. Wer es baut, kann mit `make build ACME_PROVIDERS="…"` andere oder alle wählen (die Namen stammen aus der [lego-Liste](https://go-acme.github.io/lego/dns/)); Größen und Schritte stehen in [Dokument 10](10-acme-lets-encrypt.md). Wird Ihr Anbieter gar nicht unterstützt, können `exec` (führt ein Skript von Ihnen aus) und `httpreq` (ruft eine Webadresse auf) fast jeden DNS-Dienst ansteuern.
+Das Programm enthält nur die DNS-Anbieter, mit denen es gebaut wurde. Wer es baut, kann mit `make build ACME_PROVIDERS="…"` andere oder alle wählen (die Namen stammen aus der [lego-Liste](https://go-acme.github.io/lego/dns/)); Größen und Schritte stehen in [Dokument 10](../../10-acme-lets-encrypt.md). Wird Ihr Anbieter gar nicht unterstützt, können `exec` (führt ein Skript von Ihnen aus) und `httpreq` (ruft eine Webadresse auf) fast jeden DNS-Dienst ansteuern.

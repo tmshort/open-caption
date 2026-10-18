@@ -91,7 +91,7 @@ Dem Programm ist egal, in welchem Netzwerk es ist, solange Publikumsgeräte es e
 
 Für die meisten Theater ist der einfachste Weg der beste: Starten Sie das Programm vor jeder Show von Hand, lassen Sie sein Fenster offen und drücken Sie danach `Strg+C` (oder schließen Sie es). Die Position der Show wird laufend gespeichert, ein Neustart mitten in einer Show ist daher sicher (siehe [Fehlerbehebung](#fehlerbehebung)).
 
-Wenn der Computer den Server nach einem Neustart von selbst starten soll, enthält der Ordner [`deploy/`](../deploy/) fertige Dateien für Linux (systemd), macOS (launchd) und Windows (Aufgabenplanung). Jede beginnt mit ihren eigenen Installationsschritten.
+Wenn der Computer den Server nach einem Neustart von selbst starten soll, enthält der Ordner [`deploy/`](../../../deploy/) fertige Dateien für Linux (systemd), macOS (launchd) und Windows (Aufgabenplanung). Jede beginnt mit ihren eigenen Installationsschritten.
 
 ### Die Leute zur Seite bringen
 
@@ -153,7 +153,7 @@ Das Öffnen der Bedienerseite lädt die Show im **Standby**: Das Publikum sieht 
 
 ### Die Show-Datei schreiben
 
-Wer die Show-Datei vorbereitet, muss den Rest dieser Anleitung nicht lesen: [Eine Show-Datei vorbereiten](../web/help/admin-preparing-a-show-file.md) behandelt die Arbeit vom Stück bis zur fertigen Datei, auch das Bearbeiten im eigenen Programm, und [Erste Schritte](../web/help/admin-getting-started.md) führt durch die sechs Schritte der Einrichtung.
+Wer die Show-Datei vorbereitet, muss den Rest dieser Anleitung nicht lesen: [Eine Show-Datei vorbereiten](../../../web/help/admin-preparing-a-show-file.md) behandelt die Arbeit vom Stück bis zur fertigen Datei, auch das Bearbeiten im eigenen Programm, und [Erste Schritte](../../../web/help/admin-getting-started.md) führt durch die sechs Schritte der Einrichtung.
 
 Eine Show-Datei ist einfacher Text. Die Kurzfassung:
 

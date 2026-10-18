@@ -91,7 +91,7 @@ O programa não se importa com a rede em que está, desde que os dispositivos do
 
 Para a maioria dos teatros, o jeito mais simples é o melhor: inicie o programa à mão antes de cada espetáculo, deixe a janela dele aberta e aperte `Ctrl+C` (ou feche-a) depois. A posição do espetáculo é salva continuamente, então reiniciar no meio de um espetáculo é seguro (veja [Solução de problemas](#solucao-de-problemas)).
 
-Se o computador deve iniciar o servidor sozinho depois de uma reinicialização, a pasta [`deploy/`](../deploy/) traz arquivos prontos para Linux (systemd), macOS (launchd) e Windows (Agendador de Tarefas). Cada um começa com seus próprios passos de instalação.
+Se o computador deve iniciar o servidor sozinho depois de uma reinicialização, a pasta [`deploy/`](../../../deploy/) traz arquivos prontos para Linux (systemd), macOS (launchd) e Windows (Agendador de Tarefas). Cada um começa com seus próprios passos de instalação.
 
 ### Levar as pessoas à página
 
@@ -153,7 +153,7 @@ Abrir a página do operador carrega o espetáculo **em espera**: o público vê 
 
 ### Escrever o arquivo do espetáculo
 
-Quem prepara o arquivo do espetáculo não precisa ler o resto deste guia: [Preparar um arquivo do espetáculo](../web/help/admin-preparing-a-show-file.md) cobre o trabalho do texto ao arquivo pronto, incluindo editá-lo no seu próprio programa, e [Primeiros passos](../web/help/admin-getting-started.md) percorre as seis etapas da Configuração.
+Quem prepara o arquivo do espetáculo não precisa ler o resto deste guia: [Preparar um arquivo do espetáculo](../../../web/help/admin-preparing-a-show-file.md) cobre o trabalho do texto ao arquivo pronto, incluindo editá-lo no seu próprio programa, e [Primeiros passos](../../../web/help/admin-getting-started.md) percorre as seis etapas da Configuração.
 
 Um arquivo do espetáculo é texto simples. A versão curta:
 

@@ -2,6 +2,8 @@ package help
 
 import (
 	"io/fs"
+	"os"
+	"path/filepath"
 	"regexp"
 	"sort"
 	"strings"
@@ -335,7 +337,7 @@ func shapeOf(md string) docShape {
 			if strings.HasPrefix(m[1], "#") {
 				s.anchors = append(s.anchors, m[1][1:])
 			} else {
-				s.targets = append(s.targets, m[1])
+				s.targets = append(s.targets, relativeTarget(m[1])) // docs/ and docs/i18n/<code>/ differ in the number of ../
 			}
 		}
 	}
@@ -450,5 +452,48 @@ func TestSlugIgnoresAccents(t *testing.T) {
 		if got := Slug(in); got != want {
 			t.Errorf("%q: %q", in, got)
 		}
+	}
+}
+
+// A translated guide lives one folder deeper (docs/i18n/<code>/), and people also read it on GitHub: every relative
+// link in it must reach an existing file from where it is (a sibling translated guide, or a file up in docs/ or the repository).
+func TestLinksInTranslatedGuidesWorkWhereTheyAre(t *testing.T) {
+	files, _ := filepath.Glob("../../docs/i18n/*/*.md")
+	if len(files) < 10 {
+		t.Fatalf("found only %d translated guides", len(files))
+	}
+	for _, f := range files {
+		b, err := os.ReadFile(f)
+		if err != nil {
+			t.Fatal(err)
+		}
+		text := regexp.MustCompile("(?s)```.*?```").ReplaceAllString(string(b), "")
+		text = inlineCodeRe.ReplaceAllString(text, "")
+		for _, m := range linkTargetRe.FindAllStringSubmatch(text, -1) {
+			target := m[1]
+			if strings.HasPrefix(target, "#") || strings.Contains(target, "://") || strings.HasPrefix(target, "mailto:") || strings.HasPrefix(target, "topic:") {
+				continue
+			}
+			target, _, _ = strings.Cut(target, "#")
+			if _, err := os.Stat(filepath.Join(filepath.Dir(f), target)); err != nil {
+				t.Errorf("%s: the link %q does not reach a file from here (links in translations are relative to docs/i18n/<code>/)", f, m[1])
+			}
+		}
+	}
+}
+
+func TestGuideLinksResolveWhateverTheNumberOfDotDotIs(t *testing.T) {
+	for _, href := range []string{"../web/help/admin-getting-started.md", "../../../web/help/admin-getting-started.md"} {
+		if out := link("Getting started", href); !strings.Contains(out, `data-topic="admin-getting-started"`) {
+			t.Errorf("%s: %s", href, out)
+		}
+	}
+	for _, href := range []string{"venue-network-guide.md", "../venue-network-guide.md"} {
+		if out := link("venue", href); !strings.Contains(out, `data-topic="admin-venue-network-guide"`) {
+			t.Errorf("%s: %s", href, out)
+		}
+	}
+	if out := link("x", "../../../etc/passwd"); strings.Contains(out, "<a ") {
+		t.Errorf("an unknown path must not become a link: %s", out)
 	}
 }
