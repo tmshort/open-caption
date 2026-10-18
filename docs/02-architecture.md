@@ -154,31 +154,31 @@ language. Responses carry `Vary: Accept-Language`.
 cmd/open-caption/        main: flags, wiring, signal handling, listeners (HTTP and optional HTTPS)
 cmd/loadtest/            audience load generator (needs --dev on the server)
 internal/
+  acme/                  automatic HTTPS certificates (ACME DNS-01): the certificate manager, the lego-based issuer, the DNS providers chosen at build time (doc 10)
   check/                 the show file analysis shared by Setup's editor and `--check-show` (image use, the command-line report)
   config/                config.yaml load/generate/validate (strict: unknown keys and all bad values reported together), access allow-lists, data-dir resolution
-  web/shared/i18n*       browser-side translation of Setup, operator and Help (English text is the key)
-  web/help/<code>/       translated help topics (es fr de it pt); docs/i18n/<code>/ the translated guides
-  mdns/                  multicast-DNS responder: announces <name>.local (A records, probing for conflicts, goodbyes)
-  logx/                  levelled logging (DEBUG/INFO/WARN/ERROR) over the standard logger
-  show file/                parser, validator, Markdown-subset renderer, cue model, language structure check (pure, heavily tested)
-  show/                  show store: shows, show files per language, validated image assets, duplicate
-  live/                  engine: state, cursor, undo history, loop timer, apply/jump/back, export/restore
-  hub/                   SSE fanout, client registry, non-blocking broadcast
-  httpapi/               routes, auth + sessions, access/origin guards, runtime (engines + hubs per language), admin/operator/audience handlers
   help/                  help topic loader, safe Markdown renderer, search
-  netinfo/               host addresses, self-signed certificate
+  httpapi/               routes, auth + sessions, access/origin guards, runtime (engines + hubs per language), admin/operator/audience handlers
+  hub/                   SSE fanout, client registry, non-blocking broadcast
+  live/                  engine: state, cursor, undo history, loop timer, apply/jump/back, export/restore
   logbuf/                in-memory recent log lines (support bundle)
+  logx/                  levelled logging (DEBUG/INFO/WARN/ERROR) over the standard logger
+  mdns/                  multicast-DNS responder: announces <name>.local (A records, probing for conflicts, goodbyes)
+  netinfo/               host addresses, self-signed certificate, the watched certificate files (reload without a restart)
+  show/                  show store: shows, show files per language, validated image assets, duplicate
+  showfile/              the show file: parser, validator, Markdown-subset renderer, cue model, language structure check (pure, heavily tested)
 web/                     embedded browser assets (go:embed)
   admin/ operator/ audience/ helpui/   the four pages
-  shared/                speaker colors and the bundled fonts (OpenDyslexic, Atkinson Hyperlegible)
-  help/                  help topics (Markdown); docs/ guides are added to them at build time
+  shared/                the interface shared by Setup and the operator page (ui.css, header.css), speaker colors, the bundled fonts (OpenDyslexic, Atkinson Hyperlegible), and i18n/<code>.js: browser-side translation (the English text is the key)
+  help/                  help topics (Markdown); help/<code>/ the translations (es fr de it pt)
   sample/                the sample show (show file, Spanish translation, placeholder images)
-docs/                    these specs, the usage guide and venue network guide (docs/embed.go ships the guides in the program)
+docs/                    the specifications (01 to 10), the guides and the man page; docs/embed.go ships the three guides in the program, docs/i18n/<code>/ holds their translations
 deploy/                  systemd / launchd / Windows service files
-test/e2e/                browser end-to-end test (Node + Chrome)
+tools/                   make-icons.js (the icons), acme-go.sh (the DNS provider choice for builds)
+test/e2e/                browser end-to-end test, accessibility and translation checks (Node + Chrome)
 ```
 
-`show file`, `live`, `hub`, `show` and `help` must not import `httpapi`; they are testable without a network.
+`showfile`, `live`, `hub`, `show`, `help`, `check`, `config`, `acme` and `netinfo` must not import `httpapi`; they are testable without a network.
 
 ## Authentication
 
