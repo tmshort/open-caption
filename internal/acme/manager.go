@@ -84,6 +84,11 @@ func New(o Options) *Manager {
 		o.Now = time.Now
 	}
 	m := &Manager{o: o, kick: make(chan struct{}, 1)}
+	if _, err := os.Stat(m.certPath() + ".new"); err == nil { // an interrupted install: the key was replaced, the certificate not yet
+		if _, _, err := loadPair(m.certPath()+".new", m.keyPath()); err == nil {
+			os.Rename(m.certPath()+".new", m.certPath())
+		}
+	}
 	if cert, leaf, err := loadPair(m.certPath(), m.keyPath()); err == nil && leaf.VerifyHostname(o.Domain) == nil && o.Now().Before(leaf.NotAfter) {
 		m.cert, m.leaf = cert, leaf
 		m.infof("HTTPS: using the saved certificate for %s, valid until %s", o.Domain, leaf.NotAfter.Format("2006-01-02"))
@@ -229,10 +234,18 @@ func (m *Manager) install(b Bundle) error {
 		return fmt.Errorf("the certificate is not for %s: %w", m.o.Domain, err)
 	}
 	cert.Leaf = leaf
-	if err := writeAtomic(m.keyPath(), b.Key, 0o600); err != nil {
+	// Both files are written completely under temporary names first, then moved into place (key, then
+	// certificate). A crash in between leaves the finished certificate beside the new key; New moves it in.
+	if err := os.WriteFile(m.keyPath()+".new", b.Key, 0o600); err != nil {
 		return err
 	}
-	if err := writeAtomic(m.certPath(), b.Cert, 0o644); err != nil {
+	if err := os.WriteFile(m.certPath()+".new", b.Cert, 0o644); err != nil {
+		return err
+	}
+	if err := os.Rename(m.keyPath()+".new", m.keyPath()); err != nil {
+		return err
+	}
+	if err := os.Rename(m.certPath()+".new", m.certPath()); err != nil {
 		return err
 	}
 	m.mu.Lock()

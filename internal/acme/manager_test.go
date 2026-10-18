@@ -177,3 +177,22 @@ func TestRenewNowWorksOnceAtATime(t *testing.T) {
 		t.Fatal("never became ok")
 	}
 }
+
+// A crash after the new key replaced the old one but before the new certificate did must not lose the
+// certificate (fetching again spends Let's Encrypt's rate limit).
+func TestAnInterruptedInstallIsFinishedAtTheNextStart(t *testing.T) {
+	now := time.Now()
+	dir := t.TempDir()
+	old := certFor(t, "captions.example.org", now.Add(-48*time.Hour), now.Add(10*24*time.Hour))
+	fresh := certFor(t, "captions.example.org", now.Add(-time.Hour), now.Add(90*24*time.Hour))
+	os.WriteFile(filepath.Join(dir, "cert.pem"), old.Cert, 0o644)
+	os.WriteFile(filepath.Join(dir, "key.pem"), fresh.Key, 0o600)
+	os.WriteFile(filepath.Join(dir, "cert.pem.new"), fresh.Cert, 0o644)
+	m := New(Options{Domain: "captions.example.org", Dir: dir, Now: func() time.Time { return now }})
+	if m.cert == nil || m.leaf.NotAfter.Before(now.Add(60*24*time.Hour)) {
+		t.Fatalf("the finished install was not picked up: %+v", m.leaf)
+	}
+	if _, err := os.Stat(filepath.Join(dir, "cert.pem.new")); err == nil {
+		t.Error("the temporary file was left behind")
+	}
+}
