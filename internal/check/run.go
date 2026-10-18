@@ -83,6 +83,7 @@ func Run(w io.Writer, o Options) int {
 		opts := showfile.Options{Translation: translation}
 		if checkImages {
 			opts.Assets = names
+			opts.ImageFolder = dir
 			if names == nil {
 				opts.Assets = []string{}
 			}

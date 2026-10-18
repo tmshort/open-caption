@@ -38,7 +38,7 @@ A flag, or its environment variable, overrides the file for that run. (The file 
 ```
 $ open-caption --check-show show.md show.es.md
 show.md: info: 4 captions, 1 images, 0 fullscreen, 1 loops, 1 sections, 0 notes.
-show.md:8: warning: Image "curtain.jpg" not found. Upload it in the Images step.
+show.md:8: warning: Image "curtain.jpg" not found in assets.
 show.md:13: error: [song] was opened but never closed with [/song]. The lyrics so far were kept.
 show.md: 8 cues; 2 speakers: ALICE, BOB
 show.es.md: 8 cues; language es
@@ -50,7 +50,7 @@ missing images: curtain.jpg (line 8 of show.md)
 
 - Each problem is `file:line: severity: message` (severity `error`, `warning` or `note`), the form editors and CI systems understand. A line about the whole file has no line number.
 - Files after the first are **translations**: each is parsed as a translation and compared with the main file (the same number and kinds of cues, in the same order), as Setup does. The language is the file's `[language]` line or its name (`show.es.md`); two files for one language are an error.
-- Images are checked against the `assets` folder beside the main file, or `--assets FOLDER`. Without a folder they are not checked, and the report says so. (The message about uploading is Setup's wording.)
+- Images are checked against the `assets` folder beside the main file, or `--assets FOLDER`. Without a folder they are not checked, and the report says so. A missing image names the folder it was looked for in (Setup's editor says instead to upload it in the Images step).
 - `-` as the file name reads standard input.
 - **Exit status:** `0` no errors, `1` errors (or warnings with `--strict`), `2` a file could not be read. Put other options (`--assets`, `--strict`) **before** `--check-show`: the files that follow it are translations.
 

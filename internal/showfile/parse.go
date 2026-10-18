@@ -551,7 +551,11 @@ func (p *parser) imageItem(lineNo int, file, caption string, secs float64) (Item
 		if s := suggest(file, p.opts.Assets); s != "" {
 			p.diag(lineNo, SevWarning, "Image %q not found. Did you mean %q?", file, s)
 		} else {
-			p.diag(lineNo, SevWarning, "Image %q not found. Upload it in the Images step.", file)
+			if p.opts.ImageFolder != "" { // not Setup: the command line checks a folder
+				p.diag(lineNo, SevWarning, "Image %q not found in %s.", file, p.opts.ImageFolder)
+			} else {
+				p.diag(lineNo, SevWarning, "Image %q not found. Upload it in the Images step.", file)
+			}
 		}
 	}
 	return Item{Kind: "image", Image: file, Caption: strings.TrimSpace(caption), Seconds: secs}, true

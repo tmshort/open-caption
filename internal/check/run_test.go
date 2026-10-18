@@ -72,7 +72,7 @@ func TestMissingImagesAreFoundInTheAssetsFolderBesideTheFile(t *testing.T) {
 	p := write(t, dir, "show.md", clean+"[image: curtain.jpg]\n[image: logo.png]\n")
 	write(t, dir, "assets/logo.png", "x")
 	code, out := run(t, Options{Files: []string{p}})
-	if !strings.Contains(out, "curtain.jpg") || strings.Contains(out, `"logo.png"`) || !strings.Contains(out, "missing images: curtain.jpg (line 8 of "+p+")") || !strings.Contains(out, "1 found") {
+	if !strings.Contains(out, `Image "curtain.jpg" not found in `+filepath.Join(dir, "assets")+".") || strings.Contains(out, "Upload it in the Images step") || strings.Contains(out, `"logo.png"`) || !strings.Contains(out, "missing images: curtain.jpg (line 8 of "+p+")") || !strings.Contains(out, "1 found") {
 		t.Errorf("exit %d\n%s", code, out)
 	}
 	// an explicit folder wins over the one beside the file

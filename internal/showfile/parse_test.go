@@ -450,3 +450,27 @@ func TestSpeakersInOrderOfFirstAppearance(t *testing.T) {
 		t.Errorf("want an empty, non-null list: %#v", r.Speakers)
 	}
 }
+
+func TestAMissingImageSaysWhereItWasLookedForOnlyWhenTheCallerNamesAFolder(t *testing.T) {
+	src := "[image: curtain.jpg]\n"
+	msg := func(o Options) string {
+		for _, d := range Parse(src, o).Diagnostics {
+			if strings.Contains(d.Message, "curtain.jpg") {
+				return d.Message
+			}
+		}
+		return ""
+	}
+	// Setup (no folder named): the advice is for the Images step
+	if got := msg(Options{Assets: []string{"logo.png"}}); got != `Image "curtain.jpg" not found. Upload it in the Images step.` {
+		t.Errorf("%q", got)
+	}
+	// the command line: the folder that was searched
+	if got := msg(Options{Assets: []string{"logo.png"}, ImageFolder: "/shows/x/assets"}); got != `Image "curtain.jpg" not found in /shows/x/assets.` {
+		t.Errorf("%q", got)
+	}
+	// a near miss still gets the suggestion, in both
+	if got := msg(Options{Assets: []string{"curtain.png"}, ImageFolder: "/f"}); !strings.Contains(got, `Did you mean "curtain.png"?`) {
+		t.Errorf("%q", got)
+	}
+}

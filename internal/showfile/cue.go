@@ -94,6 +94,9 @@ type Options struct {
 	// Assets lists the uploaded image filenames. When non-nil, image references
 	// are checked against it. When nil, references are not checked.
 	Assets []string
+	// ImageFolder names the folder the images are checked against, for the command line (open-caption --check-show).
+	// Setup leaves it empty, and a missing image then says to upload it in the Images step.
+	ImageFolder string
 	// Translation is set for a translation's show file: only the pre-show message may be set there; the
 	// look and the rest are set once, in the main show file.
 	Translation bool

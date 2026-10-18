@@ -8,5 +8,6 @@
  ".local",
  "{0}: {1}",
  "not a number of minutes or a time of day",
- "the timer length is out of range"
+ "the timer length is out of range",
+ "Image {0} not found in {1}."
 ]
