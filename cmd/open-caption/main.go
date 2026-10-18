@@ -22,6 +22,7 @@ import (
 	"time"
 
 	"github.com/tmshort/open-caption/internal/acme"
+	"github.com/tmshort/open-caption/internal/check"
 	"github.com/tmshort/open-caption/internal/config"
 	"github.com/tmshort/open-caption/internal/httpapi"
 	"github.com/tmshort/open-caption/internal/logbuf"
@@ -44,10 +45,16 @@ func main() {
 		showVer   = flag.Bool("version", false, "print version and exit")
 		dev       = flag.Bool("dev", false, "DEVELOPMENT ONLY: enable unauthenticated /dev/* control endpoints")
 		devShow   = flag.String("show-file", "", "with --dev: load this show file as the active show")
-		devAsset  = flag.String("assets", "", "with --dev: directory of images for --show-file")
+		devAsset  = flag.String("assets", "", "folder of images: for --check-show (default: the assets folder beside the show file), or with --dev for --show-file")
+		checkShow = flag.String("check-show", "", "check a show file and print a report, like a lint (more files after it are translations of it); starts no server")
+		strict    = flag.Bool("strict", false, "with --check-show: exit with status 1 on warnings too, not only on errors")
 	)
 	flag.Usage = usage
 	flag.Parse()
+	if *checkShow != "" {
+		// The same analysis as Setup's editor (internal/check, internal/showfile); no config, no server.
+		os.Exit(check.Run(os.Stdout, check.Options{Files: append([]string{*checkShow}, flag.Args()...), AssetsDir: *devAsset, Strict: *strict}))
+	}
 	if *showVer {
 		fmt.Println("open-caption", version)
 		fmt.Println("automatic certificates (ACME DNS-01), providers built in:", acmeProviders())
@@ -264,6 +271,8 @@ func usage() {
 	fmt.Fprintf(out, `open-caption %s: open-captioning server for community theater
 
 Usage: open-caption [options]
+
+To check a show file without starting anything (a lint): open-caption --check-show show.md [translation.es.md ...]
 
 Run with no options to start with the defaults: the first run writes config.yaml with random passwords and prints
 them, then prints the addresses to open (Setup at /admin, the operator page at /operator, the audience page at /).

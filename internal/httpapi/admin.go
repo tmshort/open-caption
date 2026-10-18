@@ -30,6 +30,7 @@ import (
 
 	qrcode "github.com/skip2/go-qrcode"
 
+	"github.com/tmshort/open-caption/internal/check"
 	"github.com/tmshort/open-caption/internal/config"
 	"github.com/tmshort/open-caption/internal/live"
 	"github.com/tmshort/open-caption/internal/netinfo"
@@ -64,11 +65,8 @@ func themeToRuntime(t show.Theme) Theme {
 
 // ---- analysis of a show file (what the editor shows) ----
 
-// Missing names an image the show file uses but that was not uploaded.
-type Missing struct {
-	Name  string `json:"name"`
-	Lines []int  `json:"lines"`
-}
+// Missing names an image the show file uses but that was not uploaded (shared with the command line: internal/check).
+type Missing = check.Missing
 
 // Analysis is the result of parsing a show file against a show's images.
 type Analysis struct {
@@ -89,27 +87,8 @@ func analyze(text string, assets []show.Asset, translation bool) (Analysis, []sh
 		have[a.Name] = true
 	}
 	res := showfile.Parse(text, showfile.Options{Assets: names, Translation: translation})
-	used := map[string][]int{}
-	note := func(it showfile.Item, line int) {
-		if it.Kind == "image" {
-			used[it.Image] = append(used[it.Image], line)
-		}
-	}
-	for _, c := range res.Cues {
-		if c.Item != nil {
-			note(*c.Item, c.Line)
-		}
-		for _, it := range c.Items {
-			note(it, c.Line)
-		}
-	}
-	missing := []Missing{} // never null in JSON
-	for name, lines := range used {
-		if !have[name] {
-			missing = append(missing, Missing{Name: name, Lines: lines})
-		}
-	}
-	sort.Slice(missing, func(i, j int) bool { return missing[i].Name < missing[j].Name })
+	used := check.ImageUse(res.Cues)
+	missing := check.MissingImages(used, have)
 	return Analysis{Speakers: res.Speakers, Language: res.Language, Cues: cueViews(res.Cues), Diagnostics: res.Diagnostics, Used: used,
 		Missing: missing, Assets: assets}, res.Cues
 }
@@ -517,7 +496,7 @@ func (s *Server) showFileResponse(id, lang, text string) (Analysis, []showfile.C
 	translation := err == nil && lang != "" && lang != m.Language
 	a, cues := analyze(text, assets, translation)
 	if !translation {
-		if showfile.ReadSettings(text, false).Title == nil {
+		if !check.HasTitle(text) {
 			a.Diagnostics = append(a.Diagnostics, showfile.Diagnostic{Line: 1, Severity: showfile.SevInfo,
 				Message: "This show has no title, so it is listed as \"Untitled show\". Use Rename in the Shows step, or add a [settings] block with a title: line."})
 		}

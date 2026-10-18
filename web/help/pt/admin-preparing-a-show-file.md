@@ -55,6 +55,7 @@ Para começar um **espetáculo novo** a partir de um arquivo, use **Importar um 
 ## Conferir o seu trabalho
 
 - A etapa Arquivo do espetáculo lista cada problema com o número da linha. Clique em um para ir até ele. Os erros nunca impedem você de salvar, mas um item com erro é ignorado, então corrija-os antes da apresentação.
+- Você pode conferir um arquivo do espetáculo sem abrir a configuração: no computador das legendas, execute `open-caption --check-show show.md` (acrescente depois as traduções, por exemplo `show.es.md`). Ele mostra os mesmos problemas com os números de linha e termina com um status diferente de zero se houver erros, então dá para usá-lo enquanto você edita ou em um script. `open-caption --help` lista as opções.
 - O painel ao lado do editor mostra o que o operador vai percorrer, uma linha por toque na barra de espaço. Confira se o número de linhas é o que você espera.
 - Execute a etapa **Teste** para ver as legendas como o público as verá, em um telefone além de uma tela grande.
 - Se outras pessoas também trabalham no arquivo do espetáculo, veja *Se duas pessoas editam o mesmo arquivo* em [Escrever um arquivo do espetáculo](topic:admin-writing-a-show-file).

@@ -783,6 +783,12 @@ func (s *Store) ListAssets(id string) ([]Asset, error) {
 	if err != nil {
 		return nil, err
 	}
+	return ListAssetsDir(dir)
+}
+
+// ListAssetsDir returns the images in a folder (a missing folder has none), sorted by name. The command line's
+// --check-show uses it on any folder.
+func ListAssetsDir(dir string) ([]Asset, error) {
 	ents, err := os.ReadDir(dir)
 	if errors.Is(err, os.ErrNotExist) {
 		return []Asset{}, nil

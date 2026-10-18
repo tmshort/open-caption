@@ -55,6 +55,7 @@ Per iniziare uno **spettacolo nuovo** da un file, usa **Importa uno spettacolo**
 ## Controllare il lavoro
 
 - Il passaggio File dello spettacolo elenca ogni problema con il numero di riga. Fai clic su uno per andarci. Gli errori non ti impediscono mai di salvare, ma un elemento con un errore viene saltato, quindi correggili prima dello spettacolo.
+- Puoi controllare un file dello spettacolo senza aprire la configurazione: sul computer dei sottotitoli esegui `open-caption --check-show show.md` (aggiungi dopo le traduzioni, per esempio `show.es.md`). Mostra gli stessi problemi con i numeri di riga e termina con uno stato diverso da zero se ci sono errori, così puoi usarlo mentre modifichi o in uno script. `open-caption --help` elenca le opzioni.
 - Il pannello accanto all'editor mostra ciò che l'operatore percorrerà, una riga per ogni pressione della barra spaziatrice. Controlla che il numero di righe sia quello che ti aspetti.
 - Esegui il passaggio **Prova** per vedere i sottotitoli come li vedrà il pubblico, su un telefono oltre che su uno schermo grande.
 - Se anche altre persone lavorano al file dello spettacolo, vedi *Se due persone modificano lo stesso file* in [Scrivere un file dello spettacolo](topic:admin-writing-a-show-file).

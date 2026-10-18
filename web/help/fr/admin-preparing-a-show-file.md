@@ -55,6 +55,7 @@ Pour créer un **nouveau spectacle** à partir d'un fichier, utilisez **Importer
 ## Vérifier votre travail
 
 - L'étape Fichier du spectacle énumère chaque problème avec son numéro de ligne. Cliquez sur l'un d'eux pour y aller. Les erreurs ne vous empêchent jamais d'enregistrer, mais un élément en erreur est ignoré : corrigez-les avant le spectacle.
+- Vous pouvez vérifier un fichier de spectacle sans ouvrir la configuration : sur l'ordinateur de sous-titrage, lancez `open-caption --check-show show.md` (ajoutez ensuite les traductions, par exemple `show.es.md`). Il affiche les mêmes problèmes avec leurs numéros de ligne et se termine avec un statut non nul s'il y a des erreurs, ce qui permet de l'utiliser pendant l'édition ou dans un script. `open-caption --help` liste les options.
 - Le panneau à côté de l'éditeur montre ce que l'opérateur va parcourir, une ligne par appui sur la barre d'espace. Vérifiez que le nombre de lignes est celui que vous attendez.
 - Lancez l'étape **Test** pour voir les sous-titres comme le public les verra, sur un téléphone comme sur un grand écran.
 - Si d'autres personnes travaillent aussi sur le fichier du spectacle, voyez *Si deux personnes modifient le même fichier* dans [Écrire un fichier de spectacle](topic:admin-writing-a-show-file).

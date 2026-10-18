@@ -55,6 +55,7 @@ Um aus einer Datei eine **neue Show** zu beginnen, verwenden Sie im Schritt Show
 ## Ihre Arbeit prüfen
 
 - Der Schritt Show-Datei listet jedes Problem mit seiner Zeilennummer auf. Klicken Sie eines an, um dorthin zu springen. Fehler hindern Sie nie am Speichern, aber ein fehlerhaftes Element wird übersprungen, beheben Sie sie also vor der Vorstellung.
+- Sie können eine Show-Datei prüfen, ohne die Einrichtung zu öffnen: Führen Sie auf dem Untertitel-Computer `open-caption --check-show show.md` aus (danach die Übersetzungen, zum Beispiel `show.es.md`). Es gibt dieselben Probleme mit Zeilennummern aus und endet mit einem Status ungleich null, wenn es Fehler gibt – so lässt es sich beim Bearbeiten oder in einem Skript nutzen. `open-caption --help` listet die Optionen auf.
 - Das Feld neben dem Editor zeigt, was der Bediener durchläuft, eine Zeile pro Druck auf die Leertaste. Prüfen Sie, ob die Anzahl der Zeilen Ihren Erwartungen entspricht.
 - Führen Sie den Schritt **Test** aus, um die Untertitel so zu sehen, wie das Publikum sie sieht, auf einem Telefon ebenso wie auf einem großen Bildschirm.
 - Wenn auch andere an der Show-Datei arbeiten, lesen Sie *Wenn zwei Personen dieselbe Show-Datei bearbeiten* in [Eine Show-Datei schreiben](topic:admin-writing-a-show-file).

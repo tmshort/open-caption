@@ -55,6 +55,7 @@ To start a **new show** from a file, use **Import a show** on the Show step and 
 ## Checking your work
 
 - The Show file step lists every problem with its line number. Click one to jump to it. Errors never stop you from saving, but an item with an error is skipped, so fix them before the show.
+- You can check a show file without opening Setup: on the captioning computer run `open-caption --check-show show.md` (add translations after it, for example `show.es.md`). It prints the same problems with their line numbers and exits with a non-zero status when there are errors, so you can use it while you edit or in a script. `open-caption --help` lists the options.
 - The panel beside the editor shows what the operator will step through, one row per press of the spacebar. Check that the count of rows is what you expect.
 - Run the **Test** step to see the captions as the audience will, on a phone as well as on a large screen.
 - If other people also work on the show file, see *If two people edit the same show file* in [Writing a show file](topic:admin-writing-a-show-file).

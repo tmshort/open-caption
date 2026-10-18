@@ -154,6 +154,7 @@ language. Responses carry `Vary: Accept-Language`.
 cmd/open-caption/        main: flags, wiring, signal handling, listeners (HTTP and optional HTTPS)
 cmd/loadtest/            audience load generator (needs --dev on the server)
 internal/
+  check/                 the show file analysis shared by Setup's editor and `--check-show` (image use, the command-line report)
   config/                config.yaml load/generate/validate (strict: unknown keys and all bad values reported together), access allow-lists, data-dir resolution
   web/shared/i18n*       browser-side translation of Setup, operator and Help (English text is the key)
   web/help/<code>/       translated help topics (es fr de it pt); docs/i18n/<code>/ the translated guides

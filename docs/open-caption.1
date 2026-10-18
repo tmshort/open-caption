@@ -18,6 +18,14 @@ open-caption \- open-captioning server for community theater
 .RB [ \-\-no\-browser ]
 .br
 .B open-caption \-\-version
+.br
+.B open-caption
+.RB [ \-\-assets
+.IR folder ]
+.RB [ \-\-strict ]
+.B \-\-check\-show
+.I show-file
+.RI [ translation ...]
 .SH DESCRIPTION
 .B open-caption
 is a single program that shows live captions on the audience's own phones, tablets and screens during a play
@@ -120,6 +128,35 @@ Do not open Setup in a browser at start-up (the same as
 .B defaults.open_browser: no
 for one run).
 .TP
+.BI \-\-check\-show " file"
+Check a show file and print a report, like a lint, without starting a server or reading
+.IR config.yaml .
+It runs the same analysis as the show file editor in Setup: every problem with its line number, in the form
+.IR file : line : severity : message
+(severity is
+.BR error ,
+.B warning
+or
+.BR note ),
+then a count of each.
+Any further file names after the option are translations of the first file; each is checked on its own and
+compared with the main file (the same number and kinds of cues).
+A file name of
+.B \-
+reads the standard input.
+Images are checked against the
+.I assets
+folder beside the first file, or the folder given with
+.BR \-\-assets .
+Put other options before
+.BR \-\-check\-show .
+The exit status is 0 when there are no errors, 1 when there are errors, and 2 when a file cannot be read.
+.TP
+.B \-\-strict
+With
+.BR \-\-check\-show :
+warnings also make the exit status 1.
+.TP
 .B \-\-version
 Print the version, and the DNS providers built into this program for automatic certificates, then exit.
 .TP
@@ -139,9 +176,13 @@ With
 load this show file as the active show.
 .TP
 .BI \-\-assets " folder"
-With
-.BR \-\-dev :
-the folder of images for
+The folder of images: for
+.BR \-\-check\-show ,
+instead of the
+.I assets
+folder beside the show file; or, with
+.BR \-\-dev ,
+the images for
 .BR \-\-show\-file .
 .SH ENVIRONMENT
 .TP
@@ -224,10 +265,24 @@ and
 Normal exit, or
 .B \-\-version
 or
-.BR \-\-help .
+.BR \-\-help ;
+with
+.BR \-\-check\-show ,
+the show file has no errors.
+.TP
+.B 1
+With
+.BR \-\-check\-show :
+the show file has errors (or warnings, with
+.BR \-\-strict ).
+.TP
+.B 2
+With
+.BR \-\-check\-show :
+a file could not be read.
 .TP
 .B non-zero
-The settings file has problems (all of them are printed, each naming the setting),
+Otherwise: the settings file has problems (all of them are printed, each naming the setting),
 a port or file cannot be used, or the program was started in a way it does not allow.
 .SH EXAMPLES
 Start with the defaults and open Setup:
@@ -252,6 +307,14 @@ Serve HTTPS as well, and keep a log file:
 .RS
 .nf
 open-caption \-\-https\-addr :443 \-\-log\-file /var/log/open-caption.log
+.fi
+.RE
+.PP
+Check a show file and its Spanish translation (the exit status says whether it passed):
+.PP
+.RS
+.nf
+open-caption \-\-check\-show show.md show.es.md
 .fi
 .RE
 .PP

@@ -10,6 +10,7 @@ open-caption --http-addr :80 --https-addr :443   # override listen addresses
 open-caption --no-browser                # don't auto-open the setup page
 open-caption --log-level debug --log-file ~/oc.log   # more detail, also to a file
 open-caption --version                   # the version and the ACME DNS providers built in
+open-caption --check-show show.md        # check a show file (a lint); no server starts
 open-caption --help                      # every option
 ```
 Every option, its environment variable (`OPEN_CAPTION_*`) and what it overrides is in the

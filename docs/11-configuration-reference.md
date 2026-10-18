@@ -26,7 +26,33 @@ A flag, or its environment variable, overrides the file for that run. (The file 
 | `--no-browser` | | Do not open Setup in a browser at start-up (like `defaults.open_browser: no`) |
 | `--version` | | Print the version and the DNS providers built in for automatic certificates, then exit |
 | `--help` | | Print the options and the environment variables, and where to read more, then exit |
-| `--dev`, `--show-file`, `--assets` | | **Developers only**: unauthenticated test endpoints on this computer, no standby; never use them at a venue |
+| `--check-show FILE [TRANSLATION ...]` | | **Check a show file** and print a report, like a lint, then exit: no server, no `config.yaml`. See "Checking a show file" below |
+| `--assets FOLDER` | | The images folder for `--check-show` (default: the `assets` folder beside the show file) |
+| `--strict` | | With `--check-show`: warnings also make the exit status 1 |
+| `--dev`, `--show-file` | | **Developers only**: unauthenticated test endpoints on this computer, no standby; never use them at a venue |
+
+## Checking a show file
+
+`open-caption --check-show show.md` analyses a show file without loading it into the program: it runs the same parser and checks as the problems list on Setup's Show file step and prints what that list would show.
+
+```
+$ open-caption --check-show show.md show.es.md
+show.md: info: 4 captions, 1 images, 0 fullscreen, 1 loops, 1 sections, 0 notes.
+show.md:8: warning: Image "curtain.jpg" not found. Upload it in the Images step.
+show.md:13: error: [song] was opened but never closed with [/song]. The lyrics so far were kept.
+show.md: 8 cues; 2 speakers: ALICE, BOB
+show.es.md: 8 cues; language es
+
+images checked against assets (1 found)
+missing images: curtain.jpg (line 8 of show.md)
+1 error, 1 warning, 1 note
+```
+
+- Each problem is `file:line: severity: message` (severity `error`, `warning` or `note`), the form editors and CI systems understand. A line about the whole file has no line number.
+- Files after the first are **translations**: each is parsed as a translation and compared with the main file (the same number and kinds of cues, in the same order), as Setup does. The language is the file's `[language]` line or its name (`show.es.md`); two files for one language are an error.
+- Images are checked against the `assets` folder beside the main file, or `--assets FOLDER`. Without a folder they are not checked, and the report says so. (The message about uploading is Setup's wording.)
+- `-` as the file name reads standard input.
+- **Exit status:** `0` no errors, `1` errors (or warnings with `--strict`), `2` a file could not be read. Put other options (`--assets`, `--strict`) **before** `--check-show`: the files that follow it are translations.
 
 ## Settings
 

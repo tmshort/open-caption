@@ -332,3 +332,7 @@ I got lost in the kitchen.
 
 The original text is stored verbatim as the show's main show file (`show.md`, with translations in `show.<lang>.md`); the setup UI
 edits that text. There is no lossy intermediate format.
+
+## Checking a show file from the command line
+
+`open-caption --check-show show.md [translation.es.md ...]` parses a show file with the same code as Setup's editor and prints its problems as `file:line: severity: message`, then exits 0 (no errors), 1 (errors) or 2 (unreadable file). It starts no server and needs no `config.yaml`. Translations are compared with the main file's structure; images are checked against the `assets` folder beside the file (or `--assets`). See the [configuration reference](11-configuration-reference.md#checking-a-show-file).
