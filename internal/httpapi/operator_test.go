@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -445,5 +446,35 @@ func TestSessionsSurviveARestartButNotAPasswordChange(t *testing.T) {
 	defer ts5.Close()
 	if code, _ := (&client{t: t, base: ts5.URL, hc: c4.hc}).do("GET", "/api/operator/state", nil); code != 401 {
 		t.Errorf("session should not survive a password change: %d", code)
+	}
+}
+
+// Several saves at once (the debounced saver, Setup's activate, shutdown) must leave a complete live.json
+// and no temporary files behind.
+func TestConcurrentFlushLeavesAValidFile(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "live.json")
+	s := New(testConfig(), "t")
+	defer s.Close()
+	s.Runtime().EnablePersistence(path)
+	s.Runtime().SetShow("demo", "Demo", "", showfile.Parse("A\nB\nC", showfile.Options{}).Cues, DefaultTheme(""))
+	var wg sync.WaitGroup
+	for i := 0; i < 20; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for j := 0; j < 20; j++ {
+				s.Runtime().Flush()
+			}
+		}()
+	}
+	wg.Wait()
+	b, err := os.ReadFile(path)
+	if err != nil || !json.Valid(b) {
+		t.Fatalf("live.json unreadable or invalid: %v %q", err, b)
+	}
+	ents, _ := os.ReadDir(dir)
+	if len(ents) != 1 {
+		t.Errorf("leftover files: %v", ents)
 	}
 }

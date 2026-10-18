@@ -264,7 +264,7 @@ and every language's lines).
     show.<lang>.md        one show file per translation (its own idle message, and the lines)
     assets/<filename>     uploaded images
   sessions.json           signed-in sessions (hashed), so a restart does not sign anyone out
-  live.json               active show id and, per language: cursor, scrollback, mode, the last 10 undo steps (debounced ≤ 250 ms)
+  live.json               active show id and, per language: cursor, scrollback, mode, the last 10 undo steps (debounced ≤ 250 ms; written through a temporary file and renamed, one save at a time; a failed save is logged)
   tls/                    generated self-signed cert/key (if used)
 ```
 

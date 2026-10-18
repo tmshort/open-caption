@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"net/url"
 	"os"
-	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -16,6 +15,7 @@ import (
 	"github.com/tmshort/open-caption/internal/config"
 	"github.com/tmshort/open-caption/internal/hub"
 	"github.com/tmshort/open-caption/internal/live"
+	"github.com/tmshort/open-caption/internal/logx"
 	"github.com/tmshort/open-caption/internal/showfile"
 )
 
@@ -130,6 +130,7 @@ type Runtime struct {
 	opDirty   chan struct{}
 	saveDirty chan struct{}
 	livePath  string
+	flushMu   sync.Mutex // one save of live.json at a time
 	quit      chan struct{}
 	wg        sync.WaitGroup
 }
@@ -858,6 +859,8 @@ func (rt *Runtime) EnablePersistence(path string) {
 
 // Flush writes live state now (no-op if persistence is off or no show is loaded).
 func (rt *Runtime) Flush() {
+	rt.flushMu.Lock()
+	defer rt.flushMu.Unlock()
 	rt.mu.RLock()
 	path, id := rt.livePath, rt.showID
 	engs := map[string]*live.Engine{}
@@ -866,7 +869,7 @@ func (rt *Runtime) Flush() {
 	}
 	primary := rt.primary
 	rt.mu.RUnlock()
-	if path == "" || id == "" {
+	if path == "" || id == "" || engs[primary] == nil {
 		return
 	}
 	sv := savedLive{ShowID: id, State: engs[primary].Export(), Langs: map[string]live.Persisted{}}
@@ -877,10 +880,8 @@ func (rt *Runtime) Flush() {
 	if err != nil {
 		return
 	}
-	os.MkdirAll(filepath.Dir(path), 0o755)
-	tmp := path + ".tmp"
-	if os.WriteFile(tmp, b, 0o600) == nil {
-		os.Rename(tmp, path)
+	if err := saveFile(path, b, 0o600); err != nil {
+		logx.Warnf("could not save the show's position (%s): %v; it will not survive a restart until this is fixed", path, err)
 	}
 }
 
