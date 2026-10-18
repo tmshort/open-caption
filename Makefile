@@ -31,7 +31,7 @@ a11y: build ## Accessibility audit with axe-core in real Chrome (needs Node and 
 	cd test/e2e && npm install --no-audit --no-fund && node a11y.js
 i18n: ## Check every sentence is translated into all six languages (needs Node)
 	cd test/e2e && npm install --no-audit --no-fund && node check-i18n.js
-dist: ## Cross-compile release binaries into dist/ (no CGO; same ACME_PROVIDERS choice as build)
+dist: ## Cross-compile release binaries into dist/ with the man page (no CGO; same ACME_PROVIDERS choice as build)
 	mkdir -p dist
 	cp docs/open-caption.1 dist/
 	CGO_ENABLED=0 GOOS=darwin  GOARCH=arm64 tools/acme-go.sh "$(ACME_PROVIDERS)" build -ldflags "$(LDFLAGS)" -o dist/open-caption-darwin-arm64 ./cmd/open-caption
