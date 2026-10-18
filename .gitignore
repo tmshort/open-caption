@@ -1,3 +1,6 @@
 bin/
 dist/
 *.test
+go.acme.mod
+go.acme.sum
+internal/acme/zz_providers_gen.go

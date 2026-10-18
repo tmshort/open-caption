@@ -8,6 +8,8 @@ import (
 	"runtime"
 	"strings"
 	"testing"
+
+	"gopkg.in/yaml.v3"
 )
 
 func TestGenerateThenReload(t *testing.T) {
@@ -392,5 +394,80 @@ func TestStandbyMessage(t *testing.T) {
 	}
 	if _, err = load(t, "standby:\n  message: \"two\\nlines\"\n"); err == nil || !strings.Contains(err.Error(), "standby.message") {
 		t.Errorf("two lines: %v", err)
+	}
+}
+
+const acmeBase = "admin_password: a\noperator_password: b\nhttps:\n  enabled: true\n  acme:\n    enabled: true\n"
+
+func loadACME(t *testing.T, acme string) (Config, error) {
+	t.Helper()
+	p := filepath.Join(t.TempDir(), "c.yaml")
+	os.WriteFile(p, []byte(acmeBase+acme), 0o600)
+	return Load(p)
+}
+
+func TestACMESettingIsValidatedAndGetsItsDefaults(t *testing.T) {
+	c, err := loadACME(t, "    domain: Captions.Example.org\n    email: me@example.org\n    agree_to_terms: true\n    dns:\n      provider: EasyDNS\n      credentials:\n        EASYDNS_TOKEN: t\n        EASYDNS_KEY: k\n")
+	if err != nil {
+		t.Fatal(err)
+	}
+	a := c.HTTPS.ACME
+	if a.Domain != "captions.example.org" || a.DNS.Provider != "easydns" || a.Directory != ACMEDirectoryProduction || a.RenewBeforeDays != DefaultRenewBeforeDays {
+		t.Errorf("%+v", a)
+	}
+}
+
+func TestACMESettingProblemsAreAllReportedWithTheirKeys(t *testing.T) {
+	_, err := loadACME(t, "    domain: open-caption.local\n    email: nobody\n    directory: ftp://x\n    renew_before_days: 90\n    dns:\n      credentials:\n        easydns-token: x\n      propagation_wait: soon\n")
+	if err == nil {
+		t.Fatal("expected problems")
+	}
+	for _, want := range []string{"https.acme.domain", "https.acme.email", "https.acme.agree_to_terms", "https.acme.directory", "https.acme.renew_before_days", "https.acme.dns.provider", "https.acme.dns.credentials", "https.acme.dns.propagation_wait"} {
+		if !strings.Contains(err.Error(), want) {
+			t.Errorf("missing a problem for %s in:\n%v", want, err)
+		}
+	}
+}
+
+func TestACMENeedsHTTPSAndExcludesCertFile(t *testing.T) {
+	p := filepath.Join(t.TempDir(), "c.yaml")
+	good := "    domain: captions.example.org\n    email: me@example.org\n    agree_to_terms: true\n    dns:\n      provider: easydns\n"
+	os.WriteFile(p, []byte("admin_password: a\noperator_password: b\nhttps:\n  acme:\n    enabled: true\n"+good), 0o600)
+	if _, err := Load(p); err == nil || !strings.Contains(err.Error(), "needs https.enabled") {
+		t.Errorf("https must be enabled: %v", err)
+	}
+	cert := filepath.Join(t.TempDir(), "c.pem")
+	os.WriteFile(cert, []byte("x"), 0o600)
+	os.WriteFile(p, []byte("admin_password: a\noperator_password: b\nhttps:\n  enabled: true\n  cert_file: "+cert+"\n  key_file: "+cert+"\n  acme:\n    enabled: true\n"+good), 0o600)
+	if _, err := Load(p); err == nil || !strings.Contains(err.Error(), "cannot be used together") {
+		t.Errorf("cert_file and acme must be exclusive: %v", err)
+	}
+}
+
+func TestACMEIpAddressesAndUnknownKeysAreRefused(t *testing.T) {
+	if _, err := loadACME(t, "    domain: 192.168.1.5\n    email: me@example.org\n    agree_to_terms: true\n    dns:\n      provider: easydns\n"); err == nil || !strings.Contains(err.Error(), "not an IP") && !strings.Contains(err.Error(), "must be a name") {
+		t.Errorf("%v", err)
+	}
+	if _, err := loadACME(t, "    domain: captions.example.org\n    token: oops\n"); err == nil || !strings.Contains(err.Error(), "unknown setting") {
+		t.Errorf("an unknown key should be an error: %v", err)
+	}
+}
+
+func TestRedactedHidesPasswordsAndDNSCredentialsWithoutChangingTheOriginal(t *testing.T) {
+	c := Default()
+	c.AdminPassword, c.OperatorPassword = "a-secret", "o-secret"
+	c.HTTPS.ACME.DNS.Credentials = map[string]string{"EASYDNS_TOKEN": "tok-secret", "EASYDNS_KEY": "key-secret"}
+	r := c.Redacted()
+	b, _ := yaml.Marshal(r)
+	for _, secret := range []string{"a-secret", "o-secret", "tok-secret", "key-secret"} {
+		if strings.Contains(string(b), secret) {
+			t.Errorf("%q leaked into the redacted copy", secret)
+		}
+	}
+	if !strings.Contains(string(b), "EASYDNS_TOKEN") {
+		t.Error("the names of the credentials are useful in a support bundle")
+	}
+	if c.HTTPS.ACME.DNS.Credentials["EASYDNS_TOKEN"] != "tok-secret" {
+		t.Error("Redacted changed the original")
 	}
 }

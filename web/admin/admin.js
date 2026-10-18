@@ -146,6 +146,30 @@
     } }, ...[['error', 'Errors only'], ['warn', 'Problems (warnings and errors)'], ['info', 'Normal (events, sign-ins)'], ['debug', 'Debug (every request)']].map(([v, t]) => h('option', { value: v }, __(t))));
     logSelect.value = s.logLevel;
     const sec = (title, ...kids) => h('section', { class: 'setsec' }, h('h3', {}, __(title)), ...kids);
+    // The HTTPS certificate: where it comes from and, for an automatic one, its state (docs/10). Filled in once the program answers.
+    const certBox = h('div', { class: 'certbox' });
+    const paintCert = (c) => {
+      const when = (t) => (t && !String(t).startsWith('0001') ? new Date(t).toLocaleString(OCI18n.lang) : '');
+      const states = { waiting: 'Waiting for the first certificate', ok: 'Valid', renewing: 'Getting a certificate…', failed: 'The last attempt failed' };
+      if (c.source === 'none') return certBox.replaceChildren(h('p', { class: 'hint' }, __('HTTPS is off, so devices use plain http. Turn it on in the settings file (https: enabled: yes).')));
+      if (c.source === 'self-signed') return certBox.replaceChildren(h('p', { class: 'hint' }, __('HTTPS uses a certificate this program made itself, so browsers show a warning until it is accepted. For a trusted one, set up automatic certificates (docs/10-acme-lets-encrypt.md).')));
+      if (c.source === 'file') return certBox.replaceChildren(h('p', { class: 'hint' }, __('HTTPS uses the certificate files named in the settings file. When they are replaced (for example after a renewal) the new ones are used within about 30 seconds, with no restart.')));
+      const st = c.status || {};
+      const renew = h('button', { type: 'button', disabled: st.state === 'renewing', onclick: async () => {
+        const x = await api('POST', '/api/admin/settings/certificate/renew'); if (!x.ok) return fail(x);
+        toast(__('Getting a certificate; this can take a few minutes'), 6000); poll(100);
+      } }, __('Renew now'));
+      certBox.replaceChildren(
+        h('p', { class: 'hint' }, __('Automatic certificate from {directory}, using the DNS provider {provider}.', { directory: c.directory, provider: c.provider })),
+        h('table', { class: 'cheat' },
+          row('Name', st.domain), row('State', states[st.state] || ''), row('Issued by', st.issuer),
+          row('Valid until', st.notAfter && !String(st.notAfter).startsWith('0001') ? when(st.notAfter) + ' (' + __('{n} days left', { n: st.daysLeft }) + ')' : ''),
+          row('Last attempt', when(st.lastAttempt)), st.lastError ? row('Last problem', st.lastError) : null),
+        h('div', { class: 'row' }, renew));
+    };
+    const loadCert = async () => { const x = await api('GET', '/api/admin/settings/certificate'); if (x.ok) { paintCert(x.data); return x.data; } };
+    const poll = (tries) => { if (tries <= 0) return; setTimeout(async () => { if (!certBox.isConnected) return; const c = await loadCert(); if (c && c.status && c.status.state === 'renewing' || tries === 100) poll(tries - 1); }, 3000); };
+    loadCert();
     // Three tabs, so the window is short and the controls people come for are one click away; the title, the tabs and Close stay in
     // view while a tab scrolls. Every tab stays in the page (only hidden), so something typed but not yet saved survives a switch.
     const tabDefs = [
@@ -164,6 +188,7 @@
                 h('label', { class: 'field' }, h('span', {}, __('New operator password')), opPw),
                 h('div', { class: 'row' }, changePw, reveal), shown)
             : h('p', { class: 'hint' }, __('This copy was started without a settings file, so passwords cannot be changed here.'))),
+        sec('Certificate', certBox),
       ]],
       ['abt', 'About', [
         sec('About this copy',

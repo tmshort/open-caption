@@ -16,6 +16,8 @@ import (
 
 // Server holds shared dependencies for handlers.
 type Server struct {
+	certMu  sync.Mutex
+	certs   CertificateManager
 	cfg     config.Config
 	version string
 	rt      *Runtime

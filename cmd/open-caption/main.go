@@ -21,6 +21,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/tmshort/open-caption/internal/acme"
 	"github.com/tmshort/open-caption/internal/config"
 	"github.com/tmshort/open-caption/internal/httpapi"
 	"github.com/tmshort/open-caption/internal/logbuf"
@@ -48,6 +49,7 @@ func main() {
 	flag.Parse()
 	if *showVer {
 		fmt.Println("open-caption", version)
+		fmt.Println("automatic certificates (ACME DNS-01), providers built in:", acmeProviders())
 		return
 	}
 
@@ -106,6 +108,14 @@ func main() {
 	}
 	if *httpAddr != "" {
 		cfg.HTTP.Addr = *httpAddr
+	}
+	if cfg.HTTPS.Enabled && cfg.HTTPS.ACME.Enabled {
+		if !acme.Available() {
+			logx.Fatalf("https.acme: this program was built without automatic certificates (ACME_PROVIDERS=none); see docs/10-acme-lets-encrypt.md")
+		}
+		if !acme.HasProvider(cfg.HTTPS.ACME.DNS.Provider) {
+			logx.Fatalf("https.acme: the DNS provider %q is not built into this program (built with: %s); see docs/10-acme-lets-encrypt.md for how to build with others", cfg.HTTPS.ACME.DNS.Provider, acmeProviders())
+		}
 	}
 	if *dev {
 		// The --dev controls have no password, so they must never be reachable from the network.
@@ -195,7 +205,7 @@ func main() {
 
 	serve("http", cfg.HTTP, nil)
 	if cfg.HTTPS.Enabled {
-		serve("https", config.Listener{Addr: cfg.HTTPS.Addr, FallbackAddr: cfg.HTTPS.FallbackAddr}, tlsConfig(cfg))
+		serve("https", config.Listener{Addr: cfg.HTTPS.Addr, FallbackAddr: cfg.HTTPS.FallbackAddr}, tlsConfig(ctx, cfg, api))
 	}
 	api.SetListeners(lis)
 	if !*dev { // the --dev controls are for this computer only
@@ -211,7 +221,7 @@ func main() {
 	logx.Infof("stopped")
 }
 
-func tlsConfig(cfg config.Config) *tls.Config {
+func tlsConfig(ctx context.Context, cfg config.Config, api *httpapi.Server) *tls.Config {
 	if cfg.HTTPS.CertFile != "" {
 		// the certificate files are watched: a renewed pair is picked up without a restart
 		rl, err := netinfo.NewReloader(cfg.HTTPS.CertFile, cfg.HTTPS.KeyFile, logx.Infof, logx.Warnf)
@@ -222,11 +232,35 @@ func tlsConfig(cfg config.Config) *tls.Config {
 	}
 	host, _ := os.Hostname()
 	cert, err := netinfo.EnsureSelfSigned(filepath.Join(cfg.DataDir, "tls"), host, netinfo.LocalIPs())
-	logx.Warnf("HTTPS is using a self-signed certificate: browsers will show a warning until it is accepted")
 	if err != nil {
 		logx.Fatalf("https: %v", err)
 	}
+	if cfg.HTTPS.ACME.Enabled {
+		// A certificate from a public CA, kept current in the background (docs/10). Until the first one arrives
+		// (and if it never does) connections get the self-signed certificate, so HTTPS is never down.
+		a := cfg.HTTPS.ACME
+		iss, err := acme.NewIssuer(a, filepath.Join(cfg.DataDir, "tls", "acme"), logx.Warnf)
+		if err != nil {
+			logx.Fatalf("https.acme: %v", err)
+		}
+		m := acme.New(acme.Options{Domain: a.Domain, Dir: filepath.Join(cfg.DataDir, "tls", "acme"), Issuer: iss,
+			RenewBefore: time.Duration(a.RenewBeforeDays) * 24 * time.Hour, Infof: logx.Infof, Warnf: logx.Warnf,
+			Fallback: func(*tls.ClientHelloInfo) (*tls.Certificate, error) { return &cert, nil }})
+		api.SetCertificates(m)
+		go m.Run(ctx)
+		logx.Infof("HTTPS: automatic certificate for %s from %s with DNS provider %s", a.Domain, a.Directory, a.DNS.Provider)
+		return &tls.Config{GetCertificate: m.GetCertificate, MinVersion: tls.VersionTLS12}
+	}
+	logx.Warnf("HTTPS is using a self-signed certificate: browsers will show a warning until it is accepted")
 	return &tls.Config{Certificates: []tls.Certificate{cert}, MinVersion: tls.VersionTLS12}
+}
+
+// acmeProviders is the list of DNS providers built into this program, for --version and the log.
+func acmeProviders() string {
+	if !acme.Available() {
+		return "none (built without automatic certificates)"
+	}
+	return strings.Join(acme.Providers(), ", ")
 }
 
 func urls(scheme string, addr net.Addr) []string {

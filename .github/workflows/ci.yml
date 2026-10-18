@@ -43,6 +43,20 @@ jobs:
         with:
           go-version: stable
       - run: make dist
+  acme:
+    # The automatic-certificate (ACME) build choices must keep compiling (none, the default, one provider, a custom list,
+    # all of lego's), and the real DNS-01 path is checked against Pebble, Let's Encrypt's test CA (docs/10).
+    if: github.event_name != 'push' || startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version: stable
+      - run: make acme-variants
+      - run: go install github.com/letsencrypt/pebble/v2/cmd/pebble@latest github.com/letsencrypt/pebble/v2/cmd/pebble-challtestsrv@latest
+      - run: PEBBLE_BIN=$(go env GOPATH)/bin PEBBLE_DIR=$(ls -d $(go env GOMODCACHE)/github.com/letsencrypt/pebble/v2@* | tail -1) go test -tags pebble -run Pebble ./internal/acme
   e2e:
     strategy:
       fail-fast: false

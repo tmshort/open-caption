@@ -98,5 +98,16 @@
   "Network name",
   "Log detail",
   "Change passwords"
+ ],
+ "certificate panel": [
+  "State",
+  "Issued by",
+  "Valid until",
+  "Last attempt",
+  "Last problem",
+  "Waiting for the first certificate",
+  "Valid",
+  "Getting a certificate…",
+  "The last attempt failed"
  ]
 }

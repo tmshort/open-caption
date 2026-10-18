@@ -311,6 +311,8 @@ func (s *Server) adminRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("PUT /api/admin/settings/log-level", adm(s.setLogLevel))
 	mux.HandleFunc("PUT /api/admin/settings/mdns", adm(s.setMDNS))
 	mux.HandleFunc("PUT /api/admin/settings/standby", adm(s.setStandby))
+	mux.HandleFunc("GET /api/admin/settings/certificate", adm(s.certificateInfo))
+	mux.HandleFunc("POST /api/admin/settings/certificate/renew", adm(s.renewCertificate))
 	mux.HandleFunc("POST /api/admin/settings/standby-logo", adm(s.setStandbyLogo))
 	mux.HandleFunc("DELETE /api/admin/settings/standby-logo", adm(s.deleteStandbyLogo))
 	mux.HandleFunc("GET /api/admin/log", adm(s.recentLog))

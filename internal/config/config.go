@@ -15,6 +15,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"gopkg.in/yaml.v3"
 
@@ -37,7 +38,43 @@ type HTTPS struct {
 	CertFile     string `yaml:"cert_file"`
 	KeyFile      string `yaml:"key_file"`
 	SelfSigned   bool   `yaml:"self_signed"`
+	// ACME gets and renews a certificate from a public CA (Let's Encrypt) with the DNS-01 challenge (docs/10).
+	ACME ACME `yaml:"acme,omitempty"`
 }
+
+// ACME is the automatic-certificate setting. The name must be a public DNS name that the venue owns.
+type ACME struct {
+	Enabled bool   `yaml:"enabled"`
+	Domain  string `yaml:"domain"`
+	Email   string `yaml:"email"`
+	// AgreeToTerms must be true: it records that the person accepts the certificate authority's terms of service.
+	AgreeToTerms bool `yaml:"agree_to_terms"`
+	// Directory is "letsencrypt" (the default), "letsencrypt-staging" (for trying it out), or the address of another ACME CA.
+	Directory string `yaml:"directory,omitempty"`
+	// RenewBeforeDays is how long before it expires the certificate is renewed (default 30).
+	RenewBeforeDays int     `yaml:"renew_before_days,omitempty"`
+	DNS             ACMEDNS `yaml:"dns"`
+}
+
+// ACMEDNS says how the DNS challenge answers: which provider, and its credentials.
+type ACMEDNS struct {
+	// Provider is a lego DNS provider name (for example "cloudflare", "godaddy", "easydns"); it must be built into the program.
+	Provider string `yaml:"provider"`
+	// Credentials are the provider's own settings (for example EASYDNS_TOKEN). The environment, including NAME_FILE variables
+	// that name a file holding the value, wins over CredentialsFile, which wins over these.
+	Credentials map[string]string `yaml:"credentials,omitempty"`
+	// CredentialsFile is a file of NAME=value lines with the same settings, read again at every attempt.
+	CredentialsFile string `yaml:"credentials_file,omitempty"`
+	// PropagationWait, if set (for example "2m"), is a fixed wait for the new DNS record to spread instead of checking for it.
+	PropagationWait string `yaml:"propagation_wait,omitempty"`
+}
+
+// Built-in values of the ACME setting.
+const (
+	ACMEDirectoryProduction = "letsencrypt"
+	ACMEDirectoryStaging    = "letsencrypt-staging"
+	DefaultRenewBeforeDays  = 30
+)
 
 // Look is the default appearance of the captions. A show file's [settings] override each value.
 type Look struct {
@@ -208,7 +245,7 @@ func yamlProblems(err error) []string {
 	var te *yaml.TypeError
 	if errors.As(err, &te) {
 		out := make([]string, 0, len(te.Errors))
-		sections := map[string]string{"Listener": "http", "HTTPS": "https", "Defaults": "defaults", "Look": "defaults.look", "Audience": "audience", "Access": "access", "Log": "log"}
+		sections := map[string]string{"Listener": "http", "HTTPS": "https", "ACME": "https.acme", "ACMEDNS": "https.acme.dns", "Defaults": "defaults", "Look": "defaults.look", "Audience": "audience", "Access": "access", "Log": "log"}
 		for _, e := range te.Errors {
 			e = strings.TrimPrefix(strings.TrimSpace(e), "yaml: ")
 			if i := strings.Index(e, " not found in type config."); i >= 0 { // line N: field X not found in type config.T
@@ -434,6 +471,8 @@ func (c *Config) normalize() []string {
 			add("https", "cert_file and key_file must be set together")
 		case c.HTTPS.CertFile == "" && !c.HTTPS.SelfSigned:
 			add("https", "enabled, but there is no cert_file/key_file and self_signed is false")
+		case c.HTTPS.CertFile != "" && c.HTTPS.ACME.Enabled:
+			add("https.acme", "cannot be used together with cert_file/key_file: choose one way to get the certificate")
 		case c.HTTPS.CertFile != "":
 			for k, f := range map[string]string{"https.cert_file": c.HTTPS.CertFile, "https.key_file": c.HTTPS.KeyFile} {
 				if _, err := os.Stat(f); err != nil {
@@ -442,6 +481,7 @@ func (c *Config) normalize() []string {
 			}
 		}
 	}
+	c.checkACME(add)
 	if _, err := ParseAllowList(c.Access.AdminAllow); err != nil {
 		add("access.admin_allow", "%v", err)
 	}
@@ -517,6 +557,13 @@ func checkAddr(a string) error {
 // Redacted returns a copy with passwords masked, for display/support bundles.
 func (c Config) Redacted() Config {
 	c.AdminPassword, c.OperatorPassword = "********", "********"
+	if len(c.HTTPS.ACME.DNS.Credentials) > 0 { // the DNS provider's secrets (a new map: the original must not change)
+		hidden := make(map[string]string, len(c.HTTPS.ACME.DNS.Credentials))
+		for k := range c.HTTPS.ACME.DNS.Credentials {
+			hidden[k] = "********"
+		}
+		c.HTTPS.ACME.DNS.Credentials = hidden
+	}
 	return c
 }
 
@@ -532,4 +579,96 @@ func RandomPassword() string {
 		b[i] = pwAlphabet[int(b[i])%len(pwAlphabet)]
 	}
 	return string(b)
+}
+
+// checkACME validates (and fills in the defaults of) the acme section. It only looks at the file system for credentials_file.
+func (c *Config) checkACME(add func(key, format string, args ...any)) {
+	a := &c.HTTPS.ACME
+	if !a.Enabled {
+		return
+	}
+	if !c.HTTPS.Enabled {
+		add("https.acme", "needs https.enabled: yes")
+	}
+	a.Domain = strings.ToLower(strings.TrimSpace(a.Domain))
+	switch {
+	case a.Domain == "":
+		add("https.acme.domain", "must be set: the public name of this computer, such as captions.example.org")
+	case strings.HasSuffix(a.Domain, ".local") || strings.HasSuffix(a.Domain, ".lan") || strings.HasSuffix(a.Domain, ".internal") || !strings.Contains(a.Domain, "."):
+		add("https.acme.domain", "%q is not a public DNS name: a certificate authority cannot issue certificates for it", a.Domain)
+	case net.ParseIP(a.Domain) != nil:
+		add("https.acme.domain", "must be a name, not an IP address")
+	case !validHostname(a.Domain):
+		add("https.acme.domain", "%q is not a valid DNS name (one name, with no wildcard, port or path)", a.Domain)
+	}
+	a.Email = strings.TrimSpace(a.Email)
+	if i := strings.Index(a.Email, "@"); i < 1 || !strings.Contains(a.Email[i:], ".") || strings.ContainsAny(a.Email, " ,;") {
+		add("https.acme.email", "must be an email address (the certificate authority sends expiry notices to it)")
+	}
+	if !a.AgreeToTerms {
+		add("https.acme.agree_to_terms", "must be yes: it records that you accept the certificate authority's terms of service")
+	}
+	switch d := strings.TrimSpace(a.Directory); {
+	case d == "":
+		a.Directory = ACMEDirectoryProduction
+	case d == ACMEDirectoryProduction, d == ACMEDirectoryStaging, strings.HasPrefix(d, "https://"):
+		a.Directory = d
+	default:
+		add("https.acme.directory", "%q must be %q, %q or an https:// address", d, ACMEDirectoryProduction, ACMEDirectoryStaging)
+	}
+	switch {
+	case a.RenewBeforeDays == 0:
+		a.RenewBeforeDays = DefaultRenewBeforeDays
+	case a.RenewBeforeDays < 1 || a.RenewBeforeDays > 60:
+		add("https.acme.renew_before_days", "must be between 1 and 60 days")
+	}
+	d := &a.DNS
+	d.Provider = strings.ToLower(strings.TrimSpace(d.Provider))
+	if d.Provider == "" {
+		add("https.acme.dns.provider", "must be set (for example cloudflare, godaddy or easydns)")
+	}
+	for k := range d.Credentials {
+		if !validCredentialName(k) {
+			add("https.acme.dns.credentials", "%q is not a setting name (capital letters, digits and underscores, such as EASYDNS_TOKEN)", k)
+		}
+	}
+	if d.CredentialsFile != "" {
+		if _, err := os.Stat(d.CredentialsFile); err != nil {
+			add("https.acme.dns.credentials_file", "cannot read %s", d.CredentialsFile)
+		}
+	}
+	if d.PropagationWait != "" {
+		if w, err := time.ParseDuration(d.PropagationWait); err != nil || w <= 0 || w > 30*time.Minute {
+			add("https.acme.dns.propagation_wait", "%q must be a time such as 90s or 2m, at most 30m", d.PropagationWait)
+		}
+	}
+}
+
+func validCredentialName(s string) bool {
+	if s == "" {
+		return false
+	}
+	for _, r := range s {
+		if !(r >= 'A' && r <= 'Z' || r >= '0' && r <= '9' || r == '_') {
+			return false
+		}
+	}
+	return true
+}
+
+func validHostname(s string) bool {
+	if len(s) > 253 {
+		return false
+	}
+	for _, label := range strings.Split(s, ".") {
+		if label == "" || len(label) > 63 || label[0] == '-' || label[len(label)-1] == '-' {
+			return false
+		}
+		for _, r := range label {
+			if !(r >= 'a' && r <= 'z' || r >= '0' && r <= '9' || r == '-') {
+				return false
+			}
+		}
+	}
+	return true
 }
