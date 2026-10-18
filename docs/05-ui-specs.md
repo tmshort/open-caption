@@ -117,7 +117,7 @@ Behavior:
   |-----|--------|
   | `Space`, `→`, `Enter`, `PageDown` | **NEXT**: send the next caption; start a loop when it is next; end a running loop and send the cue after it (clickers typically send PageDown/Right) |
   | `Shift+Q` | **STOP**: stop a running loop and leave a blank screen (NEXT then continues normally) |
-  | `Backspace`, `←`, `PageUp` | **Back**: undo the last action (NEXT, STOP, blank, clear, message); backing into a loop restarts it |
+  | `Backspace`, `←`, `PageUp` | **Back**: undo the last action (NEXT, STOP, blank, clear, an announcement); backing into a loop restarts it |
   | `B` | Toggle blank |
   | `C` | Clear screen |
   | `/` or `Ctrl+F` | Focus search/jump |
@@ -131,7 +131,7 @@ Behavior:
 - **Status indicators**: connection state (green/yellow/red); audience count; warning if another session claims control; "Last sent n seconds ago".
 - **Touch layout** (phone/tablet; the operator page adapts to small screens but is not recommended for running a show, see REQ-035): large bottom Next/Back buttons; swipe not used (accidental). Wake lock requested.
 - **Dark theme default** (theater is dark; low glare). The operator page uses its own login (operator password). Optional "stage-dark" red-tinted mode.
-- **Ad-hoc message**: dialog to send one-off caption or fullscreen text (e.g., "Show paused — please remain seated") without editing the show file.
+- **Announcement…** (an ad-hoc message): dialog to send one-off fullscreen text (e.g., "Show paused — please remain seated") without editing the show file.
 
 ## 3. Audience interface — `/`
 
@@ -143,7 +143,7 @@ Principle: **no interaction needed.** Controls, if any, are hidden/minimal.
 - **Loops**: the audience page does not run loop timers. The server sends one `fullscreen` event per item (doc 04), and the page cross-fades between them; a reconnect snapshot carries the current item. Upcoming images are prefetched in the background (`preload`), since each device downloads full-size files. The one exception is the **countdown**: an item that contains `{timer}` carries the end time (`deadline`), and the page (`web/audience/audience.js`, `paintTimers`) updates the `[data-timer]` elements four times a second in whole minutes, rounded up (`15 min`, `1 hr 5 min`; no seconds) using the server's clock (snapshot `ts`) so a phone with a wrong clock is still right. It stays at `0 min` when it reaches zero.
 - **Blank**: pure theme background.
 - **Standby** (`mode: standby`): the venue's logo (the built-in [oc] mark unless replaced) and message (or the built-in words in the viewer's language), full screen on the show's background colour; nothing of the show, ever. This is what the audience sees before the operator presses START, after Go to standby, and when no show is loaded.
-- **Idle**: once the show is on air and before its first line (no leading loop), shows the show's idle message and a subtle "connected" indicator.
+- **Idle**: once the show is on air and before its first line (no leading loop), shows the show's pre-show message (`idle message`) and a subtle "connected" indicator.
 - **Connection**: a small unobtrusive status dot; if offline > 5 s shows "Reconnecting…" overlay while retaining the last text visible underneath, and auto-recovers on reconnect (re-snapshot). Reconnect backoff 0.5 s → 5 s with jitter.
 - **Keep awake**: request Screen Wake Lock on load and on first user visibility change; where it is unavailable (plain HTTP, older iPhones) or refused, a silent 2-pixel video (`nosleep.mp4` / `nosleep.webm`, about 1 KB each, looping, muted, `playsinline`) keeps the screen on; browsers that need a tap to start it start it at the first touch. The page shows the one-time hint "Tip: turn off Auto-Lock to keep captions on" only if the video could not be started. `<html data-awake>` says which method is active (`wakelock`, `video`, `none` or `off`). A button in the display panel (the "Aa" button) turns *Screen stays on* off for that device (kept in the browser, translated into every supported language) for people on a low battery; turning it off releases the wake lock and pauses the video.
 - **Language** (when the show has more than one language): the page starts in the language matched from the browser's `Accept-Language` header, or the default (`en`). A small picker in a corner lists the available languages; choosing one navigates to `/?lang=xx`, so the URL form (e.g. on a lobby QR code) works identically. With a single language there is no picker. The page never blocks on a choice.
@@ -182,7 +182,7 @@ volunteers: plain language, short, with examples.
 2. *Keyboard reference* — the table in section 2 (generated from the same key map the page uses, so it can't drift).
 3. *Loops* — how they start, STOP (blank), NEXT (continue), Back (restart).
 4. *Indicators* — connection dot, audience count, controller/takeover, image/loop chips.
-5. *If something goes wrong* — wrong line sent (Back), lost connection, someone else took control, audience can't see captions, send an ad-hoc message, blank/clear.
+5. *If something goes wrong* — wrong line sent (Back), lost connection, someone else took control, audience can't see captions, send an announcement, blank/clear.
 
 **"Writing a show file" must cover every show file convention in doc 03**, each with a short example and the result:
 - one line = one caption (and wrapping; you decide where to break lines)
