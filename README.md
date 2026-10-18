@@ -53,6 +53,22 @@ The first run creates `config.yaml` (in your user config folder; the path is pri
 
 `make help` lists every target. `open-caption --help` lists the command-line options; the manual page is `docs/open-caption.1` (`make man` shows it).
 
+## Documentation
+
+For people who use and run the program (the specifications are further down):
+
+| Guide | For |
+|-------|-----|
+| [docs/usage-guide.md](docs/usage-guide.md) | **Start here:** deployment recommendations, setting up a show, running it, the day-of checklist, troubleshooting |
+| [docs/venue-network-guide.md](docs/venue-network-guide.md) | Whoever manages the venue's WiFi: how audience phones reach the computer |
+| [docs/https-certificate-guide.md](docs/https-certificate-guide.md) | Step by step: a trusted HTTPS certificate with Cloudflare, GoDaddy or EasyDNS (English) |
+| [docs/11-configuration-reference.md](docs/11-configuration-reference.md) | Every `config.yaml` setting, the command-line options and environment variables, checking a show file (English) |
+| [docs/open-caption.1](docs/open-caption.1) | The manual page (`man ./docs/open-caption.1`): options, environment, files, signals, exit status (English) |
+
+The usage guide and the venue network guide are also available in Spanish, French, German, Italian and Portuguese
+(`docs/i18n/`), and everything in the app's **Help** button (written for the person writing the show file and for the
+operator) is translated the same way; the topics are in [web/help/](web/help/).
+
 ## Building and testing
 
 **To run the program you need nothing but the binary.** To build and test it:
@@ -85,13 +101,12 @@ make build ACME_PROVIDERS=none                # no automatic certificates (the s
 
 ## Spec-driven workflow
 
-The documents in `docs/` are the source of truth. Code follows the specs; if
-behavior needs to change, change the spec first (in the same PR).
+The specifications in `docs/` are the source of truth. Code follows the specs; if
+behavior needs to change, change the spec first (in the same PR). (The guides for people who *use* the program are
+under [Documentation](#documentation) above.)
 
-| Doc | Purpose |
+| Spec | Purpose |
 |-----|---------|
-| [docs/usage-guide.md](docs/usage-guide.md) | **Start here for using it:** deployment recommendations, setup, running a show, checklist |
-| [docs/venue-network-guide.md](docs/venue-network-guide.md) | For whoever manages the venue's WiFi |
 | [docs/01-vision-and-requirements.md](docs/01-vision-and-requirements.md) | Goals, users, scope, numbered requirements (REQ-xxx) |
 | [docs/02-architecture.md](docs/02-architecture.md) | Components, state model, transport, persistence, package layout |
 | [docs/03-show-file-format.md](docs/03-show-file-format.md) | The show file syntax and its parsed model |
@@ -102,9 +117,6 @@ behavior needs to change, change the spec first (in the same PR).
 | [docs/08-roadmap.md](docs/08-roadmap.md) | Milestones and task breakdown |
 | [docs/09-open-questions.md](docs/09-open-questions.md) | Resolved decisions and remaining open questions |
 | [docs/10-acme-lets-encrypt.md](docs/10-acme-lets-encrypt.md) | Automatic HTTPS certificates (ACME DNS-01): design, build choices, sizes, tests |
-| [docs/11-configuration-reference.md](docs/11-configuration-reference.md) | Every `config.yaml` setting, the flags and environment variables |
-| [docs/open-caption.1](docs/open-caption.1) | The manual page (`man ./docs/open-caption.1`): options, environment, files, signals, exit status (English) |
-| [docs/https-certificate-guide.md](docs/https-certificate-guide.md) | Step by step: a trusted HTTPS certificate with Cloudflare, GoDaddy or EasyDNS (English) |
 
 Requirement IDs (`REQ-…`) are referenced from the other docs and should be
 referenced from tests and commits.

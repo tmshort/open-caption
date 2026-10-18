@@ -24,7 +24,7 @@ Run `gofmt`, `go vet ./...` and `go test -race ./...` before committing (the ful
 
 ## Spec-driven
 
-`docs/` is the source of truth (see README table); change the spec in the same commit as behavior. Requirements are numbered `REQ-xxx`; reference them from tests and commits. Terminology: the text file a show is written in is the **show file** — never "script".
+`docs/` is the source of truth (the README's *Spec-driven workflow* table lists the specifications `01`–`10`; its *Documentation* table lists the guides for users); change the spec in the same commit as behavior. Requirements are numbered `REQ-xxx`; reference them from tests and commits. Terminology: the text file a show is written in is the **show file** — never "script".
 
 ## Commits and documentation (always)
 
