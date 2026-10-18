@@ -14,7 +14,6 @@ import (
 	"net/netip"
 	"net/url"
 	"os"
-	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -122,10 +121,8 @@ func (a *auth) saveLocked() {
 	if err != nil {
 		return
 	}
-	os.MkdirAll(filepath.Dir(a.path), 0o755)
-	tmp := a.path + ".tmp"
-	if os.WriteFile(tmp, b, 0o600) == nil {
-		os.Rename(tmp, a.path)
+	if err := saveFile(a.path, b, 0o600); err != nil {
+		logx.Warnf("could not save sign-ins (%s): %v; people will have to sign in again after a restart", a.path, err)
 	}
 }
 
