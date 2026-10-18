@@ -106,7 +106,7 @@ In der Reihenfolge der Zuverlässigkeit:
 
 - Standardmäßig lauscht der Server auf **Port 80**, sodass die Publikumsadresse keine Portnummer braucht, zum Beispiel `http://192.168.1.10/`. Benutzt etwas anderes Port 80 oder erlaubt das Betriebssystem ihn nicht, sagt der Server es Ihnen und verwendet stattdessen **Port 8080**; die Publikumsadresse endet dann auf `:8080`. Unter Linux braucht Port 80 eine Berechtigung (`sudo setcap 'cap_net_bind_service=+ep' ./open-caption`), es sei denn, Sie verwenden die systemd-Datei, die sie gewährt.
 - Sie können Ports selbst wählen, mit `--http-addr :8081` oder in `config.yaml`.
-- **HTTPS ist optional.** Einfaches `http://` funktioniert auf jedem Gerät ohne Warnungen und ist die empfohlene Publikumsadresse. Eine selbstsignierte HTTPS-Adresse lässt jedes Gerät eine Sicherheitswarnung zeigen. Schalten Sie HTTPS nur ein, wenn Sie ein Zertifikat installieren können, dem Ihre Geräte vertrauen. Besitzt das Haus einen eigenen Domainnamen, kann das Programm ein vertrauenswürdiges Zertifikat selbst holen und erneuern; siehe `docs/https-certificate-guide.md` (nur auf Englisch).
+- **HTTPS ist optional.** Einfaches `http://` funktioniert auf jedem Gerät ohne Warnungen und ist die empfohlene Publikumsadresse. Eine selbstsignierte HTTPS-Adresse lässt jedes Gerät eine Sicherheitswarnung zeigen. Schalten Sie HTTPS nur ein, wenn Sie ein Zertifikat installieren können, dem Ihre Geräte vertrauen. Besitzt das Haus einen eigenen Domainnamen, kann das Programm ein vertrauenswürdiges Zertifikat selbst holen und erneuern; siehe die [Anleitung für ein vertrauenswürdiges HTTPS-Zertifikat](https-certificate-guide.md) (`docs/https-certificate-guide.md`, nur auf Englisch).
 
 ### Sicherheit
 
