@@ -20,8 +20,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms * SLOW));
 const T = (ms) => ms * SLOW;
 // Every browser started is remembered so that a stuck or failed run still closes them (no orphan Chrome or server left behind).
 const launched = [];
-const realLaunch = puppeteer.launch.bind(puppeteer);
-puppeteer.launch = async (opts) => { const b = await realLaunch(opts); launched.push(b); return b; };
+const launch = async (opts) => { const b = await puppeteer.launch(opts); launched.push(b); return b; };
 async function cleanup() {
   for (const b of launched.splice(0)) {
     const proc = b.process && b.process();
@@ -72,7 +71,7 @@ async function main() {
   port = await freePort(); B = 'http://localhost:' + port;
   await startServer();
 
-  const b = await puppeteer.launch({ executablePath: CHROME, headless: 'new', args: ['--no-sandbox'] });
+  const b = await launch({ executablePath: CHROME, headless: 'new', args: ['--no-sandbox'] });
   const errs = [];
   const open = async (opts = {}) => {
     const p = await b.newPage(); p.setDefaultTimeout(T(8000));
@@ -451,7 +450,7 @@ async function main() {
     // ------------------------------------------------------------------ keeping the screen on
     section('Audience: the screen stays on where the Wake Lock API is missing');
     // A separate browser: Chrome allows six connections per site, and the pages above hold them all open.
-    const b2 = await puppeteer.launch({ executablePath: CHROME, headless: 'new', args: ['--no-sandbox'] });
+    const b2 = await launch({ executablePath: CHROME, headless: 'new', args: ['--no-sandbox'] });
     const nolock = await b2.newPage(); nolock.setDefaultTimeout(T(8000));
     await nolock.setViewport({ width: 420, height: 760 });
     nolock.on('pageerror', (e) => errs.push(e.message));
@@ -585,7 +584,7 @@ async function main() {
 
     // ------------------------------------------------------------------ older browsers
     section('Older browsers: dialogs without <dialog>, and a plain message when a page cannot run');
-    const b3 = await puppeteer.launch({ executablePath: CHROME, headless: 'new', args: ['--no-sandbox'] });
+    const b3 = await launch({ executablePath: CHROME, headless: 'new', args: ['--no-sandbox'] });
     const old = async (script, url) => {
       const p = await b3.newPage(); p.setDefaultTimeout(T(30000)); await p.setViewport({ width: 1100, height: 800 });
       p.on('pageerror', (e) => errs.push(e.message));
@@ -636,7 +635,7 @@ async function main() {
 
     // ------------------------------------------------------------------ interface languages
     section('Interface languages: Setup, the operator page and Help in the six audience languages');
-    const b4 = await puppeteer.launch({ executablePath: CHROME, headless: 'new', args: ['--no-sandbox'] });
+    const b4 = await launch({ executablePath: CHROME, headless: 'new', args: ['--no-sandbox'] });
     // Visible text that is still English although the language has a translation for it.
     const leaksOf = (p) => p.evaluate(() => {
       const dict = new Set(OCI18n.keys(OCI18n.lang)), out = [];

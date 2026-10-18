@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-A single-binary open-captioning server for community theater (Go 1.22+, no CGO). One host serves three web UIs: `/admin` (Setup wizard), `/operator` (spacebar advances the caption), and the audience page. Module path: `github.com/tmshort/open-caption`.
+A single-binary open-captioning server for community theater (Go 1.26+, no CGO). One host serves three web UIs: `/admin` (Setup wizard), `/operator` (spacebar advances the caption), and the audience page. Module path: `github.com/tmshort/open-caption`.
 
 ## Commands
 
