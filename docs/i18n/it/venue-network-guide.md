@@ -38,7 +38,7 @@ Il programma non esegue un proprio server DHCP o DNS, di proposito: andrebbe in 
 
 ## HTTP e HTTPS
 
-Usa `http://` semplice per il pubblico. Un certificato HTTPS autofirmato fa mostrare a ogni dispositivo un avviso di sicurezza. HTTPS è disponibile (`https.enabled: true` in `config.yaml`) per i luoghi che possono installare un certificato di cui i loro dispositivi si fidano. Se la sala possiede un nome di dominio, il programma può ottenere e rinnovare da solo un certificato attendibile; vedi la [guida al certificato HTTPS attendibile](https-certificate-guide.md) (`docs/https-certificate-guide.md`, solo in inglese).
+Usa `http://` semplice per il pubblico. Un certificato HTTPS autofirmato fa mostrare a ogni dispositivo un avviso di sicurezza. HTTPS è disponibile (`https.enabled: true` in `config.yaml`) per i luoghi che possono installare un certificato di cui i loro dispositivi si fidano. Se la sala possiede un nome di dominio, il programma può ottenere e rinnovare da solo un certificato attendibile; vedi la [guida al certificato HTTPS attendibile](https-certificate-guide.md) (`docs/https-certificate-guide.md`).
 
 Un piccolo costo dell'HTTP semplice: i browser permettono «tieni lo schermo acceso» solo sulle pagine sicure. Con HTTP la pagina tiene acceso lo schermo del telefono con un minuscolo video in ciclo, silenzioso e invisibile. Un telefono in modalità risparmio energetico può rifiutarlo; la pagina mostra allora, una sola volta, un suggerimento che chiede di disattivare il blocco automatico.
 

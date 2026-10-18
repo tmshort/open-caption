@@ -61,12 +61,12 @@ For people who use and run the program (the specifications are further down):
 |-------|-----|
 | [docs/usage-guide.md](docs/usage-guide.md) | **Start here:** deployment recommendations, setting up a show, running it, the day-of checklist, troubleshooting |
 | [docs/venue-network-guide.md](docs/venue-network-guide.md) | Whoever manages the venue's WiFi: how audience phones reach the computer |
-| [docs/https-certificate-guide.md](docs/https-certificate-guide.md) | Step by step: a trusted HTTPS certificate with Cloudflare, GoDaddy or EasyDNS (English) |
+| [docs/https-certificate-guide.md](docs/https-certificate-guide.md) | Step by step: a trusted HTTPS certificate with Cloudflare, GoDaddy or EasyDNS |
 | [docs/11-configuration-reference.md](docs/11-configuration-reference.md) | Every `config.yaml` setting, the command-line options and environment variables, checking a show file (English) |
 | [docs/open-caption.1](docs/open-caption.1) | The manual page (`man ./docs/open-caption.1`): options, environment, files, signals, exit status (English) |
 
-The usage guide and the venue network guide are also available in Spanish, French, German, Italian and Portuguese
-(`docs/i18n/`), and everything in the app's **Help** button (written for the person writing the show file and for the
+The usage guide, the venue network guide and the HTTPS certificate guide are also available in Spanish, French, German,
+Italian and Portuguese (`docs/i18n/`), and everything in the app's **Help** button (written for the person writing the show file and for the
 operator) is translated the same way; the topics are in [web/help/](web/help/).
 
 ## Building and testing

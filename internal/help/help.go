@@ -364,8 +364,9 @@ var topicHref = regexp.MustCompile(`^(admin|operator)-[a-z0-9-]+$`)
 // Aliases maps file names used in Markdown links (for example "usage-guide.md") to topic ids,
 // so documents written for GitHub keep working when shown in the app.
 var Aliases = map[string]string{
-	"usage-guide.md":         "admin-usage-guide",
-	"venue-network-guide.md": "admin-venue-network-guide",
+	"usage-guide.md":             "admin-usage-guide",
+	"venue-network-guide.md":     "admin-venue-network-guide",
+	"https-certificate-guide.md": "admin-https-certificate-guide",
 }
 
 // pathLinks are help topics as GitHub shows them (web/help/<id>.md), so a guide can link to them from either place.

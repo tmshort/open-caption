@@ -106,7 +106,7 @@ In order of reliability:
 
 - By default the server listens on **port 80**, so the audience address needs no port number, for example `http://192.168.1.10/`. If something else is using port 80, or the operating system does not allow it, the server tells you and uses **port 8080** instead; the audience address then ends in `:8080`. On Linux, port 80 needs permission (`sudo setcap 'cap_net_bind_service=+ep' ./open-caption`) unless you use the systemd file, which grants it.
 - You can choose ports yourself with `--http-addr :8081`, or in `config.yaml`.
-- **HTTPS is optional.** Plain `http://` works on every device without warnings and is the recommended audience address. A self-signed HTTPS address makes every device show a security warning. Turn HTTPS on only if you can install a certificate your devices trust. If the venue owns a domain name, the program can get and renew a trusted certificate by itself; see the [trusted HTTPS certificate guide](https-certificate-guide.md) (`docs/https-certificate-guide.md`, English only).
+- **HTTPS is optional.** Plain `http://` works on every device without warnings and is the recommended audience address. A self-signed HTTPS address makes every device show a security warning. Turn HTTPS on only if you can install a certificate your devices trust. If the venue owns a domain name, the program can get and renew a trusted certificate by itself; see the [trusted HTTPS certificate guide](https-certificate-guide.md) (`docs/https-certificate-guide.md`).
 
 ### Security
 

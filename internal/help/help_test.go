@@ -246,7 +246,7 @@ func TestLinksInsideCodeAreLeftAlone(t *testing.T) {
 // The guides in docs/ ship inside the program, so they must display properly there.
 func TestGuidesRenderCleanlyInTheApp(t *testing.T) {
 	topics := guideTopics(t)
-	if len(topics) != 2 {
+	if len(topics) != 3 {
 		t.Fatalf("guides: %d", len(topics))
 	}
 	all := loadAll(t)
@@ -284,6 +284,12 @@ func TestGuidesRenderCleanlyInTheApp(t *testing.T) {
 	// The usage guide links to the venue guide; both resolve to topics.
 	if out := Render(topics["admin-usage-guide"].Markdown); !strings.Contains(out, `data-topic="admin-venue-network-guide"`) {
 		t.Error("usage guide does not link to the venue network guide")
+	}
+	// The usage guide and the venue guide both lead to the certificate guide (a link that works in the app).
+	for _, id := range []string{"admin-usage-guide", "admin-venue-network-guide"} {
+		if out := Render(topics[id].Markdown); !strings.Contains(out, `data-topic="admin-https-certificate-guide"`) {
+			t.Errorf("%s does not link to the certificate guide", id)
+		}
 	}
 	// ...and to the preparer's topics, by the path GitHub shows.
 	for _, id := range []string{"admin-preparing-a-show-file", "admin-getting-started"} {
@@ -337,7 +343,7 @@ func shapeOf(md string) docShape {
 	return s
 }
 
-// translatedDocs returns every English document that has to be translated, by id: the help topics and the two guides.
+// translatedDocs returns every English document that has to be translated, by id: the help topics and the three guides.
 func englishDocs(t *testing.T) map[string]string {
 	t.Helper()
 	out := map[string]string{}

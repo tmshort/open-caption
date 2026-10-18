@@ -106,7 +106,7 @@ En orden de fiabilidad:
 
 - Por defecto el servidor escucha en el **puerto 80**, así que la dirección del público no necesita número de puerto, por ejemplo `http://192.168.1.10/`. Si algo más usa el puerto 80, o el sistema operativo no lo permite, el servidor se lo dice y usa el **puerto 8080**; entonces la dirección del público termina en `:8080`. En Linux, el puerto 80 necesita permiso (`sudo setcap 'cap_net_bind_service=+ep' ./open-caption`) salvo que use el archivo de systemd, que lo concede.
 - Puede elegir los puertos usted mismo con `--http-addr :8081`, o en `config.yaml`.
-- **HTTPS es opcional.** `http://` sencillo funciona en todos los dispositivos sin advertencias y es la dirección recomendada para el público. Una dirección HTTPS autofirmada hace que cada dispositivo muestre una advertencia de seguridad. Active HTTPS solo si puede instalar un certificado en el que confíen sus dispositivos. Si el local tiene un nombre de dominio propio, el programa puede obtener y renovar solo un certificado de confianza; véase la [guía del certificado HTTPS de confianza](https-certificate-guide.md) (`docs/https-certificate-guide.md`, solo en inglés).
+- **HTTPS es opcional.** `http://` sencillo funciona en todos los dispositivos sin advertencias y es la dirección recomendada para el público. Una dirección HTTPS autofirmada hace que cada dispositivo muestre una advertencia de seguridad. Active HTTPS solo si puede instalar un certificado en el que confíen sus dispositivos. Si el local tiene un nombre de dominio propio, el programa puede obtener y renovar solo un certificado de confianza; véase la [guía del certificado HTTPS de confianza](https-certificate-guide.md) (`docs/https-certificate-guide.md`).
 
 ### Seguridad
 

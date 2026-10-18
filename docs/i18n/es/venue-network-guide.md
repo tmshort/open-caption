@@ -38,7 +38,7 @@ El programa no ejecuta su propio servidor DHCP ni DNS, a propósito: chocaría c
 
 ## HTTP y HTTPS
 
-Use `http://` sencillo para el público. Un certificado HTTPS autofirmado hace que cada dispositivo muestre una advertencia de seguridad. HTTPS está disponible (`https.enabled: true` en `config.yaml`) para sitios que puedan instalar un certificado en el que confíen sus dispositivos. Si el local tiene un nombre de dominio propio, el programa puede obtener y renovar solo un certificado de confianza; véase la [guía del certificado HTTPS de confianza](https-certificate-guide.md) (`docs/https-certificate-guide.md`, solo en inglés).
+Use `http://` sencillo para el público. Un certificado HTTPS autofirmado hace que cada dispositivo muestre una advertencia de seguridad. HTTPS está disponible (`https.enabled: true` en `config.yaml`) para sitios que puedan instalar un certificado en el que confíen sus dispositivos. Si el local tiene un nombre de dominio propio, el programa puede obtener y renovar solo un certificado de confianza; véase la [guía del certificado HTTPS de confianza](https-certificate-guide.md) (`docs/https-certificate-guide.md`).
 
 Un pequeño inconveniente del HTTP sencillo: los navegadores solo permiten «mantener la pantalla encendida» en páginas seguras. Con HTTP la página mantiene encendida la pantalla del teléfono con un pequeño vídeo en bucle, silencioso e invisible. Un teléfono en modo de bajo consumo puede rechazarlo; entonces la página muestra un consejo, una sola vez, que pide a la gente desactivar el bloqueo automático.
 

@@ -1,6 +1,6 @@
 # Set up a trusted HTTPS certificate (optional)
 
-This guide is for the person who looks after the captioning computer. It is **optional**: the captions work without it. (This guide is in English only; the settings it uses are in the [configuration reference](11-configuration-reference.md), and the design and tests are in [doc 10](10-acme-lets-encrypt.md).)
+This guide is for the person who looks after the captioning computer. It is **optional**: the captions work without it. (The settings it uses are in the [configuration reference](11-configuration-reference.md), and the design and tests are in [doc 10](10-acme-lets-encrypt.md); both are in English only.)
 
 ## Do you need this?
 
