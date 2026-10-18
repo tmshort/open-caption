@@ -167,22 +167,26 @@ volunteers: plain language, short, with examples.
 
 **Format and source.** Topics are Markdown files in `web/help/`, rendered with the same renderer as show files. Examples are fenced code blocks with **Copy** (and, in the show file editor, **Insert at cursor**) buttons.
 
-**Topics for admins**
+**Topics for admins** (in the order of the list, which opens on the first)
 1. *Getting started* — the six wizard steps; how to find the audience URL/QR; where passwords are (`config.yaml`).
-2. *Writing a show file* — the Markdown conventions (below).
-3. *Images* — formats, sizes, the 1 MB warning, naming, what "missing image" means.
-4. *Loops: pre-show and intermission* — syntax, durations, how the operator starts/stops them.
+2. *Preparing a show file* — for whoever turns the script into captions, including editing the file in their own program and checking it offline (`--check-show`).
+3. *Writing a show file* — the Markdown conventions (below).
+4. *Images* — formats, sizes, the 1 MB warning, naming, what "missing image" means.
 5. *Look and feel* — themes, contrast, speaker colors, projector mode.
 6. *Languages* — translated show files, identical structure, how audiences pick.
-7. *Network and joining* — URL, QR, HTTPS caveats, venue prerequisites.
-8. *Troubleshooting* — port in use, nobody can connect, images slow, show file warnings explained.
+7. *Loops: pre-show and intermission* — syntax, durations, timers, how the operator starts/stops them.
+8. *Musicals* — lyrics, voices together, clearing between numbers.
+9. *Network and joining* — URL, QR, the `.local` name, HTTPS caveats, venue prerequisites.
+10. *Troubleshooting* — port in use, nobody can connect, images slow, show file warnings explained, the log and the support bundle.
 
 **Topics for operators**
-1. *Running the show* — one-page summary: NEXT, Back, STOP, what the highlighted line means.
+1. *Running the show* — one-page summary: NEXT, Back, STOP, what the highlighted line means, the words used on the page.
 2. *Keyboard reference* — the table in section 2 (generated from the same key map the page uses, so it can't drift).
-3. *Loops* — how they start, STOP (blank), NEXT (continue), Back (restart).
-4. *Indicators* — connection dot, audience count, controller/takeover, image/loop chips.
+3. *Indicators* — connection dot, audience count, controller/takeover, banners, image/loop chips.
+4. *Loops for the operator* — how they start, STOP (blank), NEXT (continue), Back (restart).
 5. *If something goes wrong* — wrong line sent (Back), lost connection, someone else took control, audience can't see captions, send an announcement, blank/clear.
+
+**Guides and reference.** After the topics, under their own heading (**Guides and reference**), the longer documents from `docs/` that ship inside the program (`docs/embed.go`): the *usage guide*, the *venue network guide*, the *trusted HTTPS certificate guide* and the *`config.yaml` reference*, each translated into the five other languages (`docs/i18n/<code>/`). The order of all of it is `topicOrder` in `internal/help`; a test fails when a topic is not in that list. The manual page and the certificate design notes (doc 10) are English only and are not in the app.
 
 **"Writing a show file" must cover every show file convention in doc 03**, each with a short example and the result:
 - one line = one caption (and wrapping; you decide where to break lines)

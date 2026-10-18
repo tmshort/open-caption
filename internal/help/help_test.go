@@ -497,3 +497,36 @@ func TestGuideLinksResolveWhateverTheNumberOfDotDotIs(t *testing.T) {
 		t.Errorf("an unknown path must not become a link: %s", out)
 	}
 }
+
+func TestTopicListOrderPutsGettingStartedFirstAndTheGuidesLast(t *testing.T) {
+	all := loadAll(t)
+	listed := map[string]bool{}
+	for _, id := range topicOrder {
+		listed[id] = true
+	}
+	var ts []Topic
+	for id, tp := range all {
+		if !listed[id] {
+			t.Errorf("the topic %s is not in topicOrder: add it where it belongs in the list", id)
+		}
+		ts = append(ts, tp)
+	}
+	for id := range guideTopics(t) {
+		if !listed[id] {
+			t.Errorf("the guide %s is not in topicOrder", id)
+		}
+	}
+	SortTopics(ts)
+	if len(ts) == 0 || ts[0].ID != "admin-getting-started" {
+		t.Errorf("the first topic should be Getting started, not %v", ts[0].ID)
+	}
+	if tp, err := FromMarkdown("admin-x", "admin", "# `config.yaml` reference\n\nText"); err != nil || tp.Title != "config.yaml reference" {
+		t.Errorf("a title is plain text in the list: %q %v", tp.Title, err)
+	}
+	// unknown topics follow the listed ones
+	more := []Topic{{ID: "admin-zzz-new"}, {ID: "admin-getting-started"}}
+	SortTopics(more)
+	if more[0].ID != "admin-getting-started" || more[1].ID != "admin-zzz-new" {
+		t.Errorf("%v", more)
+	}
+}

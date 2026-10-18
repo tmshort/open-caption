@@ -25,7 +25,8 @@
     const nav = $('topics'); nav.replaceChildren();
     if (hits) { nav.append(...listTopics(hits.map((h) => h), hits.length ? 'Search results' : 'No matches')); return; }
     const mine = topics.filter((t) => t.role === role), other = topics.filter((t) => t.role !== role);
-    nav.append(...listTopics(mine, role === 'admin' ? 'Setting up' : 'Running the show'), ...listTopics(other, role === 'admin' ? 'For the operator' : 'For whoever sets up'));
+    const guides = mine.filter((t) => t.guide);
+    nav.append(...listTopics(mine.filter((t) => !t.guide), role === 'admin' ? 'Setting up' : 'Running the show'), ...(guides.length ? listTopics(guides, 'Guides and reference') : []), ...listTopics(other, role === 'admin' ? 'For the operator' : 'For whoever sets up'));
     mark();
   }
   function mark() { document.querySelectorAll('#topics a').forEach((a) => (a.dataset.topic === current ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'))); }

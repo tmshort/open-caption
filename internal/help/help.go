@@ -17,10 +17,40 @@ import (
 
 // Topic is one help page.
 type Topic struct {
-	ID       string `json:"id"`
-	Title    string `json:"title"`
-	Role     string `json:"role"` // "admin" | "operator"
+	ID    string `json:"id"`
+	Title string `json:"title"`
+	Role  string `json:"role"` // "admin" | "operator"
+	// Guide marks the long guides and references (docs/) as against the short how-to topics (web/help/), so the topic
+	// list can show them under their own heading.
+	Guide    bool   `json:"guide,omitempty"`
 	Markdown string `json:"-"`
+}
+
+// topicOrder is the order of the topic list: what to read first, then the rest, then the guides and references.
+// A topic that is not listed (a new file) goes after the listed ones of its kind, by id.
+var topicOrder = []string{
+	"admin-getting-started", "admin-preparing-a-show-file", "admin-writing-a-show-file", "admin-images", "admin-look-and-feel",
+	"admin-languages", "admin-loops", "admin-musicals", "admin-network", "admin-troubleshooting",
+	"operator-running-the-show", "operator-keyboard", "operator-indicators", "operator-loops", "operator-if-something-goes-wrong",
+	"admin-usage-guide", "admin-venue-network-guide", "admin-https-certificate-guide", "admin-configuration-reference",
+}
+
+// SortTopics puts topics in topicOrder.
+func SortTopics(ts []Topic) {
+	rank := func(id string) int {
+		for i, o := range topicOrder {
+			if o == id {
+				return i
+			}
+		}
+		return len(topicOrder)
+	}
+	sort.SliceStable(ts, func(i, j int) bool {
+		if ri, rj := rank(ts[i].ID), rank(ts[j].ID); ri != rj {
+			return ri < rj
+		}
+		return ts[i].ID < ts[j].ID
+	})
 }
 
 // Languages are the languages the help is written in; English is the original and the others are translations
@@ -468,5 +498,6 @@ func FromMarkdown(id, role, md string) (Topic, error) {
 	if !strings.HasPrefix(first, "# ") {
 		return Topic{}, fmt.Errorf("topic %q must start with a '# Title' line", id)
 	}
-	return Topic{ID: id, Title: strings.TrimSpace(first[2:]), Role: role, Markdown: md}, nil
+	// the title is shown as plain text in the topic list, so the backticks of a title such as "`config.yaml` reference" go
+	return Topic{ID: id, Title: strings.ReplaceAll(strings.TrimSpace(first[2:]), "`", ""), Role: role, Markdown: md}, nil
 }

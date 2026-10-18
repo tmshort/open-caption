@@ -648,5 +648,6 @@ OCI18n.add("it", {
  "Renew now": "Rinnova ora",
  "Getting a certificate; this can take a few minutes": "Ottenimento di un certificato; può richiedere qualche minuto",
  "Automatic certificates are not turned on.": "I certificati automatici non sono attivi.",
- "A certificate is already being fetched.": "Un certificato è già in corso di ottenimento."
+ "A certificate is already being fetched.": "Un certificato è già in corso di ottenimento.",
+ "Guides and reference": "Guide e riferimento"
 });

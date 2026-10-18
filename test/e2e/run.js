@@ -673,8 +673,8 @@ async function main() {
       check(lang + ': no English is left in Setup (steps, Settings dialog)', leaks.length === 0, [...new Set(leaks)].slice(0, 8));
       const hp = await uiPage('/help?role=admin', lang);
       await hp.waitForFunction(() => { const h = document.querySelector('#doc h1'); return h && h.textContent.trim().length > 0; }, { timeout: 8000 }).catch(() => {});
-      const helpState = await hp.evaluate(() => ({ title: (document.querySelector('#doc h1') || {}).textContent, topics: document.getElementById('topics').innerText.slice(0, 200), leaks: [] }));
-      check(lang + ': Help shows its topics and pages in the language', helpState.title === HELP_TITLE[lang] && !/Setting up|For the operator/.test(helpState.topics), helpState);
+      const helpState = await hp.evaluate(() => ({ title: (document.querySelector('#doc h1') || {}).textContent, topics: document.getElementById('topics').innerText.slice(0, 200), heads: document.querySelectorAll('#topics h2').length, leaks: [] }));
+      check(lang + ': Help shows its topics and pages in the language', helpState.title === HELP_TITLE[lang] && !/Setting up|For the operator|Guides and reference/.test(helpState.topics) && helpState.heads === 3, helpState);
       await hp.close();
       await a.close();
     }

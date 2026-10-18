@@ -4,7 +4,6 @@ import (
 	"io/fs"
 	"net/http"
 	"path"
-	"sort"
 
 	"github.com/tmshort/open-caption/docs"
 	"github.com/tmshort/open-caption/internal/help"
@@ -34,10 +33,11 @@ func (s *Server) helpRoutes(mux *http.ServeMux) {
 		if err != nil {
 			panic("help: " + err.Error())
 		}
+		t.Guide = true
 		topics = append(topics, t)
 		guideBase[id] = file
 	}
-	sort.Slice(topics, func(i, j int) bool { return topics[i].ID < topics[j].ID })
+	help.SortTopics(topics)
 	byLang := map[string][]help.Topic{"en": topics}
 	byIDLang := map[string]map[string]help.Topic{}
 	for _, lang := range help.Languages[1:] {
@@ -49,6 +49,7 @@ func (s *Server) helpRoutes(mux *http.ServeMux) {
 			if file := guideBase[t.ID]; file != "" {
 				if b, err := fs.ReadFile(docs.Guides, path.Join("i18n", lang, file)); err == nil {
 					if g, err := help.FromMarkdown(t.ID, "admin", string(b)); err == nil {
+						g.Guide = true
 						tr[i] = g
 					}
 				}
