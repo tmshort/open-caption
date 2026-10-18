@@ -109,7 +109,13 @@
     S.payload = p;
     if (needCues) {
       const r = await api('GET', API + '/state');
-      if (r.ok) { applyState(r.data.cues, r.data.payload); return; }
+      if (r.ok) {
+        // A newer update may have arrived while the show was being fetched; never put an older one back over it.
+        const newer = S.payload !== p;
+        if (newer && S.payload.cuesVer !== r.data.payload.cuesVer) return; // that update fetches the show itself
+        applyState(r.data.cues, newer ? S.payload : r.data.payload);
+        return;
+      }
     }
     renderStatus();
     renderMarkers(true);
