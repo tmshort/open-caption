@@ -55,10 +55,20 @@ So the **API token (and key) is the password the program uses to add and delete 
 
 ## What "compatible but not free" means
 
-The project is one binary with no CGO and very few dependencies (today only `yaml.v3` and `golang.org/x/net`). Any ACME library is compatible with that (pure Go, cross-compiles with `make dist`), but each one has a cost:
+The project is one binary with no CGO and very few dependencies (today only `yaml.v3` and `golang.org/x/net`). Any ACME library is compatible with that (pure Go, cross-compiles with `make dist`), but each one has a cost (not in megabytes, as the measurement below shows):
 
-- `autocert` is small, but it is in `golang.org/x/crypto`, a **new module** the project does not use today, and it cannot do DNS-01.
-- `lego` and `certmagic` can do DNS-01, but each brings **many dependencies** (HTTP clients, a DNS library, and code for dozens of DNS providers). That makes the binary larger (not measured here; expect a noticeable number of megabytes), lengthens builds, and widens the supply-chain surface: more code whose security updates must be followed.
+- `autocert` is tiny, but it is in `golang.org/x/crypto`, a **new module** the project does not use today, and it cannot do DNS-01.
+- `lego` can do DNS-01 (and `certmagic` can, through its own provider packages), but it brings **more dependencies** (a JOSE library, a DNS library, `golang.org/x/crypto` and `x/text`, plus the one provider's package). That lengthens builds and widens the supply-chain surface: more code whose security updates must be followed. Only the providers you import are linked, so supporting EasyDNS alone does not pull in the dozens of others.
+
+**Measured size** (2026-10-18; `go build -ldflags="-s -w"` on macOS/arm64, a throwaway copy of the repo that only references the library, not a working feature):
+
+| Build | Binary | Change | Go modules linked |
+|---|---|---|---|
+| Today | 10,847,410 bytes (10.3 MiB) | n/a | 5 (this program, `go-qrcode`, `x/net`, `x/sys`, `yaml.v3`) |
+| + `autocert` (HTTP-01 / TLS-ALPN-01 only) | 10,897,378 bytes | +50 KB (+0.5%) | +1 (`x/crypto`) |
+| + `lego` with the EasyDNS provider (DNS-01) | 11,056,818 bytes | **+209 KB (+1.9%)** | +6 (`lego`, `go-jose`, `miekg/dns`, `backoff`, `x/crypto`, `x/text`) |
+
+The real feature's own code (configuration, storage, renewal loop, the Setup panel) would add a little more, but the library is the larger part and is small. So **size is not the cost**; the cost is the extra modules to keep up to date and the maintenance of the failure cases below.
 - Either way the project takes on code to maintain, a test suite for failure cases, and a dependency whose provider list can break when a DNS company changes its API.
 
 So "compatible" means it fits the single-binary, no-CGO rules; "not free" means it adds size, dependencies and maintenance.
