@@ -1,0 +1,81 @@
+# GoReleaser: builds and packages a release when a version tag is pushed (docs/release process: docs/releasing.md).
+#   git tag v1.2.3 && git push origin v1.2.3     (GitHub Actions: .github/workflows/release.yml)
+#   make release-snapshot                        (try the packaging locally; publishes nothing)
+version: 2
+project_name: open-caption
+
+before:
+  hooks:
+    - sh tools/package-readme.sh .tools/README.release.md
+
+builds:
+  - id: open-caption
+    main: ./cmd/open-caption
+    binary: open-caption
+    env: [CGO_ENABLED=0]
+    flags: [-trimpath]
+    ldflags: ["-s -w -X main.version={{.Version}}"]
+    goos: [darwin, linux, windows]
+    goarch: [amd64, arm64]
+    ignore:
+      - goos: windows
+        goarch: arm64
+
+archives:
+  - id: open-caption
+    formats: [tar.gz]
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    name_template: >-
+      {{ .ProjectName }}_{{ .Version }}_{{ if eq .Os "darwin" }}macOS{{ else }}{{ title .Os }}{{ end }}_{{ .Arch }}
+    wrap_in_directory: true
+    # The program, the README (without the source-only parts), the licence, the guides for the people who run the
+    # program (not the design specifications 01-09), their translations and the start-at-boot files.
+    files:
+      - src: .tools/README.release.md
+        dst: README.md
+      - LICENSE
+      - NOTICE
+      - docs/open-caption.1
+      - docs/usage-guide.md
+      - docs/venue-network-guide.md
+      - docs/https-certificate-guide.md
+      - docs/configuration-reference.md
+      - docs/10-acme-lets-encrypt.md
+      - docs/i18n/README.md
+      - docs/i18n/*/*.md
+      - web/help/*.md
+      - web/help/*/*.md
+      - web/sample/sample-show.md
+      - web/sample/sample-show.es.md
+      - deploy/README.md
+      - deploy/open-caption.service
+      - deploy/org.open-caption.server.plist
+      - deploy/windows-install.ps1
+
+checksum:
+  name_template: checksums.txt
+  algorithm: sha256
+
+changelog:
+  sort: asc
+  filters:
+    exclude: ["^Merge "]
+
+release:
+  draft: true          # review the notes and the files, then press Publish
+  prerelease: auto     # v1.2.3-rc1 is marked as a pre-release
+  header: |
+    ## Installing
+
+    Unzip (Windows) or untar (macOS, Linux) the file for your computer and run `open-caption` (`open-caption.exe`); the README in it has the steps.
+    **Intel and AMD computers are `amd64`; Apple silicon (M1 and later) and ARM are `arm64`.**
+
+    These programs are **not code-signed**, so macOS and Windows warn the first time:
+
+    - **macOS:** if it says the program "cannot be opened" or is from an unidentified developer, run `xattr -dr com.apple.quarantine open-caption_*` in the unpacked folder, or open **System Settings → Privacy & Security** after the first attempt and click **Open Anyway**.
+    - **Windows:** if SmartScreen says "Windows protected your PC", click **More info → Run anyway**. If the zip itself is blocked, right-click it → Properties → **Unblock** before unzipping.
+    - **Linux:** nothing to do.
+
+    `checksums.txt` has the SHA-256 of every file.

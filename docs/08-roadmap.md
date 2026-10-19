@@ -47,7 +47,8 @@ Each milestone is shippable and ends with a demoable result. Tasks reference req
 ## After M5: hardening and polish
 - [x] Access lists for Setup/operator, forged-request check, scroll-back for the audience, rewritten end-to-end test (`make e2e`, also a CI job), specs reconciled (2026-10-15)
 - [ ] Real-device rehearsal (the largest remaining risk); minimum browser versions to be set from it
-- [ ] Signed/notarized builds, installers, release pipeline
+- [x] Release pipeline: a `v*` tag builds and packages every platform with the guides as a draft GitHub release (GoReleaser; doc `releasing.md`)
+- [ ] Signed/notarized builds and installers (by decision, users deal with the unsigned-program warnings)
 - [ ] Screen-reader and contrast audit
 
 ## Housekeeping after M5

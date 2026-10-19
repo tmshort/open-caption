@@ -128,8 +128,8 @@ Par ordre de fiabilité :
 
 ## Installation et démarrage
 
-1. **Procurez-vous le programme.** Téléchargez la version pour votre ordinateur (ou lancez `make dist` pour toutes les construire). Placez-la dans un dossier que vous garderez, par exemple `Documents/open-caption`.
-2. **Premier démarrage.** Lancez-le : double-clic sous Windows, ou dans un terminal `./open-caption` (macOS/Linux ; sous macOS, le premier lancement peut nécessiter *clic droit → Ouvrir* car le programme n'est pas signé).
+1. **Procurez-vous le programme.** Téléchargez la version pour votre ordinateur depuis la page *Releases* du dépôt et décompressez-la (ou construisez-la vous-même : voir les guides de compilation du README). Placez-la dans un dossier que vous garderez, par exemple `Documents/open-caption`.
+2. **Premier démarrage.** Lancez-le : double-clic sous Windows, ou dans un terminal `./open-caption` (macOS/Linux). Le programme n'est pas signé : le premier lancement peut demander un clic de plus. Sous macOS, *clic droit → Ouvrir* (ou **Ouvrir quand même** dans Réglages Système → Confidentialité et sécurité) ; sous Windows, *Informations complémentaires → Exécuter quand même* dans la fenêtre SmartScreen.
 3. **Notez les mots de passe.** La première fois, le programme affiche les mots de passe **administrateur** et **opérateur** et l'emplacement de `config.yaml`. Ils restent dans ce fichier.
 4. La page de configuration s'ouvre dans votre navigateur. Sinon, ouvrez `http://localhost/admin` (ou `http://localhost:8080/admin` si la console dit qu'elle a utilisé le port 8080).
 5. **Choisissez où vivent les données (facultatif).** Par défaut, les spectacles et réglages sont dans le dossier de configuration de votre utilisateur (macOS `~/Library/Application Support/open-caption`, Linux `~/.config/open-caption`, Windows `%AppData%\open-caption`). Pour tout garder dans un dossier de votre choix, démarrez avec `--data <dossier>`. Utilisez toujours le même dossier.

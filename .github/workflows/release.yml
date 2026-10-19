@@ -1,0 +1,27 @@
+# Push a version tag and this builds every platform, packages it with the documentation, and attaches it all to a
+# DRAFT release on GitHub for you to review and publish (docs/releasing.md):
+#
+#     git tag v1.2.3
+#     git push origin v1.2.3
+name: release
+on:
+  push:
+    tags:
+      - 'v*'
+permissions:
+  contents: write   # to create the release and attach the files
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0   # the release notes are made from the commits since the last tag
+      - uses: actions/setup-go@v7
+        with:
+          go-version: stable
+      # the same command as a release made from your own computer; it runs the Go tests first
+      - run: make release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

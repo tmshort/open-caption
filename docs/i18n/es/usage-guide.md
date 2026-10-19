@@ -128,8 +128,8 @@ En orden de fiabilidad:
 
 ## Instalación y arranque
 
-1. **Consiga el programa.** Descargue la versión para su equipo (o ejecute `make dist` para construirlas todas). Póngala en una carpeta que vaya a conservar, por ejemplo `Documentos/open-caption`.
-2. **Primer arranque.** Ejecútelo: haga doble clic en Windows, o en una terminal ejecute `./open-caption` (macOS/Linux; en macOS la primera vez puede hacer falta *clic derecho → Abrir* porque el programa no está firmado).
+1. **Consiga el programa.** Descargue la versión para su equipo de la página *Releases* del repositorio y descomprímala (o constrúyala usted: vea las guías de compilación en el README). Póngala en una carpeta que vaya a conservar, por ejemplo `Documentos/open-caption`.
+2. **Primer arranque.** Ejecútelo: haga doble clic en Windows, o en una terminal ejecute `./open-caption` (macOS/Linux). El programa no está firmado, así que la primera vez puede hacer falta un clic: en macOS *clic derecho → Abrir* (o **Abrir de todos modos** en Ajustes del Sistema → Privacidad y seguridad), en Windows *Más información → Ejecutar de todas formas* en la ventana de SmartScreen.
 3. **Anote las contraseñas.** La primera vez, el programa imprime las contraseñas de **administrador** y de **operador** y dónde está `config.yaml`. Se quedan en ese archivo.
 4. La página de configuración se abre en su navegador. Si no, abra `http://localhost/admin` (o `http://localhost:8080/admin` si la consola dice que usó el puerto 8080).
 5. **Elija dónde viven los datos (opcional).** Por defecto, los espectáculos y los ajustes están en la carpeta de configuración de su usuario (macOS `~/Library/Application Support/open-caption`, Linux `~/.config/open-caption`, Windows `%AppData%\open-caption`). Para guardar todo en una carpeta que usted elija, arranque con `--data <carpeta>`. Use siempre la misma carpeta.

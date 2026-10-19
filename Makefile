@@ -9,10 +9,12 @@ ACME_PROVIDERS ?= cloudflare godaddy easydns
 # Pebble is Let's Encrypt's test CA, used by `make pebble-test`; change the version here, run `make vulncheck`, then `make pebble-test`.
 PEBBLE_VERSION ?= v2.10.1
 PEBBLE_PKG := github.com/letsencrypt/pebble/v2
+# GoReleaser builds and packages a release (docs/releasing.md); the version is pinned here, for `make release` locally and in the workflow.
+GORELEASER_VERSION ?= v2.18.3
 TOOLS := $(CURDIR)/.tools
 
 .DEFAULT_GOAL := help
-.PHONY: help build test race fuzz vet vulncheck pebble pebble-test tidy e2e a11y i18n dist man acme-variants clean
+.PHONY: help build test race fuzz vet vulncheck pebble pebble-test goreleaser release release-snapshot tidy e2e a11y i18n dist man acme-variants clean
 
 help: ## Show this list of targets
 	@echo "open-caption: make <target>"; echo
@@ -28,16 +30,28 @@ fuzz: ## Fuzz the show-file parser for 30 seconds
 	go test ./internal/showfile -run xxx -fuzz FuzzParse -fuzztime 30s
 vet: ## Run go vet
 	go vet ./...
-vulncheck: pebble ## Check the dependencies, Go and the pinned test tools (Pebble) for known vulnerabilities, and say if a pinned tool has a newer release (govulncheck; needs internet)
+vulncheck: pebble goreleaser ## Check the dependencies, Go and the pinned tools (Pebble, GoReleaser) for known vulnerabilities, and say if a pinned tool has a newer release (govulncheck; needs internet)
 	go run golang.org/x/vuln/cmd/govulncheck@latest ./...
 	go run golang.org/x/vuln/cmd/govulncheck@latest -mode=binary $(TOOLS)/bin/pebble
 	go run golang.org/x/vuln/cmd/govulncheck@latest -mode=binary $(TOOLS)/bin/pebble-challtestsrv
+	@echo "GoReleaser (a build tool; what it reports is shown but does not fail this check, since it is in the libraries of that program, not in open-caption):"
+	-go run golang.org/x/vuln/cmd/govulncheck@latest -mode=binary $(TOOLS)/bin/goreleaser
+	@latest=$$(go list -m -f '{{.Version}}' github.com/goreleaser/goreleaser/v2@latest 2>/dev/null); \
+	if [ -n "$$latest" ] && [ "$$latest" != "$(GORELEASER_VERSION)" ]; then echo "note: GoReleaser $$latest is out; the pinned version is $(GORELEASER_VERSION) (GORELEASER_VERSION in the Makefile)"; else echo "GoReleaser $(GORELEASER_VERSION) is the latest release"; fi
 	@latest=$$(go list -m -f '{{.Version}}' $(PEBBLE_PKG)@latest 2>/dev/null); \
 	if [ -n "$$latest" ] && [ "$$latest" != "$(PEBBLE_VERSION)" ]; then echo "note: Pebble $$latest is out; the pinned version is $(PEBBLE_VERSION) (PEBBLE_VERSION in the Makefile)"; else echo "Pebble $(PEBBLE_VERSION) is the latest release"; fi
 pebble: ## Install the pinned Pebble (test CA) into .tools/bin (needs internet the first time)
 	GOBIN=$(TOOLS)/bin go install $(PEBBLE_PKG)/cmd/pebble@$(PEBBLE_VERSION) $(PEBBLE_PKG)/cmd/pebble-challtestsrv@$(PEBBLE_VERSION)
 pebble-test: pebble ## Run the real ACME path (DNS-01) against the pinned Pebble
 	PEBBLE_BIN=$(TOOLS)/bin PEBBLE_DIR=$$(go env GOMODCACHE)/$(PEBBLE_PKG)@$(PEBBLE_VERSION) go test -count=1 -tags pebble -run Pebble ./internal/acme
+goreleaser: ## Install the pinned GoReleaser into .tools/bin (needs internet the first time; a minute to compile)
+	GOBIN=$(TOOLS)/bin go install github.com/goreleaser/goreleaser/v2@$(GORELEASER_VERSION)
+release-snapshot: goreleaser ## Try the release packaging here: builds every platform into dist/ and publishes nothing
+	$(TOOLS)/bin/goreleaser release --snapshot --clean --skip=publish
+release: goreleaser ## Build and publish the release for the tag at HEAD as a draft on GitHub (needs GITHUB_TOKEN, e.g. GITHUB_TOKEN=$$(gh auth token) make release)
+	@test -n "$$GITHUB_TOKEN" || { echo "set GITHUB_TOKEN, for example: GITHUB_TOKEN=\$$(gh auth token) make release"; exit 1; }
+	go test ./...
+	$(TOOLS)/bin/goreleaser release --clean
 tidy: ## Tidy go.mod and go.sum (go mod tidy)
 	go mod tidy
 e2e: build ## Browser end-to-end test (needs Node and Chrome; set CHROME if not in the default place)
