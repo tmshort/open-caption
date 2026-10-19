@@ -67,11 +67,7 @@ Almost all of the default's cost is the ACME library itself (about 1.6 MB); each
 ## Testing
 
 - Unit tests with a fake `Issuer` (no network): first issue, the files and their permissions, restart reuse, the renew window, a failed renewal keeping the old certificate, wrong-name and unusable certificates, `RenewNow` once at a time; the credentials precedence and the credentials file; the configuration rules; the Setup endpoints (and that credentials are never sent).
-- An **end-to-end test against Pebble**, Let's Encrypt's test CA, with its test DNS server standing in for the provider (so lego, the DNS-01 challenge and our `Manager` run for real, on this computer only). It is off unless asked for, because it needs two programs:
-  ```
-  go install github.com/letsencrypt/pebble/v2/cmd/pebble@latest github.com/letsencrypt/pebble/v2/cmd/pebble-challtestsrv@latest
-  PEBBLE_BIN=$(go env GOPATH)/bin PEBBLE_DIR=$(ls -d $(go env GOMODCACHE)/github.com/letsencrypt/pebble/v2@* | tail -1) go test -tags pebble -run Pebble ./internal/acme
-  ```
+- An **end-to-end test against Pebble**, Let's Encrypt's test CA, with its test DNS server standing in for the provider (so lego, the DNS-01 challenge and our `Manager` run for real, on this computer only). It is off unless asked for, because it needs two programs. `make pebble-test` installs a **pinned** Pebble version (`PEBBLE_VERSION` in the Makefile, into `.tools/`, which `make clean` removes) and runs the test, so every run uses the same one; CI does the same. `make vulncheck` scans the pinned Pebble programs for known vulnerabilities too, and says when a newer Pebble release exists.
 - **Not tested here:** a real provider's API (EasyDNS, Cloudflare, GoDaddy) and the real Let's Encrypt. Those are the library's code and the providers' services; the first run on a real venue should use `letsencrypt-staging`, as in the example above.
 
 ## Limits and ideas not built

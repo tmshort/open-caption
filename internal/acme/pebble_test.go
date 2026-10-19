@@ -5,8 +5,9 @@ package acme
 // An end-to-end check of the real ACME path (lego, the DNS-01 challenge, our Manager) against Pebble, Let's Encrypt's
 // test CA, with Pebble's test DNS server standing in for the venue's DNS provider. Nothing leaves this computer.
 //
-//	go install github.com/letsencrypt/pebble/v2/cmd/pebble@latest github.com/letsencrypt/pebble/v2/cmd/pebble-challtestsrv@latest
-//	PEBBLE_BIN=$(go env GOPATH)/bin PEBBLE_DIR=$(ls -d $(go env GOMODCACHE)/github.com/letsencrypt/pebble/v2@* | tail -1) go test -tags pebble -run Pebble ./internal/acme
+//	make pebble-test
+//
+// (it installs the pinned Pebble version, PEBBLE_VERSION in the Makefile, and sets the variables below.)
 //
 // (PEBBLE_DIR is the folder holding Pebble's test/certs; PEBBLE_BIN, if set, is the folder with the two programs.)
 

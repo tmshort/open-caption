@@ -4,8 +4,15 @@ LDFLAGS := -s -w -X main.version=$(VERSION)
 # The default adds about 0.3 MB; for example: make build ACME_PROVIDERS="easydns route53"
 ACME_PROVIDERS ?= cloudflare godaddy easydns
 
+# Tools used only for testing are pinned to a version, so a run today and a run next year use the same one.
+# (govulncheck is deliberately not pinned: it checks against today's advisories, and an old copy would miss new ones.)
+# Pebble is Let's Encrypt's test CA, used by `make pebble-test`; change the version here, run `make vulncheck`, then `make pebble-test`.
+PEBBLE_VERSION ?= v2.10.1
+PEBBLE_PKG := github.com/letsencrypt/pebble/v2
+TOOLS := $(CURDIR)/.tools
+
 .DEFAULT_GOAL := help
-.PHONY: help build test race fuzz vet vulncheck tidy e2e a11y i18n dist man acme-variants clean
+.PHONY: help build test race fuzz vet vulncheck pebble pebble-test tidy e2e a11y i18n dist man acme-variants clean
 
 help: ## Show this list of targets
 	@echo "open-caption: make <target>"; echo
@@ -21,8 +28,16 @@ fuzz: ## Fuzz the show-file parser for 30 seconds
 	go test ./internal/showfile -run xxx -fuzz FuzzParse -fuzztime 30s
 vet: ## Run go vet
 	go vet ./...
-vulncheck: ## Check the dependencies and Go for known vulnerabilities (govulncheck; needs internet)
+vulncheck: pebble ## Check the dependencies, Go and the pinned test tools (Pebble) for known vulnerabilities, and say if a pinned tool has a newer release (govulncheck; needs internet)
 	go run golang.org/x/vuln/cmd/govulncheck@latest ./...
+	go run golang.org/x/vuln/cmd/govulncheck@latest -mode=binary $(TOOLS)/bin/pebble
+	go run golang.org/x/vuln/cmd/govulncheck@latest -mode=binary $(TOOLS)/bin/pebble-challtestsrv
+	@latest=$$(go list -m -f '{{.Version}}' $(PEBBLE_PKG)@latest 2>/dev/null); \
+	if [ -n "$$latest" ] && [ "$$latest" != "$(PEBBLE_VERSION)" ]; then echo "note: Pebble $$latest is out; the pinned version is $(PEBBLE_VERSION) (PEBBLE_VERSION in the Makefile)"; else echo "Pebble $(PEBBLE_VERSION) is the latest release"; fi
+pebble: ## Install the pinned Pebble (test CA) into .tools/bin (needs internet the first time)
+	GOBIN=$(TOOLS)/bin go install $(PEBBLE_PKG)/cmd/pebble@$(PEBBLE_VERSION) $(PEBBLE_PKG)/cmd/pebble-challtestsrv@$(PEBBLE_VERSION)
+pebble-test: pebble ## Run the real ACME path (DNS-01) against the pinned Pebble
+	PEBBLE_BIN=$(TOOLS)/bin PEBBLE_DIR=$$(go env GOMODCACHE)/$(PEBBLE_PKG)@$(PEBBLE_VERSION) go test -count=1 -tags pebble -run Pebble ./internal/acme
 tidy: ## Tidy go.mod and go.sum (go mod tidy)
 	go mod tidy
 e2e: build ## Browser end-to-end test (needs Node and Chrome; set CHROME if not in the default place)
@@ -45,5 +60,5 @@ acme-variants: ## Check that the ACME build choices compile: none, the default, 
 	@for v in none "" "easydns" "easydns route53" all; do \
 	  echo "== ACME_PROVIDERS=$${v:-default}"; tools/acme-go.sh "$$v" build -o /dev/null ./cmd/open-caption || exit 1; \
 	done
-clean: ## Remove bin/ and dist/ (and the files tools/acme-go.sh generates)
-	rm -rf bin dist internal/acme/zz_providers_gen.go go.acme.mod go.acme.sum
+clean: ## Remove bin/, dist/ and .tools/ (and the files tools/acme-go.sh generates)
+	rm -rf bin dist .tools internal/acme/zz_providers_gen.go go.acme.mod go.acme.sum

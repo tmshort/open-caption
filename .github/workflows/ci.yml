@@ -55,8 +55,7 @@ jobs:
         with:
           go-version: stable
       - run: make acme-variants
-      - run: go install github.com/letsencrypt/pebble/v2/cmd/pebble@latest github.com/letsencrypt/pebble/v2/cmd/pebble-challtestsrv@latest
-      - run: PEBBLE_BIN=$(go env GOPATH)/bin PEBBLE_DIR=$(ls -d $(go env GOMODCACHE)/github.com/letsencrypt/pebble/v2@* | tail -1) go test -tags pebble -run Pebble ./internal/acme
+      - run: make pebble-test
   e2e:
     strategy:
       fail-fast: false
@@ -114,5 +113,4 @@ jobs:
       - uses: actions/setup-go@v7
         with:
           go-version: stable
-      - run: go install golang.org/x/vuln/cmd/govulncheck@latest
-      - run: govulncheck ./...
+      - run: make vulncheck
