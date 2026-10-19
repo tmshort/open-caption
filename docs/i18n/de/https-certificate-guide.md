@@ -1,6 +1,6 @@
 # Ein vertrauenswürdiges HTTPS-Zertifikat einrichten (optional)
 
-Diese Anleitung richtet sich an die Person, die den Untertitel-Computer betreut. Sie ist **optional**: Die Untertitel funktionieren auch ohne sie. (Die Einstellungen, die sie nutzt, stehen in der [Konfigurationsreferenz](../../configuration-reference.md), Entwurf und Tests in [Dokument 10](../../10-acme-lets-encrypt.md); Letzteres gibt es nur auf Englisch.)
+Diese Anleitung richtet sich an die Person, die den Untertitel-Computer betreut. Sie ist **optional**: Die Untertitel funktionieren auch ohne sie. (Die Einstellungen, die sie nutzt, stehen in der [Konfigurationsreferenz](../../configuration-reference.md).)
 
 ## Brauchen Sie das?
 
@@ -100,4 +100,4 @@ Die Zugangsdaten werden nie ins Protokoll, ins Support-Paket oder in die Einrich
 
 ## Ein anderer DNS-Anbieter
 
-Das Programm enthält nur die DNS-Anbieter, mit denen es gebaut wurde. Wer es baut, kann mit `make build ACME_PROVIDERS="…"` andere oder alle wählen (die Namen stammen aus der [lego-Liste](https://go-acme.github.io/lego/dns/)); Größen und Schritte stehen in [Dokument 10](../../10-acme-lets-encrypt.md). Wird Ihr Anbieter gar nicht unterstützt, können `exec` (führt ein Skript von Ihnen aus) und `httpreq` (ruft eine Webadresse auf) fast jeden DNS-Dienst ansteuern.
+Das Programm enthält nur die DNS-Anbieter, mit denen es gebaut wurde. Wer es baut, kann mit `make build ACME_PROVIDERS="…"` andere oder alle wählen (die Namen stammen aus der [lego-Liste](https://go-acme.github.io/lego/dns/)). Das Bauen braucht den Quellcode und eine Internetverbindung (die Bauanleitungen für macOS, Windows und Linux liegen im Quellcode-Repository; unter Windows `build.bat -AcmeProviders "…"`). Das Programm wächst mit jedem Anbieter: etwa 10,9 MB ohne automatische Zertifikate, 12,6 MB mit den drei Standardanbietern (Cloudflare, GoDaddy, EasyDNS), 15,0 MB mit EasyDNS und Route 53 und 60,9 MB mit allen Anbietern. Wird Ihr Anbieter gar nicht unterstützt, können `exec` (führt ein Skript von Ihnen aus) und `httpreq` (ruft eine Webadresse auf) fast jeden DNS-Dienst ansteuern.

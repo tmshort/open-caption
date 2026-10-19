@@ -636,7 +636,7 @@ OCI18n.add("pt", {
  "More actions for {name}": "Mais ações para {name}",
  "Certificate": "Certificado",
  "HTTPS is off, so devices use plain http. Turn it on in the settings file (https: enabled: yes).": "O HTTPS está desligado, então os dispositivos usam http simples. Ligue-o no arquivo de configurações (https: enabled: yes).",
- "HTTPS uses a certificate this program made itself, so browsers show a warning until it is accepted. For a trusted one, set up automatic certificates (docs/10-acme-lets-encrypt.md).": "O HTTPS usa um certificado que este programa criou, então os navegadores mostram um aviso até que ele seja aceito. Para um confiável, configure os certificados automáticos (docs/10-acme-lets-encrypt.md).",
+ "HTTPS uses a certificate this program made itself, so browsers show a warning until it is accepted. For a trusted one, set up automatic certificates (docs/https-certificate-guide.md).": "O HTTPS usa um certificado que este programa criou, então os navegadores mostram um aviso até que ele seja aceito. Para um confiável, configure os certificados automáticos (docs/https-certificate-guide.md).",
  "HTTPS uses the certificate files named in the settings file. When they are replaced (for example after a renewal) the new ones are used within about 30 seconds, with no restart.": "O HTTPS usa os arquivos de certificado indicados no arquivo de configurações. Quando são substituídos (por exemplo após uma renovação), os novos são usados em cerca de 30 segundos, sem reiniciar.",
  "Automatic certificate from {directory}, using the DNS provider {provider}.": "Certificado automático de {directory}, com o provedor de DNS {provider}.",
  "Waiting for the first certificate": "Aguardando o primeiro certificado",

@@ -1,6 +1,6 @@
 # Configurar un certificado HTTPS de confianza (opcional)
 
-Esta guía es para la persona que cuida del equipo de subtitulado. Es **opcional**: los subtítulos funcionan sin ella. (Los ajustes que usa están en la [referencia de configuración](../../configuration-reference.md), y el diseño y las pruebas en el [documento 10](../../10-acme-lets-encrypt.md); este último solo está en inglés.)
+Esta guía es para la persona que cuida del equipo de subtitulado. Es **opcional**: los subtítulos funcionan sin ella. (Los ajustes que usa están en la [referencia de configuración](../../configuration-reference.md).)
 
 ## ¿Lo necesita?
 
@@ -100,4 +100,4 @@ Las credenciales nunca se escriben en el registro, en el paquete de soporte ni e
 
 ## Otro proveedor de DNS
 
-El programa solo contiene los proveedores de DNS con los que se compiló. Quien lo compila puede elegir otros, o todos, con `make build ACME_PROVIDERS="…"` (los nombres son los de la [lista de lego](https://go-acme.github.io/lego/dns/)); los tamaños y los pasos están en el [documento 10](../../10-acme-lets-encrypt.md). Si su proveedor no es compatible en absoluto, `exec` (ejecuta un script suyo) y `httpreq` (llama a una dirección web) pueden manejar casi cualquier servicio de DNS.
+El programa solo contiene los proveedores de DNS con los que se compiló. Quien lo compila puede elegir otros, o todos, con `make build ACME_PROVIDERS="…"` (los nombres son los de la [lista de lego](https://go-acme.github.io/lego/dns/)). Compilar necesita el código fuente y conexión a Internet (las guías de compilación para macOS, Windows y Linux están en el repositorio del código; en Windows use `build.bat -AcmeProviders "…"`). El programa crece con cada proveedor: unos 10,9 MB sin certificados automáticos, 12,6 MB con los tres predeterminados (Cloudflare, GoDaddy, EasyDNS), 15,0 MB con EasyDNS y Route 53, y 60,9 MB con todos los proveedores. Si su proveedor no es compatible en absoluto, `exec` (ejecuta un script suyo) y `httpreq` (llama a una dirección web) pueden manejar casi cualquier servicio de DNS.

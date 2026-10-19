@@ -1,6 +1,6 @@
 # Configurare un certificato HTTPS attendibile (facoltativo)
 
-Questa guida è per la persona che si occupa del computer dei sottotitoli. È **facoltativa**: i sottotitoli funzionano anche senza. (Le impostazioni che usa sono nel [riferimento della configurazione](../../configuration-reference.md), la progettazione e i test nel [documento 10](../../10-acme-lets-encrypt.md); quest'ultimo esiste solo in inglese.)
+Questa guida è per la persona che si occupa del computer dei sottotitoli. È **facoltativa**: i sottotitoli funzionano anche senza. (Le impostazioni che usa sono nel [riferimento della configurazione](../../configuration-reference.md).)
 
 ## Ti serve?
 
@@ -100,4 +100,4 @@ Le credenziali non vengono mai scritte nel registro, nel pacchetto di supporto n
 
 ## Un altro provider DNS
 
-Il programma contiene solo i provider DNS con cui è stato compilato. Chi lo compila può sceglierne altri, o tutti, con `make build ACME_PROVIDERS="…"` (i nomi sono quelli dell'[elenco di lego](https://go-acme.github.io/lego/dns/)); le dimensioni e i passaggi sono nel [documento 10](../../10-acme-lets-encrypt.md). Se il tuo provider non è supportato affatto, `exec` (esegue uno script tuo) e `httpreq` (chiama un indirizzo web) possono pilotare quasi qualsiasi servizio DNS.
+Il programma contiene solo i provider DNS con cui è stato compilato. Chi lo compila può sceglierne altri, o tutti, con `make build ACME_PROVIDERS="…"` (i nomi sono quelli dell'[elenco di lego](https://go-acme.github.io/lego/dns/)). Compilare richiede il codice sorgente e una connessione a Internet (le guide alla compilazione per macOS, Windows e Linux sono nel repository del codice; su Windows usa `build.bat -AcmeProviders "…"`). Il programma cresce con ogni provider: circa 10,9 MB senza certificati automatici, 12,6 MB con i tre predefiniti (Cloudflare, GoDaddy, EasyDNS), 15,0 MB con EasyDNS e Route 53 e 60,9 MB con tutti i provider. Se il tuo provider non è supportato affatto, `exec` (esegue uno script tuo) e `httpreq` (chiama un indirizzo web) possono pilotare quasi qualsiasi servizio DNS.

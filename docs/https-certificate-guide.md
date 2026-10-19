@@ -1,6 +1,6 @@
 # Set up a trusted HTTPS certificate (optional)
 
-This guide is for the person who looks after the captioning computer. It is **optional**: the captions work without it. (The settings it uses are in the [configuration reference](configuration-reference.md), and the design and tests are in [doc 10](10-acme-lets-encrypt.md), which is in English only.)
+This guide is for the person who looks after the captioning computer. It is **optional**: the captions work without it. (The settings it uses are in the [configuration reference](configuration-reference.md).)
 
 ## Do you need this?
 
@@ -100,4 +100,4 @@ The credentials are never written to the log, the support bundle or Setup.
 
 ## A different DNS provider
 
-The program only contains the DNS providers it was built with. People who build it can choose others, or all of them, with `make build ACME_PROVIDERS="…"` (names are those in the [lego list](https://go-acme.github.io/lego/dns/)); the sizes and the steps are in [doc 10](10-acme-lets-encrypt.md). If your provider is not supported at all, `exec` (runs a script of yours) and `httpreq` (calls a web address) can drive almost any DNS service.
+The program only contains the DNS providers it was built with. People who build it can choose others, or all of them, with `make build ACME_PROVIDERS="…"` (names are those in the [lego list](https://go-acme.github.io/lego/dns/)). Building needs the source code and an internet connection (the build guides for macOS, Windows and Linux are in the source repository; on Windows use `build.bat -AcmeProviders "…"`). The program grows with each provider: about 10.9 MB with no automatic certificates, 12.6 MB with the default three (Cloudflare, GoDaddy, EasyDNS), 15.0 MB with EasyDNS and Route 53, and 60.9 MB with every provider. If your provider is not supported at all, `exec` (runs a script of yours) and `httpreq` (calls a web address) can drive almost any DNS service.

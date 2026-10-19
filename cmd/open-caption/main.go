@@ -119,10 +119,10 @@ func main() {
 	}
 	if cfg.HTTPS.Enabled && cfg.HTTPS.ACME.Enabled {
 		if !acme.Available() {
-			logx.Fatalf("https.acme: this program was built without automatic certificates (ACME_PROVIDERS=none); see docs/10-acme-lets-encrypt.md")
+			logx.Fatalf("https.acme: this program was built without automatic certificates (ACME_PROVIDERS=none); see docs/https-certificate-guide.md")
 		}
 		if !acme.HasProvider(cfg.HTTPS.ACME.DNS.Provider) {
-			logx.Fatalf("https.acme: the DNS provider %q is not built into this program (built with: %s); see docs/10-acme-lets-encrypt.md for how to build with others", cfg.HTTPS.ACME.DNS.Provider, acmeProviders())
+			logx.Fatalf("https.acme: the DNS provider %q is not built into this program (built with: %s); see docs/https-certificate-guide.md for how to build with others", cfg.HTTPS.ACME.DNS.Provider, acmeProviders())
 		}
 	}
 	if *dev {

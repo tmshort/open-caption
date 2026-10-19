@@ -88,7 +88,7 @@ HTTPS ist standardmäßig **aus**. Es gibt drei Wege zu einem Zertifikat; wähle
 
 ### `https.acme` (automatische Zertifikate)
 
-Aus, außer bei `enabled: yes`. Braucht `https.enabled: yes`, einen öffentlichen Domainnamen, der Ihnen gehört, und einen DNS-Anbieter, mit dem dieses Programm gebaut wurde. Nicht kombinierbar mit `cert_file`/`key_file`. Wie man es einrichtet, Schritt für Schritt: die [Anleitung für ein vertrauenswürdiges HTTPS-Zertifikat](https-certificate-guide.md); den Entwurf, die Build-Optionen und die Größen: die [Entwurfsnotizen](../../10-acme-lets-encrypt.md) (nur auf Englisch).
+Aus, außer bei `enabled: yes`. Braucht `https.enabled: yes`, einen öffentlichen Domainnamen, der Ihnen gehört, und einen DNS-Anbieter, mit dem dieses Programm gebaut wurde. Nicht kombinierbar mit `cert_file`/`key_file`. Wie man es einrichtet, Schritt für Schritt: die [Anleitung für ein vertrauenswürdiges HTTPS-Zertifikat](https-certificate-guide.md); die Auswahl der DNS-Anbieter beim Bauen und die Größen stehen am Ende dieser Anleitung.
 
 | Schlüssel | Standard | Bedeutung |
 |---|---|---|

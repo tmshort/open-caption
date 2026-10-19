@@ -176,7 +176,7 @@
       const when = (t) => (t && !String(t).startsWith('0001') ? new Date(t).toLocaleString(OCI18n.lang) : '');
       const states = { waiting: 'Waiting for the first certificate', ok: 'Valid', renewing: 'Getting a certificate…', failed: 'The last attempt failed' };
       if (c.source === 'none') return certBox.replaceChildren(h('p', { class: 'hint' }, __('HTTPS is off, so devices use plain http. Turn it on in the settings file (https: enabled: yes).')));
-      if (c.source === 'self-signed') return certBox.replaceChildren(h('p', { class: 'hint' }, __('HTTPS uses a certificate this program made itself, so browsers show a warning until it is accepted. For a trusted one, set up automatic certificates (docs/10-acme-lets-encrypt.md).')));
+      if (c.source === 'self-signed') return certBox.replaceChildren(h('p', { class: 'hint' }, __('HTTPS uses a certificate this program made itself, so browsers show a warning until it is accepted. For a trusted one, set up automatic certificates (docs/https-certificate-guide.md).')));
       if (c.source === 'file') return certBox.replaceChildren(h('p', { class: 'hint' }, __('HTTPS uses the certificate files named in the settings file. When they are replaced (for example after a renewal) the new ones are used within about 30 seconds, with no restart.')));
       const st = c.status || {};
       const renew = h('button', { type: 'button', disabled: st.state === 'renewing', onclick: async () => {

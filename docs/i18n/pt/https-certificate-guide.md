@@ -1,6 +1,6 @@
 # Configurar um certificado HTTPS confiável (opcional)
 
-Este guia é para a pessoa que cuida do computador das legendas. Ele é **opcional**: as legendas funcionam sem ele. (As configurações que ele usa estão na [referência de configuração](../../configuration-reference.md), e o projeto e os testes no [documento 10](../../10-acme-lets-encrypt.md); este último existe somente em inglês.)
+Este guia é para a pessoa que cuida do computador das legendas. Ele é **opcional**: as legendas funcionam sem ele. (As configurações que ele usa estão na [referência de configuração](../../configuration-reference.md).)
 
 ## Você precisa disto?
 
@@ -100,4 +100,4 @@ As credenciais nunca são escritas no registro, no pacote de suporte nem na conf
 
 ## Outro provedor de DNS
 
-O programa só contém os provedores de DNS com que foi compilado. Quem o compila pode escolher outros, ou todos, com `make build ACME_PROVIDERS="…"` (os nomes são os da [lista do lego](https://go-acme.github.io/lego/dns/)); os tamanhos e os passos estão no [documento 10](../../10-acme-lets-encrypt.md). Se o seu provedor não for compatível de forma alguma, `exec` (executa um script seu) e `httpreq` (chama um endereço web) podem controlar quase qualquer serviço de DNS.
+O programa só contém os provedores de DNS com que foi compilado. Quem o compila pode escolher outros, ou todos, com `make build ACME_PROVIDERS="…"` (os nomes são os da [lista do lego](https://go-acme.github.io/lego/dns/)). Compilar exige o código-fonte e uma conexão com a Internet (os guias de compilação para macOS, Windows e Linux estão no repositório do código; no Windows use `build.bat -AcmeProviders "…"`). O programa cresce a cada provedor: cerca de 10,9 MB sem certificados automáticos, 12,6 MB com os três padrão (Cloudflare, GoDaddy, EasyDNS), 15,0 MB com EasyDNS e Route 53 e 60,9 MB com todos os provedores. Se o seu provedor não for compatível de forma alguma, `exec` (executa um script seu) e `httpreq` (chama um endereço web) podem controlar quase qualquer serviço de DNS.

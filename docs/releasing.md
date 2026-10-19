@@ -25,13 +25,13 @@ One download per platform, named `open-caption_<version>_<system>_<arch>`:
 
 plus `checksums.txt` (SHA-256 of every file). Each download unpacks into one folder holding:
 
-- the program (`open-caption`, or `open-caption.exe`), with the default DNS providers for automatic certificates (Cloudflare, GoDaddy, EasyDNS; [doc 10](10-acme-lets-encrypt.md));
+- the program (`open-caption`, or `open-caption.exe`), with the default DNS providers for automatic certificates (Cloudflare, GoDaddy, EasyDNS);
 - `README.md` (the repository README without the parts that only concern the source code), `LICENSE`, `NOTICE`;
-- `docs/`: the usage guide, venue network guide, HTTPS certificate guide, configuration reference and the certificate design/how-to (`10-acme-lets-encrypt.md`), the man page, and the translations in `docs/i18n/`;
+- `docs/`: the usage guide, venue network guide, HTTPS certificate guide, configuration reference, the man page, and the translations in `docs/i18n/`;
 - `web/help/` (the in-app help topics, which the README links to) and `web/sample/` (the sample show);
 - `deploy/`: the start-at-boot files for systemd, launchd and Windows Task Scheduler.
 
-**Not included:** the numbered design specifications `01`–`09`, the build guides, the tests and the source. A test (`deploy/release_test.go`) checks that no design document slips in and that no link inside the download is dead.
+**Not included:** the numbered design specifications `01`–`10` (including the certificate design notes), the build guides, the tests and the source. A test (`deploy/release_test.go`) checks that no design document slips in and that no link inside the download is dead.
 
 The version reported by `open-caption --version` is the tag without the `v`.
 

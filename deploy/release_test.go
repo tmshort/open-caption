@@ -74,8 +74,8 @@ func TestReleasePackageHoldsTheGuidesAndNotTheDesignDocuments(t *testing.T) {
 		}
 	}
 	for p, disk := range files {
-		if regexp.MustCompile(`^docs/0\d-`).MatchString(p) {
-			t.Errorf("%s is a design document and must not be in the download", p)
+		if regexp.MustCompile(`^docs/(0\d|10)-`).MatchString(p) {
+			t.Errorf("%s is a design document (01 to 10) and must not be in the download", p)
 		}
 		if disk != "" {
 			if _, err := os.Stat(disk); err != nil {

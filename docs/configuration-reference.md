@@ -88,7 +88,7 @@ HTTPS is **off** by default. There are three ways to get a certificate; choose o
 
 ### `https.acme` (automatic certificates)
 
-Off unless `enabled: yes`. Needs `https.enabled: yes`, a public domain name you own, and a DNS provider this program was built with. It cannot be combined with `cert_file`/`key_file`. How to set it up, step by step: the [trusted HTTPS guide](https-certificate-guide.md); the design, the build choices and the sizes: the [design notes](10-acme-lets-encrypt.md) (English only).
+Off unless `enabled: yes`. Needs `https.enabled: yes`, a public domain name you own, and a DNS provider this program was built with. It cannot be combined with `cert_file`/`key_file`. How to set it up, step by step: the [trusted HTTPS guide](https-certificate-guide.md); the choices of DNS providers when building, and the sizes, are at the end of that guide.
 
 | Key | Default | Meaning |
 |---|---|---|

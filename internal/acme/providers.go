@@ -60,7 +60,7 @@ func newProvider(name string) (challenge.Provider, error) {
 	if lookupAny != nil {
 		return lookupAny(name)
 	}
-	return nil, fmt.Errorf("the DNS provider %q is not built into this program (built with: %s); see docs/10-acme-lets-encrypt.md for how to build with others",
+	return nil, fmt.Errorf("the DNS provider %q is not built into this program (built with: %s); see docs/https-certificate-guide.md for how to build with others",
 		name, strings.Join(Providers(), ", "))
 }
 

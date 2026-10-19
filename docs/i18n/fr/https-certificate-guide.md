@@ -1,6 +1,6 @@
 # Mettre en place un certificat HTTPS de confiance (facultatif)
 
-Ce guide s'adresse à la personne qui s'occupe de l'ordinateur de sous-titrage. Il est **facultatif** : les sous-titres fonctionnent sans lui. (Les réglages qu'il utilise sont dans la [référence de configuration](../../configuration-reference.md), et la conception et les tests dans le [document 10](../../10-acme-lets-encrypt.md) ; ce dernier n'existe qu'en anglais.)
+Ce guide s'adresse à la personne qui s'occupe de l'ordinateur de sous-titrage. Il est **facultatif** : les sous-titres fonctionnent sans lui. (Les réglages qu'il utilise sont dans la [référence de configuration](../../configuration-reference.md).)
 
 ## En avez-vous besoin ?
 
@@ -100,4 +100,4 @@ Les identifiants ne sont jamais écrits dans le journal, le paquet d'assistance 
 
 ## Un autre fournisseur DNS
 
-Le programme ne contient que les fournisseurs DNS avec lesquels il a été compilé. Ceux qui le compilent peuvent en choisir d'autres, ou tous, avec `make build ACME_PROVIDERS="…"` (les noms sont ceux de la [liste de lego](https://go-acme.github.io/lego/dns/)) ; les tailles et les étapes sont dans le [document 10](../../10-acme-lets-encrypt.md). Si votre fournisseur n'est pas pris en charge du tout, `exec` (lance un script de votre choix) et `httpreq` (appelle une adresse web) peuvent piloter presque n'importe quel service DNS.
+Le programme ne contient que les fournisseurs DNS avec lesquels il a été compilé. Ceux qui le compilent peuvent en choisir d'autres, ou tous, avec `make build ACME_PROVIDERS="…"` (les noms sont ceux de la [liste de lego](https://go-acme.github.io/lego/dns/)). La compilation demande le code source et une connexion Internet (les guides de compilation pour macOS, Windows et Linux sont dans le dépôt du code ; sous Windows, utilisez `build.bat -AcmeProviders "…"`). Le programme grossit avec chaque fournisseur : environ 10,9 Mo sans certificats automatiques, 12,6 Mo avec les trois par défaut (Cloudflare, GoDaddy, EasyDNS), 15,0 Mo avec EasyDNS et Route 53, et 60,9 Mo avec tous les fournisseurs. Si votre fournisseur n'est pas pris en charge du tout, `exec` (lance un script de votre choix) et `httpreq` (appelle une adresse web) peuvent piloter presque n'importe quel service DNS.

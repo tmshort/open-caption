@@ -88,7 +88,7 @@ HTTPS est **désactivé** par défaut. Il y a trois façons d'obtenir un certifi
 
 ### `https.acme` (certificats automatiques)
 
-Désactivé sauf `enabled: yes`. Demande `https.enabled: yes`, un nom de domaine public qui vous appartient et un fournisseur DNS avec lequel ce programme a été compilé. Ne peut pas être combiné avec `cert_file`/`key_file`. Comment le mettre en place, pas à pas : le [guide du certificat HTTPS de confiance](https-certificate-guide.md) ; la conception, les choix de compilation et les tailles : les [notes de conception](../../10-acme-lets-encrypt.md) (en anglais seulement).
+Désactivé sauf `enabled: yes`. Demande `https.enabled: yes`, un nom de domaine public qui vous appartient et un fournisseur DNS avec lequel ce programme a été compilé. Ne peut pas être combiné avec `cert_file`/`key_file`. Comment le mettre en place, pas à pas : le [guide du certificat HTTPS de confiance](https-certificate-guide.md) ; les choix de fournisseurs DNS à la compilation, et les tailles, sont à la fin de ce guide.
 
 | Clé | Par défaut | Signification |
 |---|---|---|
