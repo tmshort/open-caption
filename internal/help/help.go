@@ -432,6 +432,8 @@ func link(text, href string) string {
 	switch {
 	case strings.HasPrefix(base, "topic:") && topicHref.MatchString(base[6:]):
 		return `<a href="#` + base[6:] + `" data-topic="` + base[6:] + `"` + fragAttr + `>` + label + "</a>"
+	case rel == "sample/sample-show.md": // the starter file, as GitHub shows it; in the app it is the download
+		return `<a href="/help/sample-show.md">` + label + "</a>"
 	case pathLinks[rel] != "":
 		return `<a href="#` + pathLinks[rel] + `" data-topic="` + pathLinks[rel] + `"` + fragAttr + `>` + label + "</a>"
 	case Aliases[rel] != "":

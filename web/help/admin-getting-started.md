@@ -30,7 +30,7 @@ Rename, Duplicate, Export, Archive and Delete are in the **More ▾** menu on ea
 
 ## New to show files?
 
-A show file is just text. Each line is one caption, and one press of the spacebar sends one line. For the whole job, from script to finished file (including editing in your own program and bringing the file back), read [Preparing a show file](topic:admin-preparing-a-show-file). The markings are listed in [Writing a show file](topic:admin-writing-a-show-file). Or create the sample show and look at how it is written. A starter you can download is at [/help/sample-show.md](/help/sample-show.md).
+A show file is just text. Each line is one caption, and one press of the spacebar sends one line. For the whole job, from script to finished file (including editing in your own program and bringing the file back), read [Preparing a show file](topic:admin-preparing-a-show-file). The markings are listed in [Writing a show file](topic:admin-writing-a-show-file). Or create the sample show and look at how it is written. A starter you can download is at [/help/sample-show.md](../sample/sample-show.md).
 
 ## Planning the equipment
 

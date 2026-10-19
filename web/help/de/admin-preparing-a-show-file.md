@@ -4,7 +4,7 @@ Diese Seite ist f체r die Person, die das St체ck in Untertitel verwandelt. Sie m�
 
 ## Die Kurzfassung
 
-1. Bringen Sie das St체ck in eine reine Textdatei. Beginnen Sie auf Wunsch mit der Beispiel-Show unter [/help/sample-show.md](/help/sample-show.md).
+1. Bringen Sie das St체ck in eine reine Textdatei. Beginnen Sie auf Wunsch mit der Beispiel-Show unter [/help/sample-show.md](../../sample/sample-show.md).
 2. Machen Sie **eine Zeile der Datei zu einem Untertitel**: einem Druck auf die Leertaste.
 3. F체gen Sie hinzu, was Publikum und Bediener hilft (Sprechernamen, Ger채uschbeschreibungen, Abschnitte, Notizen).
 4. Holen Sie die Datei in die Einrichtung, lesen Sie die Problemliste, beheben Sie die Probleme und speichern Sie.

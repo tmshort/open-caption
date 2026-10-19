@@ -4,7 +4,7 @@ This page is for the person who turns the script into captions. You do not need 
 
 ## The short version
 
-1. Get the script into a plain text file. Start from the sample show at [/help/sample-show.md](/help/sample-show.md) if you like.
+1. Get the script into a plain text file. Start from the sample show at [/help/sample-show.md](../sample/sample-show.md) if you like.
 2. Make **one line of the file equal one caption**: one press of the spacebar.
 3. Add the extras that help the audience and the operator (speaker names, sound descriptions, sections, notes).
 4. Bring the file into Setup, read the list of problems, fix them and save.

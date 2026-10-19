@@ -530,3 +530,16 @@ func TestTopicListOrderPutsGettingStartedFirstAndTheGuidesLast(t *testing.T) {
 		t.Errorf("%v", more)
 	}
 }
+
+// The help topics link to the starter show file by its place in the repository, so the link works on GitHub;
+// in the app it is the download.
+func TestSampleShowLinkWorksOnGitHubAndInTheApp(t *testing.T) {
+	for _, in := range []string{"../sample/sample-show.md", "../../sample/sample-show.md"} {
+		if got := link("starter", in); got != `<a href="/help/sample-show.md">starter</a>` {
+			t.Errorf("%s -> %s", in, got)
+		}
+	}
+	if _, err := os.Stat("../../web/sample/sample-show.md"); err != nil {
+		t.Errorf("the file the topics link to is missing: %v", err)
+	}
+}

@@ -30,7 +30,7 @@ Renomear, Duplicar, Exportar, Arquivar e Excluir estão no menu **Mais ▾** de 
 
 ## Novo nos arquivos de espetáculo?
 
-Um arquivo do espetáculo é só texto. Cada linha é uma legenda, e um toque na barra de espaço envia uma linha. Para todo o trabalho, do texto ao arquivo pronto (incluindo editar no seu próprio programa e trazer o arquivo de volta), leia [Preparar um arquivo do espetáculo](topic:admin-preparing-a-show-file). As marcações estão listadas em [Escrever um arquivo do espetáculo](topic:admin-writing-a-show-file). Ou crie o espetáculo de exemplo e veja como ele foi escrito. Um modelo para baixar está em [/help/sample-show.md](/help/sample-show.md).
+Um arquivo do espetáculo é só texto. Cada linha é uma legenda, e um toque na barra de espaço envia uma linha. Para todo o trabalho, do texto ao arquivo pronto (incluindo editar no seu próprio programa e trazer o arquivo de volta), leia [Preparar um arquivo do espetáculo](topic:admin-preparing-a-show-file). As marcações estão listadas em [Escrever um arquivo do espetáculo](topic:admin-writing-a-show-file). Ou crie o espetáculo de exemplo e veja como ele foi escrito. Um modelo para baixar está em [/help/sample-show.md](../../sample/sample-show.md).
 
 ## Planejar o equipamento
 

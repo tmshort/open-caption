@@ -30,7 +30,7 @@ Renommer, Dupliquer, Exporter, Archiver et Supprimer se trouvent dans le menu **
 
 ## Nouveau avec les fichiers de spectacle ?
 
-Un fichier du spectacle est simplement du texte. Chaque ligne est un sous-titre, et une pression sur la barre d'espace envoie une ligne. Pour tout le travail, du texte au fichier terminé (y compris la modification dans votre propre programme et le retour du fichier), lisez [Préparer un fichier de spectacle](topic:admin-preparing-a-show-file). Les marquages sont énumérés dans [Écrire un fichier du spectacle](topic:admin-writing-a-show-file). Ou créez le spectacle d'exemple et regardez comment il est écrit. Un modèle à télécharger se trouve à l'adresse [/help/sample-show.md](/help/sample-show.md).
+Un fichier du spectacle est simplement du texte. Chaque ligne est un sous-titre, et une pression sur la barre d'espace envoie une ligne. Pour tout le travail, du texte au fichier terminé (y compris la modification dans votre propre programme et le retour du fichier), lisez [Préparer un fichier de spectacle](topic:admin-preparing-a-show-file). Les marquages sont énumérés dans [Écrire un fichier du spectacle](topic:admin-writing-a-show-file). Ou créez le spectacle d'exemple et regardez comment il est écrit. Un modèle à télécharger se trouve à l'adresse [/help/sample-show.md](../../sample/sample-show.md).
 
 ## Prévoir le matériel
 

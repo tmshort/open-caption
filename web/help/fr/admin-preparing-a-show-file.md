@@ -4,7 +4,7 @@ Cette page s'adresse à la personne qui transforme le texte de la pièce en sous
 
 ## En bref
 
-1. Mettez le texte dans un fichier texte brut. Partez du spectacle d'exemple à [/help/sample-show.md](/help/sample-show.md) si vous voulez.
+1. Mettez le texte dans un fichier texte brut. Partez du spectacle d'exemple à [/help/sample-show.md](../../sample/sample-show.md) si vous voulez.
 2. Faites en sorte qu'**une ligne du fichier soit un sous-titre** : un appui sur la barre d'espace.
 3. Ajoutez ce qui aide le public et l'opérateur (noms des personnages, descriptions de sons, sections, notes).
 4. Apportez le fichier dans la Configuration, lisez la liste des problèmes, corrigez-les et enregistrez.

@@ -30,7 +30,7 @@ Rinomina, Duplica, Esporta, Archivia ed Elimina sono nel menu **Altro ▾** di o
 
 ## Sei nuovo ai file dello spettacolo?
 
-Un file dello spettacolo è solo testo. Ogni riga è un sottotitolo, e una pressione della barra spaziatrice invia una riga. Per tutto il lavoro, dal copione al file finito (compresa la modifica nel tuo programma e il ritorno del file), leggi [Preparare un file dello spettacolo](topic:admin-preparing-a-show-file). I marcatori sono elencati in [Scrivere un file dello spettacolo](topic:admin-writing-a-show-file). Oppure crea lo spettacolo di esempio e guarda come è scritto. Un modello scaricabile si trova su [/help/sample-show.md](/help/sample-show.md).
+Un file dello spettacolo è solo testo. Ogni riga è un sottotitolo, e una pressione della barra spaziatrice invia una riga. Per tutto il lavoro, dal copione al file finito (compresa la modifica nel tuo programma e il ritorno del file), leggi [Preparare un file dello spettacolo](topic:admin-preparing-a-show-file). I marcatori sono elencati in [Scrivere un file dello spettacolo](topic:admin-writing-a-show-file). Oppure crea lo spettacolo di esempio e guarda come è scritto. Un modello scaricabile si trova su [/help/sample-show.md](../../sample/sample-show.md).
 
 ## Pianificare l'attrezzatura
 

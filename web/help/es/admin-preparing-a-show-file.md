@@ -4,7 +4,7 @@ Esta página es para quien convierte el guion en subtítulos. No necesita dirigi
 
 ## La versión corta
 
-1. Ponga el guion en un archivo de texto sin formato. Si quiere, parta del espectáculo de ejemplo en [/help/sample-show.md](/help/sample-show.md).
+1. Ponga el guion en un archivo de texto sin formato. Si quiere, parta del espectáculo de ejemplo en [/help/sample-show.md](../../sample/sample-show.md).
 2. Haga que **una línea del archivo sea un subtítulo**: una pulsación de la barra espaciadora.
 3. Añada lo que ayuda al público y al operador (nombres de personajes, descripciones de sonidos, secciones, notas).
 4. Traiga el archivo a Configuración, lea la lista de problemas, corríjalos y guarde.
