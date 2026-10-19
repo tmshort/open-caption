@@ -3,6 +3,7 @@ package netinfo
 import (
 	"crypto/x509"
 	"net"
+	"strings"
 	"testing"
 )
 
@@ -53,5 +54,31 @@ func TestUsableIPsSkipsInterfacesThatAreDown(t *testing.T) {
 	}
 	if got := usableIPs(net.FlagUp|net.FlagLoopback, addrs); len(got) != 0 {
 		t.Errorf("loopback offers nothing: %v", got)
+	}
+}
+
+func TestMainFirstPutsTheMainConnectionFirstThenNumericOrder(t *testing.T) {
+	ips := func(l ...string) []net.IP {
+		var out []net.IP
+		for _, s := range l {
+			out = append(out, net.ParseIP(s))
+		}
+		return out
+	}
+	str := func(l []net.IP) string {
+		var s []string
+		for _, ip := range l {
+			s = append(s, ip.String())
+		}
+		return strings.Join(s, " ")
+	}
+	if got := str(mainFirst(ips("192.168.1.138", "192.168.1.185", "10.0.0.5"), net.ParseIP("192.168.1.185"))); got != "192.168.1.185 10.0.0.5 192.168.1.138" {
+		t.Errorf("main first, then numeric order: %s", got)
+	}
+	if got := str(mainFirst(ips("192.168.1.100", "192.168.1.9"), nil)); got != "192.168.1.9 192.168.1.100" {
+		t.Errorf("without a main connection the order is numeric (not text): %s", got)
+	}
+	if got := str(mainFirst(ips("192.168.1.9", "192.168.1.100"), net.ParseIP("172.16.0.1"))); got != "192.168.1.9 192.168.1.100" {
+		t.Errorf("a main address that is not in the list changes nothing: %s", got)
 	}
 }

@@ -3,6 +3,7 @@
 package netinfo
 
 import (
+	"bytes"
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
@@ -18,7 +19,8 @@ import (
 	"time"
 )
 
-// LocalIPs returns the non-loopback unicast IPv4 addresses of the network interfaces that are up. The
+// LocalIPs returns the non-loopback unicast IPv4 addresses of the network interfaces that are up, the main
+// connection first and the others in numeric order. The
 // interfaces are asked, not the whole address table: on Windows that table also holds the last address of an
 // adapter that is switched off or disconnected (a Wi-Fi card turned off still lists the address it had), and
 // such an address must not be offered to the audience or put in the certificate.
@@ -29,8 +31,36 @@ func LocalIPs() []net.IP {
 		addrs, _ := ifc.Addrs()
 		out = append(out, usableIPs(ifc.Flags, addrs)...)
 	}
-	sort.Slice(out, func(i, j int) bool { return out[i].String() < out[j].String() })
-	return out
+	return mainFirst(out, mainIP())
+}
+
+// mainIP is the address this computer uses to reach the rest of the network (the one on the route to the
+// default gateway), or nil when there is none. Connecting a UDP socket only asks the operating system which
+// address it would send from: no packet is sent, so it also works on a venue network without internet.
+func mainIP() net.IP {
+	c, err := net.Dial("udp4", "192.0.2.1:9") // a documentation address (RFC 5737): never reached
+	if err != nil {
+		return nil
+	}
+	defer c.Close()
+	if a, ok := c.LocalAddr().(*net.UDPAddr); ok {
+		return a.IP
+	}
+	return nil
+}
+
+// mainFirst sorts the addresses numerically and puts main (if it is one of them) first, so the address given
+// to the audience is the one most likely to work when a computer has a cable and Wi-Fi at once.
+func mainFirst(ips []net.IP, main net.IP) []net.IP {
+	sort.Slice(ips, func(i, j int) bool { return bytes.Compare(ips[i].To4(), ips[j].To4()) < 0 })
+	for i, ip := range ips {
+		if main != nil && ip.Equal(main) {
+			copy(ips[1:i+1], ips[:i])
+			ips[0] = ip
+			break
+		}
+	}
+	return ips
 }
 
 // usableIPs picks the addresses worth offering from one interface: none unless it is up.

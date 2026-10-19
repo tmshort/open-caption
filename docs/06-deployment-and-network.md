@@ -33,6 +33,8 @@ non-loopback IPv4 addresses and the audience URL, and opens
 | Windows | Windows Firewall prompt on first run — user must allow *Private networks*. Provide a note/screenshot. Port 80/443 may be held by other software (IIS, Skype); auto-fallback to 8080 (HTTP) / 8443 (HTTPS). The address list (startup, Setup, the self-signed certificate) comes from the network interfaces that are *up*: Windows also reports the last address of a switched-off or disconnected adapter, which must not be offered to the audience (`netinfo.LocalIPs`). |
 | Linux | Port 80 needs `setcap 'cap_net_bind_service=+ep'` or run on 8080 + redirect. Optional systemd unit file in `deploy/`. |
 
+When a computer has more than one address (a cable and Wi-Fi at once), the **main connection** (the address the computer would use to reach its default gateway, found without sending any packet) is listed first, in the startup log, in Setup and therefore in the address given to the audience; the others follow in numeric order.
+
 Ready-made service files for systemd, launchd and Windows Task Scheduler are in `deploy/`; day-to-day deployment advice is in [usage-guide.md](usage-guide.md).
 
 Cross-compile with `GOOS/GOARCH`; CI produces release artifacts for all targets.
