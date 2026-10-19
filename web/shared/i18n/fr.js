@@ -1,5 +1,6 @@
 // French translations of Setup, the operator page and Help (see web/shared/i18n.js). The key is the English text.
 OCI18n.add("fr", {
+ "for example {value}": "par exemple {value}",
  "One entry per line. Leave Show only these empty to show all. In Prefer these adapters write Ethernet, Wi-Fi or an adapter name: the first that matches is used when two adapters are on the same network.": "Une entrée par ligne. Laissez Afficher seulement celles-ci vide pour tout afficher. Dans Préférer ces cartes réseau, écrivez Ethernet, Wi-Fi ou le nom d'une carte : la première qui correspond est utilisée quand deux cartes sont sur le même réseau.",
  "Use this adapter for its network": "Utiliser cette carte pour son réseau",
  "Network": "Réseau",

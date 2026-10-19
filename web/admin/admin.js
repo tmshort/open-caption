@@ -175,13 +175,13 @@
     // not of a show, so it lives here and not on the Run step.
     const net0 = s.network || {};
     const shownList = h('ul', { class: 'addrlist' });
-    const pref = h('textarea', { rows: '3', spellcheck: 'false', 'aria-label': __('Prefer these adapters'), placeholder: 'Ethernet' }); pref.value = (net0.prefer || []).join('\n');
+    const pref = h('textarea', { rows: '3', spellcheck: 'false', 'aria-label': __('Prefer these adapters'), placeholder: __('for example {value}', { value: 'Ethernet' }) }); pref.value = (net0.prefer || []).join('\n');
     const kindName = (k) => k === 'wifi' ? __('Wi-Fi') : k === 'ethernet' ? __('Ethernet') : '';
     const stateText = (a) => a.shown ? __('shown') : a.hidden === 'network' ? __('not used: same network as {ip}', { ip: a.instead }) : __('hidden');
     const paintList = (addrs) => shownList.replaceChildren(...(addrs.length ? addrs.map((a) => h('li', { class: a.shown ? '' : 'off' }, h('b', {}, a.ip), ' ', [kindName(a.kind), a.interface].filter(Boolean).length ? '(' + [kindName(a.kind), a.interface].filter(Boolean).join(', ') + ') ' : '', stateText(a), a.current ? ' — ' + __('you are using Setup through this one') : '', a.hidden === 'network' && a.interface ? [' ', h('button', { type: 'button', class: 'usethis', title: __('Use this adapter for its network'), onclick: () => { pref.value = [a.interface].concat(pref.value.split('\n').map((x) => x.trim()).filter((x) => x && x !== a.interface)).join('\n'); pref.focus(); } }, __('Use this one'))] : '')) : [h('li', {}, __('No network address was found.'))]));
     paintList(s.addresses || []);
-    const inc = h('textarea', { rows: '3', spellcheck: 'false', 'aria-label': __('Show only these'), placeholder: '192.168.1.0/24' }); inc.value = (net0.include || []).join('\n');
-    const exc = h('textarea', { rows: '3', spellcheck: 'false', 'aria-label': __('Never show these'), placeholder: '192.168.56.0/24' }); exc.value = (net0.exclude || []).join('\n');
+    const inc = h('textarea', { rows: '3', spellcheck: 'false', 'aria-label': __('Show only these'), placeholder: __('for example {value}', { value: '192.168.1.0/24' }) }); inc.value = (net0.include || []).join('\n');
+    const exc = h('textarea', { rows: '3', spellcheck: 'false', 'aria-label': __('Never show these'), placeholder: __('for example {value}', { value: '192.168.56.0/24' }) }); exc.value = (net0.exclude || []).join('\n');
     const restrict = h('input', { type: 'checkbox' }); restrict.checked = !!net0.restrictListening;
     const netMsg = h('div', { class: 'check warn', role: 'alert', hidden: '' });
     const applyNet = h('button', { type: 'button', onclick: async () => {
