@@ -89,17 +89,18 @@ type Responder struct {
 }
 
 // Start claims name.local (or name-2.local ... if another computer has it) and keeps answering for it.
-// It returns once the name is claimed, or an error if multicast cannot be used on this computer.
-func Start(name string) (*Responder, error) {
+// It returns once the name is claimed, or an error if multicast cannot be used on this computer. allow, when not
+// nil, decides which of this computer's addresses are announced (it is asked again each time, so it may change).
+func Start(name string, allow func(net.IP) bool) (*Responder, error) {
 	n, err := NormalizeName(name)
 	if err != nil {
 		return nil, err
 	}
-	tr, err := newUDPTransport(5353)
+	tr, err := newUDPTransport(5353, allow)
 	if err != nil {
 		return nil, err
 	}
-	return startWith(n, tr, realEnvironment(), defaultTiming)
+	return startWith(n, tr, realEnvironment(allow), defaultTiming)
 }
 
 func startWith(name string, tr transport, env environment, tm timing) (*Responder, error) {

@@ -18,6 +18,10 @@ Test it before the first show: join the guest WiFi on a phone and open the addre
 3. **A name** — the program announces itself as **`open-caption.local`**, so `http://open-caption.local/` works on most phones and computers on the same network, with nothing to set up. Change the name, or switch it off, on the **Run** step, in the row of the `.local` address (**Rename…** and its checkbox). Some guest WiFi networks block this kind of announcement; then use the numeric address or the QR code. A venue can also add a name of its own (such as `captions.theater`) on its router, which works everywhere.
 4. **Automatic page** — a venue can send guests to the page when they join the WiFi with the access point's splash page ("captive portal"). The program also answers the standard network-detection address `/captive-api` for venues that use DHCP option 114, but that only reports that the network is not captive: it does not open the page by itself, and it needs a trusted HTTPS certificate. See the [venue network guide](topic:admin-venue-network-guide).
 
+## If this computer has more than one address
+
+A computer with a cable and WiFi at once, or with virtual machines or a VPN, has several addresses. The Run step lists the ones of adapters that are connected, with the main connection first; that is the one the QR code uses at first. To give the audience only some of them (for example only the venue's WiFi network), use **Choose addresses…** next to the QR sign button: **Show only these** (empty means all) and **Never show these**, one per line, each an address (`192.168.1.50`), a network (`192.168.1.0/24`) or the word `private`. The change applies at once. Addresses that are left out are not listed, not in the QR code, not announced as the `.local` name, and not in a new self-signed HTTPS certificate.
+
 ## HTTP and HTTPS
 
 Plain `http://` addresses work on every device and are the default. HTTPS can be turned on in `config.yaml`; with a self-signed certificate each device shows a security warning the first time. Plain HTTP is simpler for an audience.

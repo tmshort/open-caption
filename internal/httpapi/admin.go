@@ -290,6 +290,7 @@ func (s *Server) adminRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("PUT /api/admin/settings/passwords", adm(s.changePasswords))
 	mux.HandleFunc("PUT /api/admin/settings/log-level", adm(s.setLogLevel))
 	mux.HandleFunc("PUT /api/admin/settings/mdns", adm(s.setMDNS))
+	mux.HandleFunc("PUT /api/admin/settings/network", adm(s.setNetwork))
 	mux.HandleFunc("PUT /api/admin/settings/standby", adm(s.setStandby))
 	mux.HandleFunc("GET /api/admin/settings/certificate", adm(s.certificateInfo))
 	mux.HandleFunc("POST /api/admin/settings/certificate/renew", adm(s.renewCertificate))
@@ -1166,7 +1167,11 @@ func (s *Server) network(w http.ResponseWriter, r *http.Request) {
 
 	var warnings []string
 	if len(ips) == 0 {
-		warnings = append(warnings, "No network address was found. Connect this computer to the venue's network, then reload.")
+		if len(netinfo.AllAddresses()) > 0 {
+			warnings = append(warnings, "Every network address of this computer is hidden by the address settings. Use Choose addresses… to show one.")
+		} else {
+			warnings = append(warnings, "No network address was found. Connect this computer to the venue's network, then reload.")
+		}
 	}
 	if l.HTTPAddr != "" && l.HTTPConfigured != "" && portOf(l.HTTPAddr) != portOf(l.HTTPConfigured) {
 		warnings = append(warnings, fmt.Sprintf("Port %s was not available, so the server is using port %s. Audience addresses must include the port.", portOf(l.HTTPConfigured), portOf(l.HTTPAddr)))
@@ -1226,8 +1231,8 @@ func (s *Server) ownHost(h string) bool {
 	if st := s.MDNSStatus(); st.Active && strings.EqualFold(h, st.Host) {
 		return true
 	}
-	for _, ip := range netinfo.LocalIPs() {
-		if ip.String() == h {
+	for _, a := range netinfo.AllAddresses() { // every address, also one that is not offered: it still reaches this computer
+		if a.IP.String() == h {
 			return true
 		}
 	}
@@ -1295,12 +1300,14 @@ func (s *Server) settings(w http.ResponseWriter, r *http.Request) {
 	s.lmu.Lock()
 	l := s.listeners
 	s.lmu.Unlock()
+	ns := s.networkSettings()
 	writeJSON(w, http.StatusOK, map[string]any{
 		"config": s.cfg.Redacted(), "configPath": s.cfg.Path, "dataDir": s.cfg.DataDir,
 		"httpAddr": l.HTTPAddr, "httpsAddr": l.HTTPSAddr, "version": s.version,
 		"canChangePasswords": s.cfg.Path != "", "standby": s.standbyView(), "logLevel": logx.Current().String(), "logLevelPinned": s.pinnedLevel, "mdns": s.MDNSStatus(),
 		"adminAllow": s.cfg.Access.AdminAllow, "operatorAllow": s.cfg.Access.OperatorAllow,
 		"adminRestricted": s.adminAllow.Restricted(), "operatorRestricted": s.operatorAllow.Restricted(),
+		"network": map[string]any{"include": ns.Include, "exclude": ns.Exclude}, "networkPinned": s.pinnedNetwork, "addresses": s.networkAddresses(),
 	})
 }
 

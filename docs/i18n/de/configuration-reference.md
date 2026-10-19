@@ -23,6 +23,8 @@ Eine Option oder ihre Umgebungsvariable hat für diesen Lauf Vorrang vor der Dat
 | `--https-addr ADDR` | `OPEN_CAPTION_HTTPS_ADDR` | Schaltet HTTPS an dieser Adresse **ein** (hat Vorrang vor `https.enabled` und `https.addr`) |
 | `--log-level LEVEL` | `OPEN_CAPTION_LOG_LEVEL` | Hat bei jedem Programmstart Vorrang vor `log.level` (die Einrichtung sagt es, wenn es gilt) |
 | `--log-file FILE` | `OPEN_CAPTION_LOG` | Hängt das Protokoll zusätzlich an diese Datei an |
+| `--network-include LIST` | `OPEN_CAPTION_NETWORK_INCLUDE` | Hat bei jedem Programmstart Vorrang vor `network.include`: eine durch Kommas getrennte Liste wie `192.168.1.0/24,10.0.0.0/8` (die Einrichtung sagt es, wenn es gilt) |
+| `--network-exclude LIST` | `OPEN_CAPTION_NETWORK_EXCLUDE` | Dasselbe für `network.exclude` |
 | `--no-browser` | | Öffnet die Einrichtung beim Start nicht in einem Browser (wie `defaults.open_browser: no`) |
 | `--version` | | Gibt die Version und die für automatische Zertifikate eingebauten DNS-Anbieter aus und beendet sich |
 | `--help` | | Gibt die Optionen und Umgebungsvariablen aus, dazu wo man mehr liest, und beendet sich |
@@ -146,9 +148,18 @@ Wer die Einrichtung und die Bedienerseite öffnen darf. Die Publikumsseite ist i
 | `mdns.name` | `open-caption` | Der Name: nur Buchstaben, Ziffern und Bindestriche, bis zu 63 Zeichen (`.local` wird angehängt). *Einrichtung: Schritt Fahren* |
 | `standby.message` | leer | Die Zeile, die das Publikum auf dem Standby-Bildschirm sieht. Leer bedeutet „Captions will begin shortly“ in der Sprache jedes Zuschauers. Eine Zeile, bis zu 200 Zeichen. *Einrichtung: Einstellungen → Publikumsbildschirm* (das Logo ist eine dort gewählte Datei, keine Einstellung) |
 
+### `network`
+
+| Schlüssel | Standard | Bedeutung |
+|---|---|---|
+| `network.include` | `[]` | Dem Publikum nur diese Adressen dieses Computers anbieten. Leer bedeutet alle Adressen. Einträge: eine Adresse (`192.168.1.50`), ein Netzwerk (`192.168.1.0/24`) oder `private` (die üblichen Heim- und Büronetze). Beispiel: `[192.168.1.0/24]` |
+| `network.exclude` | `[]` | Diese nie anbieten (dieselben Arten von Einträgen); das hat Vorrang vor `include`. Nützlich für die Adapter virtueller Maschinen, VPNs oder Docker. Beispiel: `[192.168.56.0/24]` |
+
+Eine ausgelassene Adresse wird im Schritt Fahren und beim Start nicht aufgelistet, dem Publikum nicht gegeben, nicht als `<Name>.local` angekündigt und nicht in ein neues selbstsigniertes HTTPS-Zertifikat aufgenommen. Angeboten werden nur Adressen verbundener Netzwerkadapter. *Einrichtung: Schritt Fahren → Adressen auswählen…*
+
 ## Wo eine Einstellung entschieden wird
 
-Von schwächer zu stärker: der eingebaute Wert des Programms → `config.yaml` (`defaults`, `defaults.look`, `audience.scrollback_lines`) → das `[settings]` der Show-Datei. Eine Befehlszeilenoption oder Umgebungsvariable hat Vorrang vor der Datei. Die Einstellungen des Hauses (Ports, HTTPS, Passwörter, `access`, `data_dir`, `audience.max_clients`, `mdns`, `standby`, `log`) gibt es nur hier.
+Von schwächer zu stärker: der eingebaute Wert des Programms → `config.yaml` (`defaults`, `defaults.look`, `audience.scrollback_lines`) → das `[settings]` der Show-Datei. Eine Befehlszeilenoption oder Umgebungsvariable hat Vorrang vor der Datei. Die Einstellungen des Hauses (Ports, HTTPS, Passwörter, `access`, `data_dir`, `audience.max_clients`, `mdns`, `network`, `standby`, `log`) gibt es nur hier.
 
 ## Ein vollständiges Beispiel
 
@@ -175,6 +186,9 @@ https:
 mdns:
   enabled: yes
   name: open-caption
+network:
+  include: []
+  exclude: []
 standby:
   message: "Welcome to the Little Theatre"
 defaults:

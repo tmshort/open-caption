@@ -23,6 +23,8 @@ Une option, ou sa variable d'environnement, l'emporte sur le fichier pour cette 
 | `--https-addr ADDR` | `OPEN_CAPTION_HTTPS_ADDR` | **Active** HTTPS à cette adresse (l'emporte sur `https.enabled` et `https.addr`) |
 | `--log-level LEVEL` | `OPEN_CAPTION_LOG_LEVEL` | L'emporte sur `log.level` à chaque démarrage du programme (la configuration l'indique quand il est en vigueur) |
 | `--log-file FILE` | `OPEN_CAPTION_LOG` | Ajoute aussi le journal à ce fichier |
+| `--network-include LIST` | `OPEN_CAPTION_NETWORK_INCLUDE` | L'emporte sur `network.include` à chaque démarrage du programme : une liste séparée par des virgules, comme `192.168.1.0/24,10.0.0.0/8` (la configuration l'indique quand il est en vigueur) |
+| `--network-exclude LIST` | `OPEN_CAPTION_NETWORK_EXCLUDE` | Même chose pour `network.exclude` |
 | `--no-browser` | | N'ouvre pas la configuration dans un navigateur au démarrage (comme `defaults.open_browser: no`) |
 | `--version` | | Affiche la version et les fournisseurs DNS inclus pour les certificats automatiques, puis quitte |
 | `--help` | | Affiche les options et les variables d'environnement, et où en lire plus, puis quitte |
@@ -146,9 +148,18 @@ Qui peut ouvrir la configuration et la page de l'opérateur. La page du public e
 | `mdns.name` | `open-caption` | Le nom : lettres, chiffres et traits d'union seulement, jusqu'à 63 caractères (`.local` est ajouté). *Configuration : étape Conduire* |
 | `standby.message` | vide | La ligne que voit le public sur l'écran d'attente. Vide signifie « Captions will begin shortly » dans la langue de chaque spectateur. Une ligne, jusqu'à 200 caractères. *Configuration : Réglages → Écran du public* (le logo est un fichier choisi là, pas un réglage) |
 
+### `network`
+
+| Clé | Par défaut | Signification |
+|---|---|---|
+| `network.include` | `[]` | N'offre au public que ces adresses de cet ordinateur. Vide signifie toutes les adresses. Entrées : une adresse (`192.168.1.50`), un réseau (`192.168.1.0/24`) ou `private` (les réseaux domestiques et de bureau habituels). Exemple : `[192.168.1.0/24]` |
+| `network.exclude` | `[]` | Ne jamais offrir celles-ci (les mêmes sortes d'entrées) ; cela l'emporte sur `include`. Utile pour les cartes réseau de machines virtuelles, de VPN ou de Docker. Exemple : `[192.168.56.0/24]` |
+
+Une adresse écartée n'est pas listée à l'étape Conduire ni au démarrage, n'est pas donnée au public, n'est pas annoncée comme `<nom>.local` et n'est pas mise dans un nouveau certificat HTTPS autosigné. Seules les adresses des cartes réseau connectées sont proposées. *Configuration : étape Conduire → Choisir les adresses…*
+
 ## Où un réglage est décidé
 
-Du plus faible au plus fort : la valeur intégrée du programme → `config.yaml` (`defaults`, `defaults.look`, `audience.scrollback_lines`) → le `[settings]` du fichier de spectacle. Une option de ligne de commande ou une variable d'environnement l'emporte sur le fichier. Les réglages propres au lieu (ports, HTTPS, mots de passe, `access`, `data_dir`, `audience.max_clients`, `mdns`, `standby`, `log`) n'existent qu'ici.
+Du plus faible au plus fort : la valeur intégrée du programme → `config.yaml` (`defaults`, `defaults.look`, `audience.scrollback_lines`) → le `[settings]` du fichier de spectacle. Une option de ligne de commande ou une variable d'environnement l'emporte sur le fichier. Les réglages propres au lieu (ports, HTTPS, mots de passe, `access`, `data_dir`, `audience.max_clients`, `mdns`, `network`, `standby`, `log`) n'existent qu'ici.
 
 ## Un exemple complet
 
@@ -175,6 +186,9 @@ https:
 mdns:
   enabled: yes
   name: open-caption
+network:
+  include: []
+  exclude: []
 standby:
   message: "Welcome to the Little Theatre"
 defaults:

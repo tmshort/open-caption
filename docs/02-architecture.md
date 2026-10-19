@@ -164,7 +164,7 @@ internal/
   logbuf/                in-memory recent log lines (support bundle)
   logx/                  levelled logging (DEBUG/INFO/WARN/ERROR) over the standard logger
   mdns/                  multicast-DNS responder: announces <name>.local (A records, probing for conflicts, goodbyes)
-  netinfo/               host addresses, self-signed certificate, the watched certificate files (reload without a restart)
+  netinfo/               host addresses (adapters that are up, main connection first, `network.include`/`exclude` filter), self-signed certificate, the watched certificate files (reload without a restart)
   show/                  show store: shows, show files per language, validated image assets, duplicate
   showfile/              the show file: parser, validator, Markdown-subset renderer, cue model, language structure check (pure, heavily tested)
 web/                     embedded browser assets (go:embed)
@@ -218,6 +218,9 @@ https:
 mdns:
   enabled: true                    # announce <name>.local on the local network
   name: open-caption
+network:
+  include: []                      # offer only these addresses/networks (empty = all); entries: 192.168.1.50, 192.168.1.0/24, private
+  exclude: []                      # never offer these (wins over include); Setup: Run step -> Choose addresses
 standby:
   message: ""                      # shown while no show is on air; empty = "Captions will begin shortly" in the viewer's language (the logo is set in Setup)
 defaults:                          # used when a show file does not say otherwise (a show file's [settings] override these)

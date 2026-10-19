@@ -24,5 +24,6 @@
  "The program had a problem. Try again; if it keeps happening, restart the program.",
  "That did not work. Check the connection and try again.",
  "Next: {step} →",
- "How far through the show the audience is (notes and section headings are not counted)"
+ "How far through the show the audience is (notes and section headings are not counted)",
+ "Could not change the addresses"
 ]

@@ -23,6 +23,8 @@ Uma opção, ou a sua variável de ambiente, tem prioridade sobre o arquivo naqu
 | `--https-addr ADDR` | `OPEN_CAPTION_HTTPS_ADDR` | **Liga** o HTTPS neste endereço (tem prioridade sobre `https.enabled` e `https.addr`) |
 | `--log-level LEVEL` | `OPEN_CAPTION_LOG_LEVEL` | Tem prioridade sobre `log.level` toda vez que o programa inicia (a configuração avisa quando está em vigor) |
 | `--log-file FILE` | `OPEN_CAPTION_LOG` | Acrescenta também o registro a este arquivo |
+| `--network-include LIST` | `OPEN_CAPTION_NETWORK_INCLUDE` | Tem prioridade sobre `network.include` toda vez que o programa inicia: uma lista separada por vírgulas, como `192.168.1.0/24,10.0.0.0/8` (a configuração avisa quando está em vigor) |
+| `--network-exclude LIST` | `OPEN_CAPTION_NETWORK_EXCLUDE` | O mesmo para `network.exclude` |
 | `--no-browser` | | Não abre a configuração em um navegador ao iniciar (como `defaults.open_browser: no`) |
 | `--version` | | Imprime a versão e os provedores de DNS incluídos para os certificados automáticos, e sai |
 | `--help` | | Imprime as opções e as variáveis de ambiente, e onde ler mais, e sai |
@@ -146,9 +148,18 @@ Quem pode abrir a configuração e a página do operador. A página do público 
 | `mdns.name` | `open-caption` | O nome: somente letras, dígitos e hifens, até 63 caracteres (`.local` é acrescentado). *Configuração: etapa Conduzir* |
 | `standby.message` | vazio | A linha que o público vê na tela de espera. Vazio significa «Captions will begin shortly» no idioma de cada espectador. Uma linha, até 200 caracteres. *Configuração: Configurações → Tela do público* (o logotipo é um arquivo escolhido ali, não uma configuração) |
 
+### `network`
+
+| Chave | Padrão | Significado |
+|---|---|---|
+| `network.include` | `[]` | Oferece ao público somente estes endereços deste computador. Vazio significa todos os endereços. Entradas: um endereço (`192.168.1.50`), uma rede (`192.168.1.0/24`) ou `private` (as redes domésticas e de escritório habituais). Exemplo: `[192.168.1.0/24]` |
+| `network.exclude` | `[]` | Nunca oferecer estes (os mesmos tipos de entradas); tem prioridade sobre `include`. Serve para os adaptadores de máquinas virtuais, VPNs ou Docker. Exemplo: `[192.168.56.0/24]` |
+
+Um endereço excluído não aparece na etapa Conduzir nem na inicialização, não é dado ao público, não é anunciado como `<nome>.local` e não entra em um novo certificado HTTPS autoassinado. Somente endereços de adaptadores de rede conectados são oferecidos. *Configuração: etapa Conduzir → Escolher endereços…*
+
 ## Onde uma configuração é decidida
 
-Do mais fraco ao mais forte: o valor embutido do programa → `config.yaml` (`defaults`, `defaults.look`, `audience.scrollback_lines`) → o `[settings]` do arquivo do espetáculo. Uma opção da linha de comando ou uma variável de ambiente prevalece sobre o arquivo. As configurações do local (portas, HTTPS, senhas, `access`, `data_dir`, `audience.max_clients`, `mdns`, `standby`, `log`) existem somente aqui.
+Do mais fraco ao mais forte: o valor embutido do programa → `config.yaml` (`defaults`, `defaults.look`, `audience.scrollback_lines`) → o `[settings]` do arquivo do espetáculo. Uma opção da linha de comando ou uma variável de ambiente prevalece sobre o arquivo. As configurações do local (portas, HTTPS, senhas, `access`, `data_dir`, `audience.max_clients`, `mdns`, `network`, `standby`, `log`) existem somente aqui.
 
 ## Um exemplo completo
 
@@ -175,6 +186,9 @@ https:
 mdns:
   enabled: yes
   name: open-caption
+network:
+  include: []
+  exclude: []
 standby:
   message: "Welcome to the Little Theatre"
 defaults:

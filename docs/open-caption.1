@@ -123,6 +123,22 @@ every time the program starts.
 Also append the log to this file.
 It starts a new file at about 5 MB and keeps three old ones.
 .TP
+.BI \-\-network\-include " list"
+Offer only these addresses of this computer to the audience (in Setup, at start-up, in the HTTPS certificate and in the
+.B .local
+name): a comma-separated list of addresses (192.168.1.50), networks (192.168.1.0/24) and the word
+.BR private .
+Overrides
+.B network.include
+every time the program starts.
+.TP
+.BI \-\-network\-exclude " list"
+Never offer these addresses or networks (the same kinds of entries); this wins over
+.BR \-\-network\-include .
+Overrides
+.B network.exclude
+every time the program starts.
+.TP
 .B \-\-no\-browser
 Do not open Setup in a browser at start-up (the same as
 .B defaults.open_browser: no
@@ -209,6 +225,14 @@ Same as
 .B OPEN_CAPTION_LOG
 Same as
 .BR \-\-log\-file .
+.TP
+.B OPEN_CAPTION_NETWORK_INCLUDE
+Same as
+.BR \-\-network\-include .
+.TP
+.B OPEN_CAPTION_NETWORK_EXCLUDE
+Same as
+.BR \-\-network\-exclude .
 .PP
 A command-line option wins over its variable, and either wins over the settings file.
 .PP

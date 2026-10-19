@@ -23,6 +23,8 @@ A flag, or its environment variable, overrides the file for that run. (The file 
 | `--https-addr ADDR` | `OPEN_CAPTION_HTTPS_ADDR` | Turns HTTPS **on** at this address (overrides `https.enabled` and `https.addr`) |
 | `--log-level LEVEL` | `OPEN_CAPTION_LOG_LEVEL` | Overrides `log.level` every time the program starts (Setup says so when it is in force) |
 | `--log-file FILE` | `OPEN_CAPTION_LOG` | Also append the log to this file |
+| `--network-include LIST` | `OPEN_CAPTION_NETWORK_INCLUDE` | Overrides `network.include` every time the program starts: a comma-separated list such as `192.168.1.0/24,10.0.0.0/8` (Setup says so when it is in force) |
+| `--network-exclude LIST` | `OPEN_CAPTION_NETWORK_EXCLUDE` | The same for `network.exclude` |
 | `--no-browser` | | Do not open Setup in a browser at start-up (like `defaults.open_browser: no`) |
 | `--version` | | Print the version and the DNS providers built in for automatic certificates, then exit |
 | `--help` | | Print the options and the environment variables, and where to read more, then exit |
@@ -146,9 +148,18 @@ Who may open Setup and the operator page. The audience page is always open to ev
 | `mdns.name` | `open-caption` | The name: letters, digits and hyphens only, up to 63 characters (`.local` is added). *Setup: Run step* |
 | `standby.message` | empty | The line the audience sees on the standby screen. Empty means "Captions will begin shortly" in each viewer's language. One line, up to 200 characters. *Setup: Settings → Audience screen* (the logo is a file chosen there, not a setting) |
 
+### `network`
+
+| Key | Default | Meaning |
+|---|---|---|
+| `network.include` | `[]` | Offer only these addresses of this computer to the audience. Empty means every address. Entries: an address (`192.168.1.50`), a network (`192.168.1.0/24`) or `private` (the usual home and office networks). Example: `[192.168.1.0/24]` |
+| `network.exclude` | `[]` | Never offer these (the same kinds of entries); this wins over `include`. Use it for the adapters of virtual machines, VPNs or Docker. Example: `[192.168.56.0/24]` |
+
+An address that is left out is not listed in the Run step or at start-up, is not given to the audience, is not announced as `<name>.local` and is not put in a new self-signed HTTPS certificate. Only addresses of network adapters that are connected are ever offered. *Setup: Run step → Choose addresses…*
+
 ## Where a setting is decided
 
-From weakest to strongest: the program's built-in value → `config.yaml` (`defaults`, `defaults.look`, `audience.scrollback_lines`) → the show file's `[settings]`. A command-line flag or environment variable beats the file. The venue-level settings (ports, HTTPS, passwords, `access`, `data_dir`, `audience.max_clients`, `mdns`, `standby`, `log`) exist only here.
+From weakest to strongest: the program's built-in value → `config.yaml` (`defaults`, `defaults.look`, `audience.scrollback_lines`) → the show file's `[settings]`. A command-line flag or environment variable beats the file. The venue-level settings (ports, HTTPS, passwords, `access`, `data_dir`, `audience.max_clients`, `mdns`, `network`, `standby`, `log`) exist only here.
 
 ## A complete example
 
@@ -175,6 +186,9 @@ https:
 mdns:
   enabled: yes
   name: open-caption
+network:
+  include: []
+  exclude: []
 standby:
   message: "Welcome to the Little Theatre"
 defaults:

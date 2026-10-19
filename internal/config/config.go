@@ -108,6 +108,15 @@ type MDNS struct {
 	Name    string `yaml:"name"` // one label; ".local" is added
 }
 
+// Network chooses which of this computer's network addresses are offered to the audience: listed in Setup,
+// printed at startup, put in the HTTPS certificate and announced by name. Entries are an address
+// ("192.168.1.50"), a network ("192.168.1.0/24"), or "private" (the usual home and office networks). Include
+// empty means every address; an address that matches Exclude is never offered, whatever Include says.
+type Network struct {
+	Include []string `yaml:"include"`
+	Exclude []string `yaml:"exclude"`
+}
+
 // Standby is what the audience sees while no show is on air: before the operator starts one, after one goes
 // off air, and when no show is loaded. It belongs to the venue, not to a show. (The logo is a file in the data
 // folder, set in Setup.)
@@ -141,6 +150,7 @@ type Config struct {
 	Access           Access   `yaml:"access"`
 	Log              Log      `yaml:"log"`
 	MDNS             MDNS     `yaml:"mdns"`
+	Network          Network  `yaml:"network"`
 	Standby          Standby  `yaml:"standby"`
 
 	// Path is where the config was loaded from or generated (not serialized).
@@ -359,6 +369,14 @@ func SetValues(path string, kv map[string]any) error {
 					n.Tag, n.Value = "!!bool", strconv.FormatBool(v)
 				case int:
 					n.Tag, n.Value = "!!int", strconv.Itoa(v)
+				case []string: // a list of text values; an empty list is written as []
+					n.Kind, n.Tag, n.Value = yaml.SequenceNode, "!!seq", ""
+					if len(v) == 0 {
+						n.Style = yaml.FlowStyle
+					}
+					for _, item := range v {
+						n.Content = append(n.Content, &yaml.Node{Kind: yaml.ScalarNode, Tag: "!!str", Value: item})
+					}
 				default:
 					n.Value = fmt.Sprint(v)
 				}
@@ -487,6 +505,12 @@ func (c *Config) normalize() []string {
 	}
 	if _, err := ParseAllowList(c.Access.OperatorAllow); err != nil {
 		add("access.operator_allow", "%v", err)
+	}
+	if _, err := NewAddressFilter(c.Network.Include, nil); err != nil {
+		add("network.include", "%v", err)
+	}
+	if _, err := NewAddressFilter(nil, c.Network.Exclude); err != nil {
+		add("network.exclude", "%v", err)
 	}
 	if n, err := mdns.NormalizeName(c.MDNS.Name); err != nil {
 		add("mdns.name", "%v", err)

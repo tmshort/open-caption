@@ -8,6 +8,7 @@ import (
 	"github.com/tmshort/open-caption/internal/config"
 	"github.com/tmshort/open-caption/internal/logx"
 	"github.com/tmshort/open-caption/internal/mdns"
+	"github.com/tmshort/open-caption/internal/netinfo"
 )
 
 // responder is a running mDNS announcement (internal/mdns), so tests can stand in for the network.
@@ -40,7 +41,7 @@ type mdnsManager struct {
 func newMDNSManager(cfg config.MDNS) *mdnsManager {
 	return &mdnsManager{
 		status: MDNSStatus{Enabled: cfg.Enabled, Requested: cfg.Name},
-		start:  func(name string) (responder, error) { return mdns.Start(name) },
+		start:  func(name string) (responder, error) { return mdns.Start(name, netinfo.Allowed) },
 	}
 }
 

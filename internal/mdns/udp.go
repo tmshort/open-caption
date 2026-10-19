@@ -14,21 +14,22 @@ var group = &net.UDPAddr{IP: net.IPv4(224, 0, 0, 251), Port: 5353}
 
 // udpTransport speaks mDNS over IPv4 multicast.
 type udpTransport struct {
-	raw  net.PacketConn
-	p    *ipv4.PacketConn
-	port int
+	raw   net.PacketConn
+	p     *ipv4.PacketConn
+	port  int
+	allow func(net.IP) bool // which addresses may be announced (nil: all)
 
 	mu     sync.Mutex // guards joined and serialises sends (SetMulticastInterface is per socket)
 	joined map[int]bool
 }
 
-func newUDPTransport(port int) (*udpTransport, error) {
+func newUDPTransport(port int, allow func(net.IP) bool) (*udpTransport, error) {
 	lc := net.ListenConfig{Control: shareAddress} // other mDNS programs on this computer use the same port
 	raw, err := lc.ListenPacket(context.Background(), "udp4", fmt.Sprintf("0.0.0.0:%d", port))
 	if err != nil {
 		return nil, fmt.Errorf("cannot listen for multicast DNS on UDP port %d: %w", port, err)
 	}
-	t := &udpTransport{raw: raw, p: ipv4.NewPacketConn(raw), port: port, joined: map[int]bool{}}
+	t := &udpTransport{raw: raw, p: ipv4.NewPacketConn(raw), port: port, allow: allow, joined: map[int]bool{}}
 	t.p.SetControlMessage(ipv4.FlagInterface, true) // not available everywhere: then the interface is unknown (0)
 	t.p.SetMulticastTTL(255)
 	t.p.SetMulticastLoopback(true)
@@ -40,8 +41,8 @@ func newUDPTransport(port int) (*udpTransport, error) {
 	return t, nil
 }
 
-func usable(i net.Interface) bool {
-	return i.Flags&net.FlagUp != 0 && i.Flags&net.FlagMulticast != 0 && i.Flags&net.FlagLoopback == 0 && len(ipv4Addrs(i.Index)) > 0
+func usable(i net.Interface, allow func(net.IP) bool) bool {
+	return i.Flags&net.FlagUp != 0 && i.Flags&net.FlagMulticast != 0 && i.Flags&net.FlagLoopback == 0 && len(ipv4Addrs(i.Index, allow)) > 0
 }
 
 func (t *udpTransport) Refresh() {
@@ -49,7 +50,7 @@ func (t *udpTransport) Refresh() {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 	for _, i := range ifs {
-		if usable(i) && !t.joined[i.Index] {
+		if usable(i, t.allow) && !t.joined[i.Index] {
 			ifc := i
 			if err := t.p.JoinGroup(&ifc, &net.UDPAddr{IP: group.IP}); err == nil {
 				t.joined[i.Index] = true
@@ -57,7 +58,7 @@ func (t *udpTransport) Refresh() {
 		}
 	}
 	for idx := range t.joined { // forget interfaces that went away
-		if ifc, err := net.InterfaceByIndex(idx); err != nil || !usable(*ifc) {
+		if ifc, err := net.InterfaceByIndex(idx); err != nil || !usable(*ifc, t.allow) {
 			delete(t.joined, idx)
 		}
 	}
@@ -118,8 +119,8 @@ func (t *udpTransport) Unicast(pkt []byte, dst *net.UDPAddr) error {
 
 func (t *udpTransport) Close() error { return t.raw.Close() }
 
-// ipv4Addrs returns an interface's usable IPv4 addresses.
-func ipv4Addrs(ifIndex int) []net.IP {
+// ipv4Addrs returns an interface's usable IPv4 addresses that allow (when not nil) accepts.
+func ipv4Addrs(ifIndex int, allow func(net.IP) bool) []net.IP {
 	ifc, err := net.InterfaceByIndex(ifIndex)
 	if err != nil {
 		return nil
@@ -128,7 +129,7 @@ func ipv4Addrs(ifIndex int) []net.IP {
 	var out []net.IP
 	for _, a := range addrs {
 		if n, ok := a.(*net.IPNet); ok {
-			if ip := n.IP.To4(); ip != nil && ip.IsGlobalUnicast() {
+			if ip := n.IP.To4(); ip != nil && ip.IsGlobalUnicast() && (allow == nil || allow(ip)) {
 				out = append(out, ip)
 			}
 		}
@@ -136,9 +137,9 @@ func ipv4Addrs(ifIndex int) []net.IP {
 	return out
 }
 
-func realEnvironment() environment {
+func realEnvironment(allow func(net.IP) bool) environment {
 	return environment{
-		addrs: ipv4Addrs,
+		addrs: func(ifIndex int) []net.IP { return ipv4Addrs(ifIndex, allow) },
 		isOurs: func(ip net.IP) bool {
 			addrs, _ := net.InterfaceAddrs()
 			for _, a := range addrs {

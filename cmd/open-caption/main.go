@@ -41,6 +41,8 @@ func main() {
 		httpsAddr = flag.String("https-addr", env("OPEN_CAPTION_HTTPS_ADDR", ""), "HTTPS listen address, e.g. :443 (enables HTTPS)")
 		logLevel  = flag.String("log-level", env("OPEN_CAPTION_LOG_LEVEL", ""), "log detail: debug, info, warn or error (default: log.level in config.yaml, else info)")
 		logFile   = flag.String("log-file", env("OPEN_CAPTION_LOG", ""), "also append log lines to this file")
+		netInc    = flag.String("network-include", env("OPEN_CAPTION_NETWORK_INCLUDE", ""), "offer only these addresses or networks, comma separated, e.g. 192.168.1.0/24 (default: network.include in config.yaml)")
+		netExc    = flag.String("network-exclude", env("OPEN_CAPTION_NETWORK_EXCLUDE", ""), "never offer these addresses or networks, comma separated, e.g. 10.0.0.0/8 (default: network.exclude in config.yaml)")
 		noBrowser = flag.Bool("no-browser", false, "do not open the setup page in a browser at startup")
 		showVer   = flag.Bool("version", false, "print version and exit")
 		dev       = flag.Bool("dev", false, "DEVELOPMENT ONLY: enable unauthenticated /dev/* control endpoints")
@@ -117,6 +119,15 @@ func main() {
 	if *httpAddr != "" {
 		cfg.HTTP.Addr = *httpAddr
 	}
+	if *netInc != "" {
+		cfg.Network.Include = splitList(*netInc)
+	}
+	if *netExc != "" {
+		cfg.Network.Exclude = splitList(*netExc)
+	}
+	if _, err := config.NewAddressFilter(cfg.Network.Include, cfg.Network.Exclude); err != nil {
+		logx.Fatalf("--network-include / --network-exclude: %v", err)
+	}
 	if cfg.HTTPS.Enabled && cfg.HTTPS.ACME.Enabled {
 		if !acme.Available() {
 			logx.Fatalf("https.acme: this program was built without automatic certificates (ACME_PROVIDERS=none); see docs/https-certificate-guide.md")
@@ -144,6 +155,10 @@ func main() {
 	}
 
 	api := httpapi.New(cfg, version)
+	api.ApplyNetwork(cfg.Network.Include, cfg.Network.Exclude) // before any address is printed or put in a certificate
+	if *netInc != "" || *netExc != "" {
+		api.PinNetwork()
+	}
 	if *logLevel != "" {
 		api.PinLogLevel(strings.ToLower(strings.TrimSpace(*logLevel)))
 	}
@@ -288,6 +303,8 @@ Environment variables (a command-line option wins over its variable, and both wi
   OPEN_CAPTION_HTTPS_ADDR   same as --https-addr
   OPEN_CAPTION_LOG_LEVEL    same as --log-level
   OPEN_CAPTION_LOG          same as --log-file
+  OPEN_CAPTION_NETWORK_INCLUDE  same as --network-include
+  OPEN_CAPTION_NETWORK_EXCLUDE  same as --network-exclude
 
 More: man open-caption (docs/open-caption.1), docs/configuration-reference.md (every setting in config.yaml),
 docs/usage-guide.md, and https://github.com/tmshort/open-caption
@@ -359,6 +376,17 @@ func listen(l config.Listener) (net.Listener, error) {
 	}
 	logx.Warnf("cannot listen on %s (%v); falling back to %s", l.Addr, err, l.FallbackAddr)
 	return net.Listen("tcp", l.FallbackAddr)
+}
+
+// splitList turns "a, b,c" into its entries.
+func splitList(s string) []string {
+	var out []string
+	for _, e := range strings.Split(s, ",") {
+		if e = strings.TrimSpace(e); e != "" {
+			out = append(out, e)
+		}
+	}
+	return out
 }
 
 func env(k, def string) string {

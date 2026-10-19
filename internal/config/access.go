@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"net"
 	"net/netip"
 	"strings"
 )
@@ -81,4 +82,38 @@ func (l AllowList) Allows(ip netip.Addr) bool {
 		}
 	}
 	return false
+}
+
+// AddressFilter decides which of this computer's own addresses are offered (Config.Network). The zero value
+// offers every address.
+type AddressFilter struct {
+	include, exclude AllowList
+}
+
+// NewAddressFilter parses the two lists (the same entries as the access lists).
+func NewAddressFilter(include, exclude []string) (AddressFilter, error) {
+	var f AddressFilter
+	var err error
+	if f.include, err = ParseAllowList(include); err != nil {
+		return AddressFilter{}, err
+	}
+	if f.exclude, err = ParseAllowList(exclude); err != nil {
+		return AddressFilter{}, err
+	}
+	return f, nil
+}
+
+// Active reports whether the filter leaves anything out.
+func (f AddressFilter) Active() bool { return f.include.Restricted() || f.exclude.Restricted() }
+
+// Allows reports whether the address may be offered: it is in Include (when that is not empty) and not in Exclude.
+func (f AddressFilter) Allows(ip net.IP) bool {
+	a, ok := netip.AddrFromSlice(ip)
+	if !ok {
+		return false
+	}
+	if !f.include.Allows(a) {
+		return false
+	}
+	return !(f.exclude.Restricted() && f.exclude.Allows(a))
 }

@@ -16,22 +16,74 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"sync/atomic"
 	"time"
 )
 
-// LocalIPs returns the non-loopback unicast IPv4 addresses of the network interfaces that are up, the main
-// connection first and the others in numeric order. The
-// interfaces are asked, not the whole address table: on Windows that table also holds the last address of an
-// adapter that is switched off or disconnected (a Wi-Fi card turned off still lists the address it had), and
-// such an address must not be offered to the audience or put in the certificate.
-func LocalIPs() []net.IP {
+// Address is one of this computer's IPv4 addresses and the network interface it belongs to.
+type Address struct {
+	IP        net.IP
+	Interface string
+}
+
+var filter atomic.Pointer[func(net.IP) bool]
+
+// SetFilter limits LocalIPs to the addresses allow accepts (config network.include and network.exclude); nil
+// offers every address. It can be changed at any time.
+func SetFilter(allow func(net.IP) bool) {
+	if allow == nil {
+		filter.Store(nil)
+		return
+	}
+	filter.Store(&allow)
+}
+
+// Allowed reports whether the filter (SetFilter) offers ip; with no filter, every address is offered.
+func Allowed(ip net.IP) bool {
+	allow := filter.Load()
+	return allow == nil || (*allow)(ip)
+}
+
+// AllAddresses returns the non-loopback unicast IPv4 addresses of the network interfaces that are up, whether
+// or not the filter would offer them, the main connection first and the others in numeric order. The interfaces
+// are asked, not the whole address table: on Windows that table also holds the last address of an adapter that
+// is switched off or disconnected (a Wi-Fi card turned off still lists the address it had), and such an
+// address must not be offered to the audience or put in the certificate.
+func AllAddresses() []Address {
 	ifs, _ := net.Interfaces()
-	var out []net.IP
+	var out []Address
 	for _, ifc := range ifs {
 		addrs, _ := ifc.Addrs()
-		out = append(out, usableIPs(ifc.Flags, addrs)...)
+		for _, ip := range usableIPs(ifc.Flags, addrs) {
+			out = append(out, Address{IP: ip, Interface: ifc.Name})
+		}
 	}
-	return mainFirst(out, mainIP())
+	ips := make([]net.IP, len(out))
+	for i, a := range out {
+		ips[i] = a.IP
+	}
+	ips = mainFirst(ips, mainIP())
+	sorted := make([]Address, 0, len(out))
+	for _, ip := range ips {
+		for _, a := range out {
+			if a.IP.Equal(ip) {
+				sorted = append(sorted, a)
+				break
+			}
+		}
+	}
+	return sorted
+}
+
+// LocalIPs returns the addresses to offer: AllAddresses less what the filter leaves out.
+func LocalIPs() []net.IP {
+	var out []net.IP
+	for _, a := range AllAddresses() {
+		if Allowed(a.IP) {
+			out = append(out, a.IP)
+		}
+	}
+	return out
 }
 
 // mainIP is the address this computer uses to reach the rest of the network (the one on the route to the

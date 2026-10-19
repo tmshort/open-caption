@@ -29,6 +29,7 @@ type Server struct {
 	mdns                      *mdnsManager     // the local network name (open-caption.local)
 	standby                   bool             // shows start in standby (production); off for --dev
 	pinnedLevel               string           // the --log-level / OPEN_CAPTION_LOG_LEVEL value, if one was given
+	pinnedNetwork             bool             // --network-include / --network-exclude was given
 	logs                      interface {
 		String() string
 		Lines() []string
@@ -38,7 +39,8 @@ type Server struct {
 	lmu       sync.Mutex
 	listeners Listeners
 
-	pwMu sync.Mutex // guards password changes (s.cfg passwords)
+	pwMu  sync.Mutex // guards password changes (s.cfg passwords)
+	netMu sync.Mutex // guards s.cfg.Network
 
 	rmu        sync.Mutex
 	rehearsals map[string]*Runtime // admin session token -> isolated rehearsal

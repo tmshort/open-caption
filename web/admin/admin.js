@@ -1032,6 +1032,34 @@
         msg.textContent = err; msg.hidden = false;
       }
     }
+    // Which of this computer's addresses are offered (network.include / network.exclude in config.yaml).
+    async function chooseAddresses() {
+      const st = await api('GET', '/api/admin/settings');
+      if (!st.ok) return;
+      const net0 = st.data.network || {};
+      const shownList = h('ul', { class: 'addrlist' });
+      const paintList = (addrs) => shownList.replaceChildren(...(addrs.length ? addrs.map((a) => h('li', { class: a.shown ? '' : 'off' }, h('b', {}, a.ip), ' ', a.interface ? '(' + a.interface + ') ' : '', a.shown ? __('shown') : __('hidden'))) : [h('li', {}, __('No network address was found.'))]));
+      paintList(st.data.addresses || []);
+      const inc = h('textarea', { rows: '3', spellcheck: 'false', 'aria-label': __('Show only these'), placeholder: '192.168.1.0/24' }); inc.value = (net0.include || []).join('\n');
+      const exc = h('textarea', { rows: '3', spellcheck: 'false', 'aria-label': __('Never show these'), placeholder: '192.168.56.0/24' }); exc.value = (net0.exclude || []).join('\n');
+      const msg = h('div', { class: 'check warn', role: 'alert', hidden: '' });
+      const body = h('div', { class: 'addrbox' },
+        h('p', { class: 'hint' }, __('These are the addresses this computer has now. The audience is given the ones marked shown: in the address list, the QR code, the HTTPS certificate and the .local name.')),
+        shownList,
+        h('label', { class: 'addrlabel' }, __('Show only these (one per line; leave empty for all)'), inc),
+        h('label', { class: 'addrlabel' }, __('Never show these (one per line)'), exc),
+        h('p', { class: 'hint' }, __('Each line is an address (192.168.1.50), a network (192.168.1.0/24) or the word private (the usual home and office networks). A line under Never wins.')),
+        st.data.networkPinned ? h('p', { class: 'hint' }, __('This copy was started with --network-include or --network-exclude, which override these boxes each time it starts.')) : null,
+        msg);
+      for (;;) {
+        if (!await ask(__('Choose addresses'), body, __('Apply'))) return;
+        msg.hidden = true;
+        const lines = (t) => t.value.split('\n').map((x) => x.trim()).filter(Boolean);
+        const r = await api('PUT', '/api/admin/settings/network', { include: lines(inc), exclude: lines(exc) });
+        if (r.ok) { render(); return; }
+        msg.textContent = __((r.data && r.data.error) || 'Could not change the addresses'); msg.hidden = false;
+      }
+    }
     const radio = (u) => h('input', { type: 'radio', name: 'u', checked: u.url === chosen, onchange: () => { chosen = u.url; paint(); } });
     const link = (url) => h('a', { href: url, target: '_blank', rel: 'noopener', title: __('Opens in a new window') }, url);
     const nameU = net.data.urls.find((u) => u.name);
@@ -1060,7 +1088,8 @@
     p.append(h('h2', {}, __('Run')), checks,
       h('div', { class: 'card' }, h('h3', {}, __('Tell the audience this address')), big,
         h('div', { class: 'row' }, h('button', { onclick: async () => { try { await navigator.clipboard.writeText(chosen); toast(__('Copied')); } catch (e) { toast(__('Select the address and copy it')); } } }, __('Copy address')),
-          h('a', { class: 'btn', href: '/admin?print=qr&url=' + encodeURIComponent(chosen || ''), target: '_blank', rel: 'noopener' }, __('Print a QR sign for the lobby'))),
+          h('a', { class: 'btn', href: '/admin?print=qr&url=' + encodeURIComponent(chosen || ''), target: '_blank', rel: 'noopener' }, __('Print a QR sign for the lobby')),
+          h('button', { class: 'quiet', onclick: chooseAddresses }, __('Choose addresses…'))),
         h('div', { class: 'row qrrow' }, qrBox, list),
         ...(net.data.warnings || []).map((w) => h('div', { class: 'check warn' }, w)),
         h('p', { class: 'hint' }, __('Audience devices must be on the same WiFi as this computer. Devices connected right now: '), h('b', { id: 'audcount' }, String(A.audience)))),

@@ -2,6 +2,7 @@ package config
 
 import (
 	"errors"
+	"net"
 	"net/netip"
 	"os"
 	"path/filepath"
@@ -469,5 +470,50 @@ func TestRedactedHidesPasswordsAndDNSCredentialsWithoutChangingTheOriginal(t *te
 	}
 	if c.HTTPS.ACME.DNS.Credentials["EASYDNS_TOKEN"] != "tok-secret" {
 		t.Error("Redacted changed the original")
+	}
+}
+
+func TestAddressFilterIncludeAndExclude(t *testing.T) {
+	ip := func(s string) net.IP { return net.ParseIP(s) }
+	f, err := NewAddressFilter(nil, nil)
+	if err != nil || f.Active() || !f.Allows(ip("10.1.2.3")) {
+		t.Fatalf("no lists offer every address: %v %v", f, err)
+	}
+	f, err = NewAddressFilter([]string{"192.168.1.0/24", "10.0.0.7"}, []string{"192.168.1.138"})
+	if err != nil || !f.Active() {
+		t.Fatal(err)
+	}
+	for addr, want := range map[string]bool{"192.168.1.185": true, "192.168.1.138": false /* exclude wins */, "10.0.0.7": true, "10.0.0.8": false, "172.16.0.1": false} {
+		if got := f.Allows(ip(addr)); got != want {
+			t.Errorf("%s: %v, want %v", addr, got, want)
+		}
+	}
+	f, _ = NewAddressFilter(nil, []string{"private"})
+	if f.Allows(ip("192.168.5.5")) || !f.Allows(ip("8.8.8.8")) {
+		t.Error("private excludes the home and office networks only")
+	}
+	if _, err := NewAddressFilter([]string{"nonsense"}, nil); err == nil {
+		t.Error("a line that is not an address, a network or private is refused")
+	}
+}
+
+func TestNetworkListsAreCheckedAndSaved(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "config.yaml")
+	os.WriteFile(path, []byte("# kept\nadmin_password: adminpw\noperator_password: operatorpw\nhttp:\n  addr: \":80\"\n"), 0o600)
+	if err := SetValues(path, map[string]any{"network.include": []string{"192.168.1.0/24"}, "network.exclude": []string{}}); err != nil {
+		t.Fatal(err)
+	}
+	cfg, err := Load(path)
+	if err != nil || len(cfg.Network.Include) != 1 || cfg.Network.Include[0] != "192.168.1.0/24" || len(cfg.Network.Exclude) != 0 {
+		t.Fatalf("%+v %v", cfg.Network, err)
+	}
+	if b, _ := os.ReadFile(path); !strings.Contains(string(b), "# kept") {
+		t.Errorf("the rest of the file is kept:\n%s", b)
+	}
+	os.WriteFile(path, []byte("admin_password: adminpw\noperator_password: operatorpw\nnetwork:\n  include: [oops]\n  exclude: [\"10.0.0.0/40\"]\n"), 0o600)
+	_, err = Load(path)
+	var pe *ProblemsError
+	if !errors.As(err, &pe) || !strings.Contains(err.Error(), "network.include") || !strings.Contains(err.Error(), "network.exclude") {
+		t.Errorf("both bad lists are reported: %v", err)
 	}
 }

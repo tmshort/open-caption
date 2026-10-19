@@ -563,6 +563,26 @@ async function main() {
     check('buttons that are links (Open the Run page, Print a QR sign) are not underlined', await arch.evaluate(() => [...document.querySelectorAll('#panel a.btn')].length >= 1 && [...document.querySelectorAll('#panel a.btn')].every((e) => getComputedStyle(e).textDecorationLine === 'none')));
     check('the Print QR sign button sits right beside Copy address', await arch.evaluate(() => { const c = [...document.querySelectorAll('#panel button')].find((b) => b.textContent === 'Copy address'), p = [...document.querySelectorAll('#panel a.btn')].find((b) => /QR sign/.test(b.textContent)); return !!c && !!p && p.getBoundingClientRect().left - c.getBoundingClientRect().right < 40; }));
     check('the projector link is a numeric address with its own radio button, so it can be copied', await arch.evaluate(() => { const r = document.querySelector('.projrow input[type=radio]'), a = document.querySelector('.projrow a'); return !!r && !!a && /display=projector/.test(a.href) && !/\.local/.test(a.href); }));
+    // REQ-069: choosing which addresses are offered
+    {
+      const shownIps = () => arch.evaluate(() => [...document.querySelectorAll('.urls a')].map((a) => { try { return new URL(a.href).hostname; } catch (e) { return ''; } }).filter((x) => /^\d+\.\d+\.\d+\.\d+$/.test(x) && x !== '127.0.0.1'));
+      const ips = await shownIps();
+      if (ips.length) {
+        await click(arch, 'Choose addresses…'); await arch.waitForFunction(() => document.getElementById('dlg').hasAttribute('open') && document.querySelector('.addrlist li'));
+        check('Choose addresses lists this computer\'s addresses, each shown or hidden', await arch.evaluate((ip) => [...document.querySelectorAll('.addrlist li')].some((li) => li.textContent.includes(ip) && /shown/.test(li.textContent)), ips[0]));
+        await arch.evaluate((ip) => { document.querySelector('textarea[aria-label="Never show these"]').value = ip; }, ips[0]);
+        await arch.click('#dlgok'); await sleep(T(900));
+        check('an address under Never show these leaves the address list and the QR code', !(await shownIps()).includes(ips[0]));
+        await click(arch, 'Choose addresses…'); await arch.waitForFunction(() => document.getElementById('dlg').hasAttribute('open') && document.querySelector('.addrlist li'));
+        check('the window shows it as hidden', await arch.evaluate((ip) => [...document.querySelectorAll('.addrlist li')].some((li) => li.textContent.includes(ip) && /hidden/.test(li.textContent)), ips[0]));
+        await arch.evaluate(() => { document.querySelector('textarea[aria-label="Show only these"]').value = 'nonsense'; });
+        await arch.click('#dlgok'); await arch.waitForFunction(() => !document.querySelector('.addrbox .check.warn').hidden);
+        check('a line that is not an address is explained in the window, which stays open', await arch.evaluate(() => document.getElementById('dlg').hasAttribute('open') && /not an address/.test(document.querySelector('.addrbox .check.warn').textContent)));
+        await arch.evaluate(() => { document.querySelector('textarea[aria-label="Show only these"]').value = ''; document.querySelector('textarea[aria-label="Never show these"]').value = ''; });
+        await arch.click('#dlgok'); await sleep(T(900));
+        check('emptying both boxes offers every address again', (await shownIps()).includes(ips[0]));
+      }
+    }
     await step(arch, 'Show file'); await sleep(T(600));
     check('the Show file step has no second Help button (the header Help opens the same topic)', await arch.evaluate(() => ![...document.querySelectorAll('#panel button')].some((b) => /help/i.test(b.textContent))));
     // The editor grows with the window (no maximum width), and has a minimum.

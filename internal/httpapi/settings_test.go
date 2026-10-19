@@ -11,6 +11,7 @@ import (
 	"io"
 	"log"
 	"mime/multipart"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -22,6 +23,7 @@ import (
 	"time"
 
 	"github.com/tmshort/open-caption/internal/config"
+	"github.com/tmshort/open-caption/internal/netinfo"
 )
 
 func serverWith(t *testing.T, mut func(*config.Config)) (*Server, *httptest.Server, *client) {
@@ -676,5 +678,47 @@ func TestExportFailsCleanlyWhenAnImageCannotBeRead(t *testing.T) {
 	code, out := c.do("GET", "/api/admin/shows/"+id+"/export", nil)
 	if code != http.StatusInternalServerError || out == nil {
 		t.Errorf("%d %v, want a 500 with a message", code, out)
+	}
+}
+
+// REQ-069: Setup chooses which of this computer's addresses are offered; the choice is saved and applies at once.
+func TestOfferedAddressesCanBeChosenInSetup(t *testing.T) {
+	t.Cleanup(func() { netinfo.SetFilter(nil) })
+	cfgPath := filepath.Join(t.TempDir(), "config.yaml")
+	os.WriteFile(cfgPath, []byte("# kept\nadmin_password: adminpw\noperator_password: operatorpw\nhttp:\n  addr: \":80\"\n"), 0o600)
+	_, _, c := serverWith(t, func(cfg *config.Config) { cfg.Path = cfgPath })
+
+	code, r := c.do("PUT", "/api/admin/settings/network", map[string]any{"include": []string{" 192.168.1.0/24 ", "", "192.168.1.0/24"}, "exclude": []string{"192.168.1.138"}})
+	if code != 200 || r["saved"] != true {
+		t.Fatalf("%d %v", code, r)
+	}
+	b, _ := os.ReadFile(cfgPath)
+	if !strings.Contains(string(b), "# kept") || !strings.Contains(string(b), "192.168.1.0/24") || !strings.Contains(string(b), "192.168.1.138") {
+		t.Errorf("config.yaml:\n%s", b)
+	}
+	if _, err := config.Load(cfgPath); err != nil {
+		t.Errorf("the saved file must load: %v", err)
+	}
+	if !netinfo.Allowed(net.ParseIP("192.168.1.185")) || netinfo.Allowed(net.ParseIP("192.168.1.138")) || netinfo.Allowed(net.ParseIP("10.0.0.5")) {
+		t.Error("the choice applies at once: in include and not in exclude")
+	}
+	_, g := c.do("GET", "/api/admin/settings", nil)
+	n := g["network"].(map[string]any)
+	if len(n["include"].([]any)) != 1 || len(n["exclude"].([]any)) != 1 {
+		t.Errorf("blank and repeated lines are dropped: %v", n)
+	}
+	// An invalid line is refused and changes nothing.
+	if code, r := c.do("PUT", "/api/admin/settings/network", map[string]any{"include": []string{"not an address"}, "exclude": []string{}}); code != 400 || !strings.Contains(r["error"].(string), "Show only these") {
+		t.Errorf("%d %v", code, r)
+	}
+	if code, r := c.do("PUT", "/api/admin/settings/network", map[string]any{"include": []string{}, "exclude": []string{"10.0.0.0/33"}}); code != 400 || !strings.Contains(r["error"].(string), "Never show these") {
+		t.Errorf("%d %v", code, r)
+	}
+	if !netinfo.Allowed(net.ParseIP("192.168.1.185")) {
+		t.Error("a refused change leaves the rule as it was")
+	}
+	// Empty lists offer everything again.
+	if code, _ := c.do("PUT", "/api/admin/settings/network", map[string]any{"include": []string{}, "exclude": []string{}}); code != 200 || !netinfo.Allowed(net.ParseIP("10.0.0.5")) {
+		t.Error("empty lists offer every address")
 	}
 }
