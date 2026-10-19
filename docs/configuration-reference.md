@@ -25,6 +25,7 @@ A flag, or its environment variable, overrides the file for that run. (The file 
 | `--log-file FILE` | `OPEN_CAPTION_LOG` | Also append the log to this file |
 | `--network-include LIST` | `OPEN_CAPTION_NETWORK_INCLUDE` | Overrides `network.include` every time the program starts: a comma-separated list such as `192.168.1.0/24,10.0.0.0/8` (Setup says so when it is in force) |
 | `--network-exclude LIST` | `OPEN_CAPTION_NETWORK_EXCLUDE` | The same for `network.exclude` |
+| `--network-restrict` | `OPEN_CAPTION_NETWORK_RESTRICT` | Also refuse connections made to addresses that are not offered, every time the program starts (like `network.restrict_listening: yes`). The variable counts when it is `yes`, `true`, `on` or `1` |
 | `--no-browser` | | Do not open Setup in a browser at start-up (like `defaults.open_browser: no`) |
 | `--version` | | Print the version and the DNS providers built in for automatic certificates, then exit |
 | `--help` | | Print the options and the environment variables, and where to read more, then exit |
@@ -154,8 +155,9 @@ Who may open Setup and the operator page. The audience page is always open to ev
 |---|---|---|
 | `network.include` | `[]` | Offer only these addresses of this computer to the audience. Empty means every address. Entries: an address (`192.168.1.50`), a network (`192.168.1.0/24`) or `private` (the usual home and office networks). Example: `[192.168.1.0/24]` |
 | `network.exclude` | `[]` | Never offer these (the same kinds of entries); this wins over `include`. Use it for the adapters of virtual machines, VPNs or Docker. Example: `[192.168.56.0/24]` |
+| `network.restrict_listening` | `no` | Also **refuse connections** made to an address that is not offered by `include` / `exclude` (a phone that uses a hidden address is turned away), instead of only leaving the address out of the lists. Connections to this computer itself (`localhost`) are always served, so Setup can still be opened to change it. Setup refuses to turn it on while you are using Setup through an address it would refuse. *Setup: Run step → Choose addresses…* |
 
-An address that is left out is not listed in the Run step or at start-up, is not given to the audience, is not announced as `<name>.local` and is not put in a new self-signed HTTPS certificate. Only addresses of network adapters that are connected are ever offered. *Setup: Run step → Choose addresses…*
+An address that is left out is not listed in the Run step or at start-up, is not given to the audience, is not announced as `<name>.local` and is not put in a new self-signed HTTPS certificate. Only addresses of network adapters that are connected are ever offered. By default this only chooses what is *offered*: the server still accepts connections on every address, until `network.restrict_listening` is turned on. *Setup: Run step → Choose addresses…*
 
 ## Where a setting is decided
 
@@ -189,6 +191,7 @@ mdns:
 network:
   include: []
   exclude: []
+  restrict_listening: no
 standby:
   message: "Welcome to the Little Theatre"
 defaults:

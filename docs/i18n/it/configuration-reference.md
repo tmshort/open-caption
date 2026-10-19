@@ -25,6 +25,7 @@ Un'opzione, o la sua variabile d'ambiente, ha la precedenza sul file per quell'e
 | `--log-file FILE` | `OPEN_CAPTION_LOG` | Aggiunge anche il registro a questo file |
 | `--network-include LIST` | `OPEN_CAPTION_NETWORK_INCLUDE` | Ha la precedenza su `network.include` a ogni avvio del programma: un elenco separato da virgole, come `192.168.1.0/24,10.0.0.0/8` (la configurazione lo dice quando è in vigore) |
 | `--network-exclude LIST` | `OPEN_CAPTION_NETWORK_EXCLUDE` | Lo stesso per `network.exclude` |
+| `--network-restrict` | `OPEN_CAPTION_NETWORK_RESTRICT` | Rifiuta anche le connessioni fatte a indirizzi non offerti, a ogni avvio del programma (come `network.restrict_listening: yes`). La variabile conta quando vale `yes`, `true`, `on` o `1` |
 | `--no-browser` | | Non apre la configurazione in un browser all'avvio (come `defaults.open_browser: no`) |
 | `--version` | | Stampa la versione e i provider DNS inclusi per i certificati automatici, poi esce |
 | `--help` | | Stampa le opzioni e le variabili d'ambiente, e dove leggere di più, poi esce |
@@ -154,8 +155,9 @@ Chi può aprire la configurazione e la pagina dell'operatore. La pagina del pubb
 |---|---|---|
 | `network.include` | `[]` | Offre al pubblico solo questi indirizzi di questo computer. Vuoto significa tutti gli indirizzi. Voci: un indirizzo (`192.168.1.50`), una rete (`192.168.1.0/24`) o `private` (le solite reti domestiche e d'ufficio). Esempio: `[192.168.1.0/24]` |
 | `network.exclude` | `[]` | Non offrire mai questi (gli stessi tipi di voci); ha la precedenza su `include`. Serve per gli adattatori di macchine virtuali, VPN o Docker. Esempio: `[192.168.56.0/24]` |
+| `network.restrict_listening` | `no` | **Rifiuta anche le connessioni** fatte a un indirizzo che `include` / `exclude` non offrono (un telefono che usa un indirizzo nascosto viene respinto), invece di lasciare l'indirizzo solo fuori dagli elenchi. Le connessioni al computer stesso (`localhost`) sono sempre servite, quindi la configurazione si può aprire per cambiarlo. La configurazione si rifiuta di attivarlo mentre la usi attraverso un indirizzo che respingerebbe. *Configurazione: passo Conduci → Scegli gli indirizzi…* |
 
-Un indirizzo escluso non compare nel passo Conduci né all'avvio, non viene dato al pubblico, non è annunciato come `<nome>.local` e non entra in un nuovo certificato HTTPS autofirmato. Vengono offerti solo gli indirizzi degli adattatori di rete connessi. *Configurazione: passo Conduci → Scegli gli indirizzi…*
+Un indirizzo escluso non compare nel passo Conduci né all'avvio, non viene dato al pubblico, non è annunciato come `<nome>.local` e non entra in un nuovo certificato HTTPS autofirmato. Vengono offerti solo gli indirizzi degli adattatori di rete connessi. Per impostazione predefinita questo sceglie solo ciò che viene *offerto*: il server accetta comunque connessioni su tutti gli indirizzi, finché non si attiva `network.restrict_listening`. *Configurazione: passo Conduci → Scegli gli indirizzi…*
 
 ## Dove si decide un'impostazione
 
@@ -189,6 +191,7 @@ mdns:
 network:
   include: []
   exclude: []
+  restrict_listening: no
 standby:
   message: "Welcome to the Little Theatre"
 defaults:

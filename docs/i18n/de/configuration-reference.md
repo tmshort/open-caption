@@ -25,6 +25,7 @@ Eine Option oder ihre Umgebungsvariable hat für diesen Lauf Vorrang vor der Dat
 | `--log-file FILE` | `OPEN_CAPTION_LOG` | Hängt das Protokoll zusätzlich an diese Datei an |
 | `--network-include LIST` | `OPEN_CAPTION_NETWORK_INCLUDE` | Hat bei jedem Programmstart Vorrang vor `network.include`: eine durch Kommas getrennte Liste wie `192.168.1.0/24,10.0.0.0/8` (die Einrichtung sagt es, wenn es gilt) |
 | `--network-exclude LIST` | `OPEN_CAPTION_NETWORK_EXCLUDE` | Dasselbe für `network.exclude` |
+| `--network-restrict` | `OPEN_CAPTION_NETWORK_RESTRICT` | Lehnt außerdem Verbindungen zu Adressen ab, die nicht angeboten werden, bei jedem Programmstart (wie `network.restrict_listening: yes`). Die Variable zählt, wenn sie `yes`, `true`, `on` oder `1` ist |
 | `--no-browser` | | Öffnet die Einrichtung beim Start nicht in einem Browser (wie `defaults.open_browser: no`) |
 | `--version` | | Gibt die Version und die für automatische Zertifikate eingebauten DNS-Anbieter aus und beendet sich |
 | `--help` | | Gibt die Optionen und Umgebungsvariablen aus, dazu wo man mehr liest, und beendet sich |
@@ -154,8 +155,9 @@ Wer die Einrichtung und die Bedienerseite öffnen darf. Die Publikumsseite ist i
 |---|---|---|
 | `network.include` | `[]` | Dem Publikum nur diese Adressen dieses Computers anbieten. Leer bedeutet alle Adressen. Einträge: eine Adresse (`192.168.1.50`), ein Netzwerk (`192.168.1.0/24`) oder `private` (die üblichen Heim- und Büronetze). Beispiel: `[192.168.1.0/24]` |
 | `network.exclude` | `[]` | Diese nie anbieten (dieselben Arten von Einträgen); das hat Vorrang vor `include`. Nützlich für die Adapter virtueller Maschinen, VPNs oder Docker. Beispiel: `[192.168.56.0/24]` |
+| `network.restrict_listening` | `no` | **Lehnt außerdem Verbindungen ab**, die zu einer Adresse gemacht werden, die `include` / `exclude` nicht anbieten (ein Telefon, das eine ausgeblendete Adresse benutzt, wird abgewiesen), statt die Adresse nur aus den Listen zu lassen. Verbindungen zu diesem Computer selbst (`localhost`) werden immer bedient, die Einrichtung lässt sich also zum Ändern öffnen. Die Einrichtung weigert sich, es einzuschalten, solange Sie sie über eine Adresse benutzen, die es abweisen würde. *Einrichtung: Schritt Fahren → Adressen auswählen…* |
 
-Eine ausgelassene Adresse wird im Schritt Fahren und beim Start nicht aufgelistet, dem Publikum nicht gegeben, nicht als `<Name>.local` angekündigt und nicht in ein neues selbstsigniertes HTTPS-Zertifikat aufgenommen. Angeboten werden nur Adressen verbundener Netzwerkadapter. *Einrichtung: Schritt Fahren → Adressen auswählen…*
+Eine ausgelassene Adresse wird im Schritt Fahren und beim Start nicht aufgelistet, dem Publikum nicht gegeben, nicht als `<Name>.local` angekündigt und nicht in ein neues selbstsigniertes HTTPS-Zertifikat aufgenommen. Angeboten werden nur Adressen verbundener Netzwerkadapter. Standardmäßig wählt das nur, was *angeboten* wird: Der Server nimmt weiterhin auf allen Adressen Verbindungen an, bis `network.restrict_listening` eingeschaltet wird. *Einrichtung: Schritt Fahren → Adressen auswählen…*
 
 ## Wo eine Einstellung entschieden wird
 
@@ -189,6 +191,7 @@ mdns:
 network:
   include: []
   exclude: []
+  restrict_listening: no
 standby:
   message: "Welcome to the Little Theatre"
 defaults:

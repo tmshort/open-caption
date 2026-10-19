@@ -43,6 +43,7 @@ func main() {
 		logFile   = flag.String("log-file", env("OPEN_CAPTION_LOG", ""), "also append log lines to this file")
 		netInc    = flag.String("network-include", env("OPEN_CAPTION_NETWORK_INCLUDE", ""), "offer only these addresses or networks, comma separated, e.g. 192.168.1.0/24 (default: network.include in config.yaml)")
 		netExc    = flag.String("network-exclude", env("OPEN_CAPTION_NETWORK_EXCLUDE", ""), "never offer these addresses or networks, comma separated, e.g. 10.0.0.0/8 (default: network.exclude in config.yaml)")
+		netRestr  = flag.Bool("network-restrict", envYes("OPEN_CAPTION_NETWORK_RESTRICT"), "also refuse connections made to addresses that are not offered (same as network.restrict_listening: yes)")
 		noBrowser = flag.Bool("no-browser", false, "do not open the setup page in a browser at startup")
 		showVer   = flag.Bool("version", false, "print version and exit")
 		dev       = flag.Bool("dev", false, "DEVELOPMENT ONLY: enable unauthenticated /dev/* control endpoints")
@@ -125,6 +126,9 @@ func main() {
 	if *netExc != "" {
 		cfg.Network.Exclude = splitList(*netExc)
 	}
+	if *netRestr {
+		cfg.Network.RestrictListening = true
+	}
 	if _, err := config.NewAddressFilter(cfg.Network.Include, cfg.Network.Exclude); err != nil {
 		logx.Fatalf("--network-include / --network-exclude: %v", err)
 	}
@@ -155,8 +159,8 @@ func main() {
 	}
 
 	api := httpapi.New(cfg, version)
-	api.ApplyNetwork(cfg.Network.Include, cfg.Network.Exclude) // before any address is printed or put in a certificate
-	if *netInc != "" || *netExc != "" {
+	api.ApplyNetwork(cfg.Network.Include, cfg.Network.Exclude, cfg.Network.RestrictListening) // before any address is printed or put in a certificate
+	if *netInc != "" || *netExc != "" || *netRestr {
 		api.PinNetwork()
 	}
 	if *logLevel != "" {
@@ -201,6 +205,9 @@ func main() {
 		} else {
 			lis.HTTPSAddr, lis.HTTPSConfigured = ln.Addr().String(), l.Addr
 		}
+		ln = netinfo.LimitListener(ln, func(local net.Addr) { // while network.restrict_listening is on
+			logx.Debugf("refused a %s connection to %s: that address is not offered (network.restrict_listening)", scheme, local)
+		})
 		srv := &http.Server{Handler: handler, ReadHeaderTimeout: 10 * time.Second, TLSConfig: srvTLS}
 		for _, u := range urls(scheme, ln.Addr()) {
 			logx.Infof("audience/operator URL: %s", u)
@@ -305,6 +312,7 @@ Environment variables (a command-line option wins over its variable, and both wi
   OPEN_CAPTION_LOG          same as --log-file
   OPEN_CAPTION_NETWORK_INCLUDE  same as --network-include
   OPEN_CAPTION_NETWORK_EXCLUDE  same as --network-exclude
+  OPEN_CAPTION_NETWORK_RESTRICT same as --network-restrict (yes, true, on or 1)
 
 More: man open-caption (docs/open-caption.1), docs/configuration-reference.md (every setting in config.yaml),
 docs/usage-guide.md, and https://github.com/tmshort/open-caption
@@ -387,6 +395,15 @@ func splitList(s string) []string {
 		}
 	}
 	return out
+}
+
+// envYes reports whether the environment variable is set to yes, true, on or 1.
+func envYes(k string) bool {
+	switch strings.ToLower(strings.TrimSpace(os.Getenv(k))) {
+	case "yes", "true", "on", "1":
+		return true
+	}
+	return false
 }
 
 func env(k, def string) string {

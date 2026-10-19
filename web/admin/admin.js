@@ -1042,12 +1042,15 @@
       paintList(st.data.addresses || []);
       const inc = h('textarea', { rows: '3', spellcheck: 'false', 'aria-label': __('Show only these'), placeholder: '192.168.1.0/24' }); inc.value = (net0.include || []).join('\n');
       const exc = h('textarea', { rows: '3', spellcheck: 'false', 'aria-label': __('Never show these'), placeholder: '192.168.56.0/24' }); exc.value = (net0.exclude || []).join('\n');
+      const restrict = h('input', { type: 'checkbox' }); restrict.checked = !!net0.restrictListening;
       const msg = h('div', { class: 'check warn', role: 'alert', hidden: '' });
       const body = h('div', { class: 'addrbox' },
         h('p', { class: 'hint' }, __('These are the addresses this computer has now. The audience is given the ones marked shown: in the address list, the QR code, the HTTPS certificate and the .local name.')),
         shownList,
         h('label', { class: 'addrlabel' }, __('Show only these (one per line; leave empty for all)'), inc),
         h('label', { class: 'addrlabel' }, __('Never show these (one per line)'), exc),
+        h('label', { class: 'row addrrestrict' }, restrict, __('Also refuse connections to the addresses that are not shown')),
+        h('p', { class: 'hint' }, __('Connections to this computer itself are always accepted. If a phone then cannot reach the program, clear this box.')),
         h('p', { class: 'hint' }, __('Each line is an address (192.168.1.50), a network (192.168.1.0/24) or the word private (the usual home and office networks). A line under Never wins.')),
         st.data.networkPinned ? h('p', { class: 'hint' }, __('This copy was started with --network-include or --network-exclude, which override these boxes each time it starts.')) : null,
         msg);
@@ -1055,7 +1058,7 @@
         if (!await ask(__('Choose addresses'), body, __('Apply'))) return;
         msg.hidden = true;
         const lines = (t) => t.value.split('\n').map((x) => x.trim()).filter(Boolean);
-        const r = await api('PUT', '/api/admin/settings/network', { include: lines(inc), exclude: lines(exc) });
+        const r = await api('PUT', '/api/admin/settings/network', { include: lines(inc), exclude: lines(exc), restrictListening: restrict.checked });
         if (r.ok) { render(); return; }
         msg.textContent = __((r.data && r.data.error) || 'Could not change the addresses'); msg.hidden = false;
       }

@@ -221,6 +221,7 @@ mdns:
 network:
   include: []                      # offer only these addresses/networks (empty = all); entries: 192.168.1.50, 192.168.1.0/24, private
   exclude: []                      # never offer these (wins over include); Setup: Run step -> Choose addresses
+  restrict_listening: false        # also refuse connections made to an address that is not offered (localhost is always served)
 standby:
   message: ""                      # shown while no show is on air; empty = "Captions will begin shortly" in the viewer's language (the logo is set in Setup)
 defaults:                          # used when a show file does not say otherwise (a show file's [settings] override these)

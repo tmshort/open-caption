@@ -112,9 +112,12 @@ type MDNS struct {
 // printed at startup, put in the HTTPS certificate and announced by name. Entries are an address
 // ("192.168.1.50"), a network ("192.168.1.0/24"), or "private" (the usual home and office networks). Include
 // empty means every address; an address that matches Exclude is never offered, whatever Include says.
+// RestrictListening goes further than offering: the server refuses a connection made to an address that is not
+// offered (connections to this computer itself, at localhost, are always served).
 type Network struct {
-	Include []string `yaml:"include"`
-	Exclude []string `yaml:"exclude"`
+	Include           []string `yaml:"include"`
+	Exclude           []string `yaml:"exclude"`
+	RestrictListening bool     `yaml:"restrict_listening"`
 }
 
 // Standby is what the audience sees while no show is on air: before the operator starts one, after one goes

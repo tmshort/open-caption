@@ -578,6 +578,13 @@ async function main() {
         await arch.evaluate(() => { document.querySelector('textarea[aria-label="Show only these"]').value = 'nonsense'; });
         await arch.click('#dlgok'); await arch.waitForFunction(() => !document.querySelector('.addrbox .check.warn').hidden);
         check('a line that is not an address is explained in the window, which stays open', await arch.evaluate(() => document.getElementById('dlg').hasAttribute('open') && /not an address/.test(document.querySelector('.addrbox .check.warn').textContent)));
+        check('the window has a box to refuse connections to the addresses that are not shown, off by default', await arch.evaluate(() => { const b = document.querySelector('.addrrestrict input'); return !!b && !b.checked; }));
+        await arch.evaluate(() => { document.querySelector('.addrrestrict input').click(); });
+        await arch.evaluate(() => { document.querySelector('textarea[aria-label="Show only these"]').value = ''; document.querySelector('textarea[aria-label="Never show these"]').value = ''; });
+        await arch.click('#dlgok'); await sleep(T(900));
+        await click(arch, 'Choose addresses…'); await arch.waitForFunction(() => document.getElementById('dlg').hasAttribute('open') && document.querySelector('.addrlist li'));
+        check('the box stays ticked when the window is opened again', await arch.evaluate(() => document.querySelector('.addrrestrict input').checked));
+        await arch.evaluate(() => { document.querySelector('.addrrestrict input').click(); });
         await arch.evaluate(() => { document.querySelector('textarea[aria-label="Show only these"]').value = ''; document.querySelector('textarea[aria-label="Never show these"]').value = ''; });
         await arch.click('#dlgok'); await sleep(T(900));
         check('emptying both boxes offers every address again', (await shownIps()).includes(ips[0]));

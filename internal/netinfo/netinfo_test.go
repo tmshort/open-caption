@@ -82,3 +82,54 @@ func TestMainFirstPutsTheMainConnectionFirstThenNumericOrder(t *testing.T) {
 		t.Errorf("a main address that is not in the list changes nothing: %s", got)
 	}
 }
+
+type fakeConn struct {
+	net.Conn
+	local  net.Addr
+	closed *bool
+}
+
+func (c fakeConn) LocalAddr() net.Addr { return c.local }
+func (c fakeConn) Close() error        { *c.closed = true; return nil }
+
+type fakeListener struct {
+	net.Listener
+	conns []net.Conn
+}
+
+func (l *fakeListener) Accept() (net.Conn, error) {
+	if len(l.conns) == 0 {
+		return nil, net.ErrClosed
+	}
+	c := l.conns[0]
+	l.conns = l.conns[1:]
+	return c, nil
+}
+
+func TestRestrictedListeningRefusesAddressesThatAreNotOffered(t *testing.T) {
+	t.Cleanup(func() { SetFilter(nil); SetRestrictListening(false) })
+	tcp := func(s string) *net.TCPAddr { return &net.TCPAddr{IP: net.ParseIP(s), Port: 80} }
+	SetFilter(func(ip net.IP) bool { return ip.String() != "192.168.1.138" })
+
+	// Not restricted: the filter only chooses what is offered.
+	if !ConnectionAllowed(tcp("192.168.1.138")) {
+		t.Error("without the restriction every address is served")
+	}
+	SetRestrictListening(true)
+	for addr, want := range map[string]bool{"192.168.1.185": true, "192.168.1.138": false, "127.0.0.1": true, "::1": true} {
+		if got := ConnectionAllowed(tcp(addr)); got != want {
+			t.Errorf("%s: %v, want %v", addr, got, want)
+		}
+	}
+	// A connection made to a refused address is closed and never reaches the server; the next one is served.
+	var bad, good bool
+	var refusedLocal net.Addr
+	ln := LimitListener(&fakeListener{conns: []net.Conn{fakeConn{local: tcp("192.168.1.138"), closed: &bad}, fakeConn{local: tcp("192.168.1.185"), closed: &good}}}, func(a net.Addr) { refusedLocal = a })
+	c, err := ln.Accept()
+	if err != nil || c.LocalAddr().String() != "192.168.1.185:80" || !bad || good {
+		t.Fatalf("conn=%v err=%v refusedClosed=%v servedClosed=%v", c, err, bad, good)
+	}
+	if refusedLocal == nil || refusedLocal.String() != "192.168.1.138:80" {
+		t.Errorf("the refusal is reported: %v", refusedLocal)
+	}
+}

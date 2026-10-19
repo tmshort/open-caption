@@ -139,6 +139,11 @@ Overrides
 .B network.exclude
 every time the program starts.
 .TP
+.B \-\-network\-restrict
+Also refuse connections made to an address that is not offered (the same as
+.B network.restrict_listening: yes
+for one run), instead of only leaving it out of the lists. Connections to this computer itself (localhost) are always served.
+.TP
 .B \-\-no\-browser
 Do not open Setup in a browser at start-up (the same as
 .B defaults.open_browser: no
@@ -233,6 +238,11 @@ Same as
 .B OPEN_CAPTION_NETWORK_EXCLUDE
 Same as
 .BR \-\-network\-exclude .
+.TP
+.B OPEN_CAPTION_NETWORK_RESTRICT
+Same as
+.BR \-\-network\-restrict ;
+set it to yes, true, on or 1.
 .PP
 A command-line option wins over its variable, and either wins over the settings file.
 .PP

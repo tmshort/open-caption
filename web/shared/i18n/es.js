@@ -1,5 +1,8 @@
 // Spanish translations of Setup, the operator page and Help (see web/shared/i18n.js). The key is the English text.
 OCI18n.add("es", {
+ "Also refuse connections to the addresses that are not shown": "Rechazar también las conexiones a las direcciones que no se muestran",
+ "Connections to this computer itself are always accepted. If a phone then cannot reach the program, clear this box.": "Las conexiones al propio equipo siempre se aceptan. Si un teléfono no llega entonces al programa, desmarque esta casilla.",
+ "You are using Setup through {0}, which this would refuse. Open Setup on this computer (at localhost) or through an address that stays shown, then try again.": "Está usando la configuración a través de {0}, que esto rechazaría. Abra la configuración en este equipo (en localhost) o a través de una dirección que siga mostrándose, y vuelva a intentarlo.",
  "shown": "mostrada",
  "hidden": "oculta",
  "No network address was found.": "No se encontró ninguna dirección de red.",

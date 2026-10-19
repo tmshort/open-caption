@@ -1,6 +1,8 @@
 package httpapi
 
 import (
+	"fmt"
+	"net"
 	"net/http"
 	"strings"
 
@@ -11,20 +13,21 @@ import (
 
 // ApplyNetwork makes the include and exclude lists (config network.include / network.exclude) the rule for which
 // of this computer's addresses are offered. The lists must already be valid (config.Load checks them).
-func (s *Server) ApplyNetwork(include, exclude []string) {
+func (s *Server) ApplyNetwork(include, exclude []string, restrict bool) {
 	f, err := config.NewAddressFilter(include, exclude)
 	if err != nil {
 		logx.Warnf("network: %v; every address is offered", err)
 		f = config.AddressFilter{}
 	}
 	s.netMu.Lock()
-	s.cfg.Network = config.Network{Include: include, Exclude: exclude}
+	s.cfg.Network = config.Network{Include: include, Exclude: exclude, RestrictListening: restrict}
 	s.netMu.Unlock()
 	if f.Active() {
 		netinfo.SetFilter(f.Allows)
 	} else {
 		netinfo.SetFilter(nil)
 	}
+	netinfo.SetRestrictListening(restrict)
 }
 
 // PinNetwork records that the lists were given on the command line (or environment) and so override config.yaml
@@ -34,7 +37,7 @@ func (s *Server) PinNetwork() { s.pinnedNetwork = true }
 func (s *Server) networkSettings() config.Network {
 	s.netMu.Lock()
 	defer s.netMu.Unlock()
-	return config.Network{Include: append([]string{}, s.cfg.Network.Include...), Exclude: append([]string{}, s.cfg.Network.Exclude...)}
+	return config.Network{Include: append([]string{}, s.cfg.Network.Include...), Exclude: append([]string{}, s.cfg.Network.Exclude...), RestrictListening: s.cfg.Network.RestrictListening}
 }
 
 type addressInfo struct {
@@ -72,8 +75,9 @@ func cleanList(in []string) []string {
 // setNetwork is PUT /api/admin/settings/network: choose which addresses are offered to the audience.
 func (s *Server) setNetwork(w http.ResponseWriter, r *http.Request) {
 	var req struct {
-		Include []string `json:"include"`
-		Exclude []string `json:"exclude"`
+		Include           []string `json:"include"`
+		Exclude           []string `json:"exclude"`
+		RestrictListening bool     `json:"restrictListening"`
 	}
 	if !decode(w, r, &req) {
 		return
@@ -91,16 +95,27 @@ func (s *Server) setNetwork(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, http.StatusBadRequest, "A line in Never show these is not an address, a network like 192.168.1.0/24 or the word private.")
 		return
 	}
+	// Do not lock out the person who is changing it: refuse a restriction that would cut off the address this
+	// very request arrived on (this computer itself, at localhost, is never cut off).
+	if req.RestrictListening {
+		f, _ := config.NewAddressFilter(include, exclude)
+		if la, ok := r.Context().Value(http.LocalAddrContextKey).(net.Addr); ok {
+			if ta, ok := la.(*net.TCPAddr); ok && !ta.IP.IsLoopback() && !f.Allows(ta.IP) {
+				writeErr(w, http.StatusConflict, fmt.Sprintf("You are using Setup through %s, which this would refuse. Open Setup on this computer (at localhost) or through an address that stays shown, then try again.", ta.IP))
+				return
+			}
+		}
+	}
 	saved := false
 	if s.cfg.Path != "" {
-		if err := config.SetValues(s.cfg.Path, map[string]any{"network.include": include, "network.exclude": exclude}); err != nil {
+		if err := config.SetValues(s.cfg.Path, map[string]any{"network.include": include, "network.exclude": exclude, "network.restrict_listening": req.RestrictListening}); err != nil {
 			writeErr(w, http.StatusInternalServerError, "Could not save the setting in config.yaml: "+err.Error())
 			return
 		}
 		saved = true
 	}
-	s.ApplyNetwork(include, exclude)
-	logx.Infof("network addresses changed in Setup: only %v, never %v", include, exclude)
+	s.ApplyNetwork(include, exclude, req.RestrictListening)
+	logx.Infof("network addresses changed in Setup: only %v, never %v, refuse connections to the others: %v", include, exclude, req.RestrictListening)
 	resp := map[string]any{"saved": saved, "addresses": s.networkAddresses()}
 	if s.pinnedNetwork {
 		resp["note"] = "This copy was started with --network-include or --network-exclude (or the matching OPEN_CAPTION_ variable), which overrides the saved setting each time it starts. The new choice applies now, and lasts until the program is restarted."
