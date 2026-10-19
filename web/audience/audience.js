@@ -444,8 +444,9 @@
       document.body.append(video);
     }
     const p = video.play();
-    if (p && p.then) p.then(() => setAwake('video'));
-    if (p && p.catch) p.catch(() => {
+    if (p && p.then) p.then(() => setAwake('video'), (e) => {
+      // Stopped on purpose (the screen wake lock took over and paused the video): nothing to do.
+      if (e && e.name === 'AbortError') return;
       // Not allowed yet: try again at the first tap, and show the Auto-Lock tip meanwhile.
       setAwake('none'); tip();
       if (videoWaiting) return;
