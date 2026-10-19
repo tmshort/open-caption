@@ -25,6 +25,7 @@ Une option, ou sa variable d'environnement, l'emporte sur le fichier pour cette 
 | `--log-file FILE` | `OPEN_CAPTION_LOG` | Ajoute aussi le journal à ce fichier |
 | `--network-include LIST` | `OPEN_CAPTION_NETWORK_INCLUDE` | L'emporte sur `network.include` à chaque démarrage du programme : une liste séparée par des virgules, comme `192.168.1.0/24,10.0.0.0/8` (la configuration l'indique quand il est en vigueur) |
 | `--network-exclude LIST` | `OPEN_CAPTION_NETWORK_EXCLUDE` | Même chose pour `network.exclude` |
+| `--network-prefer LIST` | `OPEN_CAPTION_NETWORK_PREFER` | L'emporte sur `network.prefer` à chaque démarrage du programme : une liste séparée par des virgules, comme `ethernet` ou `Ethernet,wifi` |
 | `--network-restrict` | `OPEN_CAPTION_NETWORK_RESTRICT` | Refuse aussi les connexions faites à des adresses non proposées, à chaque démarrage du programme (comme `network.restrict_listening: yes`). La variable compte quand elle vaut `yes`, `true`, `on` ou `1` |
 | `--no-browser` | | N'ouvre pas la configuration dans un navigateur au démarrage (comme `defaults.open_browser: no`) |
 | `--version` | | Affiche la version et les fournisseurs DNS inclus pour les certificats automatiques, puis quitte |
@@ -155,9 +156,10 @@ Qui peut ouvrir la configuration et la page de l'opérateur. La page du public e
 |---|---|---|
 | `network.include` | `[]` | N'offre au public que ces adresses de cet ordinateur. Vide signifie toutes les adresses. Entrées : une adresse (`192.168.1.50`), un réseau (`192.168.1.0/24`) ou `private` (les réseaux domestiques et de bureau habituels). Exemple : `[192.168.1.0/24]` |
 | `network.exclude` | `[]` | Ne jamais offrir celles-ci (les mêmes sortes d'entrées) ; cela l'emporte sur `include`. Utile pour les cartes réseau de machines virtuelles, de VPN ou de Docker. Exemple : `[192.168.56.0/24]` |
+| `network.prefer` | `[]` | Quand deux cartes réseau sont sur le même réseau (un câble et le Wi-Fi à la fois), une seule est proposée. Ceci désigne celle à utiliser : le nom d'une carte (`Ethernet`, `en4`) ou un type (`ethernet`, `wifi`) ; la première entrée qui correspond l'emporte, même sur la connexion principale. Vide : la connexion principale (celle qui atteint le routeur), sinon une carte filaire, sinon une autre, sinon le Wi-Fi. Exemple : `[ethernet]`. *Configuration : étape Conduire → Choisir les adresses…* |
 | `network.restrict_listening` | `no` | **Refuse aussi les connexions** faites à une adresse que `include` / `exclude` ne propose pas (un téléphone qui utilise une adresse masquée est renvoyé), au lieu de seulement écarter l'adresse des listes. Les connexions à cet ordinateur lui-même (`localhost`) sont toujours acceptées : on peut donc ouvrir la configuration pour le changer. La configuration n'accepte jamais de listes qui désactiveraient l'adresse par laquelle vous l'utilisez. *Configuration : étape Conduire → Choisir les adresses…* |
 
-Une adresse écartée n'est pas listée à l'étape Conduire ni au démarrage, n'est pas donnée au public, n'est pas annoncée comme `<nom>.local` et n'est pas mise dans un nouveau certificat HTTPS autosigné. Seules les adresses des cartes réseau connectées sont proposées. Par défaut cela ne choisit que ce qui est *proposé* : le serveur accepte toujours les connexions sur toutes les adresses, tant que `network.restrict_listening` n'est pas activé. *Configuration : étape Conduire → Choisir les adresses…*
+Une adresse écartée n'est pas listée à l'étape Conduire ni au démarrage, n'est pas donnée au public, n'est pas annoncée comme `<nom>.local` et n'est pas mise dans un nouveau certificat HTTPS autosigné. Seules les adresses des cartes réseau connectées sont proposées, et une seule adresse par réseau. Par défaut cela ne choisit que ce qui est *proposé* : le serveur accepte toujours les connexions sur toutes les adresses, tant que `network.restrict_listening` n'est pas activé. *Configuration : étape Conduire → Choisir les adresses…*
 
 ## Où un réglage est décidé
 
@@ -191,6 +193,7 @@ mdns:
 network:
   include: []
   exclude: []
+  prefer: []
   restrict_listening: no
 standby:
   message: "Welcome to the Little Theatre"

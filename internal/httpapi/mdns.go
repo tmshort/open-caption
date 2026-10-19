@@ -41,7 +41,7 @@ type mdnsManager struct {
 func newMDNSManager(cfg config.MDNS) *mdnsManager {
 	return &mdnsManager{
 		status: MDNSStatus{Enabled: cfg.Enabled, Requested: cfg.Name},
-		start:  func(name string) (responder, error) { return mdns.Start(name, netinfo.Allowed) },
+		start:  func(name string) (responder, error) { return mdns.Start(name, netinfo.Offered) },
 	}
 }
 

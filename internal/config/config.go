@@ -112,11 +112,15 @@ type MDNS struct {
 // printed at startup, put in the HTTPS certificate and announced by name. Entries are an address
 // ("192.168.1.50"), a network ("192.168.1.0/24"), or "private" (the usual home and office networks). Include
 // empty means every address; an address that matches Exclude is never offered, whatever Include says.
+// Prefer settles which adapter is used when two are on the same network (a cable and Wi-Fi at once): the first
+// entry that matches wins. An entry is an adapter's name ("Ethernet", "en4") or a kind ("ethernet", "wifi");
+// with none, the main connection is used, then a wired adapter, then any other, then Wi-Fi.
 // RestrictListening goes further than offering: the server refuses a connection made to an address that is not
 // offered (connections to this computer itself, at localhost, are always served).
 type Network struct {
 	Include           []string `yaml:"include"`
 	Exclude           []string `yaml:"exclude"`
+	Prefer            []string `yaml:"prefer"`
 	RestrictListening bool     `yaml:"restrict_listening"`
 }
 
@@ -514,6 +518,11 @@ func (c *Config) normalize() []string {
 	}
 	if _, err := NewAddressFilter(nil, c.Network.Exclude); err != nil {
 		add("network.exclude", "%v", err)
+	}
+	for i, e := range c.Network.Prefer {
+		if c.Network.Prefer[i] = strings.TrimSpace(e); c.Network.Prefer[i] == "" {
+			add("network.prefer", "entry %d is empty: use an adapter's name such as Ethernet, or ethernet or wifi", i+1)
+		}
 	}
 	if n, err := mdns.NormalizeName(c.MDNS.Name); err != nil {
 		add("mdns.name", "%v", err)

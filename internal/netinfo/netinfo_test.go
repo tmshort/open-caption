@@ -3,6 +3,7 @@ package netinfo
 import (
 	"crypto/x509"
 	"net"
+	"net/netip"
 	"strings"
 	"testing"
 )
@@ -131,5 +132,83 @@ func TestRestrictedListeningRefusesAddressesThatAreNotOffered(t *testing.T) {
 	}
 	if refusedLocal == nil || refusedLocal.String() != "192.168.1.138:80" {
 		t.Errorf("the refusal is reported: %v", refusedLocal)
+	}
+}
+
+func TestOnlyOneAddressIsOfferedForEachNetwork(t *testing.T) {
+	mk := func(ip, iface, kind, netw string) Address {
+		return Address{IP: net.ParseIP(ip), Interface: iface, Kind: kind, Network: netip.MustParsePrefix(netw)}
+	}
+	wifi := mk("192.168.1.138", "Wi-Fi", KindWiFi, "192.168.1.0/24")
+	cable := mk("192.168.1.185", "Ethernet", KindEthernet, "192.168.1.0/24")
+	vpn := mk("10.8.0.2", "tun0", KindOther, "10.8.0.0/24")
+	str := func(l []Address) string {
+		var s []string
+		for _, a := range l {
+			s = append(s, a.IP.String())
+		}
+		return strings.Join(s, " ")
+	}
+	// The wired adapter wins over Wi-Fi even though Wi-Fi sorts first; another network keeps its own address.
+	if got := str(chooseOnePerNetwork([]Address{wifi, cable, vpn}, nil)); got != "192.168.1.185 10.8.0.2" {
+		t.Errorf("wired over Wi-Fi: %s", got)
+	}
+	// The main connection (the one that reaches the gateway) wins over everything, also over the cable.
+	if got := str(chooseOnePerNetwork([]Address{cable, wifi}, net.ParseIP("192.168.1.138"))); got != "192.168.1.138" {
+		t.Errorf("the main connection wins: %s", got)
+	}
+	// Equals keep the first (numeric order); an "other" adapter beats Wi-Fi but not a cable.
+	other := mk("192.168.1.50", "bridge0", KindOther, "192.168.1.0/24")
+	if got := str(chooseOnePerNetwork([]Address{wifi, other}, nil)); got != "192.168.1.50" {
+		t.Errorf("other beats Wi-Fi: %s", got)
+	}
+	if got := str(chooseOnePerNetwork([]Address{cable, other}, nil)); got != "192.168.1.185" {
+		t.Errorf("a cable beats other: %s", got)
+	}
+}
+
+func TestAdapterKindFromItsName(t *testing.T) {
+	for name, want := range map[string]string{
+		"Wi-Fi": KindWiFi, "wlan0": KindWiFi, "wlp3s0": KindWiFi, "Wireless Network Connection": KindWiFi,
+		"Ethernet": KindEthernet, "Ethernet 2": KindEthernet, "eth0": KindEthernet, "enp0s31f6": KindEthernet,
+		"docker0": KindOther, "tun0": KindOther, "vEthernet (WSL)": KindEthernet, "utun3": KindOther,
+	} {
+		if got := nameKind(name); got != want {
+			t.Errorf("%q: %s, want %s", name, got, want)
+		}
+	}
+}
+
+func TestPreferredAdapterWinsOverEveryOtherRule(t *testing.T) {
+	t.Cleanup(func() { SetPrefer(nil) })
+	mk := func(ip, iface, kind string) Address {
+		return Address{IP: net.ParseIP(ip), Interface: iface, Kind: kind, Network: netip.MustParsePrefix("192.168.1.0/24")}
+	}
+	wifi, cable := mk("192.168.1.138", "Wi-Fi", KindWiFi), mk("192.168.1.185", "Ethernet", KindEthernet)
+	pick := func(main string) string {
+		var m net.IP
+		if main != "" {
+			m = net.ParseIP(main)
+		}
+		return chooseOnePerNetwork([]Address{wifi, cable}, m)[0].Interface
+	}
+	if got := pick("192.168.1.138"); got != "Wi-Fi" {
+		t.Errorf("by default the main connection wins: %s", got)
+	}
+	SetPrefer([]string{"ethernet"})
+	if got := pick("192.168.1.138"); got != "Ethernet" {
+		t.Errorf("preferring a kind beats the main connection: %s", got)
+	}
+	SetPrefer([]string{"wifi"})
+	if got := pick(""); got != "Wi-Fi" {
+		t.Errorf("preferring Wi-Fi: %s", got)
+	}
+	SetPrefer([]string{"nothing-like-this", " ETHERNET "})
+	if got := pick(""); got != "Ethernet" {
+		t.Errorf("the first entry that matches is used, by name or kind, in any case: %s", got)
+	}
+	SetPrefer([]string{"Wi-Fi", "ethernet"})
+	if got := pick(""); got != "Wi-Fi" {
+		t.Errorf("earlier entries win: %s", got)
 	}
 }

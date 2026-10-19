@@ -1,6 +1,13 @@
 // Spanish translations of Setup, the operator page and Help (see web/shared/i18n.js). The key is the English text.
 OCI18n.add("es", {
+ "Prefer these adapters": "Preferir estos adaptadores",
+ "Use this one": "Usar esta",
+ "Prefer these adapters (one per line: Ethernet, Wi-Fi or an adapter name; the first that matches is used when two are on the same network)": "Preferir estos adaptadores (uno por línea: Ethernet, Wi-Fi o el nombre de un adaptador; se usa el primero que coincida cuando dos están en la misma red)",
+ "Wi-Fi": "Wi-Fi",
+ "Ethernet": "Ethernet",
+ "not used: same network as {ip}": "no se usa: misma red que {ip}",
  "you are using Setup through this one": "está usando la configuración a través de esta",
+ "These are the addresses this computer has now. The audience is given the ones marked shown: in the address list, the QR code, the HTTPS certificate and the .local name. When two adapters are on the same network (a cable and Wi-Fi), only one is used: the main connection, else the wired one.": "Estas son las direcciones que tiene este equipo ahora. Al público se le dan las marcadas como mostradas: en la lista de direcciones, el código QR, el certificado HTTPS y el nombre .local. Cuando dos adaptadores están en la misma red (un cable y Wi-Fi), solo se usa uno: la conexión principal y, si no, la cableada.",
  "Also refuse connections to the addresses that are not shown": "Rechazar también las conexiones a las direcciones que no se muestran",
  "Connections to this computer itself are always accepted. If a phone then cannot reach the program, clear this box.": "Las conexiones al propio equipo siempre se aceptan. Si un teléfono no llega entonces al programa, desmarque esta casilla.",
  "You are using Setup through {0}, which this would turn off. Open Setup on this computer (at localhost) or through an address that stays on, then try again.": "Está usando la configuración a través de {0}, lo que esto desactivaría. Abra la configuración en este equipo (en localhost) o a través de una dirección que siga activada, y vuelva a intentarlo.",
@@ -9,7 +16,6 @@ OCI18n.add("es", {
  "No network address was found.": "No se encontró ninguna dirección de red.",
  "Show only these": "Mostrar solo estas",
  "Never show these": "No mostrar nunca estas",
- "These are the addresses this computer has now. The audience is given the ones marked shown: in the address list, the QR code, the HTTPS certificate and the .local name.": "Estas son las direcciones que tiene este ordenador ahora. Al público se le dan las marcadas como mostradas: en la lista de direcciones, el código QR, el certificado HTTPS y el nombre .local.",
  "Show only these (one per line; leave empty for all)": "Mostrar solo estas (una por línea; déjelo vacío para todas)",
  "Never show these (one per line)": "No mostrar nunca estas (una por línea)",
  "Each line is an address (192.168.1.50), a network (192.168.1.0/24) or the word private (the usual home and office networks). A line under Never wins.": "Cada línea es una dirección (192.168.1.50), una red (192.168.1.0/24) o la palabra private (las redes domésticas y de oficina habituales). Una línea de «No mostrar nunca» prevalece.",

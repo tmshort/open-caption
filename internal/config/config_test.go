@@ -500,11 +500,11 @@ func TestAddressFilterIncludeAndExclude(t *testing.T) {
 func TestNetworkListsAreCheckedAndSaved(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "config.yaml")
 	os.WriteFile(path, []byte("# kept\nadmin_password: adminpw\noperator_password: operatorpw\nhttp:\n  addr: \":80\"\n"), 0o600)
-	if err := SetValues(path, map[string]any{"network.include": []string{"192.168.1.0/24"}, "network.exclude": []string{}}); err != nil {
+	if err := SetValues(path, map[string]any{"network.include": []string{"192.168.1.0/24"}, "network.exclude": []string{}, "network.prefer": []string{"Ethernet", "wifi"}}); err != nil {
 		t.Fatal(err)
 	}
 	cfg, err := Load(path)
-	if err != nil || len(cfg.Network.Include) != 1 || cfg.Network.Include[0] != "192.168.1.0/24" || len(cfg.Network.Exclude) != 0 {
+	if err != nil || len(cfg.Network.Include) != 1 || cfg.Network.Include[0] != "192.168.1.0/24" || len(cfg.Network.Exclude) != 0 || len(cfg.Network.Prefer) != 2 || cfg.Network.Prefer[0] != "Ethernet" {
 		t.Fatalf("%+v %v", cfg.Network, err)
 	}
 	if b, _ := os.ReadFile(path); !strings.Contains(string(b), "# kept") {

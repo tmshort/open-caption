@@ -1,6 +1,13 @@
 // German translations of Setup, the operator page and Help (see web/shared/i18n.js). The key is the English text.
 OCI18n.add("de", {
+ "Prefer these adapters": "Diese Adapter bevorzugen",
+ "Use this one": "Diese verwenden",
+ "Prefer these adapters (one per line: Ethernet, Wi-Fi or an adapter name; the first that matches is used when two are on the same network)": "Diese Adapter bevorzugen (einer pro Zeile: Ethernet, WLAN oder der Name eines Adapters; der erste Treffer wird verwendet, wenn zwei im selben Netzwerk sind)",
+ "Wi-Fi": "WLAN",
+ "Ethernet": "Ethernet",
+ "not used: same network as {ip}": "nicht verwendet: dasselbe Netzwerk wie {ip}",
  "you are using Setup through this one": "Sie benutzen die Einrichtung über diese",
+ "These are the addresses this computer has now. The audience is given the ones marked shown: in the address list, the QR code, the HTTPS certificate and the .local name. When two adapters are on the same network (a cable and Wi-Fi), only one is used: the main connection, else the wired one.": "Das sind die Adressen, die dieser Computer gerade hat. Das Publikum bekommt die als angezeigt markierten: in der Adressliste, im QR-Code, im HTTPS-Zertifikat und im .local-Namen. Sind zwei Adapter im selben Netzwerk (ein Kabel und WLAN), wird nur einer verwendet: die Hauptverbindung, sonst die kabelgebundene.",
  "Also refuse connections to the addresses that are not shown": "Auch Verbindungen zu den Adressen ablehnen, die nicht angezeigt werden",
  "Connections to this computer itself are always accepted. If a phone then cannot reach the program, clear this box.": "Verbindungen zu diesem Computer selbst werden immer angenommen. Wenn ein Telefon das Programm dann nicht mehr erreicht, entfernen Sie das Häkchen.",
  "You are using Setup through {0}, which this would turn off. Open Setup on this computer (at localhost) or through an address that stays on, then try again.": "Sie benutzen die Einrichtung über {0}, was dies ausschalten würde. Öffnen Sie die Einrichtung an diesem Computer (unter localhost) oder über eine Adresse, die eingeschaltet bleibt, und versuchen Sie es erneut.",
@@ -9,7 +16,6 @@ OCI18n.add("de", {
  "No network address was found.": "Es wurde keine Netzwerkadresse gefunden.",
  "Show only these": "Nur diese anzeigen",
  "Never show these": "Diese nie anzeigen",
- "These are the addresses this computer has now. The audience is given the ones marked shown: in the address list, the QR code, the HTTPS certificate and the .local name.": "Das sind die Adressen, die dieser Computer gerade hat. Das Publikum bekommt die als angezeigt markierten: in der Adressliste, im QR-Code, im HTTPS-Zertifikat und im .local-Namen.",
  "Show only these (one per line; leave empty for all)": "Nur diese anzeigen (eine pro Zeile; leer lassen für alle)",
  "Never show these (one per line)": "Diese nie anzeigen (eine pro Zeile)",
  "Each line is an address (192.168.1.50), a network (192.168.1.0/24) or the word private (the usual home and office networks). A line under Never wins.": "Jede Zeile ist eine Adresse (192.168.1.50), ein Netzwerk (192.168.1.0/24) oder das Wort private (die üblichen privaten Heim- und Büronetze). Eine Zeile unter „Diese nie anzeigen“ hat Vorrang.",

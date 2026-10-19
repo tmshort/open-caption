@@ -139,6 +139,13 @@ Overrides
 .B network.exclude
 every time the program starts.
 .TP
+.BI \-\-network\-prefer " list"
+When two network adapters are on the same network (a cable and Wi-Fi at once) only one is offered; use this one: an adapter name
+(Ethernet, en4) or a kind (ethernet, wifi), comma separated, the first match winning even over the main connection.
+Overrides
+.B network.prefer
+every time the program starts.
+.TP
 .B \-\-network\-restrict
 Also refuse connections made to an address that is not offered (the same as
 .B network.restrict_listening: yes
@@ -238,6 +245,10 @@ Same as
 .B OPEN_CAPTION_NETWORK_EXCLUDE
 Same as
 .BR \-\-network\-exclude .
+.TP
+.B OPEN_CAPTION_NETWORK_PREFER
+Same as
+.BR \-\-network\-prefer .
 .TP
 .B OPEN_CAPTION_NETWORK_RESTRICT
 Same as

@@ -13,20 +13,22 @@ import (
 
 // ApplyNetwork makes the include and exclude lists (config network.include / network.exclude) the rule for which
 // of this computer's addresses are offered. The lists must already be valid (config.Load checks them).
-func (s *Server) ApplyNetwork(include, exclude []string, restrict bool) {
+func (s *Server) ApplyNetwork(n config.Network) {
+	include, exclude, restrict := n.Include, n.Exclude, n.RestrictListening
 	f, err := config.NewAddressFilter(include, exclude)
 	if err != nil {
 		logx.Warnf("network: %v; every address is offered", err)
 		f = config.AddressFilter{}
 	}
 	s.netMu.Lock()
-	s.cfg.Network = config.Network{Include: include, Exclude: exclude, RestrictListening: restrict}
+	s.cfg.Network = n
 	s.netMu.Unlock()
 	if f.Active() {
 		netinfo.SetFilter(f.Allows)
 	} else {
 		netinfo.SetFilter(nil)
 	}
+	netinfo.SetPrefer(n.Prefer)
 	netinfo.SetRestrictListening(restrict)
 }
 
@@ -37,14 +39,17 @@ func (s *Server) PinNetwork() { s.pinnedNetwork = true }
 func (s *Server) networkSettings() config.Network {
 	s.netMu.Lock()
 	defer s.netMu.Unlock()
-	return config.Network{Include: append([]string{}, s.cfg.Network.Include...), Exclude: append([]string{}, s.cfg.Network.Exclude...), RestrictListening: s.cfg.Network.RestrictListening}
+	return config.Network{Include: append([]string{}, s.cfg.Network.Include...), Exclude: append([]string{}, s.cfg.Network.Exclude...), Prefer: append([]string{}, s.cfg.Network.Prefer...), RestrictListening: s.cfg.Network.RestrictListening}
 }
 
 type addressInfo struct {
 	IP        string `json:"ip"`
 	Interface string `json:"interface"`
-	Shown     bool   `json:"shown"`
-	Current   bool   `json:"current"` // the address this request arrived on
+	Kind      string `json:"kind"`              // "ethernet", "wifi" or "other"
+	Shown     bool   `json:"shown"`             // it is the address given to the audience for its network
+	Hidden    string `json:"hidden,omitempty"`  // why it is not: "rule" (network.include / exclude) or "network"
+	Instead   string `json:"instead,omitempty"` // with "network": the address shown for the same network
+	Current   bool   `json:"current"`           // the address this request arrived on
 }
 
 // currentAddress is the address of this computer that the request came in on; nil for this computer itself
@@ -58,14 +63,19 @@ func currentAddress(r *http.Request) net.IP {
 	return nil
 }
 
-// networkAddresses lists every address of this computer's working network interfaces, and whether the rules offer it.
+// networkAddresses lists every address of this computer's working network interfaces and what the rules do with it.
 func (s *Server) networkAddresses(r *http.Request) []addressInfo {
-	n := s.networkSettings()
-	f, _ := config.NewAddressFilter(n.Include, n.Exclude)
 	cur := currentAddress(r)
 	out := []addressInfo{}
-	for _, a := range netinfo.AllAddresses() {
-		out = append(out, addressInfo{IP: a.IP.String(), Interface: a.Interface, Shown: f.Allows(a.IP), Current: cur != nil && cur.Equal(a.IP)})
+	for _, st := range netinfo.Statuses() {
+		a := addressInfo{IP: st.IP.String(), Interface: st.Interface, Kind: st.Kind, Shown: st.Offered, Current: cur != nil && cur.Equal(st.IP)}
+		switch {
+		case !st.Allowed:
+			a.Hidden = "rule"
+		case !st.Offered:
+			a.Hidden, a.Instead = "network", st.Instead.String()
+		}
+		out = append(out, a)
 	}
 	return out
 }
@@ -90,13 +100,14 @@ func (s *Server) setNetwork(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		Include           []string `json:"include"`
 		Exclude           []string `json:"exclude"`
+		Prefer            []string `json:"prefer"`
 		RestrictListening bool     `json:"restrictListening"`
 	}
 	if !decode(w, r, &req) {
 		return
 	}
-	include, exclude := cleanList(req.Include), cleanList(req.Exclude)
-	if len(include) > 50 || len(exclude) > 50 {
+	include, exclude, prefer := cleanList(req.Include), cleanList(req.Exclude), cleanList(req.Prefer)
+	if len(include) > 50 || len(exclude) > 50 || len(prefer) > 50 {
 		writeErr(w, http.StatusBadRequest, "Use at most 50 lines in each box.")
 		return
 	}
@@ -118,14 +129,14 @@ func (s *Server) setNetwork(w http.ResponseWriter, r *http.Request) {
 	}
 	saved := false
 	if s.cfg.Path != "" {
-		if err := config.SetValues(s.cfg.Path, map[string]any{"network.include": include, "network.exclude": exclude, "network.restrict_listening": req.RestrictListening}); err != nil {
+		if err := config.SetValues(s.cfg.Path, map[string]any{"network.include": include, "network.exclude": exclude, "network.prefer": prefer, "network.restrict_listening": req.RestrictListening}); err != nil {
 			writeErr(w, http.StatusInternalServerError, "Could not save the setting in config.yaml: "+err.Error())
 			return
 		}
 		saved = true
 	}
-	s.ApplyNetwork(include, exclude, req.RestrictListening)
-	logx.Infof("network addresses changed in Setup: only %v, never %v, refuse connections to the others: %v", include, exclude, req.RestrictListening)
+	s.ApplyNetwork(config.Network{Include: include, Exclude: exclude, Prefer: prefer, RestrictListening: req.RestrictListening})
+	logx.Infof("network addresses changed in Setup: only %v, never %v, prefer %v, refuse connections to the others: %v", include, exclude, prefer, req.RestrictListening)
 	resp := map[string]any{"saved": saved, "addresses": s.networkAddresses(r)}
 	if s.pinnedNetwork {
 		resp["note"] = "This copy was started with --network-include or --network-exclude (or the matching OPEN_CAPTION_ variable), which overrides the saved setting each time it starts. The new choice applies now, and lasts until the program is restarted."

@@ -13,17 +13,29 @@ import (
 	"encoding/pem"
 	"math/big"
 	"net"
+	"net/netip"
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
+	"sync"
 	"sync/atomic"
 	"time"
 )
 
-// Address is one of this computer's IPv4 addresses and the network interface it belongs to.
+// Kinds of network adapter, as far as the operating system tells.
+const (
+	KindEthernet = "ethernet"
+	KindWiFi     = "wifi"
+	KindOther    = "other" // virtual adapters, VPNs, Bluetooth, phones used as modems
+)
+
+// Address is one of this computer's IPv4 addresses and the network adapter it belongs to.
 type Address struct {
 	IP        net.IP
-	Interface string
+	Interface string       // the adapter's name, as the operating system calls it
+	Kind      string       // KindEthernet, KindWiFi or KindOther
+	Network   netip.Prefix // the network it is on, for example 192.168.1.0/24
 }
 
 var filter atomic.Pointer[func(net.IP) bool]
@@ -33,9 +45,42 @@ var filter atomic.Pointer[func(net.IP) bool]
 func SetFilter(allow func(net.IP) bool) {
 	if allow == nil {
 		filter.Store(nil)
-		return
+	} else {
+		filter.Store(&allow)
 	}
-	filter.Store(&allow)
+	offeredCache.reset()
+}
+
+var prefer atomic.Pointer[[]string]
+
+// SetPrefer sets which adapter is used when two are on the same network (config network.prefer): the first entry
+// that matches an adapter's name, or its kind ("ethernet", "wifi"), wins over every other rule.
+func SetPrefer(entries []string) {
+	if len(entries) == 0 {
+		prefer.Store(nil)
+	} else {
+		cp := append([]string(nil), entries...)
+		prefer.Store(&cp)
+	}
+	offeredCache.reset()
+}
+
+// preferRank is the position of the first prefer entry that matches the address's adapter, or -1.
+func preferRank(a Address) int {
+	p := prefer.Load()
+	if p == nil {
+		return -1
+	}
+	for i, e := range *p {
+		e = strings.ToLower(strings.TrimSpace(e))
+		switch {
+		case strings.EqualFold(e, a.Interface):
+			return i
+		case (e == KindEthernet || e == "wired") && a.Kind == KindEthernet, (e == KindWiFi || e == "wi-fi" || e == "wireless") && a.Kind == KindWiFi:
+			return i
+		}
+	}
+	return -1
 }
 
 // Allowed reports whether the filter (SetFilter) offers ip; with no filter, every address is offered.
@@ -54,8 +99,16 @@ func AllAddresses() []Address {
 	var out []Address
 	for _, ifc := range ifs {
 		addrs, _ := ifc.Addrs()
-		for _, ip := range usableIPs(ifc.Flags, addrs) {
-			out = append(out, Address{IP: ip, Interface: ifc.Name})
+		nets := usableNets(ifc.Flags, addrs)
+		if len(nets) == 0 {
+			continue
+		}
+		kind := interfaceKind(ifc)
+		for _, n := range nets {
+			ip := n.IP.To4()
+			ones, _ := n.Mask.Size()
+			addr, _ := netip.AddrFromSlice(ip)
+			out = append(out, Address{IP: ip, Interface: ifc.Name, Kind: kind, Network: netip.PrefixFrom(addr, ones).Masked()})
 		}
 	}
 	ips := make([]net.IP, len(out))
@@ -75,15 +128,120 @@ func AllAddresses() []Address {
 	return sorted
 }
 
-// LocalIPs returns the addresses to offer: AllAddresses less what the filter leaves out.
+// LocalIPs returns the addresses to offer: those the filter allows, and only one for each network. A computer
+// on one network through two adapters (a cable and Wi-Fi at once) has two addresses there, and the audience
+// needs just one: the main connection's, else the wired one, else a Wi-Fi one.
 func LocalIPs() []net.IP {
-	var out []net.IP
+	var allowed []Address
 	for _, a := range AllAddresses() {
 		if Allowed(a.IP) {
-			out = append(out, a.IP)
+			allowed = append(allowed, a)
+		}
+	}
+	var out []net.IP
+	for _, a := range chooseOnePerNetwork(allowed, mainIP()) {
+		out = append(out, a.IP)
+	}
+	return out
+}
+
+// rank orders the addresses of one network: an adapter chosen with network.prefer, then the main connection, then
+// wired, then anything else, then Wi-Fi.
+func rank(a Address, main net.IP) int {
+	if r := preferRank(a); r >= 0 {
+		return r - 1000 // a chosen adapter beats everything below
+	}
+	switch {
+	case main != nil && a.IP.Equal(main):
+		return 0
+	case a.Kind == KindEthernet:
+		return 1
+	case a.Kind == KindWiFi:
+		return 3
+	}
+	return 2
+}
+
+// chooseOnePerNetwork keeps, for each network, the address with the best rank (the first of equals), in the
+// order given.
+func chooseOnePerNetwork(addrs []Address, main net.IP) []Address {
+	best := map[netip.Prefix]int{}
+	for i, a := range addrs {
+		if j, ok := best[a.Network]; !ok || rank(a, main) < rank(addrs[j], main) {
+			best[a.Network] = i
+		}
+	}
+	var out []Address
+	for i, a := range addrs {
+		if best[a.Network] == i {
+			out = append(out, a)
 		}
 	}
 	return out
+}
+
+// Status says what the rules do with one address.
+type Status struct {
+	Address
+	Allowed bool   // network.include / network.exclude allow it
+	Offered bool   // it is the one given to the audience for its network
+	Instead net.IP // when allowed but not offered: the address offered for the same network
+}
+
+// Statuses lists every address with what the rules do with it, in the order AllAddresses gives them.
+func Statuses() []Status {
+	all := AllAddresses()
+	var allowed []Address
+	for _, a := range all {
+		if Allowed(a.IP) {
+			allowed = append(allowed, a)
+		}
+	}
+	chosen := map[netip.Prefix]net.IP{}
+	for _, a := range chooseOnePerNetwork(allowed, mainIP()) {
+		chosen[a.Network] = a.IP
+	}
+	out := make([]Status, 0, len(all))
+	for _, a := range all {
+		st := Status{Address: a, Allowed: Allowed(a.IP)}
+		if st.Allowed {
+			if c := chosen[a.Network]; c.Equal(a.IP) {
+				st.Offered = true
+			} else {
+				st.Instead = c
+			}
+		}
+		out = append(out, st)
+	}
+	return out
+}
+
+// Offered reports whether ip is one of LocalIPs. The answer is kept for a couple of seconds, so it is cheap to
+// ask for every packet (the .local announcement does).
+func Offered(ip net.IP) bool { return offeredCache.has(ip) }
+
+var offeredCache cache
+
+type cache struct {
+	mu  sync.Mutex
+	at  time.Time
+	ips []net.IP
+}
+
+func (c *cache) reset() { c.mu.Lock(); c.at = time.Time{}; c.mu.Unlock() }
+
+func (c *cache) has(ip net.IP) bool {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if time.Since(c.at) > 2*time.Second {
+		c.ips, c.at = LocalIPs(), time.Now()
+	}
+	for _, o := range c.ips {
+		if o.Equal(ip) {
+			return true
+		}
+	}
+	return false
 }
 
 // mainIP is the address this computer uses to reach the rest of the network (the one on the route to the
@@ -117,13 +275,22 @@ func mainFirst(ips []net.IP, main net.IP) []net.IP {
 
 // usableIPs picks the addresses worth offering from one interface: none unless it is up.
 func usableIPs(flags net.Flags, addrs []net.Addr) []net.IP {
+	var out []net.IP
+	for _, n := range usableNets(flags, addrs) {
+		out = append(out, n.IP)
+	}
+	return out
+}
+
+// usableNets is usableIPs with each address's network mask.
+func usableNets(flags net.Flags, addrs []net.Addr) []*net.IPNet {
 	if flags&net.FlagUp == 0 || flags&net.FlagLoopback != 0 {
 		return nil
 	}
-	var out []net.IP
+	var out []*net.IPNet
 	for _, a := range addrs {
 		if n, ok := a.(*net.IPNet); ok && !n.IP.IsLoopback() && n.IP.To4() != nil && n.IP.IsGlobalUnicast() {
-			out = append(out, n.IP)
+			out = append(out, n)
 		}
 	}
 	return out

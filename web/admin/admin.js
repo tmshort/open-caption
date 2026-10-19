@@ -1038,17 +1038,21 @@
       if (!st.ok) return;
       const net0 = st.data.network || {};
       const shownList = h('ul', { class: 'addrlist' });
-      const paintList = (addrs) => shownList.replaceChildren(...(addrs.length ? addrs.map((a) => h('li', { class: a.shown ? '' : 'off' }, h('b', {}, a.ip), ' ', a.interface ? '(' + a.interface + ') ' : '', a.shown ? __('shown') : __('hidden'), a.current ? ' — ' + __('you are using Setup through this one') : '')) : [h('li', {}, __('No network address was found.'))]));
+      const pref = h('textarea', { rows: '2', spellcheck: 'false', 'aria-label': __('Prefer these adapters'), placeholder: 'Ethernet' }); pref.value = (net0.prefer || []).join('\n');
+      const kindName = (k) => k === 'wifi' ? __('Wi-Fi') : k === 'ethernet' ? __('Ethernet') : '';
+      const stateText = (a) => a.shown ? __('shown') : a.hidden === 'network' ? __('not used: same network as {ip}', { ip: a.instead }) : __('hidden');
+      const paintList = (addrs) => shownList.replaceChildren(...(addrs.length ? addrs.map((a) => h('li', { class: a.shown ? '' : 'off' }, h('b', {}, a.ip), ' ', [kindName(a.kind), a.interface].filter(Boolean).length ? '(' + [kindName(a.kind), a.interface].filter(Boolean).join(', ') + ') ' : '', stateText(a), a.current ? ' — ' + __('you are using Setup through this one') : '', a.hidden === 'network' && a.interface ? [' ', h('button', { class: 'quiet', onclick: () => { pref.value = [a.interface].concat(pref.value.split('\n').map((x) => x.trim()).filter((x) => x && x !== a.interface)).join('\n'); pref.focus(); } }, __('Use this one'))] : '')) : [h('li', {}, __('No network address was found.'))]));
       paintList(st.data.addresses || []);
       const inc = h('textarea', { rows: '3', spellcheck: 'false', 'aria-label': __('Show only these'), placeholder: '192.168.1.0/24' }); inc.value = (net0.include || []).join('\n');
       const exc = h('textarea', { rows: '3', spellcheck: 'false', 'aria-label': __('Never show these'), placeholder: '192.168.56.0/24' }); exc.value = (net0.exclude || []).join('\n');
       const restrict = h('input', { type: 'checkbox' }); restrict.checked = !!net0.restrictListening;
       const msg = h('div', { class: 'check warn', role: 'alert', hidden: '' });
       const body = h('div', { class: 'addrbox' },
-        h('p', { class: 'hint' }, __('These are the addresses this computer has now. The audience is given the ones marked shown: in the address list, the QR code, the HTTPS certificate and the .local name.')),
+        h('p', { class: 'hint' }, __('These are the addresses this computer has now. The audience is given the ones marked shown: in the address list, the QR code, the HTTPS certificate and the .local name. When two adapters are on the same network (a cable and Wi-Fi), only one is used: the main connection, else the wired one.')),
         shownList,
         h('label', { class: 'addrlabel' }, __('Show only these (one per line; leave empty for all)'), inc),
         h('label', { class: 'addrlabel' }, __('Never show these (one per line)'), exc),
+        h('label', { class: 'addrlabel' }, __('Prefer these adapters (one per line: Ethernet, Wi-Fi or an adapter name; the first that matches is used when two are on the same network)'), pref),
         h('label', { class: 'row addrrestrict' }, restrict, __('Also refuse connections to the addresses that are not shown')),
         h('p', { class: 'hint' }, __('Connections to this computer itself are always accepted. If a phone then cannot reach the program, clear this box.')),
         h('p', { class: 'hint' }, __('Each line is an address (192.168.1.50), a network (192.168.1.0/24) or the word private (the usual home and office networks). A line under Never wins.')),
@@ -1058,7 +1062,7 @@
         if (!await ask(__('Choose addresses'), body, __('Apply'))) return;
         msg.hidden = true;
         const lines = (t) => t.value.split('\n').map((x) => x.trim()).filter(Boolean);
-        const r = await api('PUT', '/api/admin/settings/network', { include: lines(inc), exclude: lines(exc), restrictListening: restrict.checked });
+        const r = await api('PUT', '/api/admin/settings/network', { include: lines(inc), exclude: lines(exc), prefer: lines(pref), restrictListening: restrict.checked });
         if (r.ok) { render(); return; }
         msg.textContent = __((r.data && r.data.error) || 'Could not change the addresses'); msg.hidden = false;
       }
@@ -1086,7 +1090,7 @@
     const projU = projBase ? { url: projBase + (projBase.includes('?') ? '&' : '?') + 'display=projector' } : null;
     const projRow = projU ? h('div', { class: 'row projrow' }, h('label', { class: 'row' }, radio(projU), link(projU.url)),
       h('span', { class: 'hint' }, __('(for a projector or shared screen; open it on that computer)'))) : null;
-    const rows = net.data.urls.filter((u) => !u.name).map((u) => h('div', { class: 'row' }, h('label', { class: 'row' }, radio(u), link(u.url), u.public ? '' : __(' (this computer only)'))));
+    const rows = net.data.urls.filter((u) => !u.name).map((u) => h('div', { class: 'row' }, h('label', { class: 'row' }, radio(u), link(u.url), u.public ? (u.adapter === 'wifi' ? ' (' + __('Wi-Fi') + ')' : u.adapter === 'ethernet' ? ' (' + __('Ethernet') + ')' : '') : __(' (this computer only)'))));
     const list = h('div', { class: 'urls' }, ...rows, ...nameRows(), projRow);
     p.append(h('h2', {}, __('Run')), checks,
       h('div', { class: 'card' }, h('h3', {}, __('Tell the audience this address')), big,

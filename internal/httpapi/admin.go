@@ -1133,6 +1133,8 @@ type urlInfo struct {
 	Host   string `json:"host"`
 	Public bool   `json:"public"` // reachable from other devices (not localhost)
 	Name   bool   `json:"name"`   // a local network name (open-caption.local) rather than a numeric address
+	// Adapter is the kind of network adapter a numeric address belongs to ("ethernet", "wifi" or "other"), so Setup can say which.
+	Adapter string `json:"adapter,omitempty"`
 }
 
 func hostURL(scheme, host, bound, def string) string {
@@ -1149,13 +1151,17 @@ func (s *Server) network(w http.ResponseWriter, r *http.Request) {
 	s.lmu.Unlock()
 	host, _ := os.Hostname()
 	ips := netinfo.LocalIPs()
+	adapterOf := map[string]string{}
+	for _, a := range netinfo.AllAddresses() {
+		adapterOf[a.IP.String()] = a.Kind
+	}
 	var urls []urlInfo
 	add := func(scheme, bound, def string) {
 		if bound == "" {
 			return
 		}
 		for _, ip := range ips {
-			urls = append(urls, urlInfo{URL: hostURL(scheme, ip.String(), bound, def), Kind: scheme, Host: ip.String(), Public: true})
+			urls = append(urls, urlInfo{URL: hostURL(scheme, ip.String(), bound, def), Kind: scheme, Host: ip.String(), Public: true, Adapter: adapterOf[ip.String()]})
 		}
 		urls = append(urls, urlInfo{URL: hostURL(scheme, "localhost", bound, def), Kind: scheme, Host: "localhost"})
 	}
@@ -1307,7 +1313,7 @@ func (s *Server) settings(w http.ResponseWriter, r *http.Request) {
 		"canChangePasswords": s.cfg.Path != "", "standby": s.standbyView(), "logLevel": logx.Current().String(), "logLevelPinned": s.pinnedLevel, "mdns": s.MDNSStatus(),
 		"adminAllow": s.cfg.Access.AdminAllow, "operatorAllow": s.cfg.Access.OperatorAllow,
 		"adminRestricted": s.adminAllow.Restricted(), "operatorRestricted": s.operatorAllow.Restricted(),
-		"network": map[string]any{"include": ns.Include, "exclude": ns.Exclude, "restrictListening": ns.RestrictListening}, "networkPinned": s.pinnedNetwork, "addresses": s.networkAddresses(r),
+		"network": map[string]any{"include": ns.Include, "exclude": ns.Exclude, "prefer": ns.Prefer, "restrictListening": ns.RestrictListening}, "networkPinned": s.pinnedNetwork, "addresses": s.networkAddresses(r),
 	})
 }
 

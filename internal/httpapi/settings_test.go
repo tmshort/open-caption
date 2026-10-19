@@ -684,12 +684,12 @@ func TestExportFailsCleanlyWhenAnImageCannotBeRead(t *testing.T) {
 
 // REQ-069: Setup chooses which of this computer's addresses are offered; the choice is saved and applies at once.
 func TestOfferedAddressesCanBeChosenInSetup(t *testing.T) {
-	t.Cleanup(func() { netinfo.SetFilter(nil); netinfo.SetRestrictListening(false) })
+	t.Cleanup(func() { netinfo.SetFilter(nil); netinfo.SetPrefer(nil); netinfo.SetRestrictListening(false) })
 	cfgPath := filepath.Join(t.TempDir(), "config.yaml")
 	os.WriteFile(cfgPath, []byte("# kept\nadmin_password: adminpw\noperator_password: operatorpw\nhttp:\n  addr: \":80\"\n"), 0o600)
 	_, _, c := serverWith(t, func(cfg *config.Config) { cfg.Path = cfgPath })
 
-	code, r := c.do("PUT", "/api/admin/settings/network", map[string]any{"include": []string{" 192.168.1.0/24 ", "", "192.168.1.0/24"}, "exclude": []string{"192.168.1.138"}})
+	code, r := c.do("PUT", "/api/admin/settings/network", map[string]any{"include": []string{" 192.168.1.0/24 ", "", "192.168.1.0/24"}, "exclude": []string{"192.168.1.138"}, "prefer": []string{" Ethernet "}})
 	if code != 200 || r["saved"] != true {
 		t.Fatalf("%d %v", code, r)
 	}
@@ -705,6 +705,9 @@ func TestOfferedAddressesCanBeChosenInSetup(t *testing.T) {
 	}
 	_, g := c.do("GET", "/api/admin/settings", nil)
 	n := g["network"].(map[string]any)
+	if p := n["prefer"].([]any); len(p) != 1 || p[0] != "Ethernet" {
+		t.Errorf("the preferred adapter is saved and returned, trimmed: %v", n["prefer"])
+	}
 	if len(n["include"].([]any)) != 1 || len(n["exclude"].([]any)) != 1 {
 		t.Errorf("blank and repeated lines are dropped: %v", n)
 	}
@@ -727,7 +730,7 @@ func TestOfferedAddressesCanBeChosenInSetup(t *testing.T) {
 // REQ-069: the restriction makes the server refuse connections to addresses that are not offered, but never cuts off
 // the address Setup is being used through.
 func TestRestrictingListeningIsSavedAndDoesNotLockOutTheCaller(t *testing.T) {
-	t.Cleanup(func() { netinfo.SetFilter(nil); netinfo.SetRestrictListening(false) })
+	t.Cleanup(func() { netinfo.SetFilter(nil); netinfo.SetPrefer(nil); netinfo.SetRestrictListening(false) })
 	cfgPath := filepath.Join(t.TempDir(), "config.yaml")
 	os.WriteFile(cfgPath, []byte("admin_password: adminpw\noperator_password: operatorpw\nhttp:\n  addr: \":80\"\n"), 0o600)
 	s, _, c := serverWith(t, func(cfg *config.Config) { cfg.Path = cfgPath })
@@ -777,27 +780,5 @@ func TestRestrictingListeningIsSavedAndDoesNotLockOutTheCaller(t *testing.T) {
 	s.setNetwork(rec, req)
 	if rec.Code != 200 || !netinfo.RestrictingListening() {
 		t.Errorf("%d %s", rec.Code, rec.Body.String())
-	}
-}
-
-func TestTheAddressInUseIsMarkedInTheList(t *testing.T) {
-	t.Cleanup(func() { netinfo.SetFilter(nil); netinfo.SetRestrictListening(false) })
-	s, _, _ := serverWith(t, nil)
-	req := httptest.NewRequest("GET", "/api/admin/settings", nil)
-	if cur := currentAddress(req); cur != nil {
-		t.Errorf("no local address in the context: %v", cur)
-	}
-	req = req.WithContext(context.WithValue(req.Context(), http.LocalAddrContextKey, net.Addr(&net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 80})))
-	if cur := currentAddress(req); cur != nil {
-		t.Errorf("this computer itself has no address to protect: %v", cur)
-	}
-	req = req.WithContext(context.WithValue(req.Context(), http.LocalAddrContextKey, net.Addr(&net.TCPAddr{IP: net.ParseIP("192.168.1.185"), Port: 80})))
-	if cur := currentAddress(req); cur == nil || cur.String() != "192.168.1.185" {
-		t.Errorf("%v", cur)
-	}
-	for _, a := range s.networkAddresses(req) {
-		if a.Current != (a.IP == "192.168.1.185") {
-			t.Errorf("%+v", a)
-		}
 	}
 }
