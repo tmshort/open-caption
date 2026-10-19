@@ -90,3 +90,31 @@ func TestSystemdUnitHasItsSections(t *testing.T) {
 		t.Error("the log file is written outside the paths the sandbox allows")
 	}
 }
+
+// build.ps1 is what Windows users run instead of `make build`; it must keep building the same thing.
+func TestWindowsBuildScriptMatchesTheMakefile(t *testing.T) {
+	mk, _ := os.ReadFile("../Makefile")
+	ps, err := os.ReadFile("../build.ps1")
+	if err != nil {
+		t.Fatal(err)
+	}
+	bat, err := os.ReadFile("../build.bat")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(bat), "build.ps1") {
+		t.Error("build.bat must run build.ps1")
+	}
+	// the default providers, the version flags and the package are the Makefile's
+	m := regexp.MustCompile(`(?m)^ACME_PROVIDERS \?= (.+)$`).FindStringSubmatch(string(mk))
+	if m == nil || !strings.Contains(string(ps), "[string]$AcmeProviders = '"+m[1]+"'") {
+		t.Errorf("build.ps1's default -AcmeProviders differs from the Makefile's ACME_PROVIDERS (%v)", m)
+	}
+	l := regexp.MustCompile(`(?m)^LDFLAGS := (.+)$`).FindStringSubmatch(string(mk))
+	if l == nil || !strings.Contains(string(ps), strings.Replace(l[1], "$(VERSION)", "$version", 1)) {
+		t.Errorf("build.ps1's -ldflags differ from the Makefile's LDFLAGS (%v)", l)
+	}
+	if !strings.Contains(string(ps), `.\cmd\open-caption`) || !strings.Contains(string(ps), "tools/acme-go.sh") {
+		t.Error("build.ps1 must build ./cmd/open-caption and use tools/acme-go.sh for other providers")
+	}
+}

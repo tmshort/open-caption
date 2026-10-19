@@ -14,7 +14,7 @@ If you only want to **run** the program and someone gives you the finished `open
 | Go 1.26 or later | the compiler | building |
 | Node.js 22.12 or later and Google Chrome | the browser tests | only if you want to run the tests (step 6) |
 
-You do **not** need Visual Studio, a C compiler or `make`: Windows builds with one `go build` command.
+You do **not** need Visual Studio, a C compiler or `make`: Windows builds with `build.bat`.
 
 ## 1. Open PowerShell
 
@@ -58,10 +58,16 @@ The repository may be private. If a sign-in window appears, sign in to GitHub wi
 ## 4. Build
 
 ```
-go build -o bin\open-caption.exe .\cmd\open-caption
+.\build.bat
 ```
 
+(`build.bat` runs `build.ps1`, which does the work. Use `build.bat` rather than `build.ps1` directly: Windows normally refuses to run `.ps1` scripts typed at the prompt, and `build.bat` is not affected. The command stays the same if building ever needs more steps.)
+
 The first build downloads the libraries it needs (internet required) and takes a minute or two. It creates `bin\open-caption.exe`.
+
+**Choosing the DNS providers for automatic HTTPS certificates (optional).** The default build includes Cloudflare, GoDaddy and EasyDNS, which is right for most people. To choose others, as `ACME_PROVIDERS` does in the Makefile: `.\build.bat -AcmeProviders "easydns route53"`, `-AcmeProviders all` or `-AcmeProviders none`. Anything but the default needs Git for Windows (installed above) and internet. See the [HTTPS certificate guide](https-certificate-guide.md) and [docs/10](10-acme-lets-encrypt.md).
+
+`go build -o bin\open-caption.exe .\cmd\open-caption` also works and builds the default.
 
 ## 5. Run
 
@@ -123,7 +129,7 @@ CHROME='C:\Program Files\Google\Chrome\Application\chrome.exe' node run.js
 ```
 cd $HOME\open-caption
 git pull
-go build -o bin\open-caption.exe .\cmd\open-caption
+.\build.bat
 ```
 
 ## If something goes wrong
@@ -132,7 +138,7 @@ go build -o bin\open-caption.exe .\cmd\open-caption
 |---|---|
 | `'go' is not recognized` or `'git' is not recognized` | Close PowerShell and open it again after installing. |
 | `go: go.mod requires go >= 1.26.0` | Your Go is too old. Install the newest from <https://go.dev/dl/> (`winget upgrade GoLang.Go`). |
-| The build stops with a network error | The build needs internet the first time. Check the connection and run the `go build` line again. |
+| The build stops with a network error | The build needs internet the first time. Check the connection and run `.\build.bat` again. |
 | `bind: Only one usage of each socket address` or the program says it moved to `:8080` | Another program holds port 80 (IIS, Skype, another web server). The program already falls back to 8080; use the address it prints. |
 | A phone cannot open the address | Allow the program on **Private networks** (Windows Security → Firewall & network protection → *Allow an app through firewall*). The phone must be on the same WiFi as the PC. |
 | Antivirus quarantines `open-caption.exe` | A program you just built yourself is unsigned and unknown to the antivirus; add an exception for the `bin` folder. |

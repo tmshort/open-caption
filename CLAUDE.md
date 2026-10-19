@@ -10,6 +10,7 @@ A single-binary open-captioning server for community theater (Go 1.26+, no CGO).
 
 `make help` lists every target (a bare `make` does the same); the ones below are the common ones.
 
+- `build.bat` (runs `build.ps1`) is `make build` for Windows, which has no make; `deploy/deploy_test.go` checks it uses the Makefile's default providers and flags, so change both together.
 - `make build` → `bin/open-caption`; run `./bin/open-caption` (first run writes `config.yaml` with random passwords; `--show-file` flag exists).
 - `make test` / `make race` (`go test -race ./...`) / `make vet`
 - Single test: `go test ./internal/httpapi -run TestName -count=1`

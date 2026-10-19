@@ -6,3 +6,4 @@
 *.woff2 binary
 *.otf binary
 *.ttf binary
+*.bat text eol=crlf
