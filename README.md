@@ -63,6 +63,7 @@ For people who use and run the program (the specifications are further down):
 | [docs/venue-network-guide.md](docs/venue-network-guide.md) | Whoever manages the venue's WiFi: how audience phones reach the computer |
 | [docs/https-certificate-guide.md](docs/https-certificate-guide.md) | Step by step: a trusted HTTPS certificate with Cloudflare, GoDaddy or EasyDNS |
 | [docs/configuration-reference.md](docs/configuration-reference.md) | Every `config.yaml` setting, the command-line options and environment variables, checking a show file |
+| [docs/build-macos.md](docs/build-macos.md), [docs/build-windows.md](docs/build-windows.md), [docs/build-linux.md](docs/build-linux.md) | Starting from a brand-new computer: exactly what to install, then how to build and run the program (English) |
 | [docs/open-caption.1](docs/open-caption.1) | The manual page (`man ./docs/open-caption.1`): options, environment, files, signals, exit status (English) |
 
 The usage guide, the venue network guide, the HTTPS certificate guide and the configuration reference are also available in Spanish, French, German,
@@ -71,7 +72,7 @@ operator) is translated the same way; the topics are in [web/help/](web/help/).
 
 ## Building and testing
 
-**To run the program you need nothing but the binary.** To build and test it:
+**To run the program you need nothing but the binary.** To build and test it (starting from a bare computer? Follow the step-by-step guide for [macOS](docs/build-macos.md), [Windows](docs/build-windows.md) or [Linux](docs/build-linux.md)):
 
 | You need | For | Notes |
 |---|---|---|
