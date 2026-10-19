@@ -760,6 +760,15 @@ func TestRestrictingListeningIsSavedAndDoesNotLockOutTheCaller(t *testing.T) {
 	if rec.Code != 409 || !strings.Contains(rec.Body.String(), "192.168.1.138") || netinfo.RestrictingListening() {
 		t.Errorf("%d %s restricting=%v", rec.Code, rec.Body.String(), netinfo.RestrictingListening())
 	}
+	// Hiding the address alone (without the restriction) is refused as well: it is the one in use.
+	body = strings.NewReader(`{"include":[],"exclude":["192.168.1.138"],"restrictListening":false}`)
+	req = httptest.NewRequest("PUT", "/api/admin/settings/network", body)
+	req = req.WithContext(context.WithValue(req.Context(), http.LocalAddrContextKey, net.Addr(&net.TCPAddr{IP: net.ParseIP("192.168.1.138"), Port: 80})))
+	rec = httptest.NewRecorder()
+	s.setNetwork(rec, req)
+	if rec.Code != 409 || !strings.Contains(rec.Body.String(), "turn off") {
+		t.Errorf("%d %s", rec.Code, rec.Body.String())
+	}
 	// ... but the same request through an address that stays shown is fine.
 	body = strings.NewReader(`{"include":[],"exclude":["192.168.1.138"],"restrictListening":true}`)
 	req = httptest.NewRequest("PUT", "/api/admin/settings/network", body)
@@ -768,5 +777,27 @@ func TestRestrictingListeningIsSavedAndDoesNotLockOutTheCaller(t *testing.T) {
 	s.setNetwork(rec, req)
 	if rec.Code != 200 || !netinfo.RestrictingListening() {
 		t.Errorf("%d %s", rec.Code, rec.Body.String())
+	}
+}
+
+func TestTheAddressInUseIsMarkedInTheList(t *testing.T) {
+	t.Cleanup(func() { netinfo.SetFilter(nil); netinfo.SetRestrictListening(false) })
+	s, _, _ := serverWith(t, nil)
+	req := httptest.NewRequest("GET", "/api/admin/settings", nil)
+	if cur := currentAddress(req); cur != nil {
+		t.Errorf("no local address in the context: %v", cur)
+	}
+	req = req.WithContext(context.WithValue(req.Context(), http.LocalAddrContextKey, net.Addr(&net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 80})))
+	if cur := currentAddress(req); cur != nil {
+		t.Errorf("this computer itself has no address to protect: %v", cur)
+	}
+	req = req.WithContext(context.WithValue(req.Context(), http.LocalAddrContextKey, net.Addr(&net.TCPAddr{IP: net.ParseIP("192.168.1.185"), Port: 80})))
+	if cur := currentAddress(req); cur == nil || cur.String() != "192.168.1.185" {
+		t.Errorf("%v", cur)
+	}
+	for _, a := range s.networkAddresses(req) {
+		if a.Current != (a.IP == "192.168.1.185") {
+			t.Errorf("%+v", a)
+		}
 	}
 }

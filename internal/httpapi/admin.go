@@ -1307,7 +1307,7 @@ func (s *Server) settings(w http.ResponseWriter, r *http.Request) {
 		"canChangePasswords": s.cfg.Path != "", "standby": s.standbyView(), "logLevel": logx.Current().String(), "logLevelPinned": s.pinnedLevel, "mdns": s.MDNSStatus(),
 		"adminAllow": s.cfg.Access.AdminAllow, "operatorAllow": s.cfg.Access.OperatorAllow,
 		"adminRestricted": s.adminAllow.Restricted(), "operatorRestricted": s.operatorAllow.Restricted(),
-		"network": map[string]any{"include": ns.Include, "exclude": ns.Exclude, "restrictListening": ns.RestrictListening}, "networkPinned": s.pinnedNetwork, "addresses": s.networkAddresses(),
+		"network": map[string]any{"include": ns.Include, "exclude": ns.Exclude, "restrictListening": ns.RestrictListening}, "networkPinned": s.pinnedNetwork, "addresses": s.networkAddresses(r),
 	})
 }
 

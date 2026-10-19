@@ -1038,7 +1038,7 @@
       if (!st.ok) return;
       const net0 = st.data.network || {};
       const shownList = h('ul', { class: 'addrlist' });
-      const paintList = (addrs) => shownList.replaceChildren(...(addrs.length ? addrs.map((a) => h('li', { class: a.shown ? '' : 'off' }, h('b', {}, a.ip), ' ', a.interface ? '(' + a.interface + ') ' : '', a.shown ? __('shown') : __('hidden'))) : [h('li', {}, __('No network address was found.'))]));
+      const paintList = (addrs) => shownList.replaceChildren(...(addrs.length ? addrs.map((a) => h('li', { class: a.shown ? '' : 'off' }, h('b', {}, a.ip), ' ', a.interface ? '(' + a.interface + ') ' : '', a.shown ? __('shown') : __('hidden'), a.current ? ' — ' + __('you are using Setup through this one') : '')) : [h('li', {}, __('No network address was found.'))]));
       paintList(st.data.addresses || []);
       const inc = h('textarea', { rows: '3', spellcheck: 'false', 'aria-label': __('Show only these'), placeholder: '192.168.1.0/24' }); inc.value = (net0.include || []).join('\n');
       const exc = h('textarea', { rows: '3', spellcheck: 'false', 'aria-label': __('Never show these'), placeholder: '192.168.56.0/24' }); exc.value = (net0.exclude || []).join('\n');

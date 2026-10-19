@@ -44,15 +44,28 @@ type addressInfo struct {
 	IP        string `json:"ip"`
 	Interface string `json:"interface"`
 	Shown     bool   `json:"shown"`
+	Current   bool   `json:"current"` // the address this request arrived on
+}
+
+// currentAddress is the address of this computer that the request came in on; nil for this computer itself
+// (localhost) or when it cannot be told.
+func currentAddress(r *http.Request) net.IP {
+	if la, ok := r.Context().Value(http.LocalAddrContextKey).(net.Addr); ok {
+		if ta, ok := la.(*net.TCPAddr); ok && ta.IP != nil && !ta.IP.IsLoopback() {
+			return ta.IP
+		}
+	}
+	return nil
 }
 
 // networkAddresses lists every address of this computer's working network interfaces, and whether the rules offer it.
-func (s *Server) networkAddresses() []addressInfo {
+func (s *Server) networkAddresses(r *http.Request) []addressInfo {
 	n := s.networkSettings()
 	f, _ := config.NewAddressFilter(n.Include, n.Exclude)
+	cur := currentAddress(r)
 	out := []addressInfo{}
 	for _, a := range netinfo.AllAddresses() {
-		out = append(out, addressInfo{IP: a.IP.String(), Interface: a.Interface, Shown: f.Allows(a.IP)})
+		out = append(out, addressInfo{IP: a.IP.String(), Interface: a.Interface, Shown: f.Allows(a.IP), Current: cur != nil && cur.Equal(a.IP)})
 	}
 	return out
 }
@@ -95,15 +108,12 @@ func (s *Server) setNetwork(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, http.StatusBadRequest, "A line in Never show these is not an address, a network like 192.168.1.0/24 or the word private.")
 		return
 	}
-	// Do not lock out the person who is changing it: refuse a restriction that would cut off the address this
-	// very request arrived on (this computer itself, at localhost, is never cut off).
-	if req.RestrictListening {
-		f, _ := config.NewAddressFilter(include, exclude)
-		if la, ok := r.Context().Value(http.LocalAddrContextKey).(net.Addr); ok {
-			if ta, ok := la.(*net.TCPAddr); ok && !ta.IP.IsLoopback() && !f.Allows(ta.IP) {
-				writeErr(w, http.StatusConflict, fmt.Sprintf("You are using Setup through %s, which this would refuse. Open Setup on this computer (at localhost) or through an address that stays shown, then try again.", ta.IP))
-				return
-			}
+	// Do not cut off the address Setup is being used through: refuse a rule that would hide it, or (with the
+	// restriction) refuse connections to it. This computer itself (localhost) has no address to protect.
+	if cur := currentAddress(r); cur != nil {
+		if f, _ := config.NewAddressFilter(include, exclude); !f.Allows(cur) {
+			writeErr(w, http.StatusConflict, fmt.Sprintf("You are using Setup through %s, which this would turn off. Open Setup on this computer (at localhost) or through an address that stays on, then try again.", cur))
+			return
 		}
 	}
 	saved := false
@@ -116,7 +126,7 @@ func (s *Server) setNetwork(w http.ResponseWriter, r *http.Request) {
 	}
 	s.ApplyNetwork(include, exclude, req.RestrictListening)
 	logx.Infof("network addresses changed in Setup: only %v, never %v, refuse connections to the others: %v", include, exclude, req.RestrictListening)
-	resp := map[string]any{"saved": saved, "addresses": s.networkAddresses()}
+	resp := map[string]any{"saved": saved, "addresses": s.networkAddresses(r)}
 	if s.pinnedNetwork {
 		resp["note"] = "This copy was started with --network-include or --network-exclude (or the matching OPEN_CAPTION_ variable), which overrides the saved setting each time it starts. The new choice applies now, and lasts until the program is restarted."
 	}
