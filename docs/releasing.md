@@ -50,7 +50,7 @@ To change what is in the download, edit the `files:` list in `.goreleaser.yaml`;
 
 ## Releasing from your own computer
 
-Useful when GitHub Actions is not available (for example the billing limit on a private repository):
+Useful when GitHub Actions is not available (for example its usage limit is reached, or the workflow is broken):
 
 ```
 git tag v1.2.3

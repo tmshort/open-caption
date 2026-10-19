@@ -67,7 +67,7 @@ git clone https://github.com/tmshort/open-caption.git
 cd open-caption
 ```
 
-The repository may be private. If git asks you to sign in, use your GitHub user name and a *personal access token* (GitHub → Settings → Developer settings → Personal access tokens) as the password. Alternatively, on the repository's page choose **Code → Download ZIP**, unzip it, and `cd` into the folder.
+If you cannot use git, choose **Code → Download ZIP** on the repository's page instead, unzip it, and `cd` into the folder.
 
 ## 5. Build and run
 

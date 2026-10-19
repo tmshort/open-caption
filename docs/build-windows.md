@@ -53,7 +53,7 @@ git clone https://github.com/tmshort/open-caption.git
 cd open-caption
 ```
 
-The repository may be private. If a sign-in window appears, sign in to GitHub with the account that was given access. Alternatively, on the repository's page choose **Code → Download ZIP**, extract it, and open PowerShell in the extracted folder.
+If you cannot use git, choose **Code → Download ZIP** on the repository's page instead, extract it, and open PowerShell in the extracted folder.
 
 ## 4. Build
 
