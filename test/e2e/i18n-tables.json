@@ -96,6 +96,8 @@
  "settings sections": [
   "About this copy",
   "Standby screen",
+  "Network",
+  "Network addresses",
   "Network name",
   "Log detail",
   "Change passwords"

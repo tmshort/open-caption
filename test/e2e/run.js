@@ -395,11 +395,11 @@ async function main() {
     const guard = await open(); await guard.goto(B + '/admin'); await guard.waitForSelector('#pw'); await guard.type('#pw', ADMIN); await guard.keyboard.press('Enter'); await guard.waitForSelector('#steps button');
     await click(guard, 'Settings'); await sleep(600);
     const tab = async (id) => { await guard.evaluate((i) => document.getElementById('settab-' + i).click(), id); await sleep(150); };
-    check('Settings has three tabs, with Close in view', await guard.evaluate(() => { const t = [...document.querySelectorAll('#dlg [role=tab]')].map((x) => x.textContent); const c = document.getElementById('dlgok').getBoundingClientRect(); return t.join('|') === 'Audience screen|Security|About' && c.bottom <= innerHeight && c.top >= 0; }));
+    check('Settings has four tabs, with Close in view', await guard.evaluate(() => { const t = [...document.querySelectorAll('#dlg [role=tab]')].map((x) => x.textContent); const c = document.getElementById('dlgok').getBoundingClientRect(); return t.join('|') === 'Audience screen|Network|Security|About' && c.bottom <= innerHeight && c.top >= 0; }));
     await tab('abt');
     {
       const sizes = [];
-      for (const id of ['aud', 'sec', 'abt']) { await tab(id); sizes.push(await guard.evaluate(() => { const b = document.getElementById('dlgbody'); return { dlg: Math.round(document.getElementById('dlg').getBoundingClientRect().height), scrolls: b.scrollHeight > b.clientHeight + 1 }; })); }
+      for (const id of ['aud', 'net', 'sec', 'abt']) { await tab(id); sizes.push(await guard.evaluate(() => { const b = document.getElementById('dlgbody'); return { dlg: Math.round(document.getElementById('dlg').getBoundingClientRect().height), scrolls: b.scrollHeight > b.clientHeight + 1 }; })); }
       check('the Settings window is as tall as its tallest tab, so no tab scrolls and it never changes size', sizes.every((z) => !z.scrolls) && sizes.every((z) => z.dlg === sizes[0].dlg), sizes);
     }
     await guard.focus('#settab-abt'); await guard.keyboard.press('ArrowLeft'); await sleep(150);
@@ -563,35 +563,36 @@ async function main() {
     check('buttons that are links (Open the Run page, Print a QR sign) are not underlined', await arch.evaluate(() => [...document.querySelectorAll('#panel a.btn')].length >= 1 && [...document.querySelectorAll('#panel a.btn')].every((e) => getComputedStyle(e).textDecorationLine === 'none')));
     check('the Print QR sign button sits right beside Copy address', await arch.evaluate(() => { const c = [...document.querySelectorAll('#panel button')].find((b) => b.textContent === 'Copy address'), p = [...document.querySelectorAll('#panel a.btn')].find((b) => /QR sign/.test(b.textContent)); return !!c && !!p && p.getBoundingClientRect().left - c.getBoundingClientRect().right < 40; }));
     check('the projector link is a numeric address with its own radio button, so it can be copied', await arch.evaluate(() => { const r = document.querySelector('.projrow input[type=radio]'), a = document.querySelector('.projrow a'); return !!r && !!a && /display=projector/.test(a.href) && !/\.local/.test(a.href); }));
-    // REQ-069: choosing which addresses are offered
+    // REQ-069: choosing which addresses are offered (a setting of this computer: Settings > Network, not the Run step)
     {
       const shownIps = () => arch.evaluate(() => [...document.querySelectorAll('.urls a')].map((a) => { try { return new URL(a.href).hostname; } catch (e) { return ''; } }).filter((x) => /^\d+\.\d+\.\d+\.\d+$/.test(x) && x !== '127.0.0.1'));
       const ips = await shownIps();
+      const netOpen = async () => { await arch.evaluate(() => [...document.querySelectorAll('#panel a')].find((a) => /Choose which addresses are offered/.test(a.textContent)).click()); await arch.waitForFunction(() => document.getElementById('dlg').hasAttribute('open') && document.querySelector('#setpanel-net:not(.inactive) .addrlist li')); };
+      const netApply = async () => { await arch.evaluate(() => [...document.querySelectorAll('#setpanel-net button')].find((b) => b.textContent === 'Apply').click()); await sleep(T(700)); };
+      const netClose = async () => { await arch.click('#dlgok'); await sleep(T(900)); };
+      check('the Run step has no address controls of its own, only a link to Settings > Network', await arch.evaluate(() => ![...document.querySelectorAll('#panel button')].some((b) => /Choose addresses/.test(b.textContent)) && [...document.querySelectorAll('#panel a')].some((a) => /Choose which addresses are offered/.test(a.textContent))));
       if (ips.length) {
-        await click(arch, 'Choose addresses…'); await arch.waitForFunction(() => document.getElementById('dlg').hasAttribute('open') && document.querySelector('.addrlist li'));
-        check('Choose addresses lists this computer\'s addresses, each shown or hidden', await arch.evaluate((ip) => [...document.querySelectorAll('.addrlist li')].some((li) => li.textContent.includes(ip) && /shown/.test(li.textContent)), ips[0]));
+        await netOpen();
+        check('the link opens Settings on the Network tab, which lists this computer\'s addresses, each shown or hidden', await arch.evaluate((ip) => [...document.querySelectorAll('.addrlist li')].some((li) => li.textContent.includes(ip) && /shown/.test(li.textContent)) && document.getElementById('settab-net').getAttribute('aria-selected') === 'true', ips[0]));
         await arch.evaluate((ip) => { document.querySelector('textarea[aria-label="Never show these"]').value = ip; }, ips[0]);
-        await arch.click('#dlgok'); await sleep(T(900));
-        check('an address under Never show these leaves the address list and the QR code', !(await shownIps()).includes(ips[0]));
-        await click(arch, 'Choose addresses…'); await arch.waitForFunction(() => document.getElementById('dlg').hasAttribute('open') && document.querySelector('.addrlist li'));
-        check('the window shows it as hidden', await arch.evaluate((ip) => [...document.querySelectorAll('.addrlist li')].some((li) => li.textContent.includes(ip) && /hidden/.test(li.textContent)), ips[0]));
+        await netApply();
+        check('the list in Settings says it is hidden', await arch.evaluate((ip) => [...document.querySelectorAll('.addrlist li')].some((li) => li.textContent.includes(ip) && /hidden/.test(li.textContent)), ips[0]));
+        await netClose();
+        check('an address under Never show these leaves the Run step\'s address list and QR code once Settings is closed', !(await shownIps()).includes(ips[0]));
+        await netOpen();
         await arch.evaluate(() => { document.querySelector('textarea[aria-label="Show only these"]').value = 'nonsense'; });
-        await arch.click('#dlgok'); await arch.waitForFunction(() => !document.querySelector('.addrbox .check.warn').hidden);
-        check('a line that is not an address is explained in the window, which stays open', await arch.evaluate(() => document.getElementById('dlg').hasAttribute('open') && /not an address/.test(document.querySelector('.addrbox .check.warn').textContent)));
-        check('the window has a box to prefer an adapter when two are on one network, empty by default', await arch.evaluate(() => { const t = document.querySelector('textarea[aria-label="Prefer these adapters"]'); return !!t && t.value === ''; }));
+        await netApply();
+        check('a line that is not an address is explained under the boxes', await arch.evaluate(() => !document.querySelector('#setpanel-net .check.warn').hidden && /not an address/.test(document.querySelector('#setpanel-net .check.warn').textContent)));
+        check('there is a box to prefer an adapter when two are on one network, empty by default', await arch.evaluate(() => { const t = document.querySelector('textarea[aria-label="Prefer these adapters"]'); return !!t && t.value === ''; }));
         await arch.evaluate(() => { document.querySelector('textarea[aria-label="Prefer these adapters"]').value = 'Ethernet'; });
-        check('the window has a box to refuse connections to the addresses that are not shown, off by default', await arch.evaluate(() => { const b = document.querySelector('.addrrestrict input'); return !!b && !b.checked; }));
-        await arch.evaluate(() => { document.querySelector('.addrrestrict input').click(); });
-        await arch.evaluate(() => { document.querySelector('textarea[aria-label="Show only these"]').value = ''; document.querySelector('textarea[aria-label="Never show these"]').value = ''; });
-        await arch.click('#dlgok'); await sleep(T(900));
-        await click(arch, 'Choose addresses…'); await arch.waitForFunction(() => document.getElementById('dlg').hasAttribute('open') && document.querySelector('.addrlist li'));
-        check('the preferred adapter is kept when the window is opened again', await arch.evaluate(() => document.querySelector('textarea[aria-label="Prefer these adapters"]').value === 'Ethernet'));
-        await arch.evaluate(() => { document.querySelector('textarea[aria-label="Prefer these adapters"]').value = ''; });
-        check('the box stays ticked when the window is opened again', await arch.evaluate(() => document.querySelector('.addrrestrict input').checked));
-        await arch.evaluate(() => { document.querySelector('.addrrestrict input').click(); });
-        await arch.evaluate(() => { document.querySelector('textarea[aria-label="Show only these"]').value = ''; document.querySelector('textarea[aria-label="Never show these"]').value = ''; });
-        await arch.click('#dlgok'); await sleep(T(900));
-        check('emptying both boxes offers every address again', (await shownIps()).includes(ips[0]));
+        check('there is a box to refuse connections to the addresses that are not shown, off by default', await arch.evaluate(() => { const b = document.querySelector('.addrrestrict input'); return !!b && !b.checked; }));
+        await arch.evaluate(() => { document.querySelector('.addrrestrict input').click(); document.querySelector('textarea[aria-label="Show only these"]').value = ''; document.querySelector('textarea[aria-label="Never show these"]').value = ''; });
+        await netApply(); await netClose();
+        await netOpen();
+        check('the preferred adapter and the ticked box are kept when Settings is opened again', await arch.evaluate(() => document.querySelector('textarea[aria-label="Prefer these adapters"]').value === 'Ethernet' && document.querySelector('.addrrestrict input').checked));
+        await arch.evaluate(() => { document.querySelector('textarea[aria-label="Prefer these adapters"]').value = ''; document.querySelector('.addrrestrict input').click(); });
+        await netApply(); await netClose();
+        check('emptying the boxes offers every address again', (await shownIps()).includes(ips[0]));
       }
     }
     await step(arch, 'Show file'); await sleep(T(600));

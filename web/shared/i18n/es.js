@@ -1,5 +1,10 @@
 // Spanish translations of Setup, the operator page and Help (see web/shared/i18n.js). The key is the English text.
 OCI18n.add("es", {
+ "Network": "Red",
+ "Network addresses": "Direcciones de red",
+ "Addresses changed": "Direcciones cambiadas",
+ "Two networks, or the wrong address?": "¿Dos redes, o la dirección equivocada?",
+ "Choose which addresses are offered": "Elegir qué direcciones se ofrecen",
  "Prefer these adapters": "Preferir estos adaptadores",
  "Use this one": "Usar esta",
  "Prefer these adapters (one per line: Ethernet, Wi-Fi or an adapter name; the first that matches is used when two are on the same network)": "Preferir estos adaptadores (uno por línea: Ethernet, Wi-Fi o el nombre de un adaptador; se usa el primero que coincida cuando dos están en la misma red)",
@@ -20,8 +25,6 @@ OCI18n.add("es", {
  "Never show these (one per line)": "No mostrar nunca estas (una por línea)",
  "Each line is an address (192.168.1.50), a network (192.168.1.0/24) or the word private (the usual home and office networks). A line under Never wins.": "Cada línea es una dirección (192.168.1.50), una red (192.168.1.0/24) o la palabra private (las redes domésticas y de oficina habituales). Una línea de «No mostrar nunca» prevalece.",
  "This copy was started with --network-include or --network-exclude, which override these boxes each time it starts.": "Esta copia se inició con --network-include o --network-exclude, que anulan estas casillas cada vez que se inicia.",
- "Choose addresses": "Elegir direcciones",
- "Choose addresses…": "Elegir direcciones…",
  "Use at most 50 lines in each box.": "Use como máximo 50 líneas en cada casilla.",
  "A line in Show only these is not an address, a network like 192.168.1.0/24 or the word private.": "Una línea de «Mostrar solo estas» no es una dirección, una red como 192.168.1.0/24 ni la palabra private.",
  "A line in Never show these is not an address, a network like 192.168.1.0/24 or the word private.": "Una línea de «No mostrar nunca estas» no es una dirección, una red como 192.168.1.0/24 ni la palabra private.",

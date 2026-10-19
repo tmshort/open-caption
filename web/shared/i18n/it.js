@@ -1,5 +1,10 @@
 // Italian translations of Setup, the operator page and Help (see web/shared/i18n.js). The key is the English text.
 OCI18n.add("it", {
+ "Network": "Rete",
+ "Network addresses": "Indirizzi di rete",
+ "Addresses changed": "Indirizzi cambiati",
+ "Two networks, or the wrong address?": "Due reti, o l'indirizzo sbagliato?",
+ "Choose which addresses are offered": "Scegliere quali indirizzi vengono offerti",
  "Prefer these adapters": "Preferisci questi adattatori",
  "Use this one": "Usa questo",
  "Prefer these adapters (one per line: Ethernet, Wi-Fi or an adapter name; the first that matches is used when two are on the same network)": "Preferisci questi adattatori (uno per riga: Ethernet, Wi-Fi o il nome di un adattatore; si usa il primo che corrisponde quando due sono sulla stessa rete)",
@@ -20,8 +25,6 @@ OCI18n.add("it", {
  "Never show these (one per line)": "Non mostrare mai questi (uno per riga)",
  "Each line is an address (192.168.1.50), a network (192.168.1.0/24) or the word private (the usual home and office networks). A line under Never wins.": "Ogni riga è un indirizzo (192.168.1.50), una rete (192.168.1.0/24) o la parola private (le solite reti domestiche e d’ufficio). Una riga sotto «Non mostrare mai» ha la precedenza.",
  "This copy was started with --network-include or --network-exclude, which override these boxes each time it starts.": "Questa copia è stata avviata con --network-include o --network-exclude, che sostituiscono queste caselle a ogni avvio.",
- "Choose addresses": "Scegli gli indirizzi",
- "Choose addresses…": "Scegli gli indirizzi…",
  "Use at most 50 lines in each box.": "Usa al massimo 50 righe in ogni casella.",
  "A line in Show only these is not an address, a network like 192.168.1.0/24 or the word private.": "Una riga di «Mostra solo questi» non è un indirizzo, né una rete come 192.168.1.0/24, né la parola private.",
  "A line in Never show these is not an address, a network like 192.168.1.0/24 or the word private.": "Una riga di «Non mostrare mai questi» non è un indirizzo, né una rete come 192.168.1.0/24, né la parola private.",

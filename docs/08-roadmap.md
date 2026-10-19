@@ -61,7 +61,7 @@ Each milestone is shippable and ends with a demoable result. Tasks reference req
 - [x] Multiple languages (REQ-026): per-language engines and hubs driven in lockstep, structure checking, language negotiation and menu, Setup language tabs, sample Spanish translation
 
 - [x] mDNS: the server announces itself as `open-caption.local` (or a name chosen in Setup)
-- [x] Several network addresses (REQ-069): only connected adapters are offered, the main connection first; `network.include` / `network.exclude`, `--network-include/--network-exclude` and Setup → Run → Choose addresses… choose which are offered; `network.restrict_listening` also refuses connections to the others; one address per network, Ethernet or Wi-Fi marked, `network.prefer`
+- [x] Several network addresses (REQ-069): only connected adapters are offered, the main connection first; `network.include` / `network.exclude`, `--network-include/--network-exclude` and Setup → Settings → Network choose which are offered; `network.restrict_listening` also refuses connections to the others; one address per network, Ethernet or Wi-Fi marked, `network.prefer`
 
 - [x] Automatic HTTPS certificates (REQ-068): ACME DNS-01 with build-time choice of DNS providers, credentials from the environment/file/config, Setup status and renew-now, a Pebble end-to-end test (doc 10)
 - [x] A supplied HTTPS certificate is watched and a renewed one used without a restart

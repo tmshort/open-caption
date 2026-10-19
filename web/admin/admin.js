@@ -127,9 +127,10 @@
   document.addEventListener('keydown', (e) => { if (e.key === 'F1') { e.preventDefault(); openHelp(); } });
 
   // ---- settings: passwords and where things are ----
-  async function openSettings() {
+  async function openSettings(openTab) {
     const r = await api('GET', '/api/admin/settings'); if (!r.ok) return fail(r);
     const s = r.data;
+    let netChanged = false;
     const adminPw = h('input', { type: 'password', autocomplete: 'new-password', 'aria-label': __('New admin password'), minlength: '6' });
     const opPw = h('input', { type: 'password', autocomplete: 'new-password', 'aria-label': __('New operator password'), minlength: '6' });
     const shown = h('div', { class: 'hint', role: 'status' });
@@ -170,6 +171,39 @@
     } }, ...[['error', 'Errors only'], ['warn', 'Problems (warnings and errors)'], ['info', 'Normal (events, sign-ins)'], ['debug', 'Debug (every request)']].map(([v, t]) => h('option', { value: v }, __(t))));
     logSelect.value = s.logLevel;
     const sec = (title, ...kids) => h('section', { class: 'setsec' }, h('h3', {}, __(title)), ...kids);
+    // Which of this computer's addresses are offered to the audience (network.* in config.yaml): a setting of this computer,
+    // not of a show, so it lives here and not on the Run step.
+    const net0 = s.network || {};
+    const shownList = h('ul', { class: 'addrlist' });
+    const pref = h('textarea', { rows: '3', spellcheck: 'false', 'aria-label': __('Prefer these adapters'), placeholder: 'Ethernet' }); pref.value = (net0.prefer || []).join('\n');
+    const kindName = (k) => k === 'wifi' ? __('Wi-Fi') : k === 'ethernet' ? __('Ethernet') : '';
+    const stateText = (a) => a.shown ? __('shown') : a.hidden === 'network' ? __('not used: same network as {ip}', { ip: a.instead }) : __('hidden');
+    const paintList = (addrs) => shownList.replaceChildren(...(addrs.length ? addrs.map((a) => h('li', { class: a.shown ? '' : 'off' }, h('b', {}, a.ip), ' ', [kindName(a.kind), a.interface].filter(Boolean).length ? '(' + [kindName(a.kind), a.interface].filter(Boolean).join(', ') + ') ' : '', stateText(a), a.current ? ' — ' + __('you are using Setup through this one') : '', a.hidden === 'network' && a.interface ? [' ', h('button', { type: 'button', class: 'quiet', onclick: () => { pref.value = [a.interface].concat(pref.value.split('\n').map((x) => x.trim()).filter((x) => x && x !== a.interface)).join('\n'); pref.focus(); } }, __('Use this one'))] : '')) : [h('li', {}, __('No network address was found.'))]));
+    paintList(s.addresses || []);
+    const inc = h('textarea', { rows: '3', spellcheck: 'false', 'aria-label': __('Show only these'), placeholder: '192.168.1.0/24' }); inc.value = (net0.include || []).join('\n');
+    const exc = h('textarea', { rows: '3', spellcheck: 'false', 'aria-label': __('Never show these'), placeholder: '192.168.56.0/24' }); exc.value = (net0.exclude || []).join('\n');
+    const restrict = h('input', { type: 'checkbox' }); restrict.checked = !!net0.restrictListening;
+    const netMsg = h('div', { class: 'check warn', role: 'alert', hidden: '' });
+    const applyNet = h('button', { type: 'button', onclick: async () => {
+      netMsg.hidden = true;
+      const lines = (t) => t.value.split('\n').map((x) => x.trim()).filter(Boolean);
+      const x = await api('PUT', '/api/admin/settings/network', { include: lines(inc), exclude: lines(exc), prefer: lines(pref), restrictListening: restrict.checked });
+      if (!x.ok) { netMsg.textContent = __((x.data && x.data.error) || 'Could not change the addresses'); netMsg.hidden = false; return; }
+      paintList(x.data.addresses || []); netChanged = true; toast(__('Addresses changed'));
+    } }, __('Apply'));
+    const networkSec = sec('Network addresses',
+      h('div', { class: 'addrbox' },
+        h('p', { class: 'hint' }, __('These are the addresses this computer has now. The audience is given the ones marked shown: in the address list, the QR code, the HTTPS certificate and the .local name. When two adapters are on the same network (a cable and Wi-Fi), only one is used: the main connection, else the wired one.')),
+        shownList,
+        h('div', { class: 'addrboxes' },
+          h('label', { class: 'addrlabel' }, __('Show only these (one per line; leave empty for all)'), inc),
+          h('label', { class: 'addrlabel' }, __('Never show these (one per line)'), exc),
+          h('label', { class: 'addrlabel' }, __('Prefer these adapters (one per line: Ethernet, Wi-Fi or an adapter name; the first that matches is used when two are on the same network)'), pref)),
+        h('label', { class: 'row addrrestrict' }, restrict, __('Also refuse connections to the addresses that are not shown')),
+        h('p', { class: 'hint' }, __('Connections to this computer itself are always accepted. If a phone then cannot reach the program, clear this box.')),
+        h('p', { class: 'hint' }, __('Each line is an address (192.168.1.50), a network (192.168.1.0/24) or the word private (the usual home and office networks). A line under Never wins.')),
+        s.networkPinned ? h('p', { class: 'hint' }, __('This copy was started with --network-include or --network-exclude, which override these boxes each time it starts.')) : null,
+        netMsg, h('div', { class: 'row' }, applyNet)));
     // The HTTPS certificate: where it comes from and, for an automatic one, its state (docs/10). Filled in once the program answers.
     const certBox = h('div', { class: 'certbox' });
     const paintCert = (c) => {
@@ -203,6 +237,7 @@
           h('div', { class: 'row' }, sbImg, sbNone), h('div', { class: 'row' }, sbChoose, sbFile, sbRemove, h('span', { class: 'hint' }, __('PNG, JPEG, GIF or WebP, up to 2 MB'))),
           h('label', { class: 'field' }, h('span', {}, __('Message (optional; empty uses “Captions will begin shortly” in each viewer’s language)')), sbMsg), h('div', { class: 'row' }, sbSave)),
         ]],
+      ['net', 'Network', [networkSec]],
       ['sec', 'Security', [
           !s.adminRestricted && !s.httpsAddr ? h('p', { class: 'check warn' }, __('Anyone on this WiFi can try to sign in to Setup, and passwords travel unencrypted over plain http. To limit it, set access: admin_allow in the settings file (for example [localhost]); see the usage guide.')) : null,
         sec('Change passwords',
@@ -243,9 +278,11 @@
     const body = h('div', { class: 'settingsbody' }, tabs, h('div', { class: 'tabpanels' }, ...panels));
     let first = 0;
     try { const last = localStorage.getItem('oc.settings.tab'); const k = tabDefs.findIndex((t) => t[0] === last); if (k >= 0) first = k; } catch (e) { /* storage unavailable */ }
+    if (openTab) { const k = tabDefs.findIndex((t) => t[0] === openTab); if (k >= 0) first = k; }
     pick(first, false);
     // Each section above has its own button (or applies as soon as you choose); this one only closes the window.
     await ask(__('Settings'), body, __('Close'), { noCancel: true, wide: true, tabbed: true });
+    if (netChanged && A.step === 'golive') render(); // the Run step lists the addresses that are offered
   }
   // The program's recent log (the last 1000 lines it keeps in memory), so a problem can be looked at without
   // opening the log file or the support bundle.
@@ -274,7 +311,7 @@
     await ask(__('Recent log'), body, __('Close'), { noCancel: true, wide: true });
     clearInterval(timer);
   }
-  $('settingsbtn').addEventListener('click', openSettings);
+  $('settingsbtn').addEventListener('click', () => openSettings());
 
   // ---- login ----
   function showLogin() { $('app').hidden = true; $('login').hidden = false; $('pw').focus(); }
@@ -1032,41 +1069,6 @@
         msg.textContent = err; msg.hidden = false;
       }
     }
-    // Which of this computer's addresses are offered (network.include / network.exclude in config.yaml).
-    async function chooseAddresses() {
-      const st = await api('GET', '/api/admin/settings');
-      if (!st.ok) return;
-      const net0 = st.data.network || {};
-      const shownList = h('ul', { class: 'addrlist' });
-      const pref = h('textarea', { rows: '2', spellcheck: 'false', 'aria-label': __('Prefer these adapters'), placeholder: 'Ethernet' }); pref.value = (net0.prefer || []).join('\n');
-      const kindName = (k) => k === 'wifi' ? __('Wi-Fi') : k === 'ethernet' ? __('Ethernet') : '';
-      const stateText = (a) => a.shown ? __('shown') : a.hidden === 'network' ? __('not used: same network as {ip}', { ip: a.instead }) : __('hidden');
-      const paintList = (addrs) => shownList.replaceChildren(...(addrs.length ? addrs.map((a) => h('li', { class: a.shown ? '' : 'off' }, h('b', {}, a.ip), ' ', [kindName(a.kind), a.interface].filter(Boolean).length ? '(' + [kindName(a.kind), a.interface].filter(Boolean).join(', ') + ') ' : '', stateText(a), a.current ? ' — ' + __('you are using Setup through this one') : '', a.hidden === 'network' && a.interface ? [' ', h('button', { class: 'quiet', onclick: () => { pref.value = [a.interface].concat(pref.value.split('\n').map((x) => x.trim()).filter((x) => x && x !== a.interface)).join('\n'); pref.focus(); } }, __('Use this one'))] : '')) : [h('li', {}, __('No network address was found.'))]));
-      paintList(st.data.addresses || []);
-      const inc = h('textarea', { rows: '3', spellcheck: 'false', 'aria-label': __('Show only these'), placeholder: '192.168.1.0/24' }); inc.value = (net0.include || []).join('\n');
-      const exc = h('textarea', { rows: '3', spellcheck: 'false', 'aria-label': __('Never show these'), placeholder: '192.168.56.0/24' }); exc.value = (net0.exclude || []).join('\n');
-      const restrict = h('input', { type: 'checkbox' }); restrict.checked = !!net0.restrictListening;
-      const msg = h('div', { class: 'check warn', role: 'alert', hidden: '' });
-      const body = h('div', { class: 'addrbox' },
-        h('p', { class: 'hint' }, __('These are the addresses this computer has now. The audience is given the ones marked shown: in the address list, the QR code, the HTTPS certificate and the .local name. When two adapters are on the same network (a cable and Wi-Fi), only one is used: the main connection, else the wired one.')),
-        shownList,
-        h('label', { class: 'addrlabel' }, __('Show only these (one per line; leave empty for all)'), inc),
-        h('label', { class: 'addrlabel' }, __('Never show these (one per line)'), exc),
-        h('label', { class: 'addrlabel' }, __('Prefer these adapters (one per line: Ethernet, Wi-Fi or an adapter name; the first that matches is used when two are on the same network)'), pref),
-        h('label', { class: 'row addrrestrict' }, restrict, __('Also refuse connections to the addresses that are not shown')),
-        h('p', { class: 'hint' }, __('Connections to this computer itself are always accepted. If a phone then cannot reach the program, clear this box.')),
-        h('p', { class: 'hint' }, __('Each line is an address (192.168.1.50), a network (192.168.1.0/24) or the word private (the usual home and office networks). A line under Never wins.')),
-        st.data.networkPinned ? h('p', { class: 'hint' }, __('This copy was started with --network-include or --network-exclude, which override these boxes each time it starts.')) : null,
-        msg);
-      for (;;) {
-        if (!await ask(__('Choose addresses'), body, __('Apply'))) return;
-        msg.hidden = true;
-        const lines = (t) => t.value.split('\n').map((x) => x.trim()).filter(Boolean);
-        const r = await api('PUT', '/api/admin/settings/network', { include: lines(inc), exclude: lines(exc), prefer: lines(pref), restrictListening: restrict.checked });
-        if (r.ok) { render(); return; }
-        msg.textContent = __((r.data && r.data.error) || 'Could not change the addresses'); msg.hidden = false;
-      }
-    }
     const radio = (u) => h('input', { type: 'radio', name: 'u', checked: u.url === chosen, onchange: () => { chosen = u.url; paint(); } });
     const link = (url) => h('a', { href: url, target: '_blank', rel: 'noopener', title: __('Opens in a new window') }, url);
     const nameU = net.data.urls.find((u) => u.name);
@@ -1095,11 +1097,11 @@
     p.append(h('h2', {}, __('Run')), checks,
       h('div', { class: 'card' }, h('h3', {}, __('Tell the audience this address')), big,
         h('div', { class: 'row' }, h('button', { onclick: async () => { try { await navigator.clipboard.writeText(chosen); toast(__('Copied')); } catch (e) { toast(__('Select the address and copy it')); } } }, __('Copy address')),
-          h('a', { class: 'btn', href: '/admin?print=qr&url=' + encodeURIComponent(chosen || ''), target: '_blank', rel: 'noopener' }, __('Print a QR sign for the lobby')),
-          h('button', { class: 'quiet', onclick: chooseAddresses }, __('Choose addresses…'))),
+          h('a', { class: 'btn', href: '/admin?print=qr&url=' + encodeURIComponent(chosen || ''), target: '_blank', rel: 'noopener' }, __('Print a QR sign for the lobby'))),
         h('div', { class: 'row qrrow' }, qrBox, list),
         ...(net.data.warnings || []).map((w) => h('div', { class: 'check warn' }, w)),
-        h('p', { class: 'hint' }, __('Audience devices must be on the same WiFi as this computer. Devices connected right now: '), h('b', { id: 'audcount' }, String(A.audience)))),
+        h('p', { class: 'hint' }, __('Audience devices must be on the same WiFi as this computer. Devices connected right now: '), h('b', { id: 'audcount' }, String(A.audience))),
+        h('p', { class: 'hint' }, __('Two networks, or the wrong address? '), h('a', { href: '#', onclick: (e) => { e.preventDefault(); openSettings('net'); } }, __('Choose which addresses are offered')))),
       h('p', { class: 'hint' }, __('Something not working? '), h('a', { href: '#', onclick: (e) => { e.preventDefault(); openHelp('admin-troubleshooting'); } }, __('Troubleshooting help')), ' · ', h('a', { href: '/api/admin/support-bundle', download: 'support-bundle.zip' }, __('Download a support bundle')), ' · ', h('a', { href: '#', onclick: (e) => { e.preventDefault(); showLog(); } }, __('Recent log…'))));
   }
   // Load a show into standby and go to the operator page. Another show that is on air is only replaced after asking.

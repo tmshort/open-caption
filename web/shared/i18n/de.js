@@ -1,5 +1,10 @@
 // German translations of Setup, the operator page and Help (see web/shared/i18n.js). The key is the English text.
 OCI18n.add("de", {
+ "Network": "Netzwerk",
+ "Network addresses": "Netzwerkadressen",
+ "Addresses changed": "Adressen geändert",
+ "Two networks, or the wrong address?": "Zwei Netzwerke, oder die falsche Adresse?",
+ "Choose which addresses are offered": "Wählen, welche Adressen angeboten werden",
  "Prefer these adapters": "Diese Adapter bevorzugen",
  "Use this one": "Diese verwenden",
  "Prefer these adapters (one per line: Ethernet, Wi-Fi or an adapter name; the first that matches is used when two are on the same network)": "Diese Adapter bevorzugen (einer pro Zeile: Ethernet, WLAN oder der Name eines Adapters; der erste Treffer wird verwendet, wenn zwei im selben Netzwerk sind)",
@@ -20,8 +25,6 @@ OCI18n.add("de", {
  "Never show these (one per line)": "Diese nie anzeigen (eine pro Zeile)",
  "Each line is an address (192.168.1.50), a network (192.168.1.0/24) or the word private (the usual home and office networks). A line under Never wins.": "Jede Zeile ist eine Adresse (192.168.1.50), ein Netzwerk (192.168.1.0/24) oder das Wort private (die üblichen privaten Heim- und Büronetze). Eine Zeile unter „Diese nie anzeigen“ hat Vorrang.",
  "This copy was started with --network-include or --network-exclude, which override these boxes each time it starts.": "Diese Kopie wurde mit --network-include oder --network-exclude gestartet; beide überschreiben diese Felder bei jedem Start.",
- "Choose addresses": "Adressen auswählen",
- "Choose addresses…": "Adressen auswählen…",
  "Use at most 50 lines in each box.": "Verwenden Sie höchstens 50 Zeilen in jedem Feld.",
  "A line in Show only these is not an address, a network like 192.168.1.0/24 or the word private.": "Eine Zeile unter „Nur diese anzeigen“ ist weder eine Adresse noch ein Netzwerk wie 192.168.1.0/24 noch das Wort private.",
  "A line in Never show these is not an address, a network like 192.168.1.0/24 or the word private.": "Eine Zeile unter „Diese nie anzeigen“ ist weder eine Adresse noch ein Netzwerk wie 192.168.1.0/24 noch das Wort private.",

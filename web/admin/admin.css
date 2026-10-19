@@ -108,6 +108,7 @@ pre.diff .d-add { background: #1f6f3a33; } pre.diff .d-del { background: #b32626
 .setsec { margin: 0 0 1.2rem; padding-top: .2rem; }
 .setsec + .setsec { border-top: 1px solid var(--line); padding-top: 1rem; }
 .setsec h3 { margin: 0 0 .5rem; font-size: 1.05rem; }
+dialog .addrboxes { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 0 .8rem; align-items: start; }
 dialog .addrbox textarea { width: 100%; box-sizing: border-box; font-family: ui-monospace, Menlo, Consolas, monospace; }
 dialog .addrlabel { display: block; margin: .6rem 0; }
 dialog .addrlist { margin: .5rem 0; padding-left: 1.2rem; }

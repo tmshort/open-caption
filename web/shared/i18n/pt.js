@@ -1,5 +1,10 @@
 // Portuguese translations of Setup, the operator page and Help (see web/shared/i18n.js). The key is the English text.
 OCI18n.add("pt", {
+ "Network": "Rede",
+ "Network addresses": "Endereços de rede",
+ "Addresses changed": "Endereços alterados",
+ "Two networks, or the wrong address?": "Duas redes, ou o endereço errado?",
+ "Choose which addresses are offered": "Escolher quais endereços são oferecidos",
  "Prefer these adapters": "Preferir estes adaptadores",
  "Use this one": "Usar este",
  "Prefer these adapters (one per line: Ethernet, Wi-Fi or an adapter name; the first that matches is used when two are on the same network)": "Preferir estes adaptadores (um por linha: Ethernet, Wi-Fi ou o nome de um adaptador; o primeiro que combinar é usado quando dois estão na mesma rede)",
@@ -20,8 +25,6 @@ OCI18n.add("pt", {
  "Never show these (one per line)": "Nunca mostrar estes (um por linha)",
  "Each line is an address (192.168.1.50), a network (192.168.1.0/24) or the word private (the usual home and office networks). A line under Never wins.": "Cada linha é um endereço (192.168.1.50), uma rede (192.168.1.0/24) ou a palavra private (as redes domésticas e de escritório habituais). Uma linha em «Nunca mostrar» tem prioridade.",
  "This copy was started with --network-include or --network-exclude, which override these boxes each time it starts.": "Esta cópia foi iniciada com --network-include ou --network-exclude, que substituem estas caixas a cada arranque.",
- "Choose addresses": "Escolher endereços",
- "Choose addresses…": "Escolher endereços…",
  "Use at most 50 lines in each box.": "Use no máximo 50 linhas em cada caixa.",
  "A line in Show only these is not an address, a network like 192.168.1.0/24 or the word private.": "Uma linha de «Mostrar só estes» não é um endereço, nem uma rede como 192.168.1.0/24, nem a palavra private.",
  "A line in Never show these is not an address, a network like 192.168.1.0/24 or the word private.": "Uma linha de «Nunca mostrar estes» não é um endereço, nem uma rede como 192.168.1.0/24, nem a palavra private.",

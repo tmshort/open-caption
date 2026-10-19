@@ -1174,7 +1174,7 @@ func (s *Server) network(w http.ResponseWriter, r *http.Request) {
 	var warnings []string
 	if len(ips) == 0 {
 		if len(netinfo.AllAddresses()) > 0 {
-			warnings = append(warnings, "Every network address of this computer is hidden by the address settings. Use Choose addresses… to show one.")
+			warnings = append(warnings, "Every network address of this computer is hidden by the address settings. Use Settings, Network to show one.")
 		} else {
 			warnings = append(warnings, "No network address was found. Connect this computer to the venue's network, then reload.")
 		}
