@@ -102,3 +102,19 @@ func TestAutomaticSignInCanBeTurnedOffAndRespectsTheAccessList(t *testing.T) {
 		t.Errorf("not on the access list: %d", w.Code)
 	}
 }
+
+// A script on this computer that keeps no cookies still works on every call, without piling up sessions.
+func TestCookielessLocalCallsAlwaysWorkAndDoNotPileUpSessions(t *testing.T) {
+	s := localServer(t, nil)
+	for i := 0; i < 3*maxAutoSessions; i++ {
+		if w := probe(s, "/api/admin/ping", "127.0.0.1:50000", "localhost", nil); w.Code != 200 {
+			t.Fatalf("call %d: %d", i, w.Code)
+		}
+	}
+	s.auth.mu.Lock()
+	n := len(s.auth.sessions)
+	s.auth.mu.Unlock()
+	if n > maxAutoSessions {
+		t.Errorf("%d sessions kept, want at most %d", n, maxAutoSessions)
+	}
+}
