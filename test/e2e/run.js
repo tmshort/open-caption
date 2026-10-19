@@ -525,6 +525,12 @@ async function main() {
     check('Export that fails on the program says why', /could not be exported/.test(await toastText()), await toastText());
     await arch.evaluate(() => { window.fetch = window.__fetch; });
     await arch.evaluate(() => { const m = document.querySelector('.card.show .menu'); if (!m.hidden) document.querySelector('.card.show button.more').click(); });
+    // A step that cannot reach the program says so (api() no longer leaves a blank panel).
+    await arch.evaluate(() => { window.__fetch2 = window.fetch; window.fetch = () => Promise.reject(new TypeError('offline')); document.getElementById('toast').textContent = ''; document.querySelectorAll('#steps button')[1].click(); });
+    await sleep(500);
+    check('a step opened while the program does not answer says so', /Could not reach the program/.test(await toastText()), await toastText());
+    await arch.evaluate(() => { window.fetch = window.__fetch2; document.querySelectorAll('#steps button')[0].click(); });
+    await sleep(500);
     check('an action that cannot be done is listed with its reason', await arch.evaluate(() => [...document.querySelectorAll('.card.show .menu .item[aria-disabled=true] small')].every((x) => x.textContent.length > 10)));
     check('Duplicate… is named for the dialog it opens', await arch.evaluate(() => [...document.querySelectorAll('.card.show button')].some((b) => b.textContent === 'Duplicate…') && ![...document.querySelectorAll('.card.show button')].some((b) => b.textContent === 'Duplicate')));
     check('a show to archive is created', made.status === 201 || made.status === 200, made);
