@@ -16,6 +16,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -661,8 +662,8 @@ func TestImportRefusesAZipThatUnpacksToTooMuch(t *testing.T) {
 
 // An export that cannot be completed is an error, not a zip with a file missing.
 func TestExportFailsCleanlyWhenAnImageCannotBeRead(t *testing.T) {
-	if os.Geteuid() == 0 {
-		t.Skip("permissions do not stop root")
+	if os.Geteuid() == 0 || runtime.GOOS == "windows" {
+		t.Skip("file permissions do not stop root, and are not enforced the same way on Windows")
 	}
 	s, _, c := serverWith(t, nil)
 	id := createShow(t, c, "Broken")
