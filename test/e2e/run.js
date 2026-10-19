@@ -79,6 +79,9 @@ async function main() {
     p.on('dialog', (d) => d.accept());
     p.on('pageerror', (e) => errs.push(e.message));
     if (opts.headers) await p.setExtraHTTPHeaders(opts.headers);
+    // Some computers (CI runners on Windows and macOS) have animations turned off, which the page rightly honours; the tests
+    // of how things animate need the ordinary setting.
+    await p.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'no-preference' }]);
     return p;
   };
   const shot = (p, n) => (SHOTS ? p.screenshot({ path: path.join(SHOTS, n + '.png') }) : null);
