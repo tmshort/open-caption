@@ -65,7 +65,7 @@ footer #search { flex: 1 1 10rem; min-width: 8rem; }
 #help .bar b { color: var(--fg); }
 @media (min-width: 900px) { body.helpopen #app { margin-right: min(30rem, 100%); } }
 body.viewonly footer button:not(#search), body.viewonly #offair, body.viewonly #reset { opacity: .35; pointer-events: none; }
-@media (max-width: 640px) { footer { display: grid; grid-template-columns: 1fr 1fr; } footer #search { grid-column: 1 / -1; } #next { grid-column: 1 / -1; padding-block: 1.1rem; } }
+@media (max-width: 640px) { footer { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); } footer button { min-width: 0; padding-inline: .4rem; overflow-wrap: anywhere; } footer #search { grid-column: 1 / -1; min-width: 0; } #next { grid-column: 1 / -1; padding-block: 1.1rem; } }
 button small kbd { font: inherit; border: 1px solid currentColor; border-radius: 3px; padding: 0 .25em; margin-right: .2em; }
 /* the item of a running loop that is on the audience screens now */
 .items li { display: flex; gap: .4rem; }
