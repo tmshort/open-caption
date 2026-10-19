@@ -58,7 +58,6 @@ checksum:
   algorithm: sha256
 
 changelog:
-  sort: asc
   filters:
     exclude: ["^Merge "]
 
