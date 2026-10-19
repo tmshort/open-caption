@@ -69,7 +69,7 @@ The build downloads the libraries it needs the first time (internet required) an
 
 On its first run the program:
 
-- prints the **admin** and **operator** passwords **once**, in the Terminal window. Write them down. (They are also in `config.yaml`; the program prints where.)
+- prints the **admin** and **operator** passwords **once**, in the Terminal window. Write them down. (They are also in `config.yaml`; see [Where your configuration and shows are kept](#where-your-configuration-and-shows-are-kept).)
 - asks *Do you want the application "open-caption" to accept incoming network connections?* Click **Allow**, or phones on the WiFi cannot reach it.
 - opens the Setup page (`http://localhost/admin`) in your browser. On this Mac it needs no password. If port 80 was busy it uses `:8080` and prints the address.
 
@@ -78,6 +78,26 @@ To stop the program, press `Ctrl`+`C` in the Terminal window. To start it again 
 From here, follow [Getting started](../web/help/admin-getting-started.md) (also in the program's **Help** button), then the [usage guide](usage-guide.md).
 
 Useful afterwards: `./bin/open-caption --help` lists the options, and `man ./docs/open-caption.1` shows the manual page.
+
+## Where your configuration and shows are kept
+
+By default in your user folder:
+
+```
+~/Library/Application Support/open-caption
+```
+
+Open it with Finder: **Go → Go to Folder…** (`Shift`+`Cmd`+`G`), paste the path above. Or in Terminal: `open ~/Library/Application\ Support/open-caption`. The program also prints the exact path of `config.yaml` when it starts.
+
+| In the folder | What it is |
+|---|---|
+| `config.yaml` | The settings and the **admin and operator passwords** (readable only by you). Every setting is in the [configuration reference](configuration-reference.md). |
+| `shows/` | One folder per show: `show.md` (the show file), `show.<language>.md` for translations, and `assets/` (the images), plus the saved earlier versions. |
+| `standby-logo.*` | The logo on the standby screen, if you uploaded one. |
+| `live.json`, `sessions.json` | The show's position and who is signed in, so a restart in the middle of a show carries on. Safe to ignore. |
+| `tls/` | The HTTPS certificate, if HTTPS is on. |
+
+The folder is **not** inside the `open-caption` source folder, so rebuilding or updating the program never touches your shows or passwords. To back up everything, copy the whole folder (Setup → Shows → **More ▾** → Export saves a single show). To start completely fresh, quit the program and rename or delete the folder: the next run creates new passwords. To keep the data somewhere else, start the program with `--data <folder>` every time (or set `OPEN_CAPTION_DATA`).
 
 ## 6. Optional: run the tests
 

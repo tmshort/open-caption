@@ -71,7 +71,7 @@ The first build downloads the libraries it needs (internet required) and takes a
 
 On its first run the program:
 
-- prints the **admin** and **operator** passwords **once**, in the PowerShell window. Write them down. (They are also in `config.yaml`; the program prints where.)
+- prints the **admin** and **operator** passwords **once**, in the PowerShell window. Write them down. (They are also in `config.yaml`; see [Where your configuration and shows are kept](#where-your-configuration-and-shows-are-kept).)
 - makes **Windows Defender Firewall** ask whether to allow it. Tick **Private networks** and click **Allow access**; otherwise phones on the WiFi cannot reach it. (If your WiFi is set to *Public*, change it to Private in Settings → Network & internet → the network's properties, or also tick *Public networks*.)
 - opens the Setup page (`http://localhost/admin`) in your browser. On this PC it needs no password. If port 80 is used by other software it uses `:8080` and prints the address.
 
@@ -80,6 +80,26 @@ To stop the program, press `Ctrl`+`C` in the PowerShell window. To start it agai
 From here, follow [Getting started](../web/help/admin-getting-started.md) (also in the program's **Help** button), then the [usage guide](usage-guide.md). To start the program automatically at boot, see [deploy/README.md](../deploy/README.md) (`windows-install.ps1`).
 
 `.\bin\open-caption.exe --help` lists the options.
+
+## Where your configuration and shows are kept
+
+By default in your user folder:
+
+```
+%AppData%\open-caption
+```
+
+which is `C:\Users\<you>\AppData\Roaming\open-caption`. Open it by pressing `Win`+`R`, typing `%AppData%\open-caption` and pressing Enter, or in PowerShell: `explorer $env:AppData\open-caption`. The program also prints the exact path of `config.yaml` when it starts.
+
+| In the folder | What it is |
+|---|---|
+| `config.yaml` | The settings and the **admin and operator passwords** (readable only by you). Every setting is in the [configuration reference](configuration-reference.md). |
+| `shows/` | One folder per show: `show.md` (the show file), `show.<language>.md` for translations, and `assets/` (the images), plus the saved earlier versions. |
+| `standby-logo.*` | The logo on the standby screen, if you uploaded one. |
+| `live.json`, `sessions.json` | The show's position and who is signed in, so a restart in the middle of a show carries on. Safe to ignore. |
+| `tls/` | The HTTPS certificate, if HTTPS is on. |
+
+The folder is **not** inside the `open-caption` source folder, so rebuilding or updating the program never touches your shows or passwords. To back up everything, copy the whole folder (Setup → Shows → **More ▾** → Export saves a single show). To start completely fresh, quit the program and rename or delete the folder: the next run creates new passwords. To keep the data somewhere else, start the program with `--data <folder>` every time (or set `OPEN_CAPTION_DATA`).
 
 ## 6. Optional: run the tests
 

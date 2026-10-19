@@ -80,7 +80,7 @@ The first build downloads the libraries it needs (internet required) and takes a
 
 On its first run the program:
 
-- prints the **admin** and **operator** passwords **once**, in the terminal. Write them down. (They are also in `config.yaml`; the program prints where.)
+- prints the **admin** and **operator** passwords **once**, in the terminal. Write them down. (They are also in `config.yaml`; see [Where your configuration and shows are kept](#where-your-configuration-and-shows-are-kept).)
 - tries to listen on port 80. A normal user may not, so on Linux it **uses port 8080** and prints the address (`http://<this computer>:8080/`). To use port 80 instead, allow it once: `sudo setcap 'cap_net_bind_service=+ep' ./bin/open-caption` (repeat after every rebuild).
 - tries to open the Setup page (`http://localhost:8080/admin`) in your browser; on a computer with no desktop, open it from another computer, or use `--no-browser`. On this computer it needs no password.
 
@@ -99,6 +99,26 @@ To stop the program, press `Ctrl`+`C`. To start it again later: `cd ~/open-capti
 From here, follow [Getting started](../web/help/admin-getting-started.md) (also in the program's **Help** button), then the [usage guide](usage-guide.md). To start the program automatically at boot, see [deploy/README.md](../deploy/README.md) (`open-caption.service`, systemd).
 
 Useful afterwards: `./bin/open-caption --help` lists the options, and `man ./docs/open-caption.1` shows the manual page.
+
+## Where your configuration and shows are kept
+
+By default in your user configuration folder:
+
+```
+~/.config/open-caption
+```
+
+(or `$XDG_CONFIG_HOME/open-caption` if that variable is set). Open it with `ls ~/.config/open-caption`, or in the file manager with `Ctrl`+`H` to show hidden folders. The program also prints the exact path of `config.yaml` when it starts. A program started as a service (see [deploy/README.md](../deploy/README.md)) uses the `--data` folder named in its service file instead.
+
+| In the folder | What it is |
+|---|---|
+| `config.yaml` | The settings and the **admin and operator passwords** (readable only by you). Every setting is in the [configuration reference](configuration-reference.md). |
+| `shows/` | One folder per show: `show.md` (the show file), `show.<language>.md` for translations, and `assets/` (the images), plus the saved earlier versions. |
+| `standby-logo.*` | The logo on the standby screen, if you uploaded one. |
+| `live.json`, `sessions.json` | The show's position and who is signed in, so a restart in the middle of a show carries on. Safe to ignore. |
+| `tls/` | The HTTPS certificate, if HTTPS is on. |
+
+The folder is **not** inside the `open-caption` source folder, so rebuilding or updating the program never touches your shows or passwords. To back up everything, copy the whole folder (Setup → Shows → **More ▾** → Export saves a single show). To start completely fresh, quit the program and rename or delete the folder: the next run creates new passwords. To keep the data somewhere else, start the program with `--data <folder>` every time (or set `OPEN_CAPTION_DATA`).
 
 ## 6. Optional: run the tests
 
