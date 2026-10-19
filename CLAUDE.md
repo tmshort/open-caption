@@ -23,6 +23,8 @@ A single-binary open-captioning server for community theater (Go 1.26+, no CGO).
 
 Run `gofmt`, `go vet ./...` and `go test -race ./...` before committing (the full list, and the documentation rules, are under "Commits and documentation").
 
+Outside contributions: `CONTRIBUTING.md` (no code PRs accepted yet; DCO sign-off with `git commit -s`; keep its rules and the "Commits and documentation" section below in step).
+
 ## Spec-driven
 
 `docs/` is the source of truth (the README's *Spec-driven workflow* table lists the specifications `01`–`10`; its *Documentation* table lists the guides for users); change the spec in the same commit as behavior. Requirements are numbered `REQ-xxx`; reference them from tests and commits. Terminology: the text file a show is written in is the **show file** — never "script".

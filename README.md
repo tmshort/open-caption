@@ -159,6 +159,12 @@ Requirement IDs (`REQ-…`) are referenced from the other docs and should be
 referenced from tests and commits.
 <!-- source-only:end -->
 
+<!-- source-only:start -->
+## Contributing
+
+Bug reports, ideas, translation reviews from native speakers and private security reports are welcome; code pull requests are not being accepted yet. See [CONTRIBUTING.md](CONTRIBUTING.md) for how, and for the rules changes follow.
+<!-- source-only:end -->
+
 ## License
 
 Apache License 2.0 — see [LICENSE](LICENSE).
