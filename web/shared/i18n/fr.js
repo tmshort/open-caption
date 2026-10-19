@@ -1,5 +1,7 @@
 // French translations of Setup, the operator page and Help (see web/shared/i18n.js). The key is the English text.
 OCI18n.add("fr", {
+ "One entry per line. Leave Show only these empty to show all. In Prefer these adapters write Ethernet, Wi-Fi or an adapter name: the first that matches is used when two adapters are on the same network.": "Une entrée par ligne. Laissez Afficher seulement celles-ci vide pour tout afficher. Dans Préférer ces cartes réseau, écrivez Ethernet, Wi-Fi ou le nom d'une carte : la première qui correspond est utilisée quand deux cartes sont sur le même réseau.",
+ "Use this adapter for its network": "Utiliser cette carte pour son réseau",
  "Network": "Réseau",
  "Network addresses": "Adresses réseau",
  "Addresses changed": "Adresses modifiées",
@@ -7,7 +9,6 @@ OCI18n.add("fr", {
  "Choose which addresses are offered": "Choisir quelles adresses sont proposées",
  "Prefer these adapters": "Préférer ces cartes réseau",
  "Use this one": "Utiliser celle-ci",
- "Prefer these adapters (one per line: Ethernet, Wi-Fi or an adapter name; the first that matches is used when two are on the same network)": "Préférer ces cartes réseau (une par ligne : Ethernet, Wi-Fi ou le nom d'une carte ; la première qui correspond est utilisée quand deux sont sur le même réseau)",
  "Wi-Fi": "Wi-Fi",
  "Ethernet": "Ethernet",
  "not used: same network as {ip}": "non utilisée : même réseau que {ip}",
@@ -21,8 +22,6 @@ OCI18n.add("fr", {
  "No network address was found.": "Aucune adresse réseau n’a été trouvée.",
  "Show only these": "Afficher seulement celles-ci",
  "Never show these": "Ne jamais afficher celles-ci",
- "Show only these (one per line; leave empty for all)": "Afficher seulement celles-ci (une par ligne ; laisser vide pour toutes)",
- "Never show these (one per line)": "Ne jamais afficher celles-ci (une par ligne)",
  "Each line is an address (192.168.1.50), a network (192.168.1.0/24) or the word private (the usual home and office networks). A line under Never wins.": "Chaque ligne est une adresse (192.168.1.50), un réseau (192.168.1.0/24) ou le mot private (les réseaux domestiques et de bureau habituels). Une ligne de « Ne jamais afficher » l’emporte.",
  "This copy was started with --network-include or --network-exclude, which override these boxes each time it starts.": "Cette copie a été lancée avec --network-include ou --network-exclude, qui remplacent ces cases à chaque démarrage.",
  "Use at most 50 lines in each box.": "Utilisez 50 lignes au plus dans chaque case.",

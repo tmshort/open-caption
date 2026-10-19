@@ -1,5 +1,7 @@
 // Portuguese translations of Setup, the operator page and Help (see web/shared/i18n.js). The key is the English text.
 OCI18n.add("pt", {
+ "One entry per line. Leave Show only these empty to show all. In Prefer these adapters write Ethernet, Wi-Fi or an adapter name: the first that matches is used when two adapters are on the same network.": "Uma entrada por linha. Deixe Mostrar só estes vazio para mostrar tudo. Em Preferir estes adaptadores escreva Ethernet, Wi-Fi ou o nome de um adaptador: o primeiro que combinar é usado quando dois adaptadores estão na mesma rede.",
+ "Use this adapter for its network": "Usar este adaptador para a sua rede",
  "Network": "Rede",
  "Network addresses": "Endereços de rede",
  "Addresses changed": "Endereços alterados",
@@ -7,7 +9,6 @@ OCI18n.add("pt", {
  "Choose which addresses are offered": "Escolher quais endereços são oferecidos",
  "Prefer these adapters": "Preferir estes adaptadores",
  "Use this one": "Usar este",
- "Prefer these adapters (one per line: Ethernet, Wi-Fi or an adapter name; the first that matches is used when two are on the same network)": "Preferir estes adaptadores (um por linha: Ethernet, Wi-Fi ou o nome de um adaptador; o primeiro que combinar é usado quando dois estão na mesma rede)",
  "Wi-Fi": "Wi-Fi",
  "Ethernet": "Ethernet",
  "not used: same network as {ip}": "não usado: mesma rede que {ip}",
@@ -21,8 +22,6 @@ OCI18n.add("pt", {
  "No network address was found.": "Não foi encontrado nenhum endereço de rede.",
  "Show only these": "Mostrar só estes",
  "Never show these": "Nunca mostrar estes",
- "Show only these (one per line; leave empty for all)": "Mostrar só estes (um por linha; deixe vazio para todos)",
- "Never show these (one per line)": "Nunca mostrar estes (um por linha)",
  "Each line is an address (192.168.1.50), a network (192.168.1.0/24) or the word private (the usual home and office networks). A line under Never wins.": "Cada linha é um endereço (192.168.1.50), uma rede (192.168.1.0/24) ou a palavra private (as redes domésticas e de escritório habituais). Uma linha em «Nunca mostrar» tem prioridade.",
  "This copy was started with --network-include or --network-exclude, which override these boxes each time it starts.": "Esta cópia foi iniciada com --network-include ou --network-exclude, que substituem estas caixas a cada arranque.",
  "Use at most 50 lines in each box.": "Use no máximo 50 linhas em cada caixa.",

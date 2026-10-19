@@ -1,5 +1,7 @@
 // German translations of Setup, the operator page and Help (see web/shared/i18n.js). The key is the English text.
 OCI18n.add("de", {
+ "One entry per line. Leave Show only these empty to show all. In Prefer these adapters write Ethernet, Wi-Fi or an adapter name: the first that matches is used when two adapters are on the same network.": "Ein Eintrag pro Zeile. Lassen Sie Nur diese anzeigen leer, um alle anzuzeigen. Schreiben Sie bei Diese Adapter bevorzugen Ethernet, WLAN oder den Namen eines Adapters: Der erste Treffer wird verwendet, wenn zwei Adapter im selben Netzwerk sind.",
+ "Use this adapter for its network": "Diesen Adapter für sein Netzwerk verwenden",
  "Network": "Netzwerk",
  "Network addresses": "Netzwerkadressen",
  "Addresses changed": "Adressen geändert",
@@ -7,7 +9,6 @@ OCI18n.add("de", {
  "Choose which addresses are offered": "Wählen, welche Adressen angeboten werden",
  "Prefer these adapters": "Diese Adapter bevorzugen",
  "Use this one": "Diese verwenden",
- "Prefer these adapters (one per line: Ethernet, Wi-Fi or an adapter name; the first that matches is used when two are on the same network)": "Diese Adapter bevorzugen (einer pro Zeile: Ethernet, WLAN oder der Name eines Adapters; der erste Treffer wird verwendet, wenn zwei im selben Netzwerk sind)",
  "Wi-Fi": "WLAN",
  "Ethernet": "Ethernet",
  "not used: same network as {ip}": "nicht verwendet: dasselbe Netzwerk wie {ip}",
@@ -21,8 +22,6 @@ OCI18n.add("de", {
  "No network address was found.": "Es wurde keine Netzwerkadresse gefunden.",
  "Show only these": "Nur diese anzeigen",
  "Never show these": "Diese nie anzeigen",
- "Show only these (one per line; leave empty for all)": "Nur diese anzeigen (eine pro Zeile; leer lassen für alle)",
- "Never show these (one per line)": "Diese nie anzeigen (eine pro Zeile)",
  "Each line is an address (192.168.1.50), a network (192.168.1.0/24) or the word private (the usual home and office networks). A line under Never wins.": "Jede Zeile ist eine Adresse (192.168.1.50), ein Netzwerk (192.168.1.0/24) oder das Wort private (die üblichen privaten Heim- und Büronetze). Eine Zeile unter „Diese nie anzeigen“ hat Vorrang.",
  "This copy was started with --network-include or --network-exclude, which override these boxes each time it starts.": "Diese Kopie wurde mit --network-include oder --network-exclude gestartet; beide überschreiben diese Felder bei jedem Start.",
  "Use at most 50 lines in each box.": "Verwenden Sie höchstens 50 Zeilen in jedem Feld.",

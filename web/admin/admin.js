@@ -178,7 +178,7 @@
     const pref = h('textarea', { rows: '3', spellcheck: 'false', 'aria-label': __('Prefer these adapters'), placeholder: 'Ethernet' }); pref.value = (net0.prefer || []).join('\n');
     const kindName = (k) => k === 'wifi' ? __('Wi-Fi') : k === 'ethernet' ? __('Ethernet') : '';
     const stateText = (a) => a.shown ? __('shown') : a.hidden === 'network' ? __('not used: same network as {ip}', { ip: a.instead }) : __('hidden');
-    const paintList = (addrs) => shownList.replaceChildren(...(addrs.length ? addrs.map((a) => h('li', { class: a.shown ? '' : 'off' }, h('b', {}, a.ip), ' ', [kindName(a.kind), a.interface].filter(Boolean).length ? '(' + [kindName(a.kind), a.interface].filter(Boolean).join(', ') + ') ' : '', stateText(a), a.current ? ' — ' + __('you are using Setup through this one') : '', a.hidden === 'network' && a.interface ? [' ', h('button', { type: 'button', class: 'quiet', onclick: () => { pref.value = [a.interface].concat(pref.value.split('\n').map((x) => x.trim()).filter((x) => x && x !== a.interface)).join('\n'); pref.focus(); } }, __('Use this one'))] : '')) : [h('li', {}, __('No network address was found.'))]));
+    const paintList = (addrs) => shownList.replaceChildren(...(addrs.length ? addrs.map((a) => h('li', { class: a.shown ? '' : 'off' }, h('b', {}, a.ip), ' ', [kindName(a.kind), a.interface].filter(Boolean).length ? '(' + [kindName(a.kind), a.interface].filter(Boolean).join(', ') + ') ' : '', stateText(a), a.current ? ' — ' + __('you are using Setup through this one') : '', a.hidden === 'network' && a.interface ? [' ', h('button', { type: 'button', class: 'usethis', title: __('Use this adapter for its network'), onclick: () => { pref.value = [a.interface].concat(pref.value.split('\n').map((x) => x.trim()).filter((x) => x && x !== a.interface)).join('\n'); pref.focus(); } }, __('Use this one'))] : '')) : [h('li', {}, __('No network address was found.'))]));
     paintList(s.addresses || []);
     const inc = h('textarea', { rows: '3', spellcheck: 'false', 'aria-label': __('Show only these'), placeholder: '192.168.1.0/24' }); inc.value = (net0.include || []).join('\n');
     const exc = h('textarea', { rows: '3', spellcheck: 'false', 'aria-label': __('Never show these'), placeholder: '192.168.56.0/24' }); exc.value = (net0.exclude || []).join('\n');
@@ -196,9 +196,10 @@
         h('p', { class: 'hint' }, __('These are the addresses this computer has now. The audience is given the ones marked shown: in the address list, the QR code, the HTTPS certificate and the .local name. When two adapters are on the same network (a cable and Wi-Fi), only one is used: the main connection, else the wired one.')),
         shownList,
         h('div', { class: 'addrboxes' },
-          h('label', { class: 'addrlabel' }, __('Show only these (one per line; leave empty for all)'), inc),
-          h('label', { class: 'addrlabel' }, __('Never show these (one per line)'), exc),
-          h('label', { class: 'addrlabel' }, __('Prefer these adapters (one per line: Ethernet, Wi-Fi or an adapter name; the first that matches is used when two are on the same network)'), pref)),
+          h('label', { class: 'addrlabel' }, __('Show only these'), inc),
+          h('label', { class: 'addrlabel' }, __('Never show these'), exc),
+          h('label', { class: 'addrlabel' }, __('Prefer these adapters'), pref)),
+        h('p', { class: 'hint' }, __('One entry per line. Leave Show only these empty to show all. In Prefer these adapters write Ethernet, Wi-Fi or an adapter name: the first that matches is used when two adapters are on the same network.')),
         h('label', { class: 'row addrrestrict' }, restrict, __('Also refuse connections to the addresses that are not shown')),
         h('p', { class: 'hint' }, __('Connections to this computer itself are always accepted. If a phone then cannot reach the program, clear this box.')),
         h('p', { class: 'hint' }, __('Each line is an address (192.168.1.50), a network (192.168.1.0/24) or the word private (the usual home and office networks). A line under Never wins.')),
