@@ -38,20 +38,35 @@ browser on a projector) shows the captions live, with no interaction required.
 
 ## Quick start
 
-```
-make build
-./bin/open-caption
-```
+Two steps: get the program, then run it. Pick your computer's row; the guides start from a brand-new computer with nothing installed and list every download.
 
-The first run creates `config.yaml` (in your user config folder; the path is printed) with random
-**admin** and **operator** passwords, printed once in the console. Then:
+**1. Get the program.** Someone may hand you a finished program file (`open-caption`, or `open-caption.exe` on Windows); if so, skip to step 2. Otherwise build it from the source in this repository (it needs Go and `git`, plus `make` except on Windows; a few minutes):
 
-- **Setup:** open `http://localhost/admin` (or the `:8080` address printed if port 80 was busy), sign in with the admin password, and follow the six steps. "Create a sample show" is a good first try.
-- **Operator:** `/operator` (the operator password; the admin password also works). Space sends the next line.
+| Your computer | Full step-by-step guide | The build, once the tools are installed |
+|---|---|---|
+| **macOS** | [docs/build-macos.md](docs/build-macos.md) | `make build` |
+| **Windows 10 or 11** | [docs/build-windows.md](docs/build-windows.md) | `.\build.bat` |
+| **Linux** (Ubuntu, Fedora) | [docs/build-linux.md](docs/build-linux.md) | `make build` |
+
+Each build creates the program in the `bin` folder of the source (`bin/open-caption`, or `bin\open-caption.exe` on Windows).
+
+**2. Run it**, from the folder you built it in (to start it later, `cd` back there):
+
+| Your computer | Command |
+|---|---|
+| macOS, Linux | `./bin/open-caption` |
+| Windows (PowerShell) | `.\bin\open-caption.exe` |
+
+The first run creates `config.yaml` (in your user config folder; the path is printed) with random **admin** and **operator** passwords, printed once in the console, and opens Setup in your browser. When the system asks whether to allow network connections, allow them (on Windows, tick *Private networks*), or phones cannot reach the program. Then:
+
+- **Setup:** open `http://localhost/admin` (or the `:8080` address printed if port 80 was busy; on Linux a normal user cannot use port 80, so it uses 8080 unless the program is given permission, see the Linux guide). On the computer that runs the program it needs no password; elsewhere sign in with the admin password. Follow the six steps; "Create a sample show" is a good first try.
+- **Operator:** the Run page, opened from Setup's Run step (or `/operator`, with the operator password; the admin password also works). Space sends the next line.
 - **Audience:** the address shown in Setup → Run, or its QR code. Devices must be on the same WiFi.
 - **Help:** the **Help** button on Setup and Operator. Read [Getting started](web/help/admin-getting-started.md) and [Preparing a show file](web/help/admin-preparing-a-show-file.md) (for whoever writes the show file), [docs/usage-guide.md](docs/usage-guide.md) (deployment, checklist) and [docs/venue-network-guide.md](docs/venue-network-guide.md) (the WiFi side).
 
-`make help` lists every target. `open-caption --help` lists the command-line options; the manual page is `docs/open-caption.1` (`make man` shows it).
+To stop the program, press `Ctrl`+`C` in its window. Where the settings and shows are kept, and how to back them up: see the "Where your configuration and shows are kept" section of your build guide above.
+
+`open-caption --help` lists the command-line options; the manual page is `docs/open-caption.1` (on macOS and Linux, `make man` shows it). `make help` lists every build and test target (Windows: the same jobs are described in [docs/build-windows.md](docs/build-windows.md)).
 
 ## Documentation
 
