@@ -141,4 +141,5 @@ git pull
 | The build stops with a network error | The build needs internet the first time. Check the connection and run `.\build.bat` again. |
 | `bind: Only one usage of each socket address` or the program says it moved to `:8080` | Another program holds port 80 (IIS, Skype, another web server). The program already falls back to 8080; use the address it prints. |
 | A phone cannot open the address | Allow the program on **Private networks** (Windows Security → Firewall & network protection → *Allow an app through firewall*). The phone must be on the same WiFi as the PC. |
+| The program offers an address that does not work, such as one from a Wi-Fi card that is switched off | Current versions list only the adapters that are connected. If the address is still wrong, check `ipconfig` for the adapter that is connected and use that address. |
 | Antivirus quarantines `open-caption.exe` | A program you just built yourself is unsigned and unknown to the antivirus; add an exception for the `bin` folder. |

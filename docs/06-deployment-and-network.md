@@ -30,7 +30,7 @@ non-loopback IPv4 addresses and the audience URL, and opens
 | OS | Notes |
 |----|-------|
 | macOS | Unsigned binary requires Gatekeeper approval (right-click → Open) unless signed/notarized (stretch goal). Binding port 80 is allowed for non-root on recent macOS. |
-| Windows | Windows Firewall prompt on first run — user must allow *Private networks*. Provide a note/screenshot. Port 80/443 may be held by other software (IIS, Skype); auto-fallback to 8080 (HTTP) / 8443 (HTTPS). |
+| Windows | Windows Firewall prompt on first run — user must allow *Private networks*. Provide a note/screenshot. Port 80/443 may be held by other software (IIS, Skype); auto-fallback to 8080 (HTTP) / 8443 (HTTPS). The address list (startup, Setup, the self-signed certificate) comes from the network interfaces that are *up*: Windows also reports the last address of a switched-off or disconnected adapter, which must not be offered to the audience (`netinfo.LocalIPs`). |
 | Linux | Port 80 needs `setcap 'cap_net_bind_service=+ep'` or run on 8080 + redirect. Optional systemd unit file in `deploy/`. |
 
 Ready-made service files for systemd, launchd and Windows Task Scheduler are in `deploy/`; day-to-day deployment advice is in [usage-guide.md](usage-guide.md).

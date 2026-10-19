@@ -36,3 +36,22 @@ func TestLocalIPsAreNotLoopback(t *testing.T) {
 		}
 	}
 }
+
+func TestUsableIPsSkipsInterfacesThatAreDown(t *testing.T) {
+	addrs := []net.Addr{
+		&net.IPNet{IP: net.ParseIP("192.168.1.138"), Mask: net.CIDRMask(24, 32)},
+		&net.IPNet{IP: net.ParseIP("fe80::1"), Mask: net.CIDRMask(64, 128)},    // not IPv4
+		&net.IPNet{IP: net.ParseIP("169.254.3.4"), Mask: net.CIDRMask(16, 32)}, // link-local
+		&net.IPNet{IP: net.ParseIP("127.0.0.1"), Mask: net.CIDRMask(8, 32)},
+	}
+	if got := usableIPs(net.FlagUp|net.FlagMulticast, addrs); len(got) != 1 || got[0].String() != "192.168.1.138" {
+		t.Errorf("an interface that is up offers only its IPv4 unicast address: %v", got)
+	}
+	// Windows keeps the last address of a Wi-Fi adapter that was turned off or unplugged.
+	if got := usableIPs(net.FlagMulticast, addrs); len(got) != 0 {
+		t.Errorf("an interface that is down offers nothing: %v", got)
+	}
+	if got := usableIPs(net.FlagUp|net.FlagLoopback, addrs); len(got) != 0 {
+		t.Errorf("loopback offers nothing: %v", got)
+	}
+}

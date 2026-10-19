@@ -18,16 +18,32 @@ import (
 	"time"
 )
 
-// LocalIPs returns the host's non-loopback unicast IPv4 addresses.
+// LocalIPs returns the non-loopback unicast IPv4 addresses of the network interfaces that are up. The
+// interfaces are asked, not the whole address table: on Windows that table also holds the last address of an
+// adapter that is switched off or disconnected (a Wi-Fi card turned off still lists the address it had), and
+// such an address must not be offered to the audience or put in the certificate.
 func LocalIPs() []net.IP {
+	ifs, _ := net.Interfaces()
 	var out []net.IP
-	addrs, _ := net.InterfaceAddrs()
+	for _, ifc := range ifs {
+		addrs, _ := ifc.Addrs()
+		out = append(out, usableIPs(ifc.Flags, addrs)...)
+	}
+	sort.Slice(out, func(i, j int) bool { return out[i].String() < out[j].String() })
+	return out
+}
+
+// usableIPs picks the addresses worth offering from one interface: none unless it is up.
+func usableIPs(flags net.Flags, addrs []net.Addr) []net.IP {
+	if flags&net.FlagUp == 0 || flags&net.FlagLoopback != 0 {
+		return nil
+	}
+	var out []net.IP
 	for _, a := range addrs {
 		if n, ok := a.(*net.IPNet); ok && !n.IP.IsLoopback() && n.IP.To4() != nil && n.IP.IsGlobalUnicast() {
 			out = append(out, n.IP)
 		}
 	}
-	sort.Slice(out, func(i, j int) bool { return out[i].String() < out[j].String() })
 	return out
 }
 
