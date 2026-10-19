@@ -511,6 +511,20 @@ async function main() {
     await arch.click('#panel h2'); await sleep(150);
     check('a click elsewhere closes the menu', await arch.evaluate(() => document.querySelector('.card.show .menu').hidden));
     check('the menu lists Rename, Duplicate, Export, Archive and Delete, Delete last and in red', await arch.evaluate(() => { const c = document.querySelector('.card.show'), it = [...c.querySelectorAll('.menu .item')].map((e) => e.textContent.trim()), d = c.querySelector('.menu .item.danger'); return it.length === 5 && /^Rename/.test(it[0]) && /^Delete/.test(it[4]) && !!d && getComputedStyle(d).color !== getComputedStyle(document.body).color; }));
+    // Export is fetched and saved by the page, so a failure can be explained (a plain link leaves the browser's own "download failed").
+    const clickExport = () => arch.evaluate(() => { const c = document.querySelector('.card.show'); c.querySelector('button.more').click(); [...c.querySelectorAll('.menu .item')].find((x) => /^Export/.test(x.textContent)).click(); });
+    const toastText = () => arch.evaluate(() => document.getElementById('toast').textContent);
+    await arch.evaluate(() => { window.__saved = []; const click = HTMLAnchorElement.prototype.click; HTMLAnchorElement.prototype.click = function () { if (this.download) { window.__saved.push(this.download); return; } return click.call(this); }; });
+    await clickExport(); await arch.waitForFunction(() => window.__saved.length === 1, { timeout: 10000 }).catch(() => {});
+    check('Export saves the show as a .zip', await arch.evaluate(() => window.__saved.length === 1 && /\.zip$/.test(window.__saved[0])), await arch.evaluate(() => window.__saved));
+    await arch.evaluate(() => { window.__fetch = window.fetch; window.fetch = () => Promise.reject(new TypeError('offline')); });
+    await clickExport(); await sleep(400);
+    check('Export while the program does not answer says so', /Could not reach the program/.test(await toastText()), await toastText());
+    await arch.evaluate(() => { window.fetch = () => Promise.resolve(new Response(JSON.stringify({ error: 'The show could not be exported. Try again; if it keeps happening, look at the log.' }), { status: 500, headers: { 'Content-Type': 'application/json' } })); });
+    await clickExport(); await sleep(400);
+    check('Export that fails on the program says why', /could not be exported/.test(await toastText()), await toastText());
+    await arch.evaluate(() => { window.fetch = window.__fetch; });
+    await arch.evaluate(() => { const m = document.querySelector('.card.show .menu'); if (!m.hidden) document.querySelector('.card.show button.more').click(); });
     check('an action that cannot be done is listed with its reason', await arch.evaluate(() => [...document.querySelectorAll('.card.show .menu .item[aria-disabled=true] small')].every((x) => x.textContent.length > 10)));
     check('Duplicate… is named for the dialog it opens', await arch.evaluate(() => [...document.querySelectorAll('.card.show button')].some((b) => b.textContent === 'Duplicate…') && ![...document.querySelectorAll('.card.show button')].some((b) => b.textContent === 'Duplicate')));
     check('a show to archive is created', made.status === 201 || made.status === 200, made);

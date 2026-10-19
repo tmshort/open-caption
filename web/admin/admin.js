@@ -36,6 +36,25 @@
     if (r.status === 401) { showLogin(); throw new Error('login'); }
     return { ok: r.ok, status: r.status, data };
   }
+  // Fetches a file and hands it to the browser to save. Unlike a plain download link, a failure is explained here
+  // (the program says why) instead of leaving the browser's own "download failed".
+  async function saveDownload(path, filename) {
+    let r;
+    try { r = await fetch(path); } catch (e) { toast(__('Could not reach the program. Check the connection, then try again.'), 6000); return; }
+    if (r.status === 401) { showLogin(); return; }
+    if (!r.ok) {
+      let data = {};
+      try { data = await r.json(); } catch (e) { /* no reason given */ }
+      fail({ ok: false, status: r.status, data });
+      return;
+    }
+    const url = URL.createObjectURL(await r.blob());
+    const a = h('a', { href: url, download: filename });
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+  }
   // What to tell the person when the program gave no reason of its own: say what the status means and what to do.
   function whyFailed(r) {
     if (r.data && r.data.error) return r.data.error;
@@ -401,7 +420,7 @@
         moreMenu(s.name, [
           { label: __('Rename…'), run: () => renameShow(s) },
           { label: __('Duplicate…'), run: () => duplicateShow(s) },
-          { label: __('Export'), href: '/api/admin/shows/' + s.id + '/export', download: s.id + '.zip' },
+          { label: __('Export'), run: () => saveDownload('/api/admin/shows/' + s.id + '/export', s.id + '.zip') },
           { label: __('Archive'), run: () => archiveShow(s, true), why: s.active ? __('The show on air cannot be archived. Activate another show first.') : '', disabled: s.active, hint: __('Put this show away; you can restore it later') },
           { sep: true },
           { label: __('Delete…'), run: () => deleteShow(s), danger: true, why: s.live ? __('This show is on air. Restart it from the Run page, or activate another show first.') : '' }])))); 
@@ -415,7 +434,7 @@
           h('div', { class: 'name' }, s.name, h('div', { class: 'hint' }, __('Updated {when}', { when: new Date(s.updated).toLocaleString(OCI18n.lang) }))),
           h('button', { class: 'primary', onclick: () => archiveShow(s, false) }, __('Restore')),
           moreMenu(s.name, [
-            { label: __('Export'), href: '/api/admin/shows/' + s.id + '/export', download: s.id + '.zip' },
+            { label: __('Export'), run: () => saveDownload('/api/admin/shows/' + s.id + '/export', s.id + '.zip') },
             { sep: true },
             { label: __('Delete…'), run: () => deleteShow(s), danger: true, why: s.live ? __('This show is on air. Restart it from the Run page, or activate another show first.') : '' }])))));
     }
