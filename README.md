@@ -134,6 +134,8 @@ make build ACME_PROVIDERS=none                # no automatic certificates (the s
 
 **Security note:** anyone who can reach the server can open the Setup and operator sign-in pages, and over plain `http://` passwords cross the WiFi unencrypted. Limit them with `access.admin_allow` / `access.operator_allow` in `config.yaml` (see [docs/usage-guide.md](docs/usage-guide.md#security)).
 
+**HTTPS** (off by default) encrypts the sign-in. Turn it on with `https.enabled` in `config.yaml`, and choose where the certificate comes from: one the program makes itself (every browser warns about it until it is accepted), your own certificate files (a renewed file is picked up without a restart), or, if you own a public domain name, a trusted Let's Encrypt certificate that the program gets and renews by itself (ACME, DNS-01). Step by step: [docs/https-certificate-guide.md](docs/https-certificate-guide.md); every setting: [docs/configuration-reference.md](docs/configuration-reference.md). Plain `http://` stays the simplest address for the audience, and the passwords are only encrypted when the sign-in page is opened through the `https://` address.
+
 <!-- source-only:start -->
 ## Spec-driven workflow
 
@@ -168,3 +170,11 @@ Bug reports, ideas, translation reviews from native speakers and private securit
 ## License
 
 Apache License 2.0 — see [LICENSE](LICENSE).
+
+## If this is useful to you
+
+open-caption is free to use, and a credit is **not required**, but it would be appreciated. If it helped your production, please consider saying so, in the captions themselves (a line at the start or end), in the printed program, or on your website, for example:
+
+> Open captions by open-caption (github.com/tmshort/open-caption)
+
+or "This production uses open-caption for its open captions". A star on the [repository](https://github.com/tmshort/open-caption), or a note in an issue about how it went (what worked, what did not), helps other theaters find it and helps it get better.
