@@ -25,9 +25,7 @@ func (b *Buffer) Write(p []byte) (int, error) {
 	data := b.partial + string(p)
 	parts := strings.Split(data, "\n")
 	b.partial = parts[len(parts)-1]
-	for _, ln := range parts[:len(parts)-1] {
-		b.lines = append(b.lines, ln)
-	}
+	b.lines = append(b.lines, parts[:len(parts)-1]...)
 	if over := len(b.lines) - b.max; over > 0 {
 		b.lines = append([]string(nil), b.lines[over:]...)
 	}

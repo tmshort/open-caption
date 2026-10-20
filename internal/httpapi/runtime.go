@@ -451,13 +451,6 @@ func (rt *Runtime) item(it *showfile.Item) *AudItem {
 	return &AudItem{Kind: "blank"}
 }
 
-// resolveLang maps a requested code to one the show has (exact, then its base language), or the primary.
-func (rt *Runtime) resolveLang(code string) string {
-	rt.mu.RLock()
-	defer rt.mu.RUnlock()
-	return rt.resolveLangLocked(code)
-}
-
 func (rt *Runtime) resolveLangLocked(code string) string {
 	if _, ok := rt.langs[code]; ok {
 		return code

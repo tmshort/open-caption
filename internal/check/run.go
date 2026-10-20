@@ -205,7 +205,7 @@ func joinInts(a []int) string {
 // summary is the one-line description of what the show file contains (the parser's own note, printed above, counts the
 // kinds of cue; this adds the cue count, the speakers and the language).
 func summary(res showfile.Result, translation bool, lang string) string {
-	s := fmt.Sprintf("%s", count(len(res.Cues), "cue"))
+	s := count(len(res.Cues), "cue")
 	var more []string
 	if len(res.Speakers) > 0 {
 		more = append(more, count(len(res.Speakers), "speaker")+": "+strings.Join(res.Speakers, ", "))

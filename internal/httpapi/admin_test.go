@@ -619,7 +619,7 @@ func TestPlainShowFileDownloadAndImport(t *testing.T) {
 		t.Errorf("settings title: %d %v", code, out)
 	}
 	// Windows-1252 (Notepad's old "ANSI") keeps its accents
-	code, out = upload("cafe.txt", []byte("CAF\xc9: caf\xe9 \x93hello\x94\n"))
+	_, out = upload("cafe.txt", []byte("CAF\xc9: caf\xe9 \x93hello\x94\n"))
 	nid = out["show"].(map[string]any)["id"].(string)
 	_, r = c.do("GET", "/api/admin/shows/"+nid+"/showfile", nil)
 	if !strings.Contains(r["text"].(string), "CAFÉ: café “hello”") {
