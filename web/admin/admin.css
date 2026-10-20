@@ -131,7 +131,7 @@ label.tick input { flex: none; margin-top: .3rem; }
 /* a card's first heading and last paragraph add no extra gap inside the card */
 .card > h3:first-child, .readylist > h3:first-child { margin-top: 0; }
 .card > :last-child { margin-bottom: 0; }
-/* Run step: the checklist on the left, the Open the operator page button where it is seen at once on the right */
+/* Share step: the checklist on the left, the Open the operator page button where it is seen at once on the right */
 .card.ready { display: flex; gap: 1.2rem 2rem; flex-wrap: wrap; align-items: flex-start; }
 .readylist { flex: 1 1 22rem; min-width: 0; }
 .startbox { flex: 0 1 18rem; display: flex; flex-direction: column; gap: .6rem; align-items: stretch; margin-left: auto; text-align: center; }
@@ -172,7 +172,7 @@ dialog menu { flex: none; }
 .tabpanel.inactive { visibility: hidden; pointer-events: none; }
 .tabpanel > .setsec:first-child { margin-top: 0; padding-top: 0; border-top: none; }
 .tabpanel > .check { margin: 0 0 1rem; }
-/* Run step: the QR code on the left and the addresses to its right (they stack on a narrow screen) */
+/* Share step: the QR code on the left and the addresses to its right (they stack on a narrow screen) */
 .qrrow { flex-wrap: nowrap; align-items: flex-start; }
 .qrrow .qr { flex: none; }
 .qrrow .urls { flex: 1 1 auto; min-width: 0; }

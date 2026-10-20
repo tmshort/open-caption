@@ -73,7 +73,7 @@ Almost all of the default's cost is the ACME library itself (about 1.6 MB); each
 ## Limits and ideas not built
 
 - One name per certificate: no wildcard, no extra names, no HTTP-01 or TLS-ALPN-01 challenge (they need the computer reachable from the Internet).
-- Setup's Run step still lists the numeric addresses and the `.local` name; it does not yet list `https://<your domain>/`. Give people that address yourself or put it on the QR sign.
+- Setup's Share step still lists the numeric addresses and the `.local` name; it does not yet list `https://<your domain>/`. Give people that address yourself or put it on the QR sign.
 - No OCSP stapling, no certificate transparency check, no revocation.
 - The credentials can not be edited from Setup (by design: the settings file or the environment); Setup only shows the state.
 
