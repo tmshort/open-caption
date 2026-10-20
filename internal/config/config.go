@@ -113,7 +113,7 @@ type MDNS struct {
 // the list of names ("Ethernet", "Wi-Fi", "en0", "eth0") that are ticked in Setup; a new interface (a USB
 // adapter, a VPN) stays off until it is added. Empty means no choice has been made yet: every interface is used.
 // When two ticked interfaces are on the same network (a cable and Wi-Fi at once) only one address is offered,
-// the main connection's, else the wired one; untick the other to choose.
+// the wired one, else the main connection's; untick the other to choose.
 // RestrictListening goes further than offering: the server refuses a connection made to an address of an
 // interface that is not used (connections to this computer itself, at localhost, are always served).
 type Network struct {

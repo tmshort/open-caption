@@ -200,7 +200,7 @@
     restrict.checked = saved.restrictListening;
     const networkSec = sec('Network interfaces',
       h('div', { class: 'addrbox' },
-        h('p', { class: 'hint' }, __('The audience is given the addresses of the interfaces that are ticked: in the address list, the QR code, the HTTPS certificate and the .local name. Tick only the networks the audience uses. When two ticked interfaces are on the same network (a cable and Wi-Fi), only one address is offered: the main connection, else the wired one. Untick the other to choose.')),
+        h('p', { class: 'hint' }, __('The audience is given the addresses of the interfaces that are ticked: in the address list, the QR code, the HTTPS certificate and the .local name. Tick only the networks the audience uses. When two ticked interfaces are on the same network (a cable and Wi-Fi), only one address is offered: the wired one, else the main connection. Untick the other to choose.')),
         ifList,
         h('label', { class: 'row addrrestrict' }, restrict, __('Also refuse connections to interfaces that are not ticked')),
         h('p', { class: 'hint' }, __('Connections to this computer itself are always accepted. If a phone then cannot reach the program, clear this box.')),

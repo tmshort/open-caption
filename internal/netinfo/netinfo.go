@@ -134,7 +134,7 @@ func usedAddresses() []Address {
 
 // LocalIPs returns the addresses to offer: those of the interfaces that are used, and only one for each network.
 // A computer on one network through two adapters (a cable and Wi-Fi at once) has two addresses there, and the
-// audience needs just one: the main connection's, else the wired one, else a Wi-Fi one.
+// audience needs just one: the wired one, else the main connection's, else any other, else a Wi-Fi one.
 func LocalIPs() []net.IP {
 	var out []net.IP
 	for _, a := range chooseOnePerNetwork(usedAddresses(), mainIP()) {
@@ -143,17 +143,21 @@ func LocalIPs() []net.IP {
 	return out
 }
 
-// rank orders the addresses of one network: the main connection, then wired, then anything else, then Wi-Fi.
+// rank orders the addresses of one network: a wired (Ethernet) interface first, whatever its address, the one with
+// the main connection first among those; then the main connection of any other kind, then anything else, then Wi-Fi.
 func rank(a Address, main net.IP) int {
+	isMain := main != nil && a.IP.Equal(main)
 	switch {
-	case main != nil && a.IP.Equal(main):
+	case a.Kind == KindEthernet && isMain:
 		return 0
 	case a.Kind == KindEthernet:
 		return 1
+	case isMain:
+		return 2
 	case a.Kind == KindWiFi:
-		return 3
+		return 4
 	}
-	return 2
+	return 3
 }
 
 // chooseOnePerNetwork keeps, for each network, the address with the best rank (the first of equals), in the

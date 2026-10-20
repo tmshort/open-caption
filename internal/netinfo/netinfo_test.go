@@ -179,9 +179,19 @@ func TestOnlyOneAddressIsOfferedForEachNetwork(t *testing.T) {
 	if got := str(chooseOnePerNetwork([]Address{wifi, cable, vpn}, nil)); got != "192.168.1.185 10.8.0.2" {
 		t.Errorf("wired over Wi-Fi: %s", got)
 	}
-	// The main connection (the one that reaches the gateway) wins over everything, also over the cable.
-	if got := str(chooseOnePerNetwork([]Address{cable, wifi}, net.ParseIP("192.168.1.138"))); got != "192.168.1.138" {
-		t.Errorf("the main connection wins: %s", got)
+	// A wired interface wins whatever its address, also when Wi-Fi is the main connection (the one that reaches the
+	// gateway) and has the lower address.
+	if got := str(chooseOnePerNetwork([]Address{wifi, cable}, net.ParseIP("192.168.1.138"))); got != "192.168.1.185" {
+		t.Errorf("the cable wins over the main connection when that is Wi-Fi: %s", got)
+	}
+	// With two wired interfaces the one with the main connection wins; without a wired one the main connection does.
+	cable2 := mk("192.168.1.20", "Ethernet 2", KindEthernet, "192.168.1.0/24")
+	if got := str(chooseOnePerNetwork([]Address{cable2, cable}, net.ParseIP("192.168.1.185"))); got != "192.168.1.185" {
+		t.Errorf("of two cables the main connection: %s", got)
+	}
+	other0 := mk("192.168.1.50", "tun0", KindOther, "192.168.1.0/24")
+	if got := str(chooseOnePerNetwork([]Address{wifi, other0}, net.ParseIP("192.168.1.50"))); got != "192.168.1.50" {
+		t.Errorf("the main connection beats Wi-Fi when neither is wired: %s", got)
 	}
 	// Equals keep the first (numeric order); an "other" adapter beats Wi-Fi but not a cable.
 	other := mk("192.168.1.50", "bridge0", KindOther, "192.168.1.0/24")
@@ -237,10 +247,10 @@ func TestInterfacesSayWhichOneIsUsedForANetwork(t *testing.T) {
 	if w, e := find(l, "Wi-Fi"), find(l, "Ethernet"); !w.Used || e.Selected || e.Used || e.Instead != "" {
 		t.Errorf("wifi=%+v cable=%+v", w, e)
 	}
-	// The main connection wins over the cable when both are ticked.
+	// Even when Wi-Fi has the main connection, the cable is the one used.
 	SetInterfaces(nil)
 	l = buildInterfaces(all, net.ParseIP("192.168.1.138"))
-	if w := find(l, "Wi-Fi"); !w.Used {
-		t.Errorf("the main connection is used: %+v", w)
+	if w, e := find(l, "Wi-Fi"), find(l, "Ethernet"); w.Used || !e.Used || w.Instead != "Ethernet" {
+		t.Errorf("wifi=%+v cable=%+v", w, e)
 	}
 }
