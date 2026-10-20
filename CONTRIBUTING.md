@@ -58,7 +58,7 @@ These are how every change in this repository is made, by the maintainer and by 
 ### One change per commit
 
 - **One fix or feature per commit.** If a request has several parts, make several commits, each complete on its own (code, tests, documentation, translations). Do not mix refactors or unrelated tidying into a feature or a fix.
-- Commit messages say **what changed and why**, and name the `REQ-xxx` where there is one.
+- Commit messages have a short headline of **at most 80 characters**; **what changed and why** goes in the description after a blank line, which also names the `REQ-xxx` where there is one.
 
 ### The documentation changes in the same commit
 
