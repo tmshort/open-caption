@@ -171,55 +171,41 @@
     } }, ...[['error', 'Errors only'], ['warn', 'Problems (warnings and errors)'], ['info', 'Normal (events, sign-ins)'], ['debug', 'Debug (every request)']].map(([v, t]) => h('option', { value: v }, __(t))));
     logSelect.value = s.logLevel;
     const sec = (title, ...kids) => h('section', { class: 'setsec' }, h('h3', {}, __(title)), ...kids);
-    // Which of this computer's addresses are offered to the audience (network.* in config.yaml): a setting of this computer,
-    // not of a show, so it lives here and not on the Run step.
+    // Which of this computer's network interfaces are used (network.* in config.yaml): a setting of this computer, not of a
+    // show, so it lives here and not on the Run step. Each tick is saved as soon as it is clicked.
     const net0 = s.network || {};
-    const shownList = h('ul', { class: 'addrlist' });
-    const pref = h('textarea', { rows: '3', spellcheck: 'false', 'aria-label': __('Prefer these adapters'), placeholder: __('for example {value}', { value: 'Ethernet' }) }); pref.value = (net0.prefer || []).join('\n');
-    const kindName = (k) => k === 'wifi' ? __('Wi-Fi') : k === 'ethernet' ? __('Ethernet') : '';
-    // What is saved in config.yaml now: the row buttons change one thing at once and leave the other boxes alone.
-    const saved = { include: net0.include || [], exclude: net0.exclude || [], prefer: net0.prefer || [], restrictListening: !!net0.restrictListening };
-    const sameName = (x, y) => String(x).trim().toLowerCase() === String(y).trim().toLowerCase();
-    const isPreferred = (a) => !!a.interface && saved.prefer.some((x) => sameName(x, a.interface));
-    const stateText = (a) => a.shown ? __('shown') : a.hidden === 'network' ? __('not used: same network as {ip}', { ip: a.instead }) : __('hidden');
-    // Two addresses are on one network when one of them says the other is the one shown for it.
-    const sharesNetwork = (a, addrs) => a.hidden === 'network' || addrs.some((x) => x.hidden === 'network' && x.instead === a.ip);
-    const rowButton = (label, title, run) => [' ', h('button', { type: 'button', class: 'usethis', title, onclick: run }, label)];
-    const paintList = (addrs) => shownList.replaceChildren(...(addrs.length ? addrs.map((a) => h('li', { class: a.shown ? '' : 'off' }, h('b', {}, a.ip), ' ', [kindName(a.kind), a.interface].filter(Boolean).length ? '(' + [kindName(a.kind), a.interface].filter(Boolean).join(', ') + ') ' : '', stateText(a), isPreferred(a) ? ', ' + __('preferred') : '', a.current ? ' — ' + __('you are using Setup through this one') : '',
-      isPreferred(a) ? rowButton(__('Stop preferring this one'), __('Remove this adapter from Prefer these adapters'), () => setPrefer(saved.prefer.filter((x) => !sameName(x, a.interface))))
-        : a.interface && sharesNetwork(a, addrs) ? rowButton(__('Use this one'), __('Use this adapter for its network'), () => setPrefer([a.interface].concat(saved.prefer))) : '')) : [h('li', {}, __('No network address was found.'))]));
-    let lastAddrs = s.addresses || [];
-    const repaint = () => paintList(lastAddrs);
-    repaint();
-    const inc = h('textarea', { rows: '3', spellcheck: 'false', 'aria-label': __('Show only these'), placeholder: __('for example {value}', { value: '192.168.1.0/24' }) }); inc.value = (net0.include || []).join('\n');
-    const exc = h('textarea', { rows: '3', spellcheck: 'false', 'aria-label': __('Never show these'), placeholder: __('for example {value}', { value: '192.168.56.0/24' }) }); exc.value = (net0.exclude || []).join('\n');
-    const restrict = h('input', { type: 'checkbox' }); restrict.checked = !!net0.restrictListening;
+    const saved = { restrictListening: !!net0.restrictListening };
+    let ifaces = s.interfaces || [];
+    const ifList = h('div', { class: 'iflist' });
     const netMsg = h('div', { class: 'check warn', role: 'alert', hidden: '' });
-    // Saves the lists and shows what the program does with them; returns whether it worked.
-    async function putNet(body) {
+    const kindName = (k) => k === 'wifi' ? __('Wi-Fi') : k === 'ethernet' ? __('Ethernet') : '';
+    const stateText = (i) => !i.selected ? __('not used') : i.used ? __('used') : __('not used: same network as {name} ({ip})', { name: i.instead, ip: i.insteadIp });
+    const paintIfaces = () => ifList.replaceChildren(...(ifaces.length ? ifaces.map((i) => {
+      const box = h('input', { type: 'checkbox', 'aria-label': __('Use {name}', { name: i.name }), disabled: i.current, onchange: () => putNet(box.checked ? ifaces.filter((x) => x.selected || x === i).map((x) => x.name) : ifaces.filter((x) => x.selected && x !== i).map((x) => x.name), saved.restrictListening) });
+      box.checked = i.selected;
+      return h('div', { class: 'ifrow' + (i.selected && i.used ? '' : ' off') },
+        h('label', { class: 'row' }, box, h('b', {}, i.name), kindName(i.kind) ? ' (' + kindName(i.kind) + ')' : ''),
+        h('div', { class: 'hint ifinfo' }, i.addresses.join(', '), ' — ', stateText(i), i.current ? '. ' + __('you are using Setup through this interface') : ''));
+    }) : [h('p', { class: 'hint' }, __('No network address was found.'))]));
+    // Saves the choice and shows what the program does with it; returns whether it worked.
+    async function putNet(names, restrict) {
       netMsg.hidden = true;
-      const x = await api('PUT', '/api/admin/settings/network', body);
-      if (!x.ok) { netMsg.textContent = __((x.data && x.data.error) || 'Could not change the addresses'); netMsg.hidden = false; return false; }
-      Object.assign(saved, body); lastAddrs = x.data.addresses || []; repaint(); netChanged = true; toast(__('Addresses changed'));
+      const x = await api('PUT', '/api/admin/settings/network', { interfaces: names, restrictListening: restrict });
+      if (!x.ok) { netMsg.textContent = __((x.data && x.data.error) || 'Could not change the network settings'); netMsg.hidden = false; paintIfaces(); return false; }
+      saved.restrictListening = restrict; ifaces = x.data.interfaces || []; paintIfaces(); netChanged = true; toast(__('Network settings saved'));
       return true;
     }
-    async function setPrefer(list) { if (await putNet(Object.assign({}, saved, { prefer: list }))) pref.value = list.join('\n'); }
-    const lines = (t) => t.value.split('\n').map((x) => x.trim()).filter(Boolean);
-    const applyNet = h('button', { type: 'button', onclick: () => putNet({ include: lines(inc), exclude: lines(exc), prefer: lines(pref), restrictListening: restrict.checked }) }, __('Apply'));
-    const networkSec = sec('Network addresses',
+    paintIfaces();
+    const restrict = h('input', { type: 'checkbox', onchange: () => putNet(ifaces.filter((x) => x.selected).map((x) => x.name), restrict.checked).then((ok) => { if (!ok) restrict.checked = saved.restrictListening; }) });
+    restrict.checked = saved.restrictListening;
+    const networkSec = sec('Network interfaces',
       h('div', { class: 'addrbox' },
-        h('p', { class: 'hint' }, __('These are the addresses this computer has now. The audience is given the ones marked shown: in the address list, the QR code, the HTTPS certificate and the .local name. When two adapters are on the same network (a cable and Wi-Fi), only one is used: the main connection, else the wired one.')),
-        shownList,
-        h('div', { class: 'addrboxes' },
-          h('label', { class: 'addrlabel' }, __('Show only these'), inc),
-          h('label', { class: 'addrlabel' }, __('Never show these'), exc),
-          h('label', { class: 'addrlabel' }, __('Prefer these adapters'), pref)),
-        h('p', { class: 'hint' }, __('One entry per line. Leave Show only these empty to show all. In Prefer these adapters write Ethernet, Wi-Fi or an adapter name: the first that matches is used when two adapters are on the same network.')),
-        h('label', { class: 'row addrrestrict' }, restrict, __('Also refuse connections to the addresses that are not shown')),
+        h('p', { class: 'hint' }, __('The audience is given the addresses of the interfaces that are ticked: in the address list, the QR code, the HTTPS certificate and the .local name. Tick only the networks the audience uses. When two ticked interfaces are on the same network (a cable and Wi-Fi), only one address is offered: the main connection, else the wired one. Untick the other to choose.')),
+        ifList,
+        h('label', { class: 'row addrrestrict' }, restrict, __('Also refuse connections to interfaces that are not ticked')),
         h('p', { class: 'hint' }, __('Connections to this computer itself are always accepted. If a phone then cannot reach the program, clear this box.')),
-        h('p', { class: 'hint' }, __('Each line is an address (192.168.1.50), a network (192.168.1.0/24) or the word private (the usual home and office networks). A line under Never wins.')),
-        s.networkPinned ? h('p', { class: 'hint' }, __('This copy was started with --network-include or --network-exclude, which override these boxes each time it starts.')) : null,
-        netMsg, h('div', { class: 'row' }, applyNet)));
+        s.networkPinned ? h('p', { class: 'hint' }, __('This copy was started with --network-interfaces, which overrides these ticks each time it starts.')) : null,
+        netMsg));
     // The HTTPS certificate: where it comes from and, for an automatic one, its state (docs/10). Filled in once the program answers.
     const certBox = h('div', { class: 'certbox' });
     const paintCert = (c) => {
@@ -1117,7 +1103,7 @@
         h('div', { class: 'row qrrow' }, qrBox, list),
         ...(net.data.warnings || []).map((w) => h('div', { class: 'check warn' }, w)),
         h('p', { class: 'hint' }, __('Audience devices must be on the same WiFi as this computer. Devices connected right now: '), h('b', { id: 'audcount' }, String(A.audience))),
-        h('p', { class: 'hint' }, __('Two networks, or the wrong address? '), h('a', { href: '#', onclick: (e) => { e.preventDefault(); openSettings('net'); } }, __('Choose which addresses are offered')))),
+        h('p', { class: 'hint' }, __('Two networks, or the wrong address? '), h('a', { href: '#', onclick: (e) => { e.preventDefault(); openSettings('net'); } }, __('Choose which network interfaces are used')))),
       h('p', { class: 'hint' }, __('Something not working? '), h('a', { href: '#', onclick: (e) => { e.preventDefault(); openHelp('admin-troubleshooting'); } }, __('Troubleshooting help')), ' · ', h('a', { href: '/api/admin/support-bundle', download: 'support-bundle.zip' }, __('Download a support bundle')), ' · ', h('a', { href: '#', onclick: (e) => { e.preventDefault(); showLog(); } }, __('Recent log…'))));
   }
   // Load a show into standby and go to the operator page. Another show that is on air is only replaced after asking.

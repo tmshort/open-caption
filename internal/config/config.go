@@ -108,19 +108,16 @@ type MDNS struct {
 	Name    string `yaml:"name"` // one label; ".local" is added
 }
 
-// Network chooses which of this computer's network addresses are offered to the audience: listed in Setup,
-// printed at startup, put in the HTTPS certificate and announced by name. Entries are an address
-// ("192.168.1.50"), a network ("192.168.1.0/24"), or "private" (the usual home and office networks). Include
-// empty means every address; an address that matches Exclude is never offered, whatever Include says.
-// Prefer settles which adapter is used when two are on the same network (a cable and Wi-Fi at once): the first
-// entry that matches wins. An entry is an adapter's name ("Ethernet", "en4") or a kind ("ethernet", "wifi");
-// with none, the main connection is used, then a wired adapter, then any other, then Wi-Fi.
-// RestrictListening goes further than offering: the server refuses a connection made to an address that is not
-// offered (connections to this computer itself, at localhost, are always served).
+// Network chooses which of this computer's network interfaces (cable, Wi-Fi ...) are used: only their addresses
+// are given to the audience, listed in Setup, put in the HTTPS certificate and announced by name. Interfaces is
+// the list of names ("Ethernet", "Wi-Fi", "en0", "eth0") that are ticked in Setup; a new interface (a USB
+// adapter, a VPN) stays off until it is added. Empty means no choice has been made yet: every interface is used.
+// When two ticked interfaces are on the same network (a cable and Wi-Fi at once) only one address is offered,
+// the main connection's, else the wired one; untick the other to choose.
+// RestrictListening goes further than offering: the server refuses a connection made to an address of an
+// interface that is not used (connections to this computer itself, at localhost, are always served).
 type Network struct {
-	Include           []string `yaml:"include"`
-	Exclude           []string `yaml:"exclude"`
-	Prefer            []string `yaml:"prefer"`
+	Interfaces        []string `yaml:"interfaces"`
 	RestrictListening bool     `yaml:"restrict_listening"`
 }
 
@@ -513,15 +510,9 @@ func (c *Config) normalize() []string {
 	if _, err := ParseAllowList(c.Access.OperatorAllow); err != nil {
 		add("access.operator_allow", "%v", err)
 	}
-	if _, err := NewAddressFilter(c.Network.Include, nil); err != nil {
-		add("network.include", "%v", err)
-	}
-	if _, err := NewAddressFilter(nil, c.Network.Exclude); err != nil {
-		add("network.exclude", "%v", err)
-	}
-	for i, e := range c.Network.Prefer {
-		if c.Network.Prefer[i] = strings.TrimSpace(e); c.Network.Prefer[i] == "" {
-			add("network.prefer", "entry %d is empty: use an adapter's name such as Ethernet, or ethernet or wifi", i+1)
+	for i, e := range c.Network.Interfaces {
+		if c.Network.Interfaces[i] = strings.TrimSpace(e); c.Network.Interfaces[i] == "" {
+			add("network.interfaces", "entry %d is empty: use an interface's name such as Ethernet, Wi-Fi, en0 or eth0", i+1)
 		}
 	}
 	if n, err := mdns.NormalizeName(c.MDNS.Name); err != nil {

@@ -108,14 +108,11 @@ pre.diff .d-add { background: #1f6f3a33; } pre.diff .d-del { background: #b32626
 .setsec { margin: 0 0 1.2rem; padding-top: .2rem; }
 .setsec + .setsec { border-top: 1px solid var(--line); padding-top: 1rem; }
 .setsec h3 { margin: 0 0 .5rem; font-size: 1.05rem; }
-dialog .addrboxes { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 0 .8rem; align-items: start; }
-dialog .addrbox textarea { width: 100%; box-sizing: border-box; font-family: ui-monospace, Menlo, Consolas, monospace; }
-dialog .addrlabel { display: block; margin: .6rem 0 .3rem; font-weight: 600; }
-dialog .addrlabel textarea { margin-top: .3rem; font-weight: 400; }
-dialog .addrlist { margin: .5rem 0; padding-left: 1.2rem; }
-dialog .addrlist li.off { color: var(--dim); }
-dialog .addrlist li { margin: .35rem 0; }
-dialog .addrlist button.usethis { margin-left: .7rem; padding: .15rem .8rem; min-height: 0; }
+dialog .iflist { margin: .6rem 0; }
+dialog .ifrow { margin: .5rem 0; }
+dialog .ifrow.off b { color: var(--dim); }
+dialog .ifinfo { margin: .1rem 0 0 1.9rem; }
+dialog .addrrestrict { margin: .8rem 0 .2rem; }
 dialog input.netname { width: 14rem; max-width: 60%; }
 /* a link that does something (a download) is drawn like the buttons beside it, not as a blue underlined link */
 a.btn, a.quiet { display: inline-flex; align-items: center; min-height: 2.4rem; box-sizing: border-box; text-decoration: none; cursor: pointer; }

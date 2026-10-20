@@ -1174,7 +1174,7 @@ func (s *Server) network(w http.ResponseWriter, r *http.Request) {
 	var warnings []string
 	if len(ips) == 0 {
 		if len(netinfo.AllAddresses()) > 0 {
-			warnings = append(warnings, "Every network address of this computer is hidden by the address settings. Use Settings, Network to show one.")
+			warnings = append(warnings, "Every network interface of this computer is turned off in the network settings. Tick one in Settings, Network.")
 		} else {
 			warnings = append(warnings, "No network address was found. Connect this computer to the venue's network, then reload.")
 		}
@@ -1313,7 +1313,7 @@ func (s *Server) settings(w http.ResponseWriter, r *http.Request) {
 		"canChangePasswords": s.cfg.Path != "", "standby": s.standbyView(), "logLevel": logx.Current().String(), "logLevelPinned": s.pinnedLevel, "mdns": s.MDNSStatus(),
 		"adminAllow": s.cfg.Access.AdminAllow, "operatorAllow": s.cfg.Access.OperatorAllow,
 		"adminRestricted": s.adminAllow.Restricted(), "operatorRestricted": s.operatorAllow.Restricted(),
-		"network": map[string]any{"include": ns.Include, "exclude": ns.Exclude, "prefer": ns.Prefer, "restrictListening": ns.RestrictListening}, "networkPinned": s.pinnedNetwork, "addresses": s.networkAddresses(r),
+		"network": map[string]any{"interfaces": ns.Interfaces, "restrictListening": ns.RestrictListening}, "networkPinned": s.pinnedNetwork, "interfaces": s.networkInterfaces(r),
 	})
 }
 

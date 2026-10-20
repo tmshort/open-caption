@@ -682,103 +682,76 @@ func TestExportFailsCleanlyWhenAnImageCannotBeRead(t *testing.T) {
 	}
 }
 
-// REQ-069: Setup chooses which of this computer's addresses are offered; the choice is saved and applies at once.
-func TestOfferedAddressesCanBeChosenInSetup(t *testing.T) {
-	t.Cleanup(func() { netinfo.SetFilter(nil); netinfo.SetPrefer(nil); netinfo.SetRestrictListening(false) })
+// REQ-069: Setup ticks the network interfaces that are used; the choice is saved and applies at once.
+func TestNetworkInterfacesCanBeChosenInSetup(t *testing.T) {
+	t.Cleanup(func() { netinfo.SetInterfaces(nil); netinfo.SetRestrictListening(false) })
 	cfgPath := filepath.Join(t.TempDir(), "config.yaml")
 	os.WriteFile(cfgPath, []byte("# kept\nadmin_password: adminpw\noperator_password: operatorpw\nhttp:\n  addr: \":80\"\n"), 0o600)
 	_, _, c := serverWith(t, func(cfg *config.Config) { cfg.Path = cfgPath })
 
-	code, r := c.do("PUT", "/api/admin/settings/network", map[string]any{"include": []string{" 192.168.1.0/24 ", "", "192.168.1.0/24"}, "exclude": []string{"192.168.1.138"}, "prefer": []string{" Ethernet "}})
+	code, r := c.do("PUT", "/api/admin/settings/network", map[string]any{"interfaces": []string{" Ethernet ", "", "ethernet", "en4"}, "restrictListening": true})
 	if code != 200 || r["saved"] != true {
 		t.Fatalf("%d %v", code, r)
 	}
 	b, _ := os.ReadFile(cfgPath)
-	if !strings.Contains(string(b), "# kept") || !strings.Contains(string(b), "192.168.1.0/24") || !strings.Contains(string(b), "192.168.1.138") {
+	if !strings.Contains(string(b), "# kept") || !strings.Contains(string(b), "- Ethernet") || !strings.Contains(string(b), "- en4") || !strings.Contains(string(b), "restrict_listening: true") {
 		t.Errorf("config.yaml:\n%s", b)
 	}
 	if _, err := config.Load(cfgPath); err != nil {
 		t.Errorf("the saved file must load: %v", err)
 	}
-	if !netinfo.Allowed(net.ParseIP("192.168.1.185")) || netinfo.Allowed(net.ParseIP("192.168.1.138")) || netinfo.Allowed(net.ParseIP("10.0.0.5")) {
-		t.Error("the choice applies at once: in include and not in exclude")
+	if !netinfo.InterfaceSelected("ETHERNET") || netinfo.InterfaceSelected("Wi-Fi") || !netinfo.RestrictingListening() {
+		t.Error("the choice applies at once")
 	}
 	_, g := c.do("GET", "/api/admin/settings", nil)
 	n := g["network"].(map[string]any)
-	if p := n["prefer"].([]any); len(p) != 1 || p[0] != "Ethernet" {
-		t.Errorf("the preferred adapter is saved and returned, trimmed: %v", n["prefer"])
+	if l := n["interfaces"].([]any); len(l) != 2 || l[0] != "Ethernet" || n["restrictListening"] != true {
+		t.Errorf("blank and repeated names are dropped: %v", n)
 	}
-	if len(n["include"].([]any)) != 1 || len(n["exclude"].([]any)) != 1 {
-		t.Errorf("blank and repeated lines are dropped: %v", n)
+	if _, ok := g["interfaces"].([]any); !ok {
+		t.Errorf("the settings list this computer's interfaces: %v", g["interfaces"])
 	}
-	// An invalid line is refused and changes nothing.
-	if code, r := c.do("PUT", "/api/admin/settings/network", map[string]any{"include": []string{"not an address"}, "exclude": []string{}}); code != 400 || !strings.Contains(r["error"].(string), "Show only these") {
+	// Nothing ticked is refused (and changes nothing).
+	if code, r := c.do("PUT", "/api/admin/settings/network", map[string]any{"interfaces": []string{"", " "}}); code != 400 || !strings.Contains(r["error"].(string), "at least one") {
 		t.Errorf("%d %v", code, r)
 	}
-	if code, r := c.do("PUT", "/api/admin/settings/network", map[string]any{"include": []string{}, "exclude": []string{"10.0.0.0/33"}}); code != 400 || !strings.Contains(r["error"].(string), "Never show these") {
-		t.Errorf("%d %v", code, r)
-	}
-	if !netinfo.Allowed(net.ParseIP("192.168.1.185")) {
-		t.Error("a refused change leaves the rule as it was")
-	}
-	// Empty lists offer everything again.
-	if code, _ := c.do("PUT", "/api/admin/settings/network", map[string]any{"include": []string{}, "exclude": []string{}}); code != 200 || !netinfo.Allowed(net.ParseIP("10.0.0.5")) {
-		t.Error("empty lists offer every address")
+	if !netinfo.InterfaceSelected("en4") {
+		t.Error("a refused change leaves the choice as it was")
 	}
 }
 
-// REQ-069: the restriction makes the server refuse connections to addresses that are not offered, but never cuts off
-// the address Setup is being used through.
-func TestRestrictingListeningIsSavedAndDoesNotLockOutTheCaller(t *testing.T) {
-	t.Cleanup(func() { netinfo.SetFilter(nil); netinfo.SetPrefer(nil); netinfo.SetRestrictListening(false) })
-	cfgPath := filepath.Join(t.TempDir(), "config.yaml")
-	os.WriteFile(cfgPath, []byte("admin_password: adminpw\noperator_password: operatorpw\nhttp:\n  addr: \":80\"\n"), 0o600)
-	s, _, c := serverWith(t, func(cfg *config.Config) { cfg.Path = cfgPath })
+func interfaceRequest(t *testing.T, body, local string) *http.Request {
+	t.Helper()
+	req := httptest.NewRequest("PUT", "/api/admin/settings/network", strings.NewReader(body))
+	return req.WithContext(context.WithValue(req.Context(), http.LocalAddrContextKey, net.Addr(&net.TCPAddr{IP: net.ParseIP(local), Port: 80})))
+}
 
-	code, _ := c.do("PUT", "/api/admin/settings/network", map[string]any{"include": []string{}, "exclude": []string{"192.168.1.138"}, "restrictListening": true})
-	if code != 200 || !netinfo.RestrictingListening() {
-		t.Fatalf("%d restricting=%v", code, netinfo.RestrictingListening())
-	}
-	if b, _ := os.ReadFile(cfgPath); !strings.Contains(string(b), "restrict_listening: true") {
-		t.Errorf("the switch is saved:\n%s", b)
-	}
-	if _, err := config.Load(cfgPath); err != nil {
-		t.Errorf("the saved file must load: %v", err)
-	}
-	_, g := c.do("GET", "/api/admin/settings", nil)
-	if g["network"].(map[string]any)["restrictListening"] != true {
-		t.Errorf("%v", g["network"])
-	}
-	if netinfo.ConnectionAllowed(&net.TCPAddr{IP: net.ParseIP("192.168.1.138"), Port: 80}) || !netinfo.ConnectionAllowed(&net.TCPAddr{IP: net.ParseIP("192.168.1.185"), Port: 80}) {
-		t.Error("a connection to a hidden address is refused, to a shown one served")
-	}
-
-	// A request that arrived on the address that would be refused is not accepted (nothing changes).
-	body := strings.NewReader(`{"include":[],"exclude":["192.168.1.138"],"restrictListening":true}`)
-	req := httptest.NewRequest("PUT", "/api/admin/settings/network", body)
-	req = req.WithContext(context.WithValue(req.Context(), http.LocalAddrContextKey, net.Addr(&net.TCPAddr{IP: net.ParseIP("192.168.1.138"), Port: 80})))
-	netinfo.SetRestrictListening(false)
+// Setup never turns off the interface it is being used through.
+func TestSetupDoesNotTurnOffTheInterfaceItIsUsedThrough(t *testing.T) {
+	t.Cleanup(func() { netinfo.SetInterfaces(nil); netinfo.SetRestrictListening(false) })
+	s, _, _ := serverWith(t, nil)
+	// A computer with a cable and Wi-Fi; the request arrived on the Wi-Fi address.
+	netinfo.SetTableForTest(map[string]string{"192.168.1.185": "Ethernet", "192.168.1.138": "Wi-Fi"})
 	rec := httptest.NewRecorder()
-	s.setNetwork(rec, req)
-	if rec.Code != 409 || !strings.Contains(rec.Body.String(), "192.168.1.138") || netinfo.RestrictingListening() {
-		t.Errorf("%d %s restricting=%v", rec.Code, rec.Body.String(), netinfo.RestrictingListening())
-	}
-	// Hiding the address alone (without the restriction) is refused as well: it is the one in use.
-	body = strings.NewReader(`{"include":[],"exclude":["192.168.1.138"],"restrictListening":false}`)
-	req = httptest.NewRequest("PUT", "/api/admin/settings/network", body)
-	req = req.WithContext(context.WithValue(req.Context(), http.LocalAddrContextKey, net.Addr(&net.TCPAddr{IP: net.ParseIP("192.168.1.138"), Port: 80})))
-	rec = httptest.NewRecorder()
-	s.setNetwork(rec, req)
-	if rec.Code != 409 || !strings.Contains(rec.Body.String(), "turn off") {
+	s.setNetwork(rec, interfaceRequest(t, `{"interfaces":["Ethernet"],"restrictListening":false}`, "192.168.1.138"))
+	if rec.Code != 409 || !strings.Contains(rec.Body.String(), "Wi-Fi") || !strings.Contains(rec.Body.String(), "turn off") {
 		t.Errorf("%d %s", rec.Code, rec.Body.String())
 	}
-	// ... but the same request through an address that stays shown is fine.
-	body = strings.NewReader(`{"include":[],"exclude":["192.168.1.138"],"restrictListening":true}`)
-	req = httptest.NewRequest("PUT", "/api/admin/settings/network", body)
-	req = req.WithContext(context.WithValue(req.Context(), http.LocalAddrContextKey, net.Addr(&net.TCPAddr{IP: net.ParseIP("192.168.1.185"), Port: 80})))
-	rec = httptest.NewRecorder()
-	s.setNetwork(rec, req)
-	if rec.Code != 200 || !netinfo.RestrictingListening() {
-		t.Errorf("%d %s", rec.Code, rec.Body.String())
+	if netinfo.InterfaceSelected("Ethernet") && !netinfo.InterfaceSelected("Wi-Fi") {
+		t.Error("a refused change changes nothing")
+	}
+	// The same choice is fine when the request came in on the cable, or at localhost.
+	for _, local := range []string{"192.168.1.185", "127.0.0.1"} {
+		rec = httptest.NewRecorder()
+		s.setNetwork(rec, interfaceRequest(t, `{"interfaces":["Ethernet"],"restrictListening":true}`, local))
+		if rec.Code != 200 {
+			t.Errorf("%s: %d %s", local, rec.Code, rec.Body.String())
+		}
+	}
+	// The interface in use is marked in the list. (A change resets what the program knows of the network.)
+	netinfo.SetTableForTest(map[string]string{"192.168.1.185": "Ethernet", "192.168.1.138": "Wi-Fi"})
+	req := interfaceRequest(t, `{}`, "192.168.1.185")
+	if cur := currentInterface(req); cur != "Ethernet" {
+		t.Errorf("the interface in use: %q", cur)
 	}
 }

@@ -563,67 +563,44 @@ async function main() {
     check('buttons that are links (Open the Run page, Print a QR sign) are not underlined', await arch.evaluate(() => [...document.querySelectorAll('#panel a.btn')].length >= 1 && [...document.querySelectorAll('#panel a.btn')].every((e) => getComputedStyle(e).textDecorationLine === 'none')));
     check('the Print QR sign button sits right beside Copy address', await arch.evaluate(() => { const c = [...document.querySelectorAll('#panel button')].find((b) => b.textContent === 'Copy address'), p = [...document.querySelectorAll('#panel a.btn')].find((b) => /QR sign/.test(b.textContent)); return !!c && !!p && p.getBoundingClientRect().left - c.getBoundingClientRect().right < 40; }));
     check('the projector link is a numeric address with its own radio button, so it can be copied', await arch.evaluate(() => { const r = document.querySelector('.projrow input[type=radio]'), a = document.querySelector('.projrow a'); return !!r && !!a && /display=projector/.test(a.href) && !/\.local/.test(a.href); }));
-    // REQ-069: choosing which addresses are offered (a setting of this computer: Settings > Network, not the Run step)
+    // REQ-069: choosing which network interfaces are used (a setting of this computer: Settings > Network, not the Run step)
     {
-      const shownIps = () => arch.evaluate(() => [...document.querySelectorAll('.urls a')].map((a) => { try { return new URL(a.href).hostname; } catch (e) { return ''; } }).filter((x) => /^\d+\.\d+\.\d+\.\d+$/.test(x) && x !== '127.0.0.1'));
-      const ips = await shownIps();
-      const netOpen = async () => { await arch.evaluate(() => [...document.querySelectorAll('#panel a')].find((a) => /Choose which addresses are offered/.test(a.textContent)).click()); await arch.waitForFunction(() => document.getElementById('dlg').hasAttribute('open') && document.querySelector('#setpanel-net:not(.inactive) .addrlist li')); };
-      const netApply = async () => { await arch.evaluate(() => [...document.querySelectorAll('#setpanel-net button')].find((b) => b.textContent === 'Apply').click()); await sleep(T(700)); };
+      const netOpen = async () => { await arch.evaluate(() => [...document.querySelectorAll('#panel a')].find((a) => /Choose which network interfaces are used/.test(a.textContent)).click()); await arch.waitForFunction(() => document.getElementById('dlg').hasAttribute('open') && document.querySelector('#setpanel-net:not(.inactive) .ifrow')); };
       const netClose = async () => { await arch.click('#dlgok'); await sleep(T(900)); };
-      check('the Run step has no address controls of its own, only a link to Settings > Network', await arch.evaluate(() => ![...document.querySelectorAll('#panel button')].some((b) => /Choose addresses/.test(b.textContent)) && [...document.querySelectorAll('#panel a')].some((a) => /Choose which addresses are offered/.test(a.textContent))));
-      if (ips.length) {
-        await netOpen();
-        check('the link opens Settings on the Network tab, which lists this computer\'s addresses, each shown or hidden', await arch.evaluate((ip) => [...document.querySelectorAll('.addrlist li')].some((li) => li.textContent.includes(ip) && /shown/.test(li.textContent)) && document.getElementById('settab-net').getAttribute('aria-selected') === 'true', ips[0]));
-        await arch.evaluate((ip) => { document.querySelector('textarea[aria-label="Never show these"]').value = ip; }, ips[0]);
-        await netApply();
-        check('the list in Settings says it is hidden', await arch.evaluate((ip) => [...document.querySelectorAll('.addrlist li')].some((li) => li.textContent.includes(ip) && /hidden/.test(li.textContent)), ips[0]));
-        await netClose();
-        check('an address under Never show these leaves the Run step\'s address list and QR code once Settings is closed', !(await shownIps()).includes(ips[0]));
-        await netOpen();
-        await arch.evaluate(() => { document.querySelector('textarea[aria-label="Show only these"]').value = 'nonsense'; });
-        await netApply();
-        check('a line that is not an address is explained under the boxes', await arch.evaluate(() => !document.querySelector('#setpanel-net .check.warn').hidden && /not an address/.test(document.querySelector('#setpanel-net .check.warn').textContent)));
-        check('there is a box to prefer an adapter when two are on one network, empty by default', await arch.evaluate(() => { const t = document.querySelector('textarea[aria-label="Prefer these adapters"]'); return !!t && t.value === ''; }));
-        await arch.evaluate(() => { document.querySelector('textarea[aria-label="Prefer these adapters"]').value = 'Ethernet'; });
-        check('there is a box to refuse connections to the addresses that are not shown, off by default', await arch.evaluate(() => { const b = document.querySelector('.addrrestrict input'); return !!b && !b.checked; }));
-        await arch.evaluate(() => { document.querySelector('.addrrestrict input').click(); document.querySelector('textarea[aria-label="Show only these"]').value = ''; document.querySelector('textarea[aria-label="Never show these"]').value = ''; });
-        await netApply(); await netClose();
-        await netOpen();
-        check('the preferred adapter and the ticked box are kept when Settings is opened again', await arch.evaluate(() => document.querySelector('textarea[aria-label="Prefer these adapters"]').value === 'Ethernet' && document.querySelector('.addrrestrict input').checked));
-        await arch.evaluate(() => { document.querySelector('textarea[aria-label="Prefer these adapters"]').value = ''; document.querySelector('.addrrestrict input').click(); });
-        await netApply(); await netClose();
-        check('emptying the boxes offers every address again', (await shownIps()).includes(ips[0]));
-      }
+      check('the Run step has no network controls of its own, only a link to Settings > Network', await arch.evaluate(() => [...document.querySelectorAll('#panel button')].map((b) => b.textContent).filter((t) => /interface|Choose addresses/i.test(t)).length === 0 && [...document.querySelectorAll('#panel a')].some((a) => /Choose which network interfaces are used/.test(a.textContent))));
+      await netOpen();
+      check('the link opens Settings on the Network tab, which lists this computer\'s interfaces with a tick each (all ticked until a choice is made), their addresses and whether they are used', await arch.evaluate(() => { const r = [...document.querySelectorAll('#setpanel-net .ifrow')]; return document.getElementById('settab-net').getAttribute('aria-selected') === 'true' && r.length > 0 && r.every((x) => x.querySelector('input').checked && /\d+\.\d+\.\d+\.\d+/.test(x.textContent)); }));
+      check('there is a box to refuse connections to interfaces that are not ticked, off by default', await arch.evaluate(() => { const b = document.querySelector('.addrrestrict input'); return !!b && !b.checked; }));
+      await netClose();
     }
-    // REQ-069: two adapters on one network. The program's answers are faked in the page (this computer may have one adapter): a cable and Wi-Fi on 192.168.1.x.
+    // REQ-069: two interfaces on one network. The program's answers are faked in the page (this computer may have one interface): a cable and Wi-Fi on 192.168.1.x.
     {
       await arch.evaluate(() => {
-        const orig = window.fetch; window.__realFetch = orig; let prefer = [];
-        const wired = () => prefer.some((x) => /^ethernet$/i.test(x));
-        const addrs = () => [{ ip: '192.168.1.138', interface: 'Wi-Fi', kind: 'wifi', shown: !wired(), hidden: wired() ? 'network' : '', instead: '192.168.1.185' },
-          { ip: '192.168.1.185', interface: 'Ethernet', kind: 'ethernet', shown: wired(), hidden: wired() ? '' : 'network', instead: '192.168.1.138' }];
+        const orig = window.fetch; window.__realFetch = orig; let ticked = ['Wi-Fi', 'Ethernet'], restrict = false;
+        const list = () => { const cable = ticked.includes('Ethernet'), wifi = ticked.includes('Wi-Fi'); return [
+          { name: 'Wi-Fi', kind: 'wifi', addresses: ['192.168.1.138'], selected: wifi, used: wifi && !cable, instead: wifi && cable ? 'Ethernet' : '', insteadIp: wifi && cable ? '192.168.1.185' : '', current: false },
+          { name: 'Ethernet', kind: 'ethernet', addresses: ['192.168.1.185'], selected: cable, used: cable, instead: '', insteadIp: '', current: false }]; };
         const json = (o) => new Response(JSON.stringify(o), { status: 200, headers: { 'Content-Type': 'application/json' } });
         window.fetch = async function (url, opt) {
           const u = String(url), m = (opt && opt.method) || 'GET';
-          if (u === '/api/admin/settings' && m === 'GET') { const j = await (await orig.call(window, url, opt)).json(); j.addresses = addrs(); j.network = { include: [], exclude: [], prefer, restrictListening: false }; return json(j); }
-          if (u === '/api/admin/settings/network' && m === 'PUT') { prefer = JSON.parse(opt.body).prefer; return json({ saved: true, addresses: addrs() }); }
+          if (u === '/api/admin/settings' && m === 'GET') { const j = await (await orig.call(window, url, opt)).json(); j.interfaces = list(); j.network = { interfaces: [], restrictListening: restrict }; return json(j); }
+          if (u === '/api/admin/settings/network' && m === 'PUT') { const b = JSON.parse(opt.body); ticked = b.interfaces; restrict = b.restrictListening; window.__lastPut = b; return json({ saved: true, interfaces: list() }); }
           return orig.call(window, url, opt);
         };
       });
       await arch.evaluate(() => document.getElementById('settingsbtn').click()); await arch.waitForSelector('#settab-net');
       await arch.evaluate(() => document.getElementById('settab-net').click()); await sleep(200);
-      const rows = () => arch.evaluate(() => [...document.querySelectorAll('#setpanel-net .addrlist li')].map((li) => li.textContent.replace(/\s+/g, ' ').trim()));
-      const box = () => arch.evaluate(() => document.querySelector('textarea[aria-label="Prefer these adapters"]').value);
-      const press = async (label, row) => { await arch.evaluate((l, w) => [...document.querySelectorAll('#setpanel-net .addrlist li')].find((li) => li.textContent.includes(w)).querySelector('button').click(), label, row); await sleep(T(500)); };
+      const rows = () => arch.evaluate(() => [...document.querySelectorAll('#setpanel-net .ifrow')].map((r) => (r.querySelector('input').checked ? '[x] ' : '[ ] ') + r.textContent.replace(/\s+/g, ' ').trim()));
+      const tick = async (name) => { await arch.evaluate((n) => [...document.querySelectorAll('#setpanel-net .ifrow')].find((r) => r.querySelector('b').textContent === n).querySelector('input').click(), name); await sleep(T(500)); };
       let r = await rows();
-      check('two adapters on one network: Wi-Fi is shown, the cable says it is not used, and both have the same Use this one button', /\(Wi-Fi, Wi-Fi\) shown Use this one$/.test(r[0]) && /\(Ethernet, Ethernet\) not used: same network as 192\.168\.1\.138 Use this one$/.test(r[1]), r);
-      await press('Use this one', 'Ethernet'); r = await rows();
-      check('Use this one acts at once: the cable is shown and preferred, with Stop preferring this one, and the box lists it', /not used: same network as 192\.168\.1\.185 Use this one$/.test(r[0]) && /shown, preferred Stop preferring this one$/.test(r[1]) && (await box()) === 'Ethernet', r);
-      await press('Stop preferring this one', 'Ethernet'); r = await rows();
-      check('Stop preferring this one undoes it, both rows offer Use this one again, and the box is empty', /\(Wi-Fi, Wi-Fi\) shown Use this one$/.test(r[0]) && /not used: same network as 192\.168\.1\.138 Use this one$/.test(r[1]) && (await box()) === '', r);
-      await press('Use this one', 'Wi-Fi'); r = await rows();
-      check('the adapter that is shown by default can be pinned the same way, and toggled back', /\(Wi-Fi, Wi-Fi\) shown, preferred Stop preferring this one$/.test(r[0]) && /not used: same network as 192\.168\.1\.138 Use this one$/.test(r[1]), r);
-      await press('Stop preferring this one', 'Wi-Fi');
+      check('two interfaces on one network: both ticked, the cable is used and Wi-Fi says it is not and why', /^\[x\] Wi-Fi \(Wi-Fi\)192\.168\.1\.138 — not used: same network as Ethernet \(192\.168\.1\.185\)$/.test(r[0]) && /^\[x\] Ethernet \(Ethernet\)192\.168\.1\.185 — used$/.test(r[1]), r);
+      await tick('Ethernet'); r = await rows();
+      check('unticking the cable saves at once and Wi-Fi is then the one used', /^\[x\] Wi-Fi .*— used$/.test(r[0]) && /^\[ \] Ethernet .*— not used$/.test(r[1]) && (await arch.evaluate(() => window.__lastPut.interfaces.join())) === 'Wi-Fi', r);
+      await tick('Ethernet'); r = await rows();
+      check('ticking it again toggles back', /not used: same network as Ethernet/.test(r[0]) && /^\[x\] Ethernet .*— used$/.test(r[1]), r);
+      await arch.evaluate(() => document.querySelector('.addrrestrict input').click()); await sleep(T(500));
+      check('the refuse-connections box saves at once, with the ticks', await arch.evaluate(() => window.__lastPut.restrictListening === true && window.__lastPut.interfaces.length === 2));
+      await arch.evaluate(() => document.querySelector('.addrrestrict input').click()); await sleep(T(300));
       await arch.click('#dlgok'); await sleep(T(500));
       await arch.evaluate(() => { window.fetch = window.__realFetch; });
     }

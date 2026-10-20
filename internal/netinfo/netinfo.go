@@ -38,59 +38,52 @@ type Address struct {
 	Network   netip.Prefix // the network it is on, for example 192.168.1.0/24
 }
 
-var filter atomic.Pointer[func(net.IP) bool]
+var selected atomic.Pointer[[]string]
 
-// SetFilter limits LocalIPs to the addresses allow accepts (config network.include and network.exclude); nil
-// offers every address. It can be changed at any time.
-func SetFilter(allow func(net.IP) bool) {
-	if allow == nil {
-		filter.Store(nil)
+// SetInterfaces chooses which network interfaces are used (config network.interfaces): only their addresses are
+// offered. An empty list means no choice was made: every interface is used. It can be changed at any time.
+func SetInterfaces(names []string) {
+	if len(names) == 0 {
+		selected.Store(nil)
 	} else {
-		filter.Store(&allow)
+		cp := append([]string(nil), names...)
+		selected.Store(&cp)
 	}
 	offeredCache.reset()
+	tableCache.reset()
 }
 
-var prefer atomic.Pointer[[]string]
-
-// SetPrefer sets which adapter is used when two are on the same network (config network.prefer): the first entry
-// that matches an adapter's name, or its kind ("ethernet", "wifi"), wins over every other rule.
-func SetPrefer(entries []string) {
-	if len(entries) == 0 {
-		prefer.Store(nil)
-	} else {
-		cp := append([]string(nil), entries...)
-		prefer.Store(&cp)
-	}
-	offeredCache.reset()
-}
-
-// preferRank is the position of the first prefer entry that matches the address's adapter, or -1.
-func preferRank(a Address) int {
-	p := prefer.Load()
+// InterfaceSelected reports whether the interface called name is used.
+func InterfaceSelected(name string) bool {
+	p := selected.Load()
 	if p == nil {
-		return -1
+		return true
 	}
-	for i, e := range *p {
-		e = strings.ToLower(strings.TrimSpace(e))
-		switch {
-		case strings.EqualFold(e, a.Interface):
-			return i
-		case (e == KindEthernet || e == "wired") && a.Kind == KindEthernet, (e == KindWiFi || e == "wi-fi" || e == "wireless") && a.Kind == KindWiFi:
-			return i
+	for _, n := range *p {
+		if strings.EqualFold(strings.TrimSpace(n), name) {
+			return true
 		}
 	}
-	return -1
+	return false
 }
 
-// Allowed reports whether the filter (SetFilter) offers ip; with no filter, every address is offered.
+// Allowed reports whether ip belongs to an interface that is used. An address that no interface is known to have
+// (it just appeared, or is gone) is allowed: it cannot be told.
 func Allowed(ip net.IP) bool {
-	allow := filter.Load()
-	return allow == nil || (*allow)(ip)
+	if selected.Load() == nil {
+		return true
+	}
+	if name, ok := tableCache.interfaceOf(ip); ok {
+		return InterfaceSelected(name)
+	}
+	return true
 }
+
+// InterfaceOf returns the name of the interface that has ip, if it is one of this computer's addresses.
+func InterfaceOf(ip net.IP) (string, bool) { return tableCache.interfaceOf(ip) }
 
 // AllAddresses returns the non-loopback unicast IPv4 addresses of the network interfaces that are up, whether
-// or not the filter would offer them, the main connection first and the others in numeric order. The interfaces
+// or not the interface is used, the main connection first and the others in numeric order. The interfaces
 // are asked, not the whole address table: on Windows that table also holds the last address of an adapter that
 // is switched off or disconnected (a Wi-Fi card turned off still lists the address it had), and such an
 // address must not be offered to the audience or put in the certificate.
@@ -128,29 +121,30 @@ func AllAddresses() []Address {
 	return sorted
 }
 
-// LocalIPs returns the addresses to offer: those the filter allows, and only one for each network. A computer
-// on one network through two adapters (a cable and Wi-Fi at once) has two addresses there, and the audience
-// needs just one: the main connection's, else the wired one, else a Wi-Fi one.
-func LocalIPs() []net.IP {
-	var allowed []Address
+// usedAddresses is AllAddresses less those of interfaces that are not used.
+func usedAddresses() []Address {
+	var out []Address
 	for _, a := range AllAddresses() {
-		if Allowed(a.IP) {
-			allowed = append(allowed, a)
+		if InterfaceSelected(a.Interface) {
+			out = append(out, a)
 		}
 	}
+	return out
+}
+
+// LocalIPs returns the addresses to offer: those of the interfaces that are used, and only one for each network.
+// A computer on one network through two adapters (a cable and Wi-Fi at once) has two addresses there, and the
+// audience needs just one: the main connection's, else the wired one, else a Wi-Fi one.
+func LocalIPs() []net.IP {
 	var out []net.IP
-	for _, a := range chooseOnePerNetwork(allowed, mainIP()) {
+	for _, a := range chooseOnePerNetwork(usedAddresses(), mainIP()) {
 		out = append(out, a.IP)
 	}
 	return out
 }
 
-// rank orders the addresses of one network: an adapter chosen with network.prefer, then the main connection, then
-// wired, then anything else, then Wi-Fi.
+// rank orders the addresses of one network: the main connection, then wired, then anything else, then Wi-Fi.
 func rank(a Address, main net.IP) int {
-	if r := preferRank(a); r >= 0 {
-		return r - 1000 // a chosen adapter beats everything below
-	}
 	switch {
 	case main != nil && a.IP.Equal(main):
 		return 0
@@ -180,38 +174,56 @@ func chooseOnePerNetwork(addrs []Address, main net.IP) []Address {
 	return out
 }
 
-// Status says what the rules do with one address.
-type Status struct {
-	Address
-	Allowed bool   // network.include / network.exclude allow it
-	Offered bool   // it is the one given to the audience for its network
-	Instead net.IP // when allowed but not offered: the address offered for the same network
+// Interface is one working network interface and what is done with it, for Setup's list.
+type Interface struct {
+	Name      string
+	Kind      string   // KindEthernet, KindWiFi or KindOther
+	Addresses []net.IP // its IPv4 addresses
+	Selected  bool     // it is ticked: its addresses may be offered
+	Used      bool     // at least one of its addresses is offered
+	Instead   string   // when ticked but not used: the interface whose address is offered for the same network
+	InsteadIP net.IP   // ... and that address
 }
 
-// Statuses lists every address with what the rules do with it, in the order AllAddresses gives them.
-func Statuses() []Status {
-	all := AllAddresses()
-	var allowed []Address
+// Interfaces lists the working network interfaces (those that are up and have an address), the one with the main
+// connection first, with what is done with each.
+func Interfaces() []Interface { return buildInterfaces(AllAddresses(), mainIP()) }
+
+func buildInterfaces(all []Address, main net.IP) []Interface {
+	var used []Address
 	for _, a := range all {
-		if Allowed(a.IP) {
-			allowed = append(allowed, a)
+		if InterfaceSelected(a.Interface) {
+			used = append(used, a)
 		}
 	}
-	chosen := map[netip.Prefix]net.IP{}
-	for _, a := range chooseOnePerNetwork(allowed, mainIP()) {
-		chosen[a.Network] = a.IP
+	chosen := map[netip.Prefix]Address{}
+	for _, a := range chooseOnePerNetwork(used, main) {
+		chosen[a.Network] = a
 	}
-	out := make([]Status, 0, len(all))
+	var out []Interface
+	index := map[string]int{}
 	for _, a := range all {
-		st := Status{Address: a, Allowed: Allowed(a.IP)}
-		if st.Allowed {
-			if c := chosen[a.Network]; c.Equal(a.IP) {
-				st.Offered = true
-			} else {
-				st.Instead = c
-			}
+		i, ok := index[a.Interface]
+		if !ok {
+			i = len(out)
+			index[a.Interface] = i
+			out = append(out, Interface{Name: a.Interface, Kind: a.Kind, Selected: InterfaceSelected(a.Interface)})
 		}
-		out = append(out, st)
+		it := &out[i]
+		it.Addresses = append(it.Addresses, a.IP)
+		if !it.Selected {
+			continue
+		}
+		if c := chosen[a.Network]; c.IP.Equal(a.IP) {
+			it.Used = true
+		} else if it.Instead == "" {
+			it.Instead, it.InsteadIP = c.Interface, c.IP
+		}
+	}
+	for i := range out {
+		if out[i].Used {
+			out[i].Instead, out[i].InsteadIP = "", nil // used through another of its addresses
+		}
 	}
 	return out
 }
@@ -242,6 +254,32 @@ func (c *cache) has(ip net.IP) bool {
 		}
 	}
 	return false
+}
+
+// tableCache remembers which interface has which address for a couple of seconds, for Allowed (asked for every
+// connection and every packet).
+var tableCache addrTable
+
+type addrTable struct {
+	mu sync.Mutex
+	at time.Time
+	by map[string]string
+}
+
+func (t *addrTable) reset() { t.mu.Lock(); t.at = time.Time{}; t.mu.Unlock() }
+
+func (t *addrTable) interfaceOf(ip net.IP) (string, bool) {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+	if time.Since(t.at) > 2*time.Second {
+		t.by = map[string]string{}
+		for _, a := range AllAddresses() {
+			t.by[a.IP.String()] = a.Interface
+		}
+		t.at = time.Now()
+	}
+	name, ok := t.by[ip.String()]
+	return name, ok
 }
 
 // mainIP is the address this computer uses to reach the rest of the network (the one on the route to the

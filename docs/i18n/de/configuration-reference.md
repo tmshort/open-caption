@@ -23,9 +23,7 @@ Eine Option oder ihre Umgebungsvariable hat für diesen Lauf Vorrang vor der Dat
 | `--https-addr ADDR` | `OPEN_CAPTION_HTTPS_ADDR` | Schaltet HTTPS an dieser Adresse **ein** (hat Vorrang vor `https.enabled` und `https.addr`) |
 | `--log-level LEVEL` | `OPEN_CAPTION_LOG_LEVEL` | Hat bei jedem Programmstart Vorrang vor `log.level` (die Einrichtung sagt es, wenn es gilt) |
 | `--log-file FILE` | `OPEN_CAPTION_LOG` | Hängt das Protokoll zusätzlich an diese Datei an |
-| `--network-include LIST` | `OPEN_CAPTION_NETWORK_INCLUDE` | Hat bei jedem Programmstart Vorrang vor `network.include`: eine durch Kommas getrennte Liste wie `192.168.1.0/24,10.0.0.0/8` (die Einrichtung sagt es, wenn es gilt) |
-| `--network-exclude LIST` | `OPEN_CAPTION_NETWORK_EXCLUDE` | Dasselbe für `network.exclude` |
-| `--network-prefer LIST` | `OPEN_CAPTION_NETWORK_PREFER` | Hat bei jedem Programmstart Vorrang vor `network.prefer`: eine durch Kommas getrennte Liste wie `ethernet` oder `Ethernet,wifi` |
+| `--network-interfaces LIST` | `OPEN_CAPTION_NETWORK_INTERFACES` | Hat bei jedem Programmstart Vorrang vor `network.interfaces`: eine durch Kommas getrennte Liste von Schnittstellennamen wie `Ethernet` oder `en0,en4` (die Einrichtung sagt es, wenn es gilt) |
 | `--network-restrict` | `OPEN_CAPTION_NETWORK_RESTRICT` | Lehnt außerdem Verbindungen zu Adressen ab, die nicht angeboten werden, bei jedem Programmstart (wie `network.restrict_listening: yes`). Die Variable zählt, wenn sie `yes`, `true`, `on` oder `1` ist |
 | `--no-browser` | | Öffnet die Einrichtung beim Start nicht in einem Browser (wie `defaults.open_browser: no`) |
 | `--version` | | Gibt die Version und die für automatische Zertifikate eingebauten DNS-Anbieter aus und beendet sich |
@@ -154,12 +152,10 @@ Wer die Einrichtung und die Bedienerseite öffnen darf. Die Publikumsseite ist i
 
 | Schlüssel | Standard | Bedeutung |
 |---|---|---|
-| `network.include` | `[]` | Dem Publikum nur diese Adressen dieses Computers anbieten. Leer bedeutet alle Adressen. Einträge: eine Adresse (`192.168.1.50`), ein Netzwerk (`192.168.1.0/24`) oder `private` (die üblichen Heim- und Büronetze). Beispiel: `[192.168.1.0/24]` |
-| `network.exclude` | `[]` | Diese nie anbieten (dieselben Arten von Einträgen); das hat Vorrang vor `include`. Nützlich für die Adapter virtueller Maschinen, VPNs oder Docker. Beispiel: `[192.168.56.0/24]` |
-| `network.prefer` | `[]` | Sind zwei Adapter im selben Netzwerk (ein Kabel und WLAN zugleich), wird nur einer angeboten. Hier steht, welcher: der Name eines Adapters (`Ethernet`, `en4`) oder eine Art (`ethernet`, `wifi`); der erste passende Eintrag gewinnt, auch gegen die Hauptverbindung. Leer: die Hauptverbindung (die zum Router), sonst ein kabelgebundener Adapter, sonst ein anderer, sonst WLAN. Beispiel: `[ethernet]`. *Einrichtung: Einstellungen → Netzwerk* |
-| `network.restrict_listening` | `no` | **Lehnt außerdem Verbindungen ab**, die zu einer Adresse gemacht werden, die `include` / `exclude` nicht anbieten (ein Telefon, das eine ausgeblendete Adresse benutzt, wird abgewiesen), statt die Adresse nur aus den Listen zu lassen. Verbindungen zu diesem Computer selbst (`localhost`) werden immer bedient, die Einrichtung lässt sich also zum Ändern öffnen. Die Einrichtung nimmt nie Listen an, die die Adresse ausschalten würden, über die Sie sie benutzen. *Einrichtung: Einstellungen → Netzwerk* |
+| `network.interfaces` | `[]` | Die verwendeten Netzwerkschnittstellen, nach Namen (`Ethernet`, `Wi-Fi`, `en0`, `eth0`): nur ihre Adressen werden dem Publikum gegeben, in der Einrichtung gelistet, in ein neues selbstsigniertes HTTPS-Zertifikat aufgenommen und als `<Name>.local` angekündigt. Leer bedeutet, dass noch nichts gewählt wurde: alle Schnittstellen werden verwendet. Ist einmal gewählt, bleibt eine später auftauchende Schnittstelle (ein USB-Adapter, ein VPN) aus, bis sie hinzugefügt wird. Sind zwei verwendete Schnittstellen im selben Netzwerk (ein Kabel und WLAN zugleich), wird nur eine Adresse angeboten: die der Hauptverbindung, sonst die kabelgebundene; lassen Sie die andere weg, um zu wählen. *Einrichtung: Einstellungen → Netzwerk* |
+| `network.restrict_listening` | `no` | **Lehnt außerdem Verbindungen ab**, die zu einer Adresse einer nicht verwendeten Schnittstelle gemacht werden (ein Telefon, das sie benutzt, wird abgewiesen), statt die Adresse nur aus den Listen zu lassen. Verbindungen zu diesem Computer selbst (`localhost`) werden immer bedient, die Einrichtung lässt sich also zum Ändern öffnen. Die Einrichtung schaltet nie die Schnittstelle aus, über die Sie sie benutzen. *Einrichtung: Einstellungen → Netzwerk* |
 
-Eine ausgelassene Adresse wird im Schritt Fahren und beim Start nicht aufgelistet, dem Publikum nicht gegeben, nicht als `<Name>.local` angekündigt und nicht in ein neues selbstsigniertes HTTPS-Zertifikat aufgenommen. Angeboten werden nur Adressen verbundener Netzwerkadapter, und nur eine Adresse je Netzwerk. Standardmäßig wählt das nur, was *angeboten* wird: Der Server nimmt weiterhin auf allen Adressen Verbindungen an, bis `network.restrict_listening` eingeschaltet wird. *Einrichtung: Einstellungen → Netzwerk*
+Die Adressen einer nicht verwendeten Schnittstelle werden im Schritt Fahren und beim Start nicht aufgelistet, dem Publikum nicht gegeben, nicht als `<Name>.local` angekündigt und nicht in ein neues selbstsigniertes HTTPS-Zertifikat aufgenommen. Aufgelistet werden nur verbundene Schnittstellen, und je Netzwerk wird nur eine Adresse angeboten. Standardmäßig wählt das nur, was *angeboten* wird: Der Server nimmt weiterhin auf allen Adressen Verbindungen an, bis `network.restrict_listening` eingeschaltet wird.
 
 ## Wo eine Einstellung entschieden wird
 
@@ -191,9 +187,7 @@ mdns:
   enabled: yes
   name: open-caption
 network:
-  include: []
-  exclude: []
-  prefer: []
+  interfaces: []
   restrict_listening: no
 standby:
   message: "Welcome to the Little Theatre"

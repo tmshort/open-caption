@@ -23,9 +23,7 @@ Una opción, o su variable de entorno, prevalece sobre el archivo en esa ejecuci
 | `--https-addr ADDR` | `OPEN_CAPTION_HTTPS_ADDR` | **Activa** HTTPS en esta dirección (prevalece sobre `https.enabled` y `https.addr`) |
 | `--log-level LEVEL` | `OPEN_CAPTION_LOG_LEVEL` | Prevalece sobre `log.level` cada vez que arranca el programa (la configuración lo indica cuando está en vigor) |
 | `--log-file FILE` | `OPEN_CAPTION_LOG` | Añade además el registro a este archivo |
-| `--network-include LIST` | `OPEN_CAPTION_NETWORK_INCLUDE` | Prevalece sobre `network.include` cada vez que arranca el programa: una lista separada por comas, como `192.168.1.0/24,10.0.0.0/8` (la configuración lo indica cuando está en vigor) |
-| `--network-exclude LIST` | `OPEN_CAPTION_NETWORK_EXCLUDE` | Lo mismo para `network.exclude` |
-| `--network-prefer LIST` | `OPEN_CAPTION_NETWORK_PREFER` | Prevalece sobre `network.prefer` cada vez que arranca el programa: una lista separada por comas, como `ethernet` o `Ethernet,wifi` |
+| `--network-interfaces LIST` | `OPEN_CAPTION_NETWORK_INTERFACES` | Prevalece sobre `network.interfaces` cada vez que arranca el programa: una lista separada por comas de nombres de interfaz, como `Ethernet` o `en0,en4` (la configuración lo indica cuando está en vigor) |
 | `--network-restrict` | `OPEN_CAPTION_NETWORK_RESTRICT` | Además rechaza las conexiones hechas a direcciones que no se ofrecen, cada vez que arranca el programa (como `network.restrict_listening: yes`). La variable cuenta cuando vale `yes`, `true`, `on` o `1` |
 | `--no-browser` | | No abre la configuración en un navegador al arrancar (como `defaults.open_browser: no`) |
 | `--version` | | Imprime la versión y los proveedores de DNS incluidos para los certificados automáticos, y sale |
@@ -154,12 +152,10 @@ Quién puede abrir la configuración y la página del operador. La página del p
 
 | Clave | Valor por defecto | Significado |
 |---|---|---|
-| `network.include` | `[]` | Ofrece al público solo estas direcciones de este equipo. Vacío significa todas las direcciones. Entradas: una dirección (`192.168.1.50`), una red (`192.168.1.0/24`) o `private` (las redes domésticas y de oficina habituales). Ejemplo: `[192.168.1.0/24]` |
-| `network.exclude` | `[]` | No ofrecer nunca estas (los mismos tipos de entrada); prevalece sobre `include`. Sirve para los adaptadores de máquinas virtuales, VPN o Docker. Ejemplo: `[192.168.56.0/24]` |
-| `network.prefer` | `[]` | Cuando dos adaptadores están en la misma red (un cable y Wi-Fi a la vez) solo se ofrece uno. Esto nombra el que se usa: el nombre de un adaptador (`Ethernet`, `en4`) o un tipo (`ethernet`, `wifi`); gana la primera entrada que coincida, incluso sobre la conexión principal. Vacío: la conexión principal (la que llega al router); si no, un adaptador cableado, luego otro cualquiera y por último Wi-Fi. Ejemplo: `[ethernet]`. *Configuración: Ajustes → Red* |
-| `network.restrict_listening` | `no` | Además **rechaza las conexiones** hechas a una dirección que `include` / `exclude` no ofrece (un teléfono que use una dirección oculta es rechazado), en lugar de solo dejar la dirección fuera de las listas. Las conexiones al propio equipo (`localhost`) siempre se atienden, así que se puede abrir la configuración para cambiarlo. La configuración nunca acepta listas que desactiven la dirección a través de la que la está usando. *Configuración: Ajustes → Red* |
+| `network.interfaces` | `[]` | Las interfaces de red que se usan, por nombre (`Ethernet`, `Wi-Fi`, `en0`, `eth0`): solo sus direcciones se dan al público, se muestran en la configuración, entran en un certificado HTTPS autofirmado nuevo y se anuncian como `<nombre>.local`. Vacío significa que aún no se ha elegido: se usan todas las interfaces. Una vez hecha la elección, una interfaz que aparezca después (un adaptador USB, una VPN) queda desactivada hasta que se añada. Cuando dos interfaces en uso están en la misma red (un cable y Wi-Fi a la vez) se ofrece una sola dirección: la de la conexión principal y, si no, la cableada; deje fuera la otra para elegir. *Configuración: Ajustes → Red* |
+| `network.restrict_listening` | `no` | También **rechaza las conexiones** hechas a una dirección de una interfaz que no se usa (un teléfono que la use es rechazado), en lugar de solo dejar la dirección fuera de las listas. Las conexiones al propio equipo (`localhost`) siempre se atienden, así que se puede abrir la configuración para cambiarlo. La configuración nunca desactiva la interfaz a través de la que la está usando. *Configuración: Ajustes → Red* |
 
-Una dirección excluida no aparece en el paso Dirigir ni al arrancar, no se da al público, no se anuncia como `<nombre>.local` y no se incluye en un certificado HTTPS autofirmado nuevo. Solo se ofrecen direcciones de adaptadores de red conectados, y una sola dirección por red. Por defecto esto solo elige lo que se *ofrece*: el servidor sigue aceptando conexiones en todas las direcciones, hasta que se active `network.restrict_listening`. *Configuración: Ajustes → Red*
+Las direcciones de una interfaz que no se usa no aparecen en el paso Dirigir ni al arrancar, no se dan al público, no se anuncian como `<nombre>.local` y no se incluyen en un certificado HTTPS autofirmado nuevo. Solo se muestran las interfaces conectadas, y se ofrece una sola dirección por red. Por defecto esto solo elige lo que se *ofrece*: el servidor sigue aceptando conexiones en todas las direcciones, hasta que se active `network.restrict_listening`.
 
 ## Dónde se decide un ajuste
 
@@ -191,9 +187,7 @@ mdns:
   enabled: yes
   name: open-caption
 network:
-  include: []
-  exclude: []
-  prefer: []
+  interfaces: []
   restrict_listening: no
 standby:
   message: "Welcome to the Little Theatre"

@@ -29,7 +29,7 @@ type Server struct {
 	mdns                      *mdnsManager     // the local network name (open-caption.local)
 	standby                   bool             // shows start in standby (production); off for --dev
 	pinnedLevel               string           // the --log-level / OPEN_CAPTION_LOG_LEVEL value, if one was given
-	pinnedNetwork             bool             // --network-include / --network-exclude was given
+	pinnedNetwork             bool             // --network-interfaces / --network-restrict was given
 	logs                      interface {
 		String() string
 		Lines() []string

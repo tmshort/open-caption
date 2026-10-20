@@ -11,71 +11,64 @@ import (
 	"github.com/tmshort/open-caption/internal/netinfo"
 )
 
-// ApplyNetwork makes the include and exclude lists (config network.include / network.exclude) the rule for which
-// of this computer's addresses are offered. The lists must already be valid (config.Load checks them).
+// ApplyNetwork makes the ticked interfaces (config network.interfaces) and the restriction the rule for which of
+// this computer's addresses are offered. The values must already be valid (config.Load checks them).
 func (s *Server) ApplyNetwork(n config.Network) {
-	include, exclude, restrict := n.Include, n.Exclude, n.RestrictListening
-	f, err := config.NewAddressFilter(include, exclude)
-	if err != nil {
-		logx.Warnf("network: %v; every address is offered", err)
-		f = config.AddressFilter{}
-	}
 	s.netMu.Lock()
 	s.cfg.Network = n
 	s.netMu.Unlock()
-	if f.Active() {
-		netinfo.SetFilter(f.Allows)
-	} else {
-		netinfo.SetFilter(nil)
-	}
-	netinfo.SetPrefer(n.Prefer)
-	netinfo.SetRestrictListening(restrict)
+	netinfo.SetInterfaces(n.Interfaces)
+	netinfo.SetRestrictListening(n.RestrictListening)
 }
 
-// PinNetwork records that the lists were given on the command line (or environment) and so override config.yaml
-// at every start.
+// PinNetwork records that the interfaces were given on the command line (or environment) and so override
+// config.yaml at every start.
 func (s *Server) PinNetwork() { s.pinnedNetwork = true }
 
 func (s *Server) networkSettings() config.Network {
 	s.netMu.Lock()
 	defer s.netMu.Unlock()
-	return config.Network{Include: append([]string{}, s.cfg.Network.Include...), Exclude: append([]string{}, s.cfg.Network.Exclude...), Prefer: append([]string{}, s.cfg.Network.Prefer...), RestrictListening: s.cfg.Network.RestrictListening}
+	return config.Network{Interfaces: append([]string{}, s.cfg.Network.Interfaces...), RestrictListening: s.cfg.Network.RestrictListening}
 }
 
-type addressInfo struct {
-	IP        string `json:"ip"`
-	Interface string `json:"interface"`
-	Kind      string `json:"kind"`              // "ethernet", "wifi" or "other"
-	Shown     bool   `json:"shown"`             // it is the address given to the audience for its network
-	Hidden    string `json:"hidden,omitempty"`  // why it is not: "rule" (network.include / exclude) or "network"
-	Instead   string `json:"instead,omitempty"` // with "network": the address shown for the same network
-	Current   bool   `json:"current"`           // the address this request arrived on
+// interfaceInfo is one network interface for Setup's list: a tick, its kind, its addresses and what is done with it.
+type interfaceInfo struct {
+	Name      string   `json:"name"`
+	Kind      string   `json:"kind"` // "ethernet", "wifi" or "other"
+	Addresses []string `json:"addresses"`
+	Selected  bool     `json:"selected"`          // ticked
+	Used      bool     `json:"used"`              // an address of it is offered
+	Instead   string   `json:"instead,omitempty"` // ticked but not used: the interface offered for the same network
+	InsteadIP string   `json:"insteadIp,omitempty"`
+	Current   bool     `json:"current"` // the interface this request arrived on
 }
 
-// currentAddress is the address of this computer that the request came in on; nil for this computer itself
+// currentInterface is the interface of this computer that the request came in on; "" for this computer itself
 // (localhost) or when it cannot be told.
-func currentAddress(r *http.Request) net.IP {
+func currentInterface(r *http.Request) string {
 	if la, ok := r.Context().Value(http.LocalAddrContextKey).(net.Addr); ok {
 		if ta, ok := la.(*net.TCPAddr); ok && ta.IP != nil && !ta.IP.IsLoopback() {
-			return ta.IP
+			if name, ok := netinfo.InterfaceOf(ta.IP); ok {
+				return name
+			}
 		}
 	}
-	return nil
+	return ""
 }
 
-// networkAddresses lists every address of this computer's working network interfaces and what the rules do with it.
-func (s *Server) networkAddresses(r *http.Request) []addressInfo {
-	cur := currentAddress(r)
-	out := []addressInfo{}
-	for _, st := range netinfo.Statuses() {
-		a := addressInfo{IP: st.IP.String(), Interface: st.Interface, Kind: st.Kind, Shown: st.Offered, Current: cur != nil && cur.Equal(st.IP)}
-		switch {
-		case !st.Allowed:
-			a.Hidden = "rule"
-		case !st.Offered:
-			a.Hidden, a.Instead = "network", st.Instead.String()
+// networkInterfaces lists this computer's working network interfaces and what is done with each.
+func (s *Server) networkInterfaces(r *http.Request) []interfaceInfo {
+	cur := currentInterface(r)
+	out := []interfaceInfo{}
+	for _, it := range netinfo.Interfaces() {
+		x := interfaceInfo{Name: it.Name, Kind: it.Kind, Addresses: []string{}, Selected: it.Selected, Used: it.Used, Instead: it.Instead, Current: cur != "" && strings.EqualFold(cur, it.Name)}
+		for _, ip := range it.Addresses {
+			x.Addresses = append(x.Addresses, ip.String())
 		}
-		out = append(out, a)
+		if it.InsteadIP != nil {
+			x.InsteadIP = it.InsteadIP.String()
+		}
+		out = append(out, x)
 	}
 	return out
 }
@@ -95,51 +88,50 @@ func cleanList(in []string) []string {
 	return out
 }
 
-// setNetwork is PUT /api/admin/settings/network: choose which addresses are offered to the audience.
+// setNetwork is PUT /api/admin/settings/network: choose which network interfaces are used.
 func (s *Server) setNetwork(w http.ResponseWriter, r *http.Request) {
 	var req struct {
-		Include           []string `json:"include"`
-		Exclude           []string `json:"exclude"`
-		Prefer            []string `json:"prefer"`
+		Interfaces        []string `json:"interfaces"`
 		RestrictListening bool     `json:"restrictListening"`
 	}
 	if !decode(w, r, &req) {
 		return
 	}
-	include, exclude, prefer := cleanList(req.Include), cleanList(req.Exclude), cleanList(req.Prefer)
-	if len(include) > 50 || len(exclude) > 50 || len(prefer) > 50 {
-		writeErr(w, http.StatusBadRequest, "Use at most 50 lines in each box.")
+	names := cleanList(req.Interfaces)
+	if len(names) == 0 {
+		writeErr(w, http.StatusBadRequest, "Tick at least one network interface.")
 		return
 	}
-	if _, err := config.NewAddressFilter(include, nil); err != nil {
-		writeErr(w, http.StatusBadRequest, "A line in Show only these is not an address, a network like 192.168.1.0/24 or the word private.")
+	if len(names) > 100 {
+		writeErr(w, http.StatusBadRequest, "Too many network interfaces.")
 		return
 	}
-	if _, err := config.NewAddressFilter(nil, exclude); err != nil {
-		writeErr(w, http.StatusBadRequest, "A line in Never show these is not an address, a network like 192.168.1.0/24 or the word private.")
-		return
-	}
-	// Do not cut off the address Setup is being used through: refuse a rule that would hide it, or (with the
-	// restriction) refuse connections to it. This computer itself (localhost) has no address to protect.
-	if cur := currentAddress(r); cur != nil {
-		if f, _ := config.NewAddressFilter(include, exclude); !f.Allows(cur) {
-			writeErr(w, http.StatusConflict, fmt.Sprintf("You are using Setup through %s, which this would turn off. Open Setup on this computer (at localhost) or through an address that stays on, then try again.", cur))
+	// Do not cut off the interface Setup is being used through. This computer itself (localhost) has none to protect.
+	if cur := currentInterface(r); cur != "" {
+		ticked := false
+		for _, n := range names {
+			if strings.EqualFold(n, cur) {
+				ticked = true
+			}
+		}
+		if !ticked {
+			writeErr(w, http.StatusConflict, fmt.Sprintf("You are using Setup through the interface %s, which this would turn off. Open Setup on this computer (at localhost) or through an interface that stays on, then try again.", cur))
 			return
 		}
 	}
 	saved := false
 	if s.cfg.Path != "" {
-		if err := config.SetValues(s.cfg.Path, map[string]any{"network.include": include, "network.exclude": exclude, "network.prefer": prefer, "network.restrict_listening": req.RestrictListening}); err != nil {
+		if err := config.SetValues(s.cfg.Path, map[string]any{"network.interfaces": names, "network.restrict_listening": req.RestrictListening}); err != nil {
 			writeErr(w, http.StatusInternalServerError, "Could not save the setting in config.yaml: "+err.Error())
 			return
 		}
 		saved = true
 	}
-	s.ApplyNetwork(config.Network{Include: include, Exclude: exclude, Prefer: prefer, RestrictListening: req.RestrictListening})
-	logx.Infof("network addresses changed in Setup: only %v, never %v, prefer %v, refuse connections to the others: %v", include, exclude, prefer, req.RestrictListening)
-	resp := map[string]any{"saved": saved, "addresses": s.networkAddresses(r)}
+	s.ApplyNetwork(config.Network{Interfaces: names, RestrictListening: req.RestrictListening})
+	logx.Infof("network interfaces changed in Setup: %v; refuse connections to the others: %v", names, req.RestrictListening)
+	resp := map[string]any{"saved": saved, "interfaces": s.networkInterfaces(r)}
 	if s.pinnedNetwork {
-		resp["note"] = "This copy was started with --network-include or --network-exclude (or the matching OPEN_CAPTION_ variable), which overrides the saved setting each time it starts. The new choice applies now, and lasts until the program is restarted."
+		resp["note"] = "This copy was started with --network-interfaces (or OPEN_CAPTION_NETWORK_INTERFACES), which overrides the saved setting each time it starts. The new choice applies now, and lasts until the program is restarted."
 	}
 	writeJSON(w, http.StatusOK, resp)
 }

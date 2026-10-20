@@ -23,9 +23,7 @@ A flag, or its environment variable, overrides the file for that run. (The file 
 | `--https-addr ADDR` | `OPEN_CAPTION_HTTPS_ADDR` | Turns HTTPS **on** at this address (overrides `https.enabled` and `https.addr`) |
 | `--log-level LEVEL` | `OPEN_CAPTION_LOG_LEVEL` | Overrides `log.level` every time the program starts (Setup says so when it is in force) |
 | `--log-file FILE` | `OPEN_CAPTION_LOG` | Also append the log to this file |
-| `--network-include LIST` | `OPEN_CAPTION_NETWORK_INCLUDE` | Overrides `network.include` every time the program starts: a comma-separated list such as `192.168.1.0/24,10.0.0.0/8` (Setup says so when it is in force) |
-| `--network-exclude LIST` | `OPEN_CAPTION_NETWORK_EXCLUDE` | The same for `network.exclude` |
-| `--network-prefer LIST` | `OPEN_CAPTION_NETWORK_PREFER` | Overrides `network.prefer` every time the program starts: a comma-separated list such as `ethernet` or `Ethernet,wifi` |
+| `--network-interfaces LIST` | `OPEN_CAPTION_NETWORK_INTERFACES` | Overrides `network.interfaces` every time the program starts: a comma-separated list of interface names such as `Ethernet` or `en0,en4` (Setup says so when it is in force) |
 | `--network-restrict` | `OPEN_CAPTION_NETWORK_RESTRICT` | Also refuse connections made to addresses that are not offered, every time the program starts (like `network.restrict_listening: yes`). The variable counts when it is `yes`, `true`, `on` or `1` |
 | `--no-browser` | | Do not open Setup in a browser at start-up (like `defaults.open_browser: no`) |
 | `--version` | | Print the version and the DNS providers built in for automatic certificates, then exit |
@@ -154,12 +152,10 @@ Who may open Setup and the operator page. The audience page is always open to ev
 
 | Key | Default | Meaning |
 |---|---|---|
-| `network.include` | `[]` | Offer only these addresses of this computer to the audience. Empty means every address. Entries: an address (`192.168.1.50`), a network (`192.168.1.0/24`) or `private` (the usual home and office networks). Example: `[192.168.1.0/24]` |
-| `network.exclude` | `[]` | Never offer these (the same kinds of entries); this wins over `include`. Use it for the adapters of virtual machines, VPNs or Docker. Example: `[192.168.56.0/24]` |
-| `network.prefer` | `[]` | When two adapters are on the same network (a cable and Wi-Fi at once) only one of them is offered. This names the one to use: an adapter's name (`Ethernet`, `en4`) or a kind (`ethernet`, `wifi`); the first entry that matches wins, even over the main connection. Empty: the main connection (the one that reaches the router), else a wired adapter, else any other, else Wi-Fi. Example: `[ethernet]`. *Setup: Settings → Network* |
-| `network.restrict_listening` | `no` | Also **refuse connections** made to an address that is not offered by `include` / `exclude` (a phone that uses a hidden address is turned away), instead of only leaving the address out of the lists. Connections to this computer itself (`localhost`) are always served, so Setup can still be opened to change it. Setup never accepts lists that would turn off the address you are using Setup through. *Setup: Settings → Network* |
+| `network.interfaces` | `[]` | The network interfaces that are used, by name (`Ethernet`, `Wi-Fi`, `en0`, `eth0`): only their addresses are given to the audience, listed in Setup, put in a new self-signed HTTPS certificate and announced as `<name>.local`. Empty means no choice has been made: every interface is used. Once a choice is made, an interface that appears later (a USB adapter, a VPN) stays off until it is added. When two used interfaces are on the same network (a cable and Wi-Fi at once) only one address is offered: the main connection's, else the wired one; leave the other out to choose. *Setup: Settings → Network* |
+| `network.restrict_listening` | `no` | Also **refuse connections** made to an address of an interface that is not used (a phone that uses it is turned away), instead of only leaving the address out of the lists. Connections to this computer itself (`localhost`) are always served, so Setup can still be opened to change it. Setup never turns off the interface you are using it through. *Setup: Settings → Network* |
 
-An address that is left out is not listed in the Run step or at start-up, is not given to the audience, is not announced as `<name>.local` and is not put in a new self-signed HTTPS certificate. Only addresses of network adapters that are connected are ever offered, and only one address for each network. By default this only chooses what is *offered*: the server still accepts connections on every address, until `network.restrict_listening` is turned on. *Setup: Settings → Network*
+The addresses of an interface that is not used are not listed in the Run step or at start-up, are not given to the audience, are not announced as `<name>.local` and are not put in a new self-signed HTTPS certificate. Only interfaces that are connected are listed, and only one address is offered for each network. By default this only chooses what is *offered*: the server still accepts connections on every address, until `network.restrict_listening` is turned on.
 
 ## Where a setting is decided
 
@@ -191,9 +187,7 @@ mdns:
   enabled: yes
   name: open-caption
 network:
-  include: []
-  exclude: []
-  prefer: []
+  interfaces: []
   restrict_listening: no
 standby:
   message: "Welcome to the Little Theatre"

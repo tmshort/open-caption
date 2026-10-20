@@ -123,31 +123,16 @@ every time the program starts.
 Also append the log to this file.
 It starts a new file at about 5 MB and keeps three old ones.
 .TP
-.BI \-\-network\-include " list"
-Offer only these addresses of this computer to the audience (in Setup, at start-up, in the HTTPS certificate and in the
-.B .local
-name): a comma-separated list of addresses (192.168.1.50), networks (192.168.1.0/24) and the word
-.BR private .
+.BI \-\-network\-interfaces " list"
+Use only these network interfaces (a comma-separated list of names such as Ethernet or en0,en4): only their addresses are given to the audience, listed in Setup, put in the HTTPS certificate and announced as
+.BR .local .
+When two used interfaces are on the same network (a cable and Wi-Fi at once) only one address is offered, the main connection's, else the wired one.
 Overrides
-.B network.include
-every time the program starts.
-.TP
-.BI \-\-network\-exclude " list"
-Never offer these addresses or networks (the same kinds of entries); this wins over
-.BR \-\-network\-include .
-Overrides
-.B network.exclude
-every time the program starts.
-.TP
-.BI \-\-network\-prefer " list"
-When two network adapters are on the same network (a cable and Wi-Fi at once) only one is offered; use this one: an adapter name
-(Ethernet, en4) or a kind (ethernet, wifi), comma separated, the first match winning even over the main connection.
-Overrides
-.B network.prefer
+.B network.interfaces
 every time the program starts.
 .TP
 .B \-\-network\-restrict
-Also refuse connections made to an address that is not offered (the same as
+Also refuse connections made to an address of an interface that is not used (the same as
 .B network.restrict_listening: yes
 for one run), instead of only leaving it out of the lists. Connections to this computer itself (localhost) are always served.
 .TP
@@ -238,17 +223,9 @@ Same as
 Same as
 .BR \-\-log\-file .
 .TP
-.B OPEN_CAPTION_NETWORK_INCLUDE
+.B OPEN_CAPTION_NETWORK_INTERFACES
 Same as
-.BR \-\-network\-include .
-.TP
-.B OPEN_CAPTION_NETWORK_EXCLUDE
-Same as
-.BR \-\-network\-exclude .
-.TP
-.B OPEN_CAPTION_NETWORK_PREFER
-Same as
-.BR \-\-network\-prefer .
+.BR \-\-network\-interfaces .
 .TP
 .B OPEN_CAPTION_NETWORK_RESTRICT
 Same as

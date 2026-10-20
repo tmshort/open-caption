@@ -6,6 +6,7 @@ import (
 	"net/netip"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestSelfSignedCreatedReusedAndRenewedForNewIP(t *testing.T) {
@@ -107,22 +108,32 @@ func (l *fakeListener) Accept() (net.Conn, error) {
 	return c, nil
 }
 
-func TestRestrictedListeningRefusesAddressesThatAreNotOffered(t *testing.T) {
-	t.Cleanup(func() { SetFilter(nil); SetRestrictListening(false) })
-	tcp := func(s string) *net.TCPAddr { return &net.TCPAddr{IP: net.ParseIP(s), Port: 80} }
-	SetFilter(func(ip net.IP) bool { return ip.String() != "192.168.1.138" })
+// fakeTable makes Allowed see a computer with a cable (192.168.1.185) and Wi-Fi (192.168.1.138).
+func fakeTable() {
+	tableCache.mu.Lock()
+	tableCache.by = map[string]string{"192.168.1.185": "Ethernet", "192.168.1.138": "Wi-Fi"}
+	tableCache.at = time.Now()
+	tableCache.mu.Unlock()
+}
 
-	// Not restricted: the filter only chooses what is offered.
+func TestRestrictedListeningRefusesAddressesOfInterfacesThatAreNotUsed(t *testing.T) {
+	t.Cleanup(func() { SetInterfaces(nil); SetRestrictListening(false) })
+	tcp := func(s string) *net.TCPAddr { return &net.TCPAddr{IP: net.ParseIP(s), Port: 80} }
+	SetInterfaces([]string{"ethernet"}) // the name matches in any case
+	fakeTable()
+
+	// Not restricted: the ticks only choose what is offered.
 	if !ConnectionAllowed(tcp("192.168.1.138")) {
 		t.Error("without the restriction every address is served")
 	}
 	SetRestrictListening(true)
-	for addr, want := range map[string]bool{"192.168.1.185": true, "192.168.1.138": false, "127.0.0.1": true, "::1": true} {
+	for addr, want := range map[string]bool{"192.168.1.185": true, "192.168.1.138": false, "127.0.0.1": true, "::1": true, "10.9.9.9": true /* not an address of any interface: cannot be told */} {
 		if got := ConnectionAllowed(tcp(addr)); got != want {
 			t.Errorf("%s: %v, want %v", addr, got, want)
 		}
 	}
-	// A connection made to a refused address is closed and never reaches the server; the next one is served.
+	// A connection made to an address of an interface that is not used is closed and never reaches the server;
+	// the next one is served.
 	var bad, good bool
 	var refusedLocal net.Addr
 	ln := LimitListener(&fakeListener{conns: []net.Conn{fakeConn{local: tcp("192.168.1.138"), closed: &bad}, fakeConn{local: tcp("192.168.1.185"), closed: &good}}}, func(a net.Addr) { refusedLocal = a })
@@ -132,6 +143,21 @@ func TestRestrictedListeningRefusesAddressesThatAreNotOffered(t *testing.T) {
 	}
 	if refusedLocal == nil || refusedLocal.String() != "192.168.1.138:80" {
 		t.Errorf("the refusal is reported: %v", refusedLocal)
+	}
+	// No choice made yet (an empty list): every interface is used.
+	SetInterfaces(nil)
+	if !ConnectionAllowed(tcp("192.168.1.138")) || !InterfaceSelected("anything") {
+		t.Error("an empty list means every interface")
+	}
+}
+
+func TestInterfaceSelectionIsByNameInAnyCase(t *testing.T) {
+	t.Cleanup(func() { SetInterfaces(nil) })
+	SetInterfaces([]string{" Ethernet ", "en4"})
+	for name, want := range map[string]bool{"ethernet": true, "ETHERNET": true, "en4": true, "Wi-Fi": false, "en0": false} {
+		if got := InterfaceSelected(name); got != want {
+			t.Errorf("%s: %v, want %v", name, got, want)
+		}
 	}
 }
 
@@ -179,36 +205,42 @@ func TestAdapterKindFromItsName(t *testing.T) {
 	}
 }
 
-func TestPreferredAdapterWinsOverEveryOtherRule(t *testing.T) {
-	t.Cleanup(func() { SetPrefer(nil) })
-	mk := func(ip, iface, kind string) Address {
-		return Address{IP: net.ParseIP(ip), Interface: iface, Kind: kind, Network: netip.MustParsePrefix("192.168.1.0/24")}
+func TestInterfacesSayWhichOneIsUsedForANetwork(t *testing.T) {
+	t.Cleanup(func() { SetInterfaces(nil) })
+	mk := func(ip, iface, kind, netw string) Address {
+		return Address{IP: net.ParseIP(ip), Interface: iface, Kind: kind, Network: netip.MustParsePrefix(netw)}
 	}
-	wifi, cable := mk("192.168.1.138", "Wi-Fi", KindWiFi), mk("192.168.1.185", "Ethernet", KindEthernet)
-	pick := func(main string) string {
-		var m net.IP
-		if main != "" {
-			m = net.ParseIP(main)
+	all := []Address{mk("192.168.1.138", "Wi-Fi", KindWiFi, "192.168.1.0/24"), mk("192.168.1.185", "Ethernet", KindEthernet, "192.168.1.0/24"), mk("10.0.0.4", "vEthernet", KindEthernet, "10.0.0.0/24")}
+	find := func(l []Interface, name string) Interface {
+		for _, i := range l {
+			if i.Name == name {
+				return i
+			}
 		}
-		return chooseOnePerNetwork([]Address{wifi, cable}, m)[0].Interface
+		t.Fatalf("no %s in %v", name, l)
+		return Interface{}
 	}
-	if got := pick("192.168.1.138"); got != "Wi-Fi" {
-		t.Errorf("by default the main connection wins: %s", got)
+	// Everything ticked (no choice yet): the cable is used for the shared network, Wi-Fi says so; another network is its own.
+	l := buildInterfaces(all, nil)
+	if w := find(l, "Wi-Fi"); !w.Selected || w.Used || w.Instead != "Ethernet" || w.InsteadIP.String() != "192.168.1.185" {
+		t.Errorf("Wi-Fi is ticked but not used: %+v", w)
 	}
-	SetPrefer([]string{"ethernet"})
-	if got := pick("192.168.1.138"); got != "Ethernet" {
-		t.Errorf("preferring a kind beats the main connection: %s", got)
+	if e := find(l, "Ethernet"); !e.Used || e.Instead != "" {
+		t.Errorf("%+v", e)
 	}
-	SetPrefer([]string{"wifi"})
-	if got := pick(""); got != "Wi-Fi" {
-		t.Errorf("preferring Wi-Fi: %s", got)
+	if v := find(l, "vEthernet"); !v.Used {
+		t.Errorf("a different network keeps its own address: %+v", v)
 	}
-	SetPrefer([]string{"nothing-like-this", " ETHERNET "})
-	if got := pick(""); got != "Ethernet" {
-		t.Errorf("the first entry that matches is used, by name or kind, in any case: %s", got)
+	// Unticking the cable lets Wi-Fi take over; an unticked interface is neither used nor "instead".
+	SetInterfaces([]string{"Wi-Fi", "vEthernet"})
+	l = buildInterfaces(all, nil)
+	if w, e := find(l, "Wi-Fi"), find(l, "Ethernet"); !w.Used || e.Selected || e.Used || e.Instead != "" {
+		t.Errorf("wifi=%+v cable=%+v", w, e)
 	}
-	SetPrefer([]string{"Wi-Fi", "ethernet"})
-	if got := pick(""); got != "Wi-Fi" {
-		t.Errorf("earlier entries win: %s", got)
+	// The main connection wins over the cable when both are ticked.
+	SetInterfaces(nil)
+	l = buildInterfaces(all, net.ParseIP("192.168.1.138"))
+	if w := find(l, "Wi-Fi"); !w.Used {
+		t.Errorf("the main connection is used: %+v", w)
 	}
 }
