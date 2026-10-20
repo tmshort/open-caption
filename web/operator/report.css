@@ -1,4 +1,5 @@
-/* The audience report page: light or dark like the user's system, and plain black on white when printed. */
+/* The stand-alone audience report page: light or dark like the user's system, and plain black on white when printed.
+   The report itself is styled by web/shared/report.css. */
 :root { --control:#fff; --input:#fff; --bg:#f6f7f9; --panel:#fff; --fg:#14171c; --dim:#5b6472; --line:#d9dde3; --accent:#1f5fd1; --accent-fg:#fff; --ok:#14804a; --warn:#a15c00; --bad:#b3261e; }
 @media (prefers-color-scheme: dark) { :root { --control:#1b1e24; --input:#1b1e24; --bg:#111317; --panel:#1b1e24; --fg:#e8ebf0; --dim:#9aa3b0; --line:#323843; --accent:#6c9cff; --accent-fg:#0b1020; --ok:#4cc38a; --warn:#f0b24a; --bad:#ff7b72; } }
 body { margin: 0; }
@@ -6,45 +7,8 @@ body { margin: 0; }
 #app[hidden], #login[hidden] { display: none; }
 .rhead { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1.5rem; justify-content: space-between; }
 .rhead h1 { margin: 0; }
-.rtools { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
-.rtools select { max-width: 18rem; }
-#report h2 { margin: 1rem 0 .1rem; }
-#report h3 { margin: 1.6rem 0 .4rem; }
-.totals { display: grid; grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr)); gap: .6rem; margin: .8rem 0; }
-.totals > div { background: var(--panel); border: 1px solid var(--line); border-radius: .5rem; padding: .6rem .8rem; }
-.totals dt { font-size: .85rem; color: var(--dim); }
-.totals dd { margin: .1rem 0 0; font-size: 1.6rem; font-weight: 700; }
-.totals dd small { display: block; font-size: .8rem; font-weight: 400; color: var(--dim); }
-.totals .big { grid-column: span 1; }
-table { border-collapse: collapse; width: 100%; background: var(--panel); }
-th, td { border: 1px solid var(--line); padding: .35rem .6rem; text-align: left; vertical-align: top; }
-td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
-thead th { background: var(--bg); }
-#langs { width: auto; min-width: 18rem; }
-.scroll { overflow-x: auto; }
-.chart { display: block; width: 100%; min-width: 640px; height: auto; background: var(--panel); border: 1px solid var(--line); border-radius: .5rem; }
-.chart text { font-size: 12px; fill: var(--fg); }
-.chart .tick { fill: var(--dim); }
-.chart .grid { stroke: var(--line); stroke-width: 1; }
-.chart .axis { stroke: var(--dim); stroke-width: 1; }
-.chart .area { fill: var(--accent); fill-opacity: .18; }
-.chart .line { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; }
-.chart .band { fill: var(--warn); fill-opacity: .14; stroke: var(--warn); stroke-width: 1; }
-.chart .hatchbar { fill: var(--warn); fill-opacity: .55; }
-.chart .peak { fill: var(--accent); stroke: var(--panel); stroke-width: 2; }
-.legend { display: flex; flex-wrap: wrap; gap: .3rem 1.2rem; margin: .4rem 0 0; color: var(--dim); }
-.swatch { display: inline-block; width: 1.6rem; height: .8rem; vertical-align: middle; margin-right: .4rem; border-radius: 2px; }
-.swatch.devices { background: var(--accent); height: .25rem; }
-.swatch.looprun { background: repeating-linear-gradient(135deg, var(--warn) 0 2px, transparent 2px 5px); border: 1px solid var(--warn); }
-#loops { width: auto; min-width: 24rem; }
-.running { color: var(--ok); font-weight: 600; }
 @media print {
   :root { --bg:#fff; --panel:#fff; --fg:#000; --dim:#333; --line:#999; }
   body { background: #fff; color: #000; }
-  .noprint { display: none !important; }
   #app { max-width: none; padding: 0; }
-  .totals > div { break-inside: avoid; }
-  .chart { min-width: 0; }
-  .scroll { overflow: visible; }
-  tr { break-inside: avoid; }
 }

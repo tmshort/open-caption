@@ -1,0 +1,38 @@
+/* The audience report (web/shared/report.js), in Setup's Report step and on the stand-alone page. It uses the palette names both pages define. */
+.oc-report h2 { margin: 1rem 0 .1rem; }
+.oc-report h3 { margin: 1.6rem 0 .4rem; }
+.oc-report .totals { display: grid; grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr)); gap: .6rem; margin: .8rem 0; }
+.oc-report .totals > div { background: var(--panel); border: 1px solid var(--line); border-radius: .5rem; padding: .6rem .8rem; }
+.oc-report .totals dt { font-size: .85rem; color: var(--dim); }
+.oc-report .totals dd { margin: .1rem 0 0; font-size: 1.6rem; font-weight: 700; }
+.oc-report .totals dd small { display: block; font-size: .8rem; font-weight: 400; color: var(--dim); }
+.oc-report table { border-collapse: collapse; width: 100%; background: var(--panel); }
+.oc-report th, .oc-report td { border: 1px solid var(--line); padding: .35rem .6rem; text-align: left; vertical-align: top; }
+.oc-report td.num, .oc-report th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.oc-report thead th { background: var(--bg); }
+.oc-report #langs { width: auto; min-width: 18rem; }
+.oc-report #loops { width: auto; min-width: 24rem; }
+.oc-report .scroll { overflow-x: auto; }
+.oc-report .chart { display: block; width: 100%; min-width: 640px; height: auto; background: var(--panel); border: 1px solid var(--line); border-radius: .5rem; }
+.oc-report .chart text { font-size: 12px; fill: var(--fg); }
+.oc-report .chart .tick { fill: var(--dim); }
+.oc-report .chart .grid { stroke: var(--line); stroke-width: 1; }
+.oc-report .chart .axis { stroke: var(--dim); stroke-width: 1; }
+.oc-report .chart .area { fill: var(--accent); fill-opacity: .18; }
+.oc-report .chart .line { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; }
+.oc-report .chart .band { fill: var(--warn); fill-opacity: .14; stroke: var(--warn); stroke-width: 1; }
+.oc-report .chart .hatchbar { fill: var(--warn); fill-opacity: .55; }
+.oc-report .chart .peak { fill: var(--accent); stroke: var(--panel); stroke-width: 2; }
+.oc-report .legend { display: flex; flex-wrap: wrap; gap: .3rem 1.2rem; margin: .4rem 0 0; color: var(--dim); }
+.oc-report .swatch { display: inline-block; width: 1.6rem; height: .8rem; vertical-align: middle; margin-right: .4rem; border-radius: 2px; }
+.oc-report .swatch.devices { background: var(--accent); height: .25rem; }
+.oc-report .swatch.looprun { background: repeating-linear-gradient(135deg, var(--warn) 0 2px, transparent 2px 5px); border: 1px solid var(--warn); }
+.oc-report .running { color: var(--ok); font-weight: 600; }
+.rtools { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin: .6rem 0; }
+.rtools select { max-width: 18rem; }
+@media print {
+  .noprint { display: none !important; }
+  .oc-report .totals > div, .oc-report tr { break-inside: avoid; }
+  .oc-report .chart { min-width: 0; }
+  .oc-report .scroll { overflow: visible; }
+}

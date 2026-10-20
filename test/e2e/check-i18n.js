@@ -16,7 +16,7 @@ const required = new Map(); // English text -> where it came from
 const need = (text, where) => { text = text.trim(); if (/[A-Za-z]{2}/.test(text) && !required.has(text)) required.set(text, where); };
 
 // 1. JavaScript: the first argument of every __('...') call (a template with {name} placeholders is kept as is).
-for (const f of ['admin/admin.js', 'operator/operator.js', 'operator/report.js', 'helpui/help.js']) {
+for (const f of ['admin/admin.js', 'operator/operator.js', 'operator/report.js', 'shared/report.js', 'helpui/help.js']) {
   const src = fs.readFileSync(path.join(web, f), 'utf8');
   const ast = acorn.parse(src, { ecmaVersion: 2018, locations: true });
   (function walk(n) {
