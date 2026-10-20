@@ -37,7 +37,35 @@ func (s *Server) newReporting() {
 // couple of seconds.
 func (s *Server) syncReport() {
 	p := s.rt.OperatorPayload()
-	s.tracker.Sync(p.Op.Live && p.Show.ID != "", p.Show.ID, p.Show.Name)
+	var loop *report.LoopInfo
+	if p.Op.Live && p.Op.Loop != nil {
+		loop = &report.LoopInfo{Cue: p.Op.Loop.Cue, Kind: loopKind(s.rt.Engine().Cues(), p.Op.Loop.Cue)}
+	}
+	s.tracker.Sync(p.Op.Live && p.Show.ID != "", p.Show.ID, p.Show.Name, loop)
+}
+
+// loopKind says what a loop is by where it stands in the show file: before the first line the audience sees it is the
+// pre-show, after the last it is the post-show, and between lines an intermission.
+func loopKind(cues []showfile.Cue, at int) string {
+	first, last := -1, -1
+	for i, c := range cues {
+		switch c.Kind {
+		case showfile.KindCaption, showfile.KindImage, showfile.KindFullscreen:
+			if first < 0 {
+				first = i
+			}
+			last = i
+		}
+	}
+	switch {
+	case first < 0:
+		return report.LoopOther
+	case at < first:
+		return report.LoopPreShow
+	case at > last:
+		return report.LoopPostShow
+	}
+	return report.LoopIntermission
 }
 
 // reportLoop keeps the tracker in step with the show and saves the run in progress now and then, so a crash during
@@ -50,7 +78,7 @@ func (s *Server) reportLoop() {
 	for {
 		select {
 		case <-s.quit:
-			s.tracker.Sync(false, "", "") // closes a run in progress, which saves it
+			s.tracker.Sync(false, "", "", nil) // closes a run in progress, which saves it
 			return
 		case <-t.C:
 			s.syncReport()

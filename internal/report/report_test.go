@@ -39,7 +39,7 @@ func TestARunCountsDevicesNotConnections(t *testing.T) {
 		t.Fatal("nothing is counted before the show is on the air")
 	}
 	c.add(time.Minute)
-	tr.Sync(true, "garden", "The Garden Party")
+	tr.Sync(true, "garden", "The Garden Party", nil)
 	c.add(time.Minute)
 
 	// A phone that drops off the WiFi three times, a Spanish tablet, a projector, a second tab on the first phone.
@@ -94,7 +94,7 @@ func TestARunCountsDevicesNotConnections(t *testing.T) {
 	}
 
 	// Going to standby ends the run with the people still there counted as connected at the end.
-	tr.Sync(false, "garden", "The Garden Party")
+	tr.Sync(false, "garden", "The Garden Party", nil)
 	if len(closed) != 1 || closed[0].Running || closed[0].Totals.Now != 2 || closed[0].Ended.IsZero() || closed[0].Totals.Devices != 4 {
 		t.Fatalf("closed: %+v", closed)
 	}
@@ -105,7 +105,7 @@ func TestARunCountsDevicesNotConnections(t *testing.T) {
 	proj()
 	// Disconnecting after the run is harmless, and a new run starts afresh with whoever is connected then.
 	late := tr.Connect("192.168.1.99", pixel, kindOf[pixel], "en", false)
-	tr.Sync(true, "garden", "The Garden Party")
+	tr.Sync(true, "garden", "The Garden Party", nil)
 	if cur, _ := tr.Current(); cur.Totals.Devices != 1 {
 		t.Errorf("a new run starts afresh: %+v", cur.Totals)
 	}
@@ -118,15 +118,15 @@ func TestADifferentShowEndsTheRun(t *testing.T) {
 	var closed int
 	tr.OnClose = func(Report) { closed++ }
 	tr.Connect("10.0.0.1", iphone, kindOf[iphone], "en", false)
-	tr.Sync(true, "a", "A")
-	tr.Sync(true, "a", "A renamed")
+	tr.Sync(true, "a", "A", nil)
+	tr.Sync(true, "a", "A renamed", nil)
 	if closed != 0 {
 		t.Error("the same show on the air keeps the run (a rename does not end it)")
 	}
 	if cur, _ := tr.Current(); cur.Show != "A renamed" {
 		t.Errorf("the name follows a rename: %q", cur.Show)
 	}
-	tr.Sync(true, "b", "B")
+	tr.Sync(true, "b", "B", nil)
 	cur, ok := tr.Current()
 	if closed != 1 || !ok || cur.ShowID != "b" || cur.Totals.Devices != 1 {
 		t.Errorf("a different show closes the run and starts another: closed=%d %+v", closed, cur)
@@ -202,5 +202,79 @@ func TestSpansAreWholeSecondsInJSON(t *testing.T) {
 	var d Device
 	if err := json.Unmarshal(b, &d); err != nil || d.Connected != Span(90*time.Second) || d.Longest != Span(time.Hour) {
 		t.Errorf("%+v %v", d, err)
+	}
+}
+
+// The graph: how many devices were connected at each moment, and when a loop was running.
+func TestTheGraphFollowsDevicesAndLoops(t *testing.T) {
+	c := newClock()
+	tr := New(c.now)
+	at := func(s int) time.Time {
+		return time.Date(2026, 10, 20, 19, 30, 0, 0, time.UTC).Add(time.Duration(s) * time.Second)
+	}
+	pre := &LoopInfo{Cue: 0, Kind: LoopPreShow}
+	interm := &LoopInfo{Cue: 9, Kind: LoopIntermission}
+
+	early := tr.Connect("10.0.0.1", iphone, Phone, "en", false)
+	tr.Sync(true, "s", "S", pre) // on air, with the pre-show loop running and one device waiting
+	c.add(10 * time.Second)
+	b := tr.Connect("10.0.0.2", pixel, Phone, "en", false)
+	c.add(10 * time.Second)
+	tr.Sync(true, "s", "S", nil) // the pre-show ends at 0:20
+	c.add(40 * time.Second)
+	b()
+	c.add(10 * time.Second)
+	tr.Sync(true, "s", "S", interm) // an intermission starts at 1:10
+	c.add(30 * time.Second)
+
+	cur, _ := tr.Current()
+	want := []Point{{at(0), 1}, {at(10), 2}, {at(60), 1}, {at(100), 1}}
+	if len(cur.Series) != len(want) {
+		t.Fatalf("series: %+v", cur.Series)
+	}
+	for i, p := range want {
+		if !cur.Series[i].T.Equal(p.T) || cur.Series[i].N != p.N {
+			t.Errorf("point %d: %+v, want %+v", i, cur.Series[i], p)
+		}
+	}
+	if len(cur.Loops) != 2 || cur.Loops[0].Kind != LoopPreShow || !cur.Loops[0].Start.Equal(at(0)) || !cur.Loops[0].End.Equal(at(20)) ||
+		cur.Loops[1].Kind != LoopIntermission || !cur.Loops[1].Start.Equal(at(70)) || !cur.Loops[1].End.Equal(at(100)) {
+		t.Errorf("loops: %+v", cur.Loops)
+	}
+	// Ending the run closes the open loop, and the graph ends there.
+	var final Report
+	tr.OnClose = func(r Report) { final = r }
+	c.add(20 * time.Second)
+	tr.Sync(false, "s", "S", nil)
+	early()
+	if final.Loops[1].End != at(120) || !final.Series[len(final.Series)-1].T.Equal(at(120)) || final.Running {
+		t.Errorf("final: %+v %+v", final.Loops, final.Series)
+	}
+	// A loop that is still the same one is not split in two.
+	tr.Sync(true, "s", "S", pre)
+	tr.Sync(true, "s", "S", pre)
+	if cur, _ := tr.Current(); len(cur.Loops) != 1 {
+		t.Errorf("one loop: %+v", cur.Loops)
+	}
+}
+
+func TestALongRunKeepsTheGraphSmall(t *testing.T) {
+	c := newClock()
+	tr := New(c.now)
+	tr.Sync(true, "s", "S", nil)
+	for i := 0; i < 5*maxSeries; i++ {
+		off := tr.Connect("10.0.0.1", iphone, Phone, "en", false)
+		c.add(time.Second)
+		off()
+		c.add(time.Second)
+	}
+	cur, _ := tr.Current()
+	if len(cur.Series) > maxSeries+2 || len(cur.Series) < maxSeries/4 {
+		t.Errorf("%d points", len(cur.Series))
+	}
+	for i := 1; i < len(cur.Series); i++ {
+		if cur.Series[i].T.Before(cur.Series[i-1].T) {
+			t.Fatalf("points out of order at %d", i)
+		}
 	}
 }

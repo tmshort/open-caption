@@ -1,5 +1,17 @@
 // Spanish translations of Setup, the operator page and Help (see web/shared/i18n.js). The key is the English text.
 OCI18n.add("es", {
+ "Pre-show": "Antes del espectáculo",
+ "Intermission": "Intermedio",
+ "Post-show": "Después del espectáculo",
+ "Devices connected over time": "Dispositivos conectados a lo largo del tiempo",
+ "Devices connected over time, from {start} to {end}: up to {peak} at once.": "Dispositivos conectados a lo largo del tiempo, de {start} a {end}: hasta {peak} a la vez.",
+ "Devices connected": "Dispositivos conectados",
+ "A loop was running": "Había un bucle en marcha",
+ "Devices over time": "Dispositivos a lo largo del tiempo",
+ "Loops": "Bucles",
+ "From": "Desde",
+ "To": "Hasta",
+ "Duration": "Duración",
  "Audience report": "Informe del público",
  "(how many devices used the audience page during the last run of the show)": "(cuántos dispositivos usaron la página del público durante la última función)",
  "The show is on air now: these are the numbers so far (from {start}).": "El espectáculo está en el aire ahora: estas son las cifras hasta el momento (desde {start}).",

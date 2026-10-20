@@ -9,6 +9,9 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/tmshort/open-caption/internal/report"
+	"github.com/tmshort/open-caption/internal/showfile"
 )
 
 const (
@@ -150,5 +153,18 @@ func TestRehearsalViewersAreNotCounted(t *testing.T) {
 	cur, ok := s.tracker.Current()
 	if !ok || cur.Totals.Devices != 0 {
 		t.Errorf("the show is on the air with nobody in the audience: %v %+v", ok, cur.Totals)
+	}
+}
+
+func TestLoopsAreNamedByWhereTheyStand(t *testing.T) {
+	cue := func(k showfile.CueKind) showfile.Cue { return showfile.Cue{Kind: k} }
+	cues := []showfile.Cue{cue(showfile.KindLoop), cue(showfile.KindNote), cue(showfile.KindCaption), cue(showfile.KindSection), cue(showfile.KindLoop), cue(showfile.KindImage), cue(showfile.KindLoop)}
+	for at, want := range map[int]string{0: report.LoopPreShow, 4: report.LoopIntermission, 6: report.LoopPostShow} {
+		if got := loopKind(cues, at); got != want {
+			t.Errorf("loop at %d: %s, want %s", at, got, want)
+		}
+	}
+	if got := loopKind([]showfile.Cue{cue(showfile.KindLoop)}, 0); got != report.LoopOther {
+		t.Errorf("a show of only loops: %s", got)
 	}
 }

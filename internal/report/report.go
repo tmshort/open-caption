@@ -50,6 +50,34 @@ type Device struct {
 	Now         bool      `json:"now"`       // still connected (at the end of the run, or at this moment)
 }
 
+// Point is how many devices were connected at one moment; the count stays the same until the next point.
+type Point struct {
+	T time.Time `json:"t"`
+	N int       `json:"n"`
+}
+
+// Loop kinds, by where a loop is in the show file.
+const (
+	LoopPreShow      = "preshow"      // before the first line the audience sees
+	LoopIntermission = "intermission" // between lines
+	LoopPostShow     = "postshow"     // after the last line
+	LoopOther        = "loop"         // a show with no lines of its own
+)
+
+// Loop is a stretch of the run during which a loop (a pre-show, an intermission) was running.
+type Loop struct {
+	Start time.Time `json:"start"`
+	End   time.Time `json:"end"`
+	Kind  string    `json:"kind"`
+	Cue   int       `json:"cue"` // the loop's place in the show file
+}
+
+// LoopInfo says which loop is running.
+type LoopInfo struct {
+	Cue  int
+	Kind string
+}
+
 // Totals sum the run up.
 type Totals struct {
 	Devices      int       `json:"devices"`
@@ -76,6 +104,8 @@ type Report struct {
 	Totals    Totals         `json:"totals"`
 	Languages map[string]int `json:"languages"` // devices that used each audience language
 	Devices   []Device       `json:"devices"`
+	Series    []Point        `json:"series"` // devices connected over time, from the start to the end (or now)
+	Loops     []Loop         `json:"loops"`  // when a loop was running
 }
 
 // ID is the short code for a device: the same address and browser type always give the same one.
@@ -119,7 +149,13 @@ type run struct {
 	devs         map[string]*device
 	peak         int
 	peakAt       time.Time
+	series       []Point
+	loops        []Loop // the last one is still running when open is true
+	open         bool
 }
+
+// maxSeries bounds the points kept for the graph; beyond it every second point is dropped, which keeps the shape.
+const maxSeries = 6000
 
 // New makes a tracker that reads the clock from now (nil: time.Now).
 func New(now func() time.Time) *Tracker {
@@ -156,11 +192,12 @@ func (t *Tracker) Connect(address, agent, kind, lang string, projector bool) (di
 
 // Sync tells the tracker whether the show is on the air, and which one. Going on the air starts a run (counting the
 // devices already connected); going off the air, or a different show, ends it.
-func (t *Tracker) Sync(onAir bool, showID, show string) {
+func (t *Tracker) Sync(onAir bool, showID, show string, loop *LoopInfo) {
 	t.mu.Lock()
 	var closed *Report
 	now := t.now()
 	if t.run != nil && (!onAir || t.run.showID != showID) {
+		t.markLocked(now)
 		r := t.reportLocked(now, false)
 		closed = &r
 		t.run = nil
@@ -175,8 +212,12 @@ func (t *Tracker) Sync(onAir bool, showID, show string) {
 		for _, id := range ids {
 			t.addLocked(t.conns[id], now)
 		}
+		t.markLocked(now)
 	} else if t.run != nil {
 		t.run.show = show
+	}
+	if t.run != nil {
+		t.loopLocked(now, loop)
 	}
 	cb := t.OnClose
 	t.mu.Unlock()
@@ -207,6 +248,49 @@ func (t *Tracker) addLocked(c *conn, now time.Time) {
 	if n := r.connectedLocked(); n > r.peak {
 		r.peak, r.peakAt = n, now
 	}
+	t.markLocked(now)
+}
+
+// markLocked adds a point to the graph when the number of connected devices changed.
+func (t *Tracker) markLocked(now time.Time) {
+	r := t.run
+	n := r.connectedLocked()
+	if k := len(r.series); k > 0 {
+		last := r.series[k-1]
+		if last.N == n {
+			return
+		}
+		if last.T.Equal(now) {
+			r.series[k-1].N = n // several changes at one moment: keep the last
+			return
+		}
+	}
+	r.series = append(r.series, Point{T: now, N: n})
+	if len(r.series) > maxSeries {
+		kept := r.series[:0:0]
+		for i, p := range r.series {
+			if i%2 == 0 || i == len(r.series)-1 {
+				kept = append(kept, p)
+			}
+		}
+		r.series = kept
+	}
+}
+
+// loopLocked follows which loop is running: a new one opens a stretch, none (or another) closes the one before.
+func (t *Tracker) loopLocked(now time.Time, loop *LoopInfo) {
+	r := t.run
+	if r.open {
+		cur := &r.loops[len(r.loops)-1]
+		if loop != nil && loop.Cue == cur.Cue {
+			return
+		}
+		cur.End, r.open = now, false
+	}
+	if loop != nil {
+		r.loops = append(r.loops, Loop{Start: now, Kind: loop.Kind, Cue: loop.Cue})
+		r.open = true
+	}
 }
 
 func (t *Tracker) dropLocked(c *conn, now time.Time) {
@@ -219,6 +303,7 @@ func (t *Tracker) dropLocked(c *conn, now time.Time) {
 	if d.open == 0 {
 		t.endStay(d, now)
 	}
+	t.markLocked(now)
 }
 
 func (t *Tracker) endStay(d *device, now time.Time) {
@@ -311,5 +396,13 @@ func (t *Tracker) reportLocked(now time.Time, running bool) Report {
 		tot.AvgConnected = sum / Span(tot.Devices)
 	}
 	tot.Peak, tot.PeakAt = r.peak, r.peakAt
+	rep.Series = append([]Point{}, r.series...)
+	if n := len(rep.Series); n == 0 || !rep.Series[n-1].T.Equal(now) {
+		rep.Series = append(rep.Series, Point{T: now, N: r.connectedLocked()}) // the graph runs on to now (or the end)
+	}
+	rep.Loops = append([]Loop{}, r.loops...)
+	if r.open {
+		rep.Loops[len(rep.Loops)-1].End = now // still running
+	}
 	return rep
 }
