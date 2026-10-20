@@ -12,7 +12,7 @@ A single-binary open-captioning server for community theater (Go 1.26+, no CGO).
 
 - `build.bat` (runs `build.ps1`) is `make build` for Windows, which has no make; `deploy/deploy_test.go` checks it uses the Makefile's default providers and flags, so change both together.
 - `make build` → `bin/open-caption`; run `./bin/open-caption` (first run writes `config.yaml` with random passwords; `--show-file` flag exists).
-- `make test` / `make race` (`go test -race ./...`) / `make vet`
+- `make test` / `make race` (`go test -race ./...`) / `make vet` / `make lint` (`go vet` plus staticcheck at the version pinned in the Makefile; CI runs it on Linux; keep it at zero findings)
 - Single test: `go test ./internal/httpapi -run TestName -count=1`
 - `make fuzz` fuzzes the show-file parser (`FuzzParse`)
 - `make e2e` — browser end-to-end suite (`test/e2e/run.js`, puppeteer-core; needs Node and Chrome, set `CHROME` if not at the default path). Chrome allows 6 connections per host, so e2e pages must be closed when finished (SSE streams stay open).
@@ -21,7 +21,7 @@ A single-binary open-captioning server for community theater (Go 1.26+, no CGO).
 - `tools/make-icons.js` regenerates `favicon.ico` / `apple-touch-icon.png` from `web/shared/favicon.svg`.
 - `make dist` cross-compiles release binaries (CGO disabled). **Releases:** push a `v1.2.3` tag and `.github/workflows/release.yml` runs `make release` (pinned GoReleaser, `.goreleaser.yaml`) to make a draft GitHub release with a download per platform; `make release-snapshot` tries it locally, `GITHUB_TOKEN=$(gh auth token) make release` releases from this computer (`docs/releasing.md`). What goes in a download is the `files:` list in `.goreleaser.yaml` (guides yes, design specs `01`–`09` no); wrap README parts that only make sense next to the source in `<!-- source-only:start -->` / `<!-- source-only:end -->`; `go test ./deploy` checks the download for dead links.
 
-Run `gofmt`, `go vet ./...` and `go test -race ./...` before committing (the full list, and the documentation rules, are under "Commits and documentation").
+Run `gofmt`, `make lint` and `go test -race ./...` before committing (the full list, and the documentation rules, are under "Commits and documentation").
 
 Outside contributions: `CONTRIBUTING.md` (no code PRs accepted yet; DCO sign-off with `git commit -s`; keep its rules and the "Commits and documentation" section below in step).
 
@@ -39,7 +39,7 @@ Outside contributions: `CONTRIBUTING.md` (no code PRs accepted yet; DCO sign-off
   - the in-app help (`web/help/*.md`) and the **translations**: help topics in `web/help/<lang>/` and guides (usage, venue network, HTTPS certificate, configuration reference) in `docs/i18n/<lang>/` for es, fr, de, it, pt, and on-screen text via `__('…')` in `web/shared/i18n/<lang>.js` (`node test/e2e/check-i18n.js`);
   - tests, including the browser checks in `test/e2e/run.js` and the accessibility audit when a page changes.
   If a document is English only by design (`docs/10`, the man page), say so where it is linked rather than leaving it untranslated silently.
-- **Verify before every commit:** `gofmt`, `go vet ./...`, `go test -race ./...`, and for anything that touches the web pages `make e2e`, `node test/e2e/a11y.js` and `node test/e2e/check-i18n.js`; `make vulncheck` after changing dependencies. Then `git pull --rebase` and push.
+- **Verify before every commit:** `gofmt`, `make lint` (`go vet ./...` and staticcheck), `go test -race ./...`, and for anything that touches the web pages `make e2e`, `node test/e2e/a11y.js` and `node test/e2e/check-i18n.js`; `make vulncheck` after changing dependencies. Then `git pull --rebase` and push.
 - Don't leave a change half-documented "for a follow-up": if the documentation can't be finished with the change, the change isn't finished.
 
 ## Architecture (needs several files to see)

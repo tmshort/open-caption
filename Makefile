@@ -11,10 +11,12 @@ PEBBLE_VERSION ?= v2.10.1
 PEBBLE_PKG := github.com/letsencrypt/pebble/v2
 # GoReleaser builds and packages a release (docs/releasing.md); the version is pinned here, for `make release` locally and in the workflow.
 GORELEASER_VERSION ?= v2.18.3
+# staticcheck is the linter behind `make lint` (run through `go run`, so nothing is installed); change the version here and fix what it newly finds.
+STATICCHECK_VERSION ?= v0.8.2
 TOOLS := $(CURDIR)/.tools
 
 .DEFAULT_GOAL := help
-.PHONY: help build test race fuzz vet vulncheck pebble pebble-test goreleaser release release-snapshot tidy e2e a11y i18n dist man acme-variants clean
+.PHONY: help build test race fuzz vet lint vulncheck pebble pebble-test goreleaser release release-snapshot tidy e2e a11y i18n dist man acme-variants clean
 
 help: ## Show this list of targets
 	@echo "open-caption: make <target>"; echo
@@ -30,6 +32,9 @@ fuzz: ## Fuzz the show-file parser for 30 seconds
 	go test ./internal/showfile -run xxx -fuzz FuzzParse -fuzztime 30s
 vet: ## Run go vet
 	go vet ./...
+lint: ## Run go vet and staticcheck (unused code, misuse of the standard library, simplifications; needs internet the first time)
+	go vet ./...
+	go run honnef.co/go/tools/cmd/staticcheck@$(STATICCHECK_VERSION) ./...
 vulncheck: pebble goreleaser ## Check the dependencies, Go and the pinned tools (Pebble, GoReleaser) for known vulnerabilities, and say if a pinned tool has a newer release (govulncheck; needs internet)
 	go run golang.org/x/vuln/cmd/govulncheck@latest ./...
 	go run golang.org/x/vuln/cmd/govulncheck@latest -mode=binary $(TOOLS)/bin/pebble

@@ -32,6 +32,8 @@ jobs:
         with:
           go-version: stable
       - run: go vet ./...
+      - run: make lint
+        if: runner.os == 'Linux'
       - run: go test ${{ runner.os == 'Linux' && '-race' || '' }} ./...  # the race detector is slow; Linux is enough
   cross-build:
     if: github.event_name != 'push' || startsWith(github.ref, 'refs/tags/')

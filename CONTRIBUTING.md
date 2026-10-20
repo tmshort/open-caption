@@ -75,7 +75,7 @@ Never "in a follow-up". Before committing, go through the places a change can to
 
 ```
 gofmt -l .
-go vet ./...
+make lint        # go vet and staticcheck
 go test -race ./...
 ```
 
