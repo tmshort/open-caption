@@ -755,6 +755,12 @@ async function main() {
     const menu = await uiPage('/admin', 'en'); await signIn(menu, '#steps button');
     await menu.select('header select.uilang', 'fr'); await menu.waitForFunction(() => document.documentElement.lang === 'fr' && document.readyState === 'complete' && window.OCI18n && OCI18n.keys('fr').length > 0, { timeout: T(15000) }).catch(() => {});
     check('the language menu switches the page and remembers the choice', await menu.evaluate(() => document.documentElement.lang === 'fr' && localStorage.getItem('oc.ui.lang') === 'fr'));
+    // The address now ends in a step (#show): going to the same address again is not a reload, so the menu has to reload on purpose.
+    await menu.evaluate(() => { location.hash = '#show'; });
+    check('the page has a #step in its address, as it does once the user has moved between steps', await menu.evaluate(() => location.hash === '#show'));
+    await menu.select('header select.uilang', 'de'); await menu.waitForFunction(() => document.documentElement.lang === 'de' && document.readyState === 'complete' && window.OCI18n && OCI18n.keys('de').length > 0, { timeout: T(15000) }).catch(() => {});
+    check('the language menu still works once the address ends in a step', await menu.evaluate(() => document.documentElement.lang === 'de' && localStorage.getItem('oc.ui.lang') === 'de' && document.getElementById('settingsbtn').textContent === 'Einstellungen'));
+    await menu.select('header select.uilang', 'fr'); await menu.waitForFunction(() => document.documentElement.lang === 'fr' && document.readyState === 'complete' && window.OCI18n && OCI18n.keys('fr').length > 0, { timeout: T(15000) }).catch(() => {});
     check('an unknown or missing translation falls back to English', await menu.evaluate(() => OCI18n.t('A sentence nobody translated') === 'A sentence nobody translated' && OCI18n.t('Image "a.png" not found. Upload it in the Images step.').includes('introuvable')));
     await menu.evaluate(() => localStorage.removeItem('oc.ui.lang'));
     await menu.close(); await b4.close();

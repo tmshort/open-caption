@@ -136,8 +136,11 @@
     sel.addEventListener('change', function () {
       if (onChange && onChange(sel.value) === false) { sel.value = lang; return; }
       store('set', sel.value);
-      // a ?ui= in the address would win over the choice just made
-      location.replace(location.pathname + location.search.replace(/([?&])ui=[^&]*&?/, '$1').replace(/[?&]$/, '') + location.hash);
+      // a ?ui= in the address would win over the choice just made: take it out. Going to an address that only differs by its #hash
+      // (or not at all) is not a navigation, so when nothing was taken out the page is reloaded on purpose.
+      var search = location.search.replace(/([?&])ui=[^&]*&?/, '$1').replace(/[?&]$/, '');
+      if (search !== location.search) location.replace(location.pathname + search + location.hash);
+      else location.reload();
     });
     return sel;
   }
