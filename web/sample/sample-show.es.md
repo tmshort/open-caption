@@ -9,7 +9,7 @@ idle message: Los subtítulos comenzarán pronto
   Los nombres de los personajes pueden quedarse igual.
 -->
 
-[loop: 10s]
+[loop: 10s, name Antes del espectáculo]
 [image: welcome.png | Bienvenidos a The Garden Party | 15s]
 **¡Bienvenidos!**
 Los subtítulos seguirán la función
@@ -56,6 +56,10 @@ Nota: esta línea es texto normal, no un personaje.
 
 MARGARET: Mira ese cielo.
 
+<!-- Una imagen SIN pie de foto llena toda la pantalla, de borde a borde (se ajusta,
+     nunca se recorta). Con un pie de foto, como arriba, deja un margen para las palabras. -->
+[image: curtain.png]
+
 [fullscreen: **Por favor, permanezcan sentados**]
 
 MARGARET: Bueno. Salió mejor de lo esperado.
@@ -75,7 +79,7 @@ EDWIN: ~ Y galletas también, por favor ~
 MARGARET: ~ Leche y azúcar ~ || EDWIN: ~ Limón, gracias ~
 
 [section: Intermedio]
-[loop: 12s, timer 15 minutes]
+[loop: 12s, name Intermedio, timer 15 minutes]
 [fullscreen: **INTERMEDIO**]
 Volvemos en {timer}
 ![Hay refrescos en el vestíbulo](lobby.png)

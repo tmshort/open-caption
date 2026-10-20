@@ -85,6 +85,11 @@ Note: this line is ordinary text, not a speaker.
 
 MARGARET: Look at that sky.
 
+<!-- A picture with NO caption fills the whole screen, edge to edge (scaled to fit,
+     never cropped). Give it a caption, as above, and it keeps a margin to make
+     room for the words. -->
+[image: curtain.png]
+
 <!-- Text that fills the whole screen, for announcements. -->
 [fullscreen: **Please remain seated**]
 

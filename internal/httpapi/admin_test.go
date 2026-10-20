@@ -218,7 +218,7 @@ func TestSampleShowAndExportImportRoundTrip(t *testing.T) {
 			t.Errorf("sample show should be clean: %v", d)
 		}
 	}
-	if len(a["assets"].([]any)) != 3 {
+	if len(a["assets"].([]any)) != 4 { // welcome, sponsors, lobby and curtain (the picture without a caption)
 		t.Errorf("sample assets: %v", a["assets"])
 	}
 
@@ -262,7 +262,7 @@ func TestSampleShowAndExportImportRoundTrip(t *testing.T) {
 		t.Errorf("import should create a new show: %v", imp)
 	}
 	_, r = c.do("GET", "/api/admin/shows/"+nid+"/showfile", nil)
-	if len(r["analysis"].(map[string]any)["assets"].([]any)) != 3 {
+	if len(r["analysis"].(map[string]any)["assets"].([]any)) != 4 {
 		t.Errorf("imported assets: %v", r["analysis"])
 	}
 	// Garbage is rejected.
