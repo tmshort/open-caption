@@ -103,6 +103,7 @@ which is `C:\Users\<you>\AppData\Roaming\open-caption`. Open it by pressing `Win
 | `shows/` | One folder per show: `show.md` (the show file), `show.<language>.md` for translations, and `assets/` (the images), plus the saved earlier versions. |
 | `standby-logo.*` | The logo on the standby screen, if you uploaded one. |
 | `live.json`, `sessions.json` | The show's position and who is signed in, so a restart in the middle of a show carries on. Safe to ignore. |
+| `reports/` | The audience reports (how many devices used the audience page during each run of a show), one file each, the newest 30. They list the devices' network addresses. Safe to delete. |
 | `tls/` | The HTTPS certificate, if HTTPS is on. |
 
 The folder is **not** inside the `open-caption` source folder, so rebuilding or updating the program never touches your shows or passwords. To back up everything, copy the whole folder (Setup → Shows → **More ▾** → Export saves a single show). To start completely fresh, quit the program and rename or delete the folder: the next run creates new passwords. To keep the data somewhere else, start the program with `--data <folder>` every time (or set `OPEN_CAPTION_DATA`).

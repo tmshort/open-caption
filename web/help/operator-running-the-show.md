@@ -51,3 +51,9 @@ A show file can do the same with the `[blank]` and `[clear]` commands; they appe
 - **Go to standby…** (top right) takes the show off the audience's screens: they see the standby screen again, and the show keeps its place. **START** puts it back on air exactly where it was.
 
 See [the keyboard](topic:operator-keyboard) and [If something goes wrong](topic:operator-if-something-goes-wrong).
+
+## After the show: the audience report
+
+When you reach the end of the show the banner says **End of the show.** with an **Audience report** link (Setup's **Share** step has the same link afterwards). The report says how many different devices used the audience page while the show was on air, however long each stayed: a phone that dropped off the WiFi and came back counts once. It shows the totals (phones, tablets, computers, projector screens, the most connected at once, how many are still connected), the languages, and a row for each device. It keeps counting until you go back to standby, restart or load another show, and you can print it or download it as a CSV file for a spreadsheet.
+
+Devices are told apart by their network address and browser type, so the numbers are an estimate: phones that share both count as one, and a phone whose address changes counts twice.

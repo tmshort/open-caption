@@ -51,3 +51,9 @@ Eine Show-Datei kann dasselbe mit den Befehlen `[blank]` und `[clear]` tun; in I
 - **In den Standby …** (oben rechts) nimmt die Show von den Bildschirmen des Publikums: Es sieht wieder den Standby-Bildschirm, und die Show behält ihren Platz. **START** bringt sie genau dort wieder auf Sendung.
 
 Siehe [die Tastatur](topic:operator-keyboard) und [Wenn etwas schiefgeht](topic:operator-if-something-goes-wrong).
+
+## Nach der Show: der Publikumsbericht
+
+Erreichen Sie das Ende der Show, steht im Banner **Ende der Show.** mit einem Link **Publikumsbericht** (der Schritt **Teilen** der Einrichtung hat danach denselben Link). Der Bericht sagt, wie viele verschiedene Geräte die Publikumsseite genutzt haben, während die Show auf Sendung war, egal wie lange jedes blieb: Ein Telefon, das aus dem WLAN fiel und zurückkam, zählt einmal. Er zeigt die Summen (Telefone, Tablets, Computer, Projektor-Bildschirme, die meisten gleichzeitig Verbundenen, wie viele noch verbunden sind), die Sprachen und eine Zeile je Gerät. Er zählt weiter, bis Sie in den Standby zurückgehen, neu starten oder eine andere Show laden, und lässt sich drucken oder als CSV-Datei für eine Tabellenkalkulation herunterladen.
+
+Geräte werden an ihrer Netzwerkadresse und dem Browsertyp unterschieden, daher sind die Zahlen eine Schätzung: Telefone, die beides teilen, zählen als eines, und ein Telefon mit wechselnder Adresse zählt doppelt.

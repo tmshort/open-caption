@@ -51,3 +51,9 @@ Un file dello spettacolo può fare lo stesso con i comandi `[blank]` e `[clear]`
 - **Metti in attesa…** (in alto a destra) toglie lo spettacolo dagli schermi del pubblico: rivede la schermata di attesa e lo spettacolo mantiene il suo punto. **AVVIA** lo rimette in onda esattamente dov'era.
 
 Vedi [la tastiera](topic:operator-keyboard) e [Se qualcosa va storto](topic:operator-if-something-goes-wrong).
+
+## Dopo lo spettacolo: il rapporto sul pubblico
+
+Quando arrivi alla fine dello spettacolo, il banner dice **Fine dello spettacolo.** con un link **Rapporto sul pubblico** (il passo **Condividi** della configurazione ha poi lo stesso link). Il rapporto dice quanti dispositivi diversi hanno usato la pagina del pubblico mentre lo spettacolo era in onda, per quanto sia rimasto ciascuno: un telefono che è caduto dal WiFi ed è tornato conta una volta. Mostra i totali (telefoni, tablet, computer, schermi del proiettore, il massimo connesso contemporaneamente, quanti sono ancora connessi), le lingue e una riga per dispositivo. Continua a contare finché non torni in attesa, riavvii o carichi un altro spettacolo, e si può stampare o scaricare come file CSV per un foglio di calcolo.
+
+I dispositivi si distinguono per indirizzo di rete e tipo di browser, quindi i numeri sono una stima: i telefoni che condividono entrambi contano come uno, e un telefono il cui indirizzo cambia conta due volte.

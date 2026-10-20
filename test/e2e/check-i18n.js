@@ -16,7 +16,7 @@ const required = new Map(); // English text -> where it came from
 const need = (text, where) => { text = text.trim(); if (/[A-Za-z]{2}/.test(text) && !required.has(text)) required.set(text, where); };
 
 // 1. JavaScript: the first argument of every __('...') call (a template with {name} placeholders is kept as is).
-for (const f of ['admin/admin.js', 'operator/operator.js', 'helpui/help.js']) {
+for (const f of ['admin/admin.js', 'operator/operator.js', 'operator/report.js', 'helpui/help.js']) {
   const src = fs.readFileSync(path.join(web, f), 'utf8');
   const ast = acorn.parse(src, { ecmaVersion: 2018, locations: true });
   (function walk(n) {
@@ -30,7 +30,7 @@ const tables = JSON.parse(fs.readFileSync(path.join(__dirname, 'i18n-tables.json
 for (const [where, list] of Object.entries(tables)) list.forEach((t) => need(t, 'table:' + where));
 
 // 2. Static HTML: text, placeholder/title/aria-label, and whole elements marked data-t.
-for (const f of ['admin/index.html', 'operator/index.html', 'helpui/index.html']) {
+for (const f of ['admin/index.html', 'operator/index.html', 'operator/report.html', 'helpui/index.html']) {
   let html = fs.readFileSync(path.join(web, f), 'utf8').replace(/<script[\s\S]*?<\/script>/g, '').replace(/<!--[\s\S]*?-->/g, '');
   for (const m of html.matchAll(/<([a-z0-9]+)\b[^>]*\bdata-t\b[^>]*>([\s\S]*?)<\/\1>/g)) { need(m[2].replace(/\s+/g, ' '), f + ' (data-t)'); html = html.replace(m[0], ''); }
   for (const m of html.matchAll(/\b(?:placeholder|title|aria-label|alt)="([^"]+)"/g)) need(m[1], f);

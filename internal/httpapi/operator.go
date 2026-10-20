@@ -98,6 +98,12 @@ func (s *Server) operatorRoutes(mux *http.ServeMux) {
 	}))
 
 	s.operatorAPI(mux, "/api/operator/", RoleOperator, func(*http.Request) *Runtime { return s.rt })
+
+	// The audience report (REQ-070): a page, and its data as JSON and CSV. Only for the show on air, not rehearsals.
+	mux.HandleFunc("GET /operator/report", s.gate(RoleOperator, func(w http.ResponseWriter, r *http.Request) { servePage(w, sub, "report.html") }))
+	mux.HandleFunc("GET /api/operator/report", s.require(RoleOperator, s.reportJSON))
+	mux.HandleFunc("GET /api/operator/reports", s.require(RoleOperator, s.reportList))
+	mux.HandleFunc("GET /api/operator/report.csv", s.require(RoleOperator, s.reportCSV))
 }
 
 // operatorAPI registers the live-control API under prefix, acting on whichever

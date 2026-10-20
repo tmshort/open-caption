@@ -33,6 +33,7 @@
 - Songs and voices: `~` shorthand, `[song]`, `[together]` and ` || ` (including mixed spoken/sung, unclosed blocks, escapes).
 - Security: access lists (listed, unlisted, bad entry denies all, cookie from an unlisted computer, admin address may run the show); forged `Origin`/`Sec-Fetch-Site` refused; sessions survive a restart but not a password change; the settings and support bundle never contain passwords.
 - Persistence: undo steps and last-action time survive a restart; two people saving one show file is detected.
+- **Audience report (REQ-070):** `internal/report` unit tests (devices counted once across reconnects and second tabs, early arrivals counted from the start, a different show ends the run, JSON seconds, CSV, the saved files and their names); `internal/httpapi` integration test (devices waiting in standby, a tablet joining, a phone dropping and returning, the JSON, CSV and saved report, a rehearsal not counted); browser tests (the report from START, the page, the banner link at the end of the show).
 
 ## Performance targets (verified by load test)
 
@@ -73,7 +74,7 @@
 captions, Setup sign-in and all six steps, the Settings dialog, operator, Help), in **dark and light colour schemes** at a
 desktop and a phone width, and runs **axe-core** with the WCAG 2.0/2.1/2.2 A and AA rules plus best practices. It also checks
 **reflow** (no sideways scrolling at 320 px wide, WCAG 1.4.10) and that **Tab** walks the controls with a visible **focus
-ring** (2.4.7). It must report nothing.
+ring** (2.4.7). It also audits the audience report page (REQ-070), signed out and with a seeded report. It must report nothing.
 
 The first run found 8 kinds of problem, all fixed: the audience "Aa" and language buttons were too faint (contrast 1.5:1;
 now 6:1 or better); Setup, the operator page and Help had no `main` landmark, and the operator page no level-one heading;

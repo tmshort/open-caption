@@ -10,6 +10,7 @@ button small { display: block; font-size: .65em; opacity: .9; font-weight: 400; 
 #banner { padding: .55rem .9rem; font-size: 1.1rem; background: #3d2f00; color: var(--mark); font-weight: 600; }
 #banner.loop { background: #0f3b2a; color: #7ef0b6; }
 #banner.standby { background: #1d2c4a; color: #cfe0ff; }
+#banner a.reportlink { color: inherit; text-decoration: underline; margin-left: .4rem; }
 
 #stage { flex: 1; min-height: 0; display: flex; flex-direction: column; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

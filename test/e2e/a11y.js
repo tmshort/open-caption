@@ -24,6 +24,14 @@ async function audit(page, label) {
 (async () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'oc-a11y-'));
   fs.writeFileSync(path.join(dir, 'config.yaml'), `admin_password: ${PW}\noperator_password: ${PW}2\nmdns:\n  enabled: false\naccess:\n  local_auto_login: false\n`);
+  // a finished audience report, so the report page can be audited with its numbers and tables
+  fs.mkdirSync(path.join(dir, 'reports'));
+  const t0 = new Date(Date.now() - 3600e3).toISOString(), t1 = new Date().toISOString();
+  fs.writeFileSync(path.join(dir, 'reports', '20260101-190000-sample.json'), JSON.stringify({ showId: 'sample', show: 'The Garden Party', started: t0, ended: t1, running: false,
+    totals: { devices: 3, phones: 2, tablets: 0, computers: 0, projectors: 1, peak: 3, peakAt: t0, now: 2, connections: 5, reconnects: 2, avgConnected: 1800, longest: 3000 }, languages: { en: 2, es: 1 },
+    devices: [{ id: 'ab12cd34', address: '192.168.1.20', kind: 'phone', languages: ['en'], first: t0, last: t1, connections: 3, connected: 3000, longest: 2000, now: true },
+      { id: 'cd34ef56', address: '192.168.1.21', kind: 'phone', languages: ['es'], first: t0, last: t1, connections: 1, connected: 1800, longest: 1800, now: true },
+      { id: 'ef56ab78', address: '192.168.1.2', kind: 'computer', projector: true, languages: ['en'], first: t0, last: t1, connections: 1, connected: 600, longest: 600, now: false }] }));
   const port = await free(), B = 'http://localhost:' + port;
   const server = spawn(BIN, ['--data', dir, '--http-addr', ':' + port, '--no-browser'], { stdio: 'ignore' });
   for (let i = 0; i < 50; i++) { try { if ((await fetch(B + '/healthz')).ok) break; } catch (e) { /* wait */ } await sleep(100); }
@@ -53,6 +61,13 @@ async function audit(page, label) {
         await p.evaluate(() => document.getElementById('dlgok').click()); await sleep(300);
         await p.goto(B + '/operator'); await p.waitForSelector('#message', { visible: true }).catch(() => {});
         await sleep(800); await audit(p, t + ' operator');
+        { // the report page in a fresh browser context (nobody signed in yet): the sign-in, then the report itself
+          const ctx = await b.createBrowserContext(), rp = await ctx.newPage(); await rp.setViewport({ width: w, height: h });
+          await rp.emulateMediaFeatures([{ name: 'prefers-color-scheme', value: scheme }]);
+          await rp.goto(B + '/operator/report'); await rp.waitForSelector('#pw', { visible: true }); await audit(rp, t + ' audience report sign-in');
+          await rp.type('#pw', PW); await rp.keyboard.press('Enter'); await rp.waitForSelector('#report:not([hidden])'); await sleep(300); await audit(rp, t + ' audience report');
+          await rp.close(); await ctx.close();
+        }
         await p.goto(B + '/help?role=admin'); await sleep(1000); await audit(p, t + ' help');
         // audience with captions on screen
         await p.goto(B + '/'); await sleep(800); await audit(p, t + ' audience (captions)');

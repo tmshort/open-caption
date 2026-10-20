@@ -11,6 +11,7 @@ import (
 
 	"github.com/tmshort/open-caption/internal/config"
 	"github.com/tmshort/open-caption/internal/live"
+	"github.com/tmshort/open-caption/internal/report"
 	"github.com/tmshort/open-caption/internal/show"
 )
 
@@ -29,6 +30,8 @@ type Server struct {
 	mdns                      *mdnsManager     // the local network name (open-caption.local)
 	standby                   bool             // shows start in standby (production); off for --dev
 	pinnedLevel               string           // the --log-level / OPEN_CAPTION_LOG_LEVEL value, if one was given
+	tracker                   *report.Tracker  // the devices that used the audience page during the run of the show (REQ-070)
+	reports                   report.Store     // where the finished reports are kept
 	pinnedNetwork             bool             // --network-interfaces / --network-restrict was given
 	logs                      interface {
 		String() string
@@ -63,8 +66,10 @@ func New(cfg config.Config, version string) *Server {
 		}
 	}
 	s.applyStandby()
-	s.done.Add(1)
+	s.newReporting()
+	s.done.Add(2)
 	go s.janitor()
+	go s.reportLoop()
 	return s
 }
 

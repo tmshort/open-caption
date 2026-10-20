@@ -51,3 +51,9 @@ Un archivo del espectáculo puede hacer lo mismo con los comandos `[blank]` y `[
 - **Poner en espera…** (arriba a la derecha) quita el espectáculo de las pantallas del público: vuelven a ver la pantalla de espera y el espectáculo conserva su lugar. **INICIAR** lo vuelve a poner en el aire exactamente donde estaba.
 
 Consulte [el teclado](topic:operator-keyboard) y [Si algo sale mal](topic:operator-if-something-goes-wrong).
+
+## Después del espectáculo: el informe del público
+
+Cuando llega al final del espectáculo, el cartel dice **Fin del espectáculo.** con un enlace **Informe del público** (el paso **Compartir** de la configuración tiene el mismo enlace después). El informe dice cuántos dispositivos distintos usaron la página del público mientras el espectáculo estaba en el aire, sin importar cuánto se quedó cada uno: un teléfono que se cayó de la WiFi y volvió cuenta una vez. Muestra las cifras (teléfonos, tabletas, ordenadores, pantallas de proyector, el máximo conectado a la vez, cuántos siguen conectados), los idiomas y una fila por dispositivo. Sigue contando hasta que vuelva a la espera, reinicie o cargue otro espectáculo, y se puede imprimir o descargar como archivo CSV para una hoja de cálculo.
+
+Los dispositivos se distinguen por su dirección de red y el tipo de navegador, así que las cifras son una estimación: los teléfonos que comparten ambos cuentan como uno, y un teléfono cuya dirección cambia cuenta dos veces.

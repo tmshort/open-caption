@@ -165,6 +165,7 @@ internal/
   logx/                  levelled logging (DEBUG/INFO/WARN/ERROR) over the standard logger
   mdns/                  multicast-DNS responder: announces <name>.local (A records, probing for conflicts, goodbyes)
   netinfo/               host addresses (interfaces that are up with their kind, Ethernet/Wi-Fi/other, main connection first, the `network.interfaces` ticks, one address per network), self-signed certificate, the watched certificate files (reload without a restart)
+  report/                the audience report: counts the devices (address + browser) that used the audience page during a run of the show; saves each run as JSON in <data>/reports; CSV
   show/                  show store: shows, show files per language, validated image assets, duplicate
   showfile/              the show file: parser, validator, Markdown-subset renderer, cue model, language structure check (pure, heavily tested)
 web/                     embedded browser assets (go:embed)

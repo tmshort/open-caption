@@ -61,6 +61,7 @@ Each milestone is shippable and ends with a demoable result. Tasks reference req
 - [x] Multiple languages (REQ-026): per-language engines and hubs driven in lockstep, structure checking, language negotiation and menu, Setup language tabs, sample Spanish translation
 
 - [x] mDNS: the server announces itself as `open-caption.local` (or a name chosen in Setup)
+- [x] Audience report (REQ-070): how many devices used the audience page during a run of the show, counted by address and browser type; totals, languages and a row per device; printable, CSV, saved in `<data>/reports/`; linked from the End of the show banner and Setup's Share step
 - [x] Several network interfaces (REQ-069): Settings → Network ticks the interfaces that are used (`network.interfaces`, `--network-interfaces`), one address per network (wired first, then the main connection), Ethernet or Wi-Fi marked, the interface in use protected; `network.restrict_listening` also refuses connections to the others
 
 - [x] Automatic HTTPS certificates (REQ-068): ACME DNS-01 with build-time choice of DNS providers, credentials from the environment/file/config, Setup status and renew-now, a Pebble end-to-end test (doc 10)

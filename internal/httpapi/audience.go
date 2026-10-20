@@ -89,6 +89,12 @@ func (s *Server) serveEvents(w http.ResponseWriter, r *http.Request, rt *Runtime
 		return
 	}
 	defer hb.Unsubscribe(cl)
+	if rt == s.rt { // the show on air, not an administrator's rehearsal: it is counted for the audience report
+		s.syncReport()
+		projector := r.URL.Query().Get("display") == "projector"
+		kind, _, _ := describeDevice(r.UserAgent(), false) // a projector is still a computer or a tablet: the report counts it by its own flag
+		defer s.tracker.Connect(clientIP(r), r.UserAgent(), kind, lang, projector)()
+	}
 	w.Header().Set("Vary", "Accept-Language")
 
 	h := w.Header()

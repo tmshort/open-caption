@@ -51,3 +51,9 @@ Un fichier de spectacle peut faire la même chose avec les commandes `[blank]` e
 - **Mettre en attente…** (en haut à droite) retire le spectacle des écrans du public : il revoit l'écran d'attente, et le spectacle garde sa place. **DÉMARRER** le remet à l'antenne exactement où il en était.
 
 Voir [le clavier](topic:operator-keyboard) et [En cas de problème](topic:operator-if-something-goes-wrong).
+
+## Après le spectacle : le rapport sur le public
+
+Quand vous arrivez à la fin du spectacle, le bandeau indique **Fin du spectacle.** avec un lien **Rapport sur le public** (l'étape **Partager** de la configuration a le même lien ensuite). Le rapport dit combien d'appareils différents ont utilisé la page du public pendant que le spectacle était à l'antenne, quelle qu'ait été la durée de chacun : un téléphone qui a perdu le WiFi puis est revenu compte une fois. Il montre les totaux (téléphones, tablettes, ordinateurs, écrans de projecteur, le maximum connecté en même temps, combien sont encore connectés), les langues et une ligne par appareil. Il continue de compter jusqu'à ce que vous reveniez en attente, redémarriez ou chargiez un autre spectacle, et on peut l'imprimer ou le télécharger en fichier CSV pour un tableur.
+
+Les appareils sont distingués par leur adresse réseau et leur type de navigateur ; les chiffres sont donc une estimation : des téléphones qui partagent les deux comptent pour un seul, et un téléphone dont l'adresse change compte deux fois.

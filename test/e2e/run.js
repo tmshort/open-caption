@@ -190,6 +190,15 @@ async function main() {
     check('the pre-show loop is on the audience screens after START (fullscreen)', await en.evaluate(() => !document.getElementById('fs').hidden));
     check('English and Spanish devices each get their language', (await en.evaluate(() => document.documentElement.lang)) === 'en' && (await es.evaluate(() => document.documentElement.lang)) === 'es');
     check('the language menu is offered', await es.evaluate(() => !document.getElementById('langbtn').hidden));
+    // REQ-070: the audience report counts, from START, the devices that were already waiting (both pages share one address and browser, so they are one device)
+    {
+      const rep = await op.evaluate(async () => { const r = await fetch('/api/operator/report'); return { status: r.status, body: await r.json() }; });
+      const tt = (rep.body.report || {}).totals || {};
+      check('from START the audience report is running and counts the devices that were waiting, once each', rep.status === 200 && rep.body.report.running === true && tt.devices === 1 && tt.connections >= 2 && rep.body.report.languages.en === 1 && rep.body.report.languages.es === 1, tt);
+      const rp = await open(); await rp.goto(B + '/operator/report'); await rp.waitForSelector('#report:not([hidden])', { timeout: T(10000) }).catch(() => {});
+      check('the report page shows the totals, the languages and a row for each device, and offers print and CSV', await rp.evaluate(() => document.querySelectorAll('#totals .card').length >= 8 && document.querySelectorAll('#langs tbody tr').length === 2 && document.querySelectorAll('#devices tbody tr').length === 1 && /report\.csv/.test(document.getElementById('csv').getAttribute('href')) && !!document.getElementById('print') && /on air now/.test(document.getElementById('period').textContent)));
+      await rp.close();
+    }
     check('page labels are translated (Spanish)', (await es.evaluate(() => document.getElementById('gear').getAttribute('aria-label'))) === 'Tamaño del texto y colores');
     const opButtons = () => op.evaluate(() => ['back', 'next', 'blank', 'clear', 'message'].map((id) => { const r = document.getElementById(id).getBoundingClientRect(); return Math.round(r.left) + ',' + Math.round(r.top); }).join(' '));
     const inLoop = { stop: await op.evaluate(() => { const b = document.getElementById('stop'); return !b.hidden && !b.disabled; }), at: await opButtons() };
@@ -813,6 +822,19 @@ async function main() {
     check('and links back to Setup (it is signed in as admin), with no Sign out', await lp.evaluate(() => !document.getElementById('setuplink').hidden && document.getElementById('logout').offsetWidth === 0));
     await lp.goto(B + '/admin'); await lp.waitForSelector('#steps button', { timeout: T(15000) }).catch(() => {});
     check('and Setup opens without a password, with no Sign out', await lp.evaluate(() => document.getElementById('login').hidden && !!document.querySelector('#steps button') && document.getElementById('logout').offsetWidth === 0));
+    {
+      // REQ-070: at the end of the show the banner has a link to the audience report
+      const j = (m, u, b) => lp.evaluate(async (m2, u2, b2) => { const r = await fetch(u2, { method: m2, headers: { 'Content-Type': 'application/json' }, body: b2 === undefined ? undefined : JSON.stringify(b2) }); return r.json().catch(() => ({})); }, m, u, b);
+      await lp.goto(B + '/admin#show'); await lp.waitForSelector('#steps button', { timeout: T(15000) }).catch(() => {});
+      const tiny = await j('POST', '/api/admin/shows', { name: 'Tiny' });
+      await j('PUT', '/api/admin/shows/' + tiny.id + '/showfile', { text: 'One\nTwo\n' });
+      await j('POST', '/api/admin/shows/' + tiny.id + '/activate', { start: true });
+      await lp.goto(B + '/operator'); await lp.waitForSelector('#list .cue', { timeout: T(15000) }).catch(() => {});
+      await j('POST', '/api/operator/claim', { takeover: true });
+      for (let i = 0; i < 3; i++) { await lp.keyboard.press('Space'); await sleep(300); }
+      await lp.waitForFunction(() => /End of the show/.test(document.getElementById('banner').textContent), { timeout: T(5000) }).catch(() => {});
+      check('at the end of the show the banner says so and links to the audience report', await lp.evaluate(() => { const b = document.getElementById('banner'); const a = b.querySelector('a.reportlink'); return !b.hidden && /End of the show/.test(b.textContent) && !!a && a.getAttribute('href') === '/operator/report' && a.target === '_blank'; }));
+    }
     await lp.close(); await ctx.close();
     // the address of this computer on the network is not localhost, so a password is asked for there
     const lan = require('os').networkInterfaces();

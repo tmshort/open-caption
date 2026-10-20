@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en" data-floor="modern">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="stylesheet" href="/static/shared/compat.css">
+<script src="/static/shared/compat.js"></script>
+<script src="/static/shared/i18n.js"></script>
+<link rel="icon" type="image/svg+xml" href="/static/shared/favicon.svg">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="apple-touch-icon" href="/static/shared/apple-touch-icon.png">
+<title>Audience report</title>
+<link rel="stylesheet" href="/static/shared/ui.css">
+<link rel="stylesheet" href="/static/operator/report.css">
+</head>
+<body>
+<main id="login" hidden><form>
+  <h1>Open Caption — Audience report</h1>
+  <p data-t>Enter the <strong>operator</strong> password. The admin password works too.</p>
+  <label>Operator password <input id="pw" type="password" name="password" autocomplete="current-password" required></label>
+  <button class="primary">Sign in</button>
+  <p id="loginerr" role="alert"></p>
+</form></main>
+
+<main id="app" hidden>
+  <header class="rhead">
+    <h1>Audience report</h1>
+    <div class="rtools noprint">
+      <label>Report <select id="which"></select></label>
+      <button id="refresh" type="button">Refresh</button>
+      <button id="print" type="button">Print</button>
+      <a id="csv" class="btn" href="/api/operator/report.csv" download>Download CSV</a>
+      <a id="back" class="btn" href="/operator">Back to Run</a>
+    </div>
+  </header>
+  <p id="none" hidden>There is no audience report yet. One is made each time the show is put on air.</p>
+  <section id="report" hidden>
+    <h2 id="show"></h2>
+    <p id="period" role="status"></p>
+    <dl class="totals" id="totals"></dl>
+    <p class="hint" id="caveat"></p>
+    <h3>Languages</h3>
+    <table id="langs"><thead><tr><th scope="col">Language</th><th scope="col">Devices</th></tr></thead><tbody></tbody></table>
+    <h3>Devices</h3>
+    <div class="scroll" tabindex="0" role="region" aria-label="Devices"><table id="devices"><thead><tr>
+      <th scope="col">Device</th><th scope="col">Address</th><th scope="col">Type</th><th scope="col">Languages</th><th scope="col">First seen</th><th scope="col">Last seen</th>
+      <th scope="col">Connections</th><th scope="col">Time connected</th><th scope="col">Longest stay</th><th scope="col">At the end</th>
+    </tr></thead><tbody></tbody></table></div>
+  </section>
+</main>
+<script src="/static/operator/report.js"></script>
+</body>
+</html>

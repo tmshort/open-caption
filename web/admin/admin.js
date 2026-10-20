@@ -1098,6 +1098,9 @@
     const projRow = projU ? h('div', { class: 'row projrow' }, h('label', { class: 'row' }, radio(projU), link(projU.url)),
       h('span', { class: 'hint' }, __('(for a projector or shared screen; open it on that computer)'))) : null;
     const rows = net.data.urls.filter((u) => !u.name).map((u) => h('div', { class: 'row' }, h('label', { class: 'row' }, radio(u), link(u.url), u.public ? (u.adapter === 'wifi' ? ' (' + __('Wi-Fi') + ')' : u.adapter === 'ethernet' ? ' (' + __('Ethernet') + ')' : '') : __(' (this computer only)'))));
+    // The audience report of the last run (how many devices used the service), when there is one.
+    const reportLink = h('p', { class: 'hint', hidden: '' }, h('a', { href: '/operator/report', target: '_blank', rel: 'noopener' }, __('Audience report')), ' ', __('(how many devices used the audience page during the last run of the show)'));
+    api('GET', '/api/operator/report').then((x) => { if (x.ok) reportLink.hidden = false; }).catch(() => {});
     const list = h('div', { class: 'urls' }, ...rows, ...nameRows(), projRow);
     p.append(h('h2', {}, __('Share')), checks,
       h('div', { class: 'card' }, h('h3', {}, __('Tell the audience this address')), big,
@@ -1106,6 +1109,7 @@
         h('div', { class: 'row qrrow' }, qrBox, list),
         ...(net.data.warnings || []).map((w) => h('div', { class: 'check warn' }, w)),
         h('p', { class: 'hint' }, __('Audience devices must be on the same WiFi as this computer. Devices connected right now: '), h('b', { id: 'audcount' }, String(A.audience))),
+        reportLink,
         h('p', { class: 'hint' }, __('Two networks, or the wrong address? '), h('a', { href: '#', onclick: (e) => { e.preventDefault(); openSettings('net'); } }, __('Choose which network interfaces are used')))),
       h('p', { class: 'hint' }, __('Something not working? '), h('a', { href: '#', onclick: (e) => { e.preventDefault(); openHelp('admin-troubleshooting'); } }, __('Troubleshooting help')), ' · ', h('a', { href: '/api/admin/support-bundle', download: 'support-bundle.zip' }, __('Download a support bundle')), ' · ', h('a', { href: '#', onclick: (e) => { e.preventDefault(); showLog(); } }, __('Recent log…'))));
   }
