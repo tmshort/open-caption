@@ -6,24 +6,13 @@ import (
 	"net"
 	"os/exec"
 	"strings"
-	"sync"
-	"time"
 )
 
-var (
-	portsMu sync.Mutex
-	portsAt time.Time
-	ports   map[string]string // device (en0) -> hardware port name (Wi-Fi)
-)
+var ports = &portCache{load: hardwarePorts}
 
 // platformKind asks `networksetup -listallhardwareports`, which names each device's hardware port.
 func platformKind(ifc net.Interface) string {
-	portsMu.Lock()
-	if ports == nil || time.Since(portsAt) > time.Minute {
-		ports, portsAt = hardwarePorts(), time.Now()
-	}
-	port, ok := ports[ifc.Name]
-	portsMu.Unlock()
+	port, ok := ports.port(ifc.Name)
 	if !ok {
 		return ""
 	}
