@@ -614,13 +614,16 @@ async function main() {
       await arch.evaluate(() => document.getElementById('settab-net').click()); await sleep(200);
       const rows = () => arch.evaluate(() => [...document.querySelectorAll('#setpanel-net .addrlist li')].map((li) => li.textContent.replace(/\s+/g, ' ').trim()));
       const box = () => arch.evaluate(() => document.querySelector('textarea[aria-label="Prefer these adapters"]').value);
-      const press = async (label) => { await arch.evaluate((l) => [...document.querySelectorAll('#setpanel-net .addrlist button')].find((x) => x.textContent === l).click(), label); await sleep(T(500)); };
+      const press = async (label, row) => { await arch.evaluate((l, w) => [...document.querySelectorAll('#setpanel-net .addrlist li')].find((li) => li.textContent.includes(w)).querySelector('button').click(), label, row); await sleep(T(500)); };
       let r = await rows();
-      check('two adapters on one network: Wi-Fi is shown (it is the first), the cable says it is not used and has Use this one', /\(Wi-Fi, Wi-Fi\) shown$/.test(r[0]) && /\(Ethernet, Ethernet\) not used: same network as 192\.168\.1\.138 Use this one$/.test(r[1]), r);
-      await press('Use this one'); r = await rows();
+      check('two adapters on one network: Wi-Fi is shown, the cable says it is not used, and both have the same Use this one button', /\(Wi-Fi, Wi-Fi\) shown Use this one$/.test(r[0]) && /\(Ethernet, Ethernet\) not used: same network as 192\.168\.1\.138 Use this one$/.test(r[1]), r);
+      await press('Use this one', 'Ethernet'); r = await rows();
       check('Use this one acts at once: the cable is shown and preferred, with Stop preferring this one, and the box lists it', /not used: same network as 192\.168\.1\.185 Use this one$/.test(r[0]) && /shown, preferred Stop preferring this one$/.test(r[1]) && (await box()) === 'Ethernet', r);
-      await press('Stop preferring this one'); r = await rows();
-      check('Stop preferring this one undoes it, and the box is empty again', /\(Wi-Fi, Wi-Fi\) shown$/.test(r[0]) && (await box()) === '', r);
+      await press('Stop preferring this one', 'Ethernet'); r = await rows();
+      check('Stop preferring this one undoes it, both rows offer Use this one again, and the box is empty', /\(Wi-Fi, Wi-Fi\) shown Use this one$/.test(r[0]) && /not used: same network as 192\.168\.1\.138 Use this one$/.test(r[1]) && (await box()) === '', r);
+      await press('Use this one', 'Wi-Fi'); r = await rows();
+      check('the adapter that is shown by default can be pinned the same way, and toggled back', /\(Wi-Fi, Wi-Fi\) shown, preferred Stop preferring this one$/.test(r[0]) && /not used: same network as 192\.168\.1\.138 Use this one$/.test(r[1]), r);
+      await press('Stop preferring this one', 'Wi-Fi');
       await arch.click('#dlgok'); await sleep(T(500));
       await arch.evaluate(() => { window.fetch = window.__realFetch; });
     }

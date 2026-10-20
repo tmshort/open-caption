@@ -182,10 +182,12 @@
     const sameName = (x, y) => String(x).trim().toLowerCase() === String(y).trim().toLowerCase();
     const isPreferred = (a) => !!a.interface && saved.prefer.some((x) => sameName(x, a.interface));
     const stateText = (a) => a.shown ? __('shown') : a.hidden === 'network' ? __('not used: same network as {ip}', { ip: a.instead }) : __('hidden');
+    // Two addresses are on one network when one of them says the other is the one shown for it.
+    const sharesNetwork = (a, addrs) => a.hidden === 'network' || addrs.some((x) => x.hidden === 'network' && x.instead === a.ip);
     const rowButton = (label, title, run) => [' ', h('button', { type: 'button', class: 'usethis', title, onclick: run }, label)];
     const paintList = (addrs) => shownList.replaceChildren(...(addrs.length ? addrs.map((a) => h('li', { class: a.shown ? '' : 'off' }, h('b', {}, a.ip), ' ', [kindName(a.kind), a.interface].filter(Boolean).length ? '(' + [kindName(a.kind), a.interface].filter(Boolean).join(', ') + ') ' : '', stateText(a), isPreferred(a) ? ', ' + __('preferred') : '', a.current ? ' — ' + __('you are using Setup through this one') : '',
       isPreferred(a) ? rowButton(__('Stop preferring this one'), __('Remove this adapter from Prefer these adapters'), () => setPrefer(saved.prefer.filter((x) => !sameName(x, a.interface))))
-        : a.hidden === 'network' && a.interface ? rowButton(__('Use this one'), __('Use this adapter for its network'), () => setPrefer([a.interface].concat(saved.prefer))) : '')) : [h('li', {}, __('No network address was found.'))]));
+        : a.interface && sharesNetwork(a, addrs) ? rowButton(__('Use this one'), __('Use this adapter for its network'), () => setPrefer([a.interface].concat(saved.prefer))) : '')) : [h('li', {}, __('No network address was found.'))]));
     let lastAddrs = s.addresses || [];
     const repaint = () => paintList(lastAddrs);
     repaint();
