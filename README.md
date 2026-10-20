@@ -23,7 +23,7 @@ browser on a projector) shows the captions live, with no interaction required.
 - An **audience report** when the show ends: how many different devices used the audience page, however long each stayed, with the busiest moment, the languages and a row for each device; printable and downloadable as CSV.
 
 **For whoever sets it up**
-- A guided Setup page: show file editor with problems listed by line, image upload, look, a private rehearsal, then a Share step with the audience address, a printable QR sign and the way into the operator page.
+- A guided Setup page: show file editor with problems listed by line, image upload, look, a private rehearsal, then a Share step with the audience address, a printable QR sign and the way into the operator page, and a Report step for after the show.
 - Edit the show file in any program you like: download it as a plain `.md`, edit it offline, and open it again to save over the show (or import any `.md` / `.txt` file as a new show). A guide for the person preparing the show file is [Preparing a show file](web/help/admin-preparing-a-show-file.md); [Getting started](web/help/admin-getting-started.md) walks through the six steps of Setup. Both are in the app's Help too. `open-caption --check-show show.md` checks a show file from the command line, like a lint, without starting anything.
 - A show is one plain-text Markdown file (plus images): title, colours, fonts and options live in it, layered over `config.yaml` defaults. Earlier versions are kept, can be named and compared, and shows can be exported, imported, duplicated and archived.
 - Setup, the operator page, Help and all the built-in documentation are available in English, Spanish, French, German, Italian and Portuguese.

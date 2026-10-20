@@ -1,6 +1,6 @@
 # Getting started
 
-Setting up a show takes six steps. The row of buttons across the top of the page follows them in order, and a tick appears when a step looks complete. You can jump to any step at any time.
+Setting up a show takes six steps (a seventh, **Report**, is for after the show). The row of buttons across the top of the page follows them in order, and a tick appears when a step looks complete. You can jump to any step at any time.
 
 1. **Shows** — create a show (or the sample show to look around).
 2. **Show file** — paste or open your show file and fix anything the page points out.
@@ -8,6 +8,7 @@ Setting up a show takes six steps. The row of buttons across the top of the page
 4. **Look** — choose colors and text size.
 5. **Test** — rehearse privately before anyone is in the room.
 6. **Share** — share the address with the audience and open the operator page, where the operator starts the show.
+7. **Report** — after the show: how many devices used the audience page, with a graph over time.
 
 ## Standby and going on air
 

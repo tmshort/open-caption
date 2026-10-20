@@ -1,6 +1,6 @@
 # Primi passi
 
-Preparare uno spettacolo richiede sei passi. La fila di pulsanti in alto nella pagina li segue in ordine, e compare una spunta quando un passo sembra completo. Puoi passare a qualsiasi passo in qualsiasi momento.
+Preparare uno spettacolo richiede sei passi (un settimo, **Rapporto**, è per dopo lo spettacolo). La fila di pulsanti in alto nella pagina li segue in ordine, e compare una spunta quando un passo sembra completo. Puoi passare a qualsiasi passo in qualsiasi momento.
 
 1. **Spettacoli** — crea uno spettacolo (o lo spettacolo di esempio per dare un'occhiata).
 2. **File dello spettacolo** — incolla o apri il file dello spettacolo e correggi ciò che la pagina segnala.
@@ -8,6 +8,7 @@ Preparare uno spettacolo richiede sei passi. La fila di pulsanti in alto nella p
 4. **Aspetto** — scegli i colori e la dimensione del testo.
 5. **Prova** — fai una prova in privato prima che ci sia qualcuno in sala.
 6. **Condividi** — condividi l'indirizzo con il pubblico e apri la pagina dell'operatore, da cui si avvia lo spettacolo.
+7. **Rapporto** — dopo lo spettacolo: quanti dispositivi hanno usato la pagina del pubblico, con un grafico nel tempo.
 
 ## Attesa e messa in onda
 

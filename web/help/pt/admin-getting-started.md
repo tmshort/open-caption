@@ -1,6 +1,6 @@
 # Primeiros passos
 
-Preparar um espetáculo leva seis etapas. A fileira de botões no alto da página as acompanha em ordem, e uma marca aparece quando uma etapa parece completa. Você pode pular para qualquer etapa a qualquer momento.
+Preparar um espetáculo leva seis etapas (uma sétima, **Relatório**, é para depois do espetáculo). A fileira de botões no alto da página as acompanha em ordem, e uma marca aparece quando uma etapa parece completa. Você pode pular para qualquer etapa a qualquer momento.
 
 1. **Espetáculos** — crie um espetáculo (ou o espetáculo de exemplo para dar uma olhada).
 2. **Arquivo do espetáculo** — cole ou abra o arquivo do espetáculo e corrija o que a página apontar.
@@ -8,6 +8,7 @@ Preparar um espetáculo leva seis etapas. A fileira de botões no alto da págin
 4. **Aparência** — escolha as cores e o tamanho do texto.
 5. **Teste** — ensaie em particular antes de haver alguém na sala.
 6. **Compartilhar** — compartilhe o endereço com o público e abra a página do operador, de onde o espetáculo é iniciado.
+7. **Relatório** — depois do espetáculo: quantos dispositivos usaram a página do público, com um gráfico ao longo do tempo.
 
 ## Espera e entrada no ar
 

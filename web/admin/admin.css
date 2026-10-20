@@ -201,3 +201,6 @@ a.quiet { background: none; border: none; color: var(--dim); text-decoration: no
 .moremenu .item small { display: block; margin-top: .15rem; color: var(--dim); font-size: .85rem; white-space: normal; }
 .moremenu .item.danger { color: var(--bad); }
 .moremenu .sep { height: 1px; margin: .3rem .2rem; background: var(--line); }
+
+/* Printing the Report step prints the report alone (the Print button adds the class for the moment of printing). */
+@media print { body.printreport header, body.printreport nav#steps, body.printreport #nextstep, body.printreport #connbar, body.printreport #help { display: none !important; } }

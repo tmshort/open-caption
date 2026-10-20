@@ -1,6 +1,6 @@
 # Primeros pasos
 
-Preparar un espectáculo lleva seis pasos. La fila de botones de la parte superior de la página los sigue en orden, y aparece una marca cuando un paso parece completo. Puede saltar a cualquier paso en cualquier momento.
+Preparar un espectáculo lleva seis pasos (un séptimo, **Informe**, es para después del espectáculo). La fila de botones de la parte superior de la página los sigue en orden, y aparece una marca cuando un paso parece completo. Puede saltar a cualquier paso en cualquier momento.
 
 1. **Espectáculos** — cree un espectáculo (o el espectáculo de ejemplo para echar un vistazo).
 2. **Archivo del espectáculo** — pegue o abra su archivo del espectáculo y corrija lo que la página señale.
@@ -8,6 +8,7 @@ Preparar un espectáculo lleva seis pasos. La fila de botones de la parte superi
 4. **Aspecto** — elija los colores y el tamaño del texto.
 5. **Prueba** — ensaye en privado antes de que haya nadie en la sala.
 6. **Compartir** — comparta la dirección con el público y abra la página del operador, donde se inicia el espectáculo.
+7. **Informe** — después del espectáculo: cuántos dispositivos usaron la página del público, con un gráfico a lo largo del tiempo.
 
 ## En espera y en el aire
 

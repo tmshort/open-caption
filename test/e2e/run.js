@@ -198,6 +198,11 @@ async function main() {
       const rp = await open(); await rp.goto(B + '/operator/report'); await rp.waitForSelector('#report:not([hidden])', { timeout: T(10000) }).catch(() => {});
       check('the report page shows the totals, the graph of devices over time, the loop under the name the show file gives it, the languages and a row for each device, and offers print and CSV', await rp.evaluate(() => document.querySelectorAll('#totals .card').length >= 8 && !!document.querySelector('#chart path.line') && /Pre-show/.test(document.getElementById('loops').textContent) && document.querySelectorAll('#chart .tick').length >= 4 && document.querySelectorAll('#langs tbody tr').length === 2 && document.querySelectorAll('#devices tbody tr').length === 1 && /report\.csv/.test(document.getElementById('csv').getAttribute('href')) && !!document.getElementById('print') && /on air now/.test(document.getElementById('period').textContent)));
       await rp.close();
+      // ... and in Setup, as its last step
+      const sp = await open(); await sp.goto(B + '/admin#report'); await sp.waitForSelector('#panel .oc-report', { timeout: T(10000) }).catch(() => {});
+      check('Setup has the report as its seventh step, the same report with the graph, a menu of reports, Print and CSV', await sp.evaluate(() => { const b = [...document.querySelectorAll('#steps button')]; const cur = document.querySelector('#steps button[aria-current=step]'); return b.length === 7 && /Report/.test(b[6].textContent) && cur === b[6] && document.querySelectorAll('#panel #totals .card').length >= 8 && !!document.querySelector('#panel #chart path.line') && !!document.querySelector('#panel select') && [...document.querySelectorAll('#panel button')].some((x) => x.textContent === 'Print') && /report\.csv/.test(document.querySelector('#panel a[download]').getAttribute('href')); }));
+      check('and the report is reachable with no show selected (it does not depend on one)', await sp.evaluate(() => !document.querySelectorAll('#steps button')[6].disabled));
+      await sp.close();
     }
     check('page labels are translated (Spanish)', (await es.evaluate(() => document.getElementById('gear').getAttribute('aria-label'))) === 'Tamaño del texto y colores');
     const opButtons = () => op.evaluate(() => ['back', 'next', 'blank', 'clear', 'message'].map((id) => { const r = document.getElementById(id).getBoundingClientRect(); return Math.round(r.left) + ',' + Math.round(r.top); }).join(' '));
@@ -739,8 +744,8 @@ async function main() {
       await signIn(a, '#steps button');
       check(lang + ': the Setup steps are translated', (await a.evaluate(() => document.getElementById('steps').innerText)).includes(SEEN[lang]) && !(await a.evaluate(() => document.documentElement.lang !== '' && false)));
       const leaks = [], stray = [];
-      for (const step of ['Shows', 'Show file', 'Images', 'Look', 'Test', 'Share']) {
-        await a.evaluate((i) => document.querySelectorAll('#steps button')[i].click(), ['Shows', 'Show file', 'Images', 'Look', 'Test', 'Share'].indexOf(step));
+      for (const step of ['Shows', 'Show file', 'Images', 'Look', 'Test', 'Share', 'Report']) {
+        await a.evaluate((i) => document.querySelectorAll('#steps button')[i].click(), ['Shows', 'Show file', 'Images', 'Look', 'Test', 'Share', 'Report'].indexOf(step));
         await sleep(700); leaks.push(...(await leaksOf(a)));
         stray.push(...(await a.evaluate(() => [...document.getElementById('panel').innerText.matchAll(/\b(null|undefined|NaN|\[object Object\])\b/g)].map((m) => m[0]))));
         stray.push(...(await a.evaluate(() => [...document.querySelectorAll('input[type=file]')].filter((f) => !f.hidden).map(() => 'a raw file chooser'))));

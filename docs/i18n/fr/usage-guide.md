@@ -140,7 +140,7 @@ Si `config.yaml` contient une erreur (un réglage mal orthographié, un nombre h
 
 ## Préparer un spectacle
 
-Ouvrez la page de configuration et suivez les six étapes en haut. Le bouton **Aide** explique chacune.
+Ouvrez la page de configuration et suivez les six étapes en haut (une septième, **Rapport**, est pour après le spectacle). Le bouton **Aide** explique chacune.
 
 1. **Spectacles.** Créez un spectacle (ou le spectacle d'exemple, pour essayer).
 2. **Fichier du spectacle.** Collez le fichier du spectacle ou déposez un fichier `.txt` ou `.md`. Chaque ligne devient un sous-titre. Corrigez ce qui est listé sous *Problèmes et remarques* ; cliquez sur l'un d'eux pour aller à sa ligne. Enregistrez.
@@ -241,7 +241,7 @@ Vous pouvez modifier et réenregistrer un fichier de spectacle pendant qu'un spe
 
 ### Quand le spectacle se termine
 
-Appuyez sur `Ctrl+C` dans la fenêtre du programme (ou arrêtez le service). La position est enregistrée. Pour relancer le spectacle depuis le début, utilisez **Redémarrer le spectacle…** sur la page de l'opérateur, ou **Redémarrer le spectacle…** dans Configuration → Partager. Les deux le remettent en attente. **Combien de personnes l'ont utilisé ?** Quand le spectacle arrive à sa fin, le bandeau de la page de l'opérateur indique *Fin du spectacle.* avec un lien **Rapport sur le public** (l'étape **Partager** de la configuration garde un lien vers le dernier). Il compte les appareils différents qui ont utilisé la page du public pendant que le spectacle était à l'antenne, quelle qu'ait été la durée de chacun (un téléphone qui a perdu le WiFi puis est revenu compte une fois), avec un graphique des appareils au fil du temps (qui montre quand ont tourné les boucles d'avant-spectacle et d'entracte), le moment de plus forte affluence, les langues et une ligne par appareil ; on peut l'imprimer ou le télécharger en fichier CSV. Les appareils sont distingués par leur adresse et leur type de navigateur : c'est donc une estimation. Les rapports sont conservés dans le dossier `reports` du dossier de données.
+Appuyez sur `Ctrl+C` dans la fenêtre du programme (ou arrêtez le service). La position est enregistrée. Pour relancer le spectacle depuis le début, utilisez **Redémarrer le spectacle…** sur la page de l'opérateur, ou **Redémarrer le spectacle…** dans Configuration → Partager. Les deux le remettent en attente. **Combien de personnes l'ont utilisé ?** Quand le spectacle arrive à sa fin, le bandeau de la page de l'opérateur indique *Fin du spectacle.* avec un lien **Rapport sur le public** (l'étape **Rapport** de la configuration affiche le dernier). Il compte les appareils différents qui ont utilisé la page du public pendant que le spectacle était à l'antenne, quelle qu'ait été la durée de chacun (un téléphone qui a perdu le WiFi puis est revenu compte une fois), avec un graphique des appareils au fil du temps (qui montre quand ont tourné les boucles d'avant-spectacle et d'entracte), le moment de plus forte affluence, les langues et une ligne par appareil ; on peut l'imprimer ou le télécharger en fichier CSV. Les appareils sont distingués par leur adresse et leur type de navigateur : c'est donc une estimation. Les rapports sont conservés dans le dossier `reports` du dossier de données.
 
 ## Liste de vérification du jour J
 

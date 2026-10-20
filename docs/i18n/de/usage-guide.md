@@ -140,7 +140,7 @@ Hat `config.yaml` einen Fehler (eine falsch geschriebene Einstellung, eine Zahl 
 
 ## Eine Show einrichten
 
-Öffnen Sie die Einrichtungsseite und folgen Sie den sechs Schritten oben. Die **Hilfe**-Schaltfläche erklärt jeden.
+Öffnen Sie die Einrichtungsseite und folgen Sie den sechs Schritten oben (ein siebter, **Bericht**, ist für nach der Show). Die **Hilfe**-Schaltfläche erklärt jeden.
 
 1. **Shows.** Legen Sie eine Show an (oder die Beispiel-Show zum Ausprobieren).
 2. **Show-Datei.** Fügen Sie die Show-Datei ein oder ziehen Sie eine `.txt`- oder `.md`-Datei hinein. Jede Zeile wird zu einem Untertitel. Beheben Sie, was unter *Probleme und Hinweise* aufgeführt ist; klicken Sie eines an, um zu seiner Zeile zu springen. Speichern.
@@ -241,7 +241,7 @@ Sie können eine Show-Datei bearbeiten und erneut speichern, während eine Show 
 
 ### Wenn die Show endet
 
-Drücken Sie `Strg+C` im Fenster des Programms (oder beenden Sie den Dienst). Die Position wird gespeichert. Um die Show wieder von vorn laufen zu lassen, verwenden Sie **Show neu starten …** auf der Bedienerseite oder **Show neu starten …** in Einrichtung → Teilen. Beides bringt die Show zurück in den Standby. **Wie viele Leute haben es genutzt?** Erreicht die Show ihr Ende, steht im Banner der Bedienerseite *Ende der Show.* mit einem Link **Publikumsbericht** (der Schritt **Teilen** der Einrichtung behält einen Link zum letzten). Er zählt die verschiedenen Geräte, die die Publikumsseite genutzt haben, während die Show auf Sendung war, egal wie lange jedes blieb (ein Telefon, das aus dem WLAN fiel und zurückkam, zählt einmal), mit einem Diagramm der Geräte im Zeitverlauf (das zeigt, wann die Schleifen vor der Show und in der Pause liefen), dem Moment des größten Andrangs, den Sprachen und einer Zeile je Gerät; er lässt sich drucken oder als CSV-Datei herunterladen. Geräte werden an Adresse und Browsertyp unterschieden, daher ist es eine Schätzung. Die Berichte liegen im Ordner `reports` des Datenordners.
+Drücken Sie `Strg+C` im Fenster des Programms (oder beenden Sie den Dienst). Die Position wird gespeichert. Um die Show wieder von vorn laufen zu lassen, verwenden Sie **Show neu starten …** auf der Bedienerseite oder **Show neu starten …** in Einrichtung → Teilen. Beides bringt die Show zurück in den Standby. **Wie viele Leute haben es genutzt?** Erreicht die Show ihr Ende, steht im Banner der Bedienerseite *Ende der Show.* mit einem Link **Publikumsbericht** (der Schritt **Bericht** der Einrichtung zeigt den letzten). Er zählt die verschiedenen Geräte, die die Publikumsseite genutzt haben, während die Show auf Sendung war, egal wie lange jedes blieb (ein Telefon, das aus dem WLAN fiel und zurückkam, zählt einmal), mit einem Diagramm der Geräte im Zeitverlauf (das zeigt, wann die Schleifen vor der Show und in der Pause liefen), dem Moment des größten Andrangs, den Sprachen und einer Zeile je Gerät; er lässt sich drucken oder als CSV-Datei herunterladen. Geräte werden an Adresse und Browsertyp unterschieden, daher ist es eine Schätzung. Die Berichte liegen im Ordner `reports` des Datenordners.
 
 ## Checkliste für den Vorstellungstag
 

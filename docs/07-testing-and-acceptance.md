@@ -71,7 +71,7 @@
 ## Accessibility audit (REQ-063)
 
 `node test/e2e/a11y.js` (run in CI on Linux) drives real Chrome through every page and Setup step (audience waiting and with
-captions, Setup sign-in and all six steps, the Settings dialog, operator, Help), in **dark and light colour schemes** at a
+captions, Setup sign-in and all seven steps, the Settings dialog, operator, Help), in **dark and light colour schemes** at a
 desktop and a phone width, and runs **axe-core** with the WCAG 2.0/2.1/2.2 A and AA rules plus best practices. It also checks
 **reflow** (no sideways scrolling at 320 px wide, WCAG 1.4.10) and that **Tab** walks the controls with a visible **focus
 ring** (2.4.7). It also audits the audience report page (REQ-070), signed out and with a seeded report. It must report nothing.

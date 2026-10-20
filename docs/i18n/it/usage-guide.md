@@ -140,7 +140,7 @@ Se `config.yaml` ha un errore (un'impostazione scritta male, un numero fuori int
 
 ## Preparare uno spettacolo
 
-Apri la pagina di configurazione e segui i sei passi in alto. Il pulsante **Aiuto** spiega ciascuno.
+Apri la pagina di configurazione e segui i sei passi in alto (un settimo, **Rapporto**, è per dopo lo spettacolo). Il pulsante **Aiuto** spiega ciascuno.
 
 1. **Spettacoli.** Crea uno spettacolo (o lo spettacolo di esempio, per provare).
 2. **File dello spettacolo.** Incolla il file dello spettacolo o trascina un file `.txt` o `.md`. Ogni riga diventa un sottotitolo. Correggi ciò che è elencato sotto *Problemi e note*; fai clic su uno per saltare alla sua riga. Salva.
@@ -241,7 +241,7 @@ Puoi modificare e risalvare un file dello spettacolo mentre uno spettacolo è in
 
 ### Quando lo spettacolo finisce
 
-Premi `Ctrl+C` nella finestra del programma (o ferma il servizio). La posizione viene salvata. Per rifare lo spettacolo dall'inizio, usa **Riavvia lo spettacolo…** nella pagina dell'operatore, oppure **Riavvia lo spettacolo…** in Configurazione → Condividi. Entrambi lo riportano in attesa. **Quante persone l'hanno usato?** Quando lo spettacolo arriva alla fine, il banner della pagina dell'operatore dice *Fine dello spettacolo.* con un link **Rapporto sul pubblico** (il passo **Condividi** della configurazione conserva un link all'ultimo). Conta i dispositivi diversi che hanno usato la pagina del pubblico mentre lo spettacolo era in onda, per quanto sia rimasto ciascuno (un telefono che è caduto dal WiFi ed è tornato conta una volta), con un grafico dei dispositivi nel tempo (che mostra quando sono andati i cicli prima dello spettacolo e nell'intervallo), il momento di maggiore affluenza, le lingue e una riga per dispositivo; si può stampare o scaricare come file CSV. I dispositivi si distinguono per indirizzo e tipo di browser, quindi è una stima. I rapporti sono conservati nella cartella `reports` della cartella dei dati.
+Premi `Ctrl+C` nella finestra del programma (o ferma il servizio). La posizione viene salvata. Per rifare lo spettacolo dall'inizio, usa **Riavvia lo spettacolo…** nella pagina dell'operatore, oppure **Riavvia lo spettacolo…** in Configurazione → Condividi. Entrambi lo riportano in attesa. **Quante persone l'hanno usato?** Quando lo spettacolo arriva alla fine, il banner della pagina dell'operatore dice *Fine dello spettacolo.* con un link **Rapporto sul pubblico** (il passo **Rapporto** della configurazione mostra l'ultimo). Conta i dispositivi diversi che hanno usato la pagina del pubblico mentre lo spettacolo era in onda, per quanto sia rimasto ciascuno (un telefono che è caduto dal WiFi ed è tornato conta una volta), con un grafico dei dispositivi nel tempo (che mostra quando sono andati i cicli prima dello spettacolo e nell'intervallo), il momento di maggiore affluenza, le lingue e una riga per dispositivo; si può stampare o scaricare come file CSV. I dispositivi si distinguono per indirizzo e tipo di browser, quindi è una stima. I rapporti sono conservati nella cartella `reports` della cartella dei dati.
 
 ## Lista di controllo del giorno dello spettacolo
 

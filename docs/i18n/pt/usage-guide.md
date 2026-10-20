@@ -140,7 +140,7 @@ Se `config.yaml` tiver um erro (uma configuração escrita errada, um número fo
 
 ## Preparar um espetáculo
 
-Abra a página de configuração e siga as seis etapas no alto. O botão **Ajuda** explica cada uma.
+Abra a página de configuração e siga as seis etapas no alto (uma sétima, **Relatório**, é para depois do espetáculo). O botão **Ajuda** explica cada uma.
 
 1. **Espetáculos.** Crie um espetáculo (ou o espetáculo de exemplo, para experimentar).
 2. **Arquivo do espetáculo.** Cole o arquivo do espetáculo ou solte um arquivo `.txt` ou `.md`. Cada linha vira uma legenda. Corrija o que aparecer em *Problemas e avisos*; clique em um para ir à linha dele. Salve.
@@ -241,7 +241,7 @@ Você pode editar e salvar de novo um arquivo do espetáculo com o espetáculo a
 
 ### Quando o espetáculo termina
 
-Pressione `Ctrl+C` na janela do programa (ou pare o serviço). A posição é salva. Para refazer o espetáculo desde o início, use **Reiniciar espetáculo…** na página do operador, ou **Reiniciar espetáculo…** em Configuração → Compartilhar. Ambos o devolvem à espera. **Quantas pessoas usaram?** Quando o espetáculo chega ao fim, o aviso da página do operador diz *Fim do espetáculo.* com um link **Relatório do público** (a etapa **Compartilhar** da configuração guarda um link para o último). Ele conta os dispositivos diferentes que usaram a página do público enquanto o espetáculo estava no ar, não importa quanto cada um ficou (um telefone que caiu do WiFi e voltou conta uma vez), com um gráfico dos dispositivos ao longo do tempo (que mostra quando rodaram os laços antes do espetáculo e do intervalo), o momento de maior movimento, os idiomas e uma linha por dispositivo; pode ser impresso ou baixado como arquivo CSV. Os dispositivos são distinguidos pelo endereço e pelo tipo de navegador, então é uma estimativa. Os relatórios ficam na pasta `reports` da pasta de dados.
+Pressione `Ctrl+C` na janela do programa (ou pare o serviço). A posição é salva. Para refazer o espetáculo desde o início, use **Reiniciar espetáculo…** na página do operador, ou **Reiniciar espetáculo…** em Configuração → Compartilhar. Ambos o devolvem à espera. **Quantas pessoas usaram?** Quando o espetáculo chega ao fim, o aviso da página do operador diz *Fim do espetáculo.* com um link **Relatório do público** (a etapa **Relatório** da configuração mostra o último). Ele conta os dispositivos diferentes que usaram a página do público enquanto o espetáculo estava no ar, não importa quanto cada um ficou (um telefone que caiu do WiFi e voltou conta uma vez), com um gráfico dos dispositivos ao longo do tempo (que mostra quando rodaram os laços antes do espetáculo e do intervalo), o momento de maior movimento, os idiomas e uma linha por dispositivo; pode ser impresso ou baixado como arquivo CSV. Os dispositivos são distinguidos pelo endereço e pelo tipo de navegador, então é uma estimativa. Os relatórios ficam na pasta `reports` da pasta de dados.
 
 ## Lista de verificação do dia
 

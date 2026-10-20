@@ -1,10 +1,10 @@
-// Setup page: a six-step wizard (Show, Show file, Images, Look, Test, Share).
+// Setup page: a six-step wizard (Show, Show file, Images, Look, Test, Share), then a Report of how the show went.
 (() => {
   'use strict';
   if (window.OC_UNSUPPORTED) return; // compat.js has already shown the "too old" message
   const $ = (id) => document.getElementById(id);
   const A = { shows: [], activeId: '', cur: null, step: 'show', text: '', saved: '', analysis: null, mainAnalysis: null, lang: '', loadedLang: null, langs: [], net: null, live: false, audience: 0, rehearsing: false };
-  const STEPS = [['show', 'Shows'], ['showfile', 'Show file'], ['images', 'Images'], ['look', 'Look'], ['test', 'Test'], ['golive', 'Share']];
+  const STEPS = [['show', 'Shows'], ['showfile', 'Show file'], ['images', 'Images'], ['look', 'Look'], ['test', 'Test'], ['golive', 'Share'], ['report', 'Report']];
   const ICON = { caption: '💬', clear: '🧹', blank: '⬛', image: '🖼', fullscreen: '⛶', loop: '🔁', section: '📑', note: '📝' };
 
   // ---- helpers ----
@@ -115,7 +115,7 @@
   const unarchived = () => A.shows.filter((s) => !s.archived);
 
   // ---- help drawer (topic follows the current step) ----
-  const HELP_TOPIC = { show: 'admin-getting-started', showfile: 'admin-writing-a-show-file', images: 'admin-images', look: 'admin-look-and-feel', test: 'admin-getting-started', golive: 'admin-network' };
+  const HELP_TOPIC = { show: 'admin-getting-started', showfile: 'admin-writing-a-show-file', images: 'admin-images', look: 'admin-look-and-feel', test: 'admin-getting-started', golive: 'admin-network', report: 'operator-running-the-show' };
   function openHelp(topic) {
     $('help').hidden = false;
     $('help').querySelector('iframe').src = '/help?role=admin&embed=1&ui=' + OCI18n.lang + '&topic=' + (topic || HELP_TOPIC[A.step] || 'admin-getting-started');
@@ -358,7 +358,7 @@
     await loadShows();
     try { A.cur = localStorage.getItem('oc.cur'); } catch (e) { /* storage unavailable */ }
     if (!curShow()) A.cur = A.activeId && curShowById(A.activeId) ? A.activeId : (unarchived()[0] ? unarchived()[0].id : null);
-    A.step = A.cur ? (location.hash.slice(1) || 'show') : 'show';
+    A.step = A.cur || location.hash.slice(1) === 'report' ? (location.hash.slice(1) || 'show') : 'show';
     if (!STEPS.some((s) => s[0] === A.step)) A.step = 'show';
     openOpStream();
     render();
@@ -428,7 +428,8 @@
   function refreshNav() {
     const nav = $('steps'); nav.replaceChildren();
     STEPS.forEach(([id, rawLabel], i) => { const label = __(rawLabel);
-      nav.append(h('button', { class: (A.step === id ? 'on ' : '') + (done(id) ? 'done' : ''), onclick: () => go(id), disabled: id !== 'show' && !A.cur, 'aria-current': A.step === id ? 'step' : false },
+      nav.append(h('button', { class: (A.step === id ? 'on ' : '') + (done(id) ? 'done' : ''), onclick: () => go(id), disabled: id !== 'show' && id !== 'report' && !A.cur, // the report of the last show does not depend on the show being worked on
+        'aria-current': A.step === id ? 'step' : false },
         h('span', { class: 'n' }, h('span', {}, String(i + 1))), label));
     });
   }
@@ -442,6 +443,7 @@
   }
 
   async function render() {
+    clearTimeout(A.reportTimer); // the Report step refreshes itself while the show is on the air; any other step does not
     const s = curShow();
     $('working').textContent = s ? s.name : __('No show selected');
     $('working').hidden = false;
@@ -451,7 +453,7 @@
     panel.classList.toggle('wide', A.step === 'showfile'); // the editor uses the whole width of the window
     document.title = __('Setup') + ' — ' + __((STEPS.find((x) => x[0] === A.step) || ['', ''])[1]);
     nextStep();
-    try { await ({ show: stepShow, showfile: stepShowFile, images: stepImages, look: stepLook, test: stepTest, golive: stepGoLive })[A.step](panel); } catch (e) { if (e.message !== 'login' && e.message !== 'network') console.error(e); }
+    try { await ({ show: stepShow, showfile: stepShowFile, images: stepImages, look: stepLook, test: stepTest, golive: stepGoLive, report: stepReport })[A.step](panel); } catch (e) { if (e.message !== 'login' && e.message !== 'network') console.error(e); }
   }
   // A button whose request failed for lack of a connection has already told the person (see api()).
   window.addEventListener('unhandledrejection', (ev) => { if (ev.reason && ev.reason.message === 'network') ev.preventDefault(); });
@@ -1099,7 +1101,7 @@
       h('span', { class: 'hint' }, __('(for a projector or shared screen; open it on that computer)'))) : null;
     const rows = net.data.urls.filter((u) => !u.name).map((u) => h('div', { class: 'row' }, h('label', { class: 'row' }, radio(u), link(u.url), u.public ? (u.adapter === 'wifi' ? ' (' + __('Wi-Fi') + ')' : u.adapter === 'ethernet' ? ' (' + __('Ethernet') + ')' : '') : __(' (this computer only)'))));
     // The audience report of the last run (how many devices used the service), when there is one.
-    const reportLink = h('p', { class: 'hint', hidden: '' }, h('a', { href: '/operator/report', target: '_blank', rel: 'noopener' }, __('Audience report')), ' ', __('(how many devices used the audience page during the last run of the show)'));
+    const reportLink = h('p', { class: 'hint', hidden: '' }, h('a', { href: '#report', onclick: (e) => { e.preventDefault(); go('report'); window.scrollTo(0, 0); } }, __('Audience report')), ' ', __('(how many devices used the audience page during the last run of the show)'));
     api('GET', '/api/operator/report').then((x) => { if (x.ok) reportLink.hidden = false; }).catch(() => {});
     const list = h('div', { class: 'urls' }, ...rows, ...nameRows(), projRow);
     p.append(h('h2', {}, __('Share')), checks,
@@ -1113,6 +1115,43 @@
         h('p', { class: 'hint' }, __('Two networks, or the wrong address? '), h('a', { href: '#', onclick: (e) => { e.preventDefault(); openSettings('net'); } }, __('Choose which network interfaces are used')))),
       h('p', { class: 'hint' }, __('Something not working? '), h('a', { href: '#', onclick: (e) => { e.preventDefault(); openHelp('admin-troubleshooting'); } }, __('Troubleshooting help')), ' · ', h('a', { href: '/api/admin/support-bundle', download: 'support-bundle.zip' }, __('Download a support bundle')), ' · ', h('a', { href: '#', onclick: (e) => { e.preventDefault(); showLog(); } }, __('Recent log…'))));
   }
+  // ---- step 7: report (REQ-070) ----
+  // How many devices used the audience page while the show was on the air: the same report as the stand-alone page, drawn by
+  // web/shared/report.js. It refreshes itself every few seconds while the show is on the air.
+  async function stepReport(p) {
+    let current = A.reportId || 'current';
+    const sel = h('select', { 'aria-label': __('Report') });
+    const csv = h('a', { class: 'btn', href: '/api/operator/report.csv', download: '' }, __('Download CSV'));
+    const none = h('p', { hidden: '' }, __('There is no audience report yet. One is made each time the show is put on air.'));
+    const body = h('div', {});
+    async function loadList() {
+      const r = await api('GET', '/api/operator/reports');
+      const items = r.ok ? r.data.reports : [];
+      sel.replaceChildren(...items.map((x) => h('option', { value: x.id }, OCReport.menuLabel(x))));
+      if (!items.length) sel.replaceChildren(h('option', { value: 'current' }, '—'));
+      else if (!items.some((x) => x.id === current)) current = items[0].id;
+      sel.value = current;
+    }
+    async function load() {
+      clearTimeout(A.reportTimer);
+      const r = await api('GET', '/api/operator/report' + (current === 'current' ? '' : '?id=' + encodeURIComponent(current)));
+      if (A.step !== 'report') return;
+      if (r.status === 404) { body.replaceChildren(); none.hidden = false; return; }
+      if (!r.ok) return;
+      none.hidden = true;
+      body.replaceChildren(OCReport.build(r.data));
+      csv.href = '/api/operator/report.csv' + (current === 'current' ? '' : '?id=' + encodeURIComponent(current));
+      if (r.data.report.running) A.reportTimer = setTimeout(() => { if (A.step === 'report') load(); }, 5000);
+    }
+    sel.addEventListener('change', () => { current = A.reportId = sel.value; load(); });
+    const print = () => { document.body.classList.add('printreport'); window.print(); document.body.classList.remove('printreport'); }; // only the report is printed, not Setup around it
+    p.append(h('h2', {}, __('Audience report')),
+      h('div', { class: 'rtools noprint' }, h('label', {}, __('Report') + ' ', sel), h('button', { onclick: async () => { await loadList(); load(); } }, __('Refresh')), h('button', { onclick: print }, __('Print')), csv,
+        h('a', { class: 'btn', href: '/operator/report', target: '_blank', rel: 'noopener' }, __('Open the report page'))),
+      none, body);
+    await loadList(); await load();
+  }
+
   // Load a show into standby and go to the operator page. Another show that is on air is only replaced after asking.
   async function loadShow(show) {
     let r = await api('POST', '/api/admin/shows/' + show.id + '/activate', {});

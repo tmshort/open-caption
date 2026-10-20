@@ -1,6 +1,6 @@
 # Erste Schritte
 
-Eine Show einzurichten dauert sechs Schritte. Die Schaltflächenreihe oben auf der Seite folgt ihnen der Reihe nach, und ein Häkchen erscheint, sobald ein Schritt vollständig aussieht. Sie können jederzeit zu jedem Schritt springen.
+Eine Show einzurichten dauert sechs Schritte (ein siebter, **Bericht**, ist für nach der Show). Die Schaltflächenreihe oben auf der Seite folgt ihnen der Reihe nach, und ein Häkchen erscheint, sobald ein Schritt vollständig aussieht. Sie können jederzeit zu jedem Schritt springen.
 
 1. **Shows** — legen Sie eine Show an (oder die Beispiel-Show, um sich umzusehen).
 2. **Show-Datei** — fügen Sie Ihre Show-Datei ein oder öffnen Sie sie und beheben Sie, worauf die Seite hinweist.
@@ -8,6 +8,7 @@ Eine Show einzurichten dauert sechs Schritte. Die Schaltflächenreihe oben auf d
 4. **Erscheinungsbild** — wählen Sie Farben und Textgröße.
 5. **Test** — proben Sie privat, bevor jemand im Saal ist.
 6. **Teilen** — teilen Sie die Adresse mit dem Publikum und öffnen Sie die Bedienerseite, von der aus die Show gestartet wird.
+7. **Bericht** — nach der Show: wie viele Geräte die Publikumsseite genutzt haben, mit einem Diagramm im Zeitverlauf.
 
 ## Standby und auf Sendung gehen
 

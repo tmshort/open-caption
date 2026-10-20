@@ -140,7 +140,7 @@ If `config.yaml` has a mistake (a misspelled setting, a number out of range, a b
 
 ## Setting up a show
 
-Open the setup page and follow the six steps along the top. The **Help** button explains each one.
+Open the setup page and follow the six steps along the top (a seventh, **Report**, is for after the show). The **Help** button explains each one.
 
 1. **Shows.** Create a show (or the sample show, to try things out).
 2. **Show file.** Paste the show file or drop in a `.txt` or `.md` file. Each line becomes one caption. Fix anything listed under *Problems and notes*; click one to jump to its line. Save.
@@ -241,7 +241,7 @@ You can edit and re-save a show file while a show is live (for example to fix a 
 
 ### When the show ends
 
-Press `Ctrl+C` in the program's window (or stop the service). The position is saved. To run the show again from the beginning, use **Restart show…** on the operator page, or **Restart show…** in Setup → Share. Either returns the show to standby. **How many people used it?** When the show reaches its end the banner on the operator page says *End of the show.* with an **Audience report** link (Setup's **Share** step keeps a link to the latest one). It counts the different devices that used the audience page while the show was on air, however long each stayed (a phone that dropped off the WiFi and came back counts once), with a graph of the devices over time (showing when the pre-show and intermission loops ran), the busiest moment, the languages and a row for each device; it can be printed or downloaded as a CSV file. Devices are told apart by address and browser type, so it is an estimate. The reports are kept in the `reports` folder of the data folder.
+Press `Ctrl+C` in the program's window (or stop the service). The position is saved. To run the show again from the beginning, use **Restart show…** on the operator page, or **Restart show…** in Setup → Share. Either returns the show to standby. **How many people used it?** When the show reaches its end the banner on the operator page says *End of the show.* with an **Audience report** link (Setup's **Report** step shows the latest one). It counts the different devices that used the audience page while the show was on air, however long each stayed (a phone that dropped off the WiFi and came back counts once), with a graph of the devices over time (showing when the pre-show and intermission loops ran), the busiest moment, the languages and a row for each device; it can be printed or downloaded as a CSV file. Devices are told apart by address and browser type, so it is an estimate. The reports are kept in the `reports` folder of the data folder.
 
 ## Day-of checklist
 

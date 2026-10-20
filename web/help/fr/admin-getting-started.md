@@ -1,6 +1,6 @@
 # Premiers pas
 
-Préparer un spectacle demande six étapes. La rangée de boutons en haut de la page les suit dans l'ordre, et une coche apparaît lorsqu'une étape semble terminée. Vous pouvez passer à n'importe quelle étape à tout moment.
+Préparer un spectacle demande six étapes (une septième, **Rapport**, est pour après le spectacle). La rangée de boutons en haut de la page les suit dans l'ordre, et une coche apparaît lorsqu'une étape semble terminée. Vous pouvez passer à n'importe quelle étape à tout moment.
 
 1. **Spectacles** — créez un spectacle (ou le spectacle d'exemple pour découvrir).
 2. **Fichier du spectacle** — collez ou ouvrez votre fichier du spectacle et corrigez ce que la page signale.
@@ -8,6 +8,7 @@ Préparer un spectacle demande six étapes. La rangée de boutons en haut de la 
 4. **Apparence** — choisissez les couleurs et la taille du texte.
 5. **Test** — répétez en privé avant que personne ne soit dans la salle.
 6. **Partager** — partagez l'adresse avec le public et ouvrez la page de l'opérateur, d'où le spectacle est lancé.
+7. **Rapport** — après le spectacle : combien d'appareils ont utilisé la page du public, avec un graphique au fil du temps.
 
 ## Attente et passage à l'antenne
 

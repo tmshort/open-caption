@@ -140,7 +140,7 @@ Si `config.yaml` tiene un error (un ajuste mal escrito, un número fuera de rang
 
 ## Preparar un espectáculo
 
-Abra la página de configuración y siga los seis pasos de la parte superior. El botón **Ayuda** explica cada uno.
+Abra la página de configuración y siga los seis pasos de la parte superior (un séptimo, **Informe**, es para después del espectáculo). El botón **Ayuda** explica cada uno.
 
 1. **Espectáculos.** Cree un espectáculo (o el de ejemplo, para probar).
 2. **Archivo del espectáculo.** Pegue el archivo del espectáculo o suelte un archivo `.txt` o `.md`. Cada línea se convierte en un subtítulo. Corrija lo que aparezca en *Problemas y avisos*; pulse uno para saltar a su línea. Guarde.
@@ -241,7 +241,7 @@ Puede editar y volver a guardar un archivo del espectáculo con el espectáculo 
 
 ### Cuando termina el espectáculo
 
-Pulse `Ctrl+C` en la ventana del programa (o detenga el servicio). La posición se guarda. Para volver a dirigir el espectáculo desde el principio, use **Reiniciar espectáculo…** en la página del operador, o **Reiniciar espectáculo…** en Configuración → Compartir. Ambos lo devuelven a la espera. **¿Cuánta gente lo usó?** Cuando el espectáculo llega a su final, el cartel de la página del operador dice *Fin del espectáculo.* con un enlace **Informe del público** (el paso **Compartir** de la configuración guarda un enlace al último). Cuenta los dispositivos distintos que usaron la página del público mientras el espectáculo estaba en el aire, sin importar cuánto se quedó cada uno (un teléfono que se cayó de la WiFi y volvió cuenta una vez), con un gráfico de los dispositivos a lo largo del tiempo (que muestra cuándo funcionaron los bucles de antes del espectáculo y del intermedio), el momento de más afluencia, los idiomas y una fila por dispositivo; se puede imprimir o descargar como archivo CSV. Los dispositivos se distinguen por su dirección y el tipo de navegador, así que es una estimación. Los informes se guardan en la carpeta `reports` de la carpeta de datos.
+Pulse `Ctrl+C` en la ventana del programa (o detenga el servicio). La posición se guarda. Para volver a dirigir el espectáculo desde el principio, use **Reiniciar espectáculo…** en la página del operador, o **Reiniciar espectáculo…** en Configuración → Compartir. Ambos lo devuelven a la espera. **¿Cuánta gente lo usó?** Cuando el espectáculo llega a su final, el cartel de la página del operador dice *Fin del espectáculo.* con un enlace **Informe del público** (el paso **Informe** de la configuración muestra el último). Cuenta los dispositivos distintos que usaron la página del público mientras el espectáculo estaba en el aire, sin importar cuánto se quedó cada uno (un teléfono que se cayó de la WiFi y volvió cuenta una vez), con un gráfico de los dispositivos a lo largo del tiempo (que muestra cuándo funcionaron los bucles de antes del espectáculo y del intermedio), el momento de más afluencia, los idiomas y una fila por dispositivo; se puede imprimir o descargar como archivo CSV. Los dispositivos se distinguen por su dirección y el tipo de navegador, así que es una estimación. Los informes se guardan en la carpeta `reports` de la carpeta de datos.
 
 ## Lista de comprobación del día
 

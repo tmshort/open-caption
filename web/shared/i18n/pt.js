@@ -1,5 +1,6 @@
 // Portuguese translations of Setup, the operator page and Help (see web/shared/i18n.js). The key is the English text.
 OCI18n.add("pt", {
+ "Open the report page": "Abrir a página do relatório",
  "The loop name is empty. Write it after the word name, like [loop: name Intermission]. The loop has no name.": "O nome do laço está vazio. Escreva-o depois da palavra name, como [loop: name Intervalo]. O laço não tem nome.",
  "The loop name is longer than {0} characters and was cut.": "O nome do laço tem mais de {0} caracteres e foi cortado.",
  "Pre-show": "Antes do espetáculo",
