@@ -76,6 +76,13 @@ func TestAudienceReportCountsDevicesAcrossReconnects(t *testing.T) {
 	if langs["en"].(float64) != 2 || langs["es"].(float64) != 1 || body["languageNames"].(map[string]any)["es"] != "Español" && body["languageNames"].(map[string]any)["es"] == "" {
 		t.Errorf("languages: %v %v", langs, body["languageNames"])
 	}
+	// The pre-show loop that started with the show is in the report, under the name the show file gives it.
+	if lp, _ := rep["loops"].([]any); len(lp) == 0 || lp[0].(map[string]any)["name"] != "Pre-show" || lp[0].(map[string]any)["kind"] != "preshow" {
+		t.Errorf("loops: %v", rep["loops"])
+	}
+	if sr, _ := rep["series"].([]any); len(sr) < 2 {
+		t.Errorf("the graph has points: %v", rep["series"])
+	}
 	if rep["show"] == "" {
 		t.Errorf("the show is named: %v", rep)
 	}

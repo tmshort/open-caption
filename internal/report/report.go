@@ -68,14 +68,16 @@ const (
 type Loop struct {
 	Start time.Time `json:"start"`
 	End   time.Time `json:"end"`
-	Kind  string    `json:"kind"`
-	Cue   int       `json:"cue"` // the loop's place in the show file
+	Kind  string    `json:"kind"`           // what it is taken for by where it stands (LoopPreShow ...)
+	Name  string    `json:"name,omitempty"` // what the show file calls it (name Intermission); better than Kind when there
+	Cue   int       `json:"cue"`            // the loop's place in the show file
 }
 
 // LoopInfo says which loop is running.
 type LoopInfo struct {
 	Cue  int
 	Kind string
+	Name string
 }
 
 // Totals sum the run up.
@@ -288,7 +290,7 @@ func (t *Tracker) loopLocked(now time.Time, loop *LoopInfo) {
 		cur.End, r.open = now, false
 	}
 	if loop != nil {
-		r.loops = append(r.loops, Loop{Start: now, Kind: loop.Kind, Cue: loop.Cue})
+		r.loops = append(r.loops, Loop{Start: now, Kind: loop.Kind, Name: loop.Name, Cue: loop.Cue})
 		r.open = true
 	}
 }

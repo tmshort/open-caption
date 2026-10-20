@@ -60,3 +60,18 @@ The show begins in {timer}
 - Saving the show file during an intermission does not restart the countdown, and neither does restarting the program.
 - In a translation, the loop must have the same timer as the main show file; translate the words around `{timer}`.
 - The operator sees the time left in the green banner too. A `{timer}` in a loop without a timer is shown as typed, with a warning.
+
+## Naming a loop
+
+Give a loop a **name** and the audience report uses it to label that loop on its graph. Without a name the report guesses from where the loop stands (before the first line: *pre-show*; between lines: *intermission*; after the last line: *post-show*).
+
+```showfile
+[loop: 12s, name Intermission]
+[fullscreen: **INTERMISSION**]
+Back soon
+[/loop]
+```
+
+- The name is free text of up to 40 characters, without commas. The audience never sees it.
+- It shares the brackets with the other options, separated by commas, in any order: `[loop: 10s, name Act 1 break, timer 15 minutes]`.
+- Only the name in the main language's show file is used; a translation may give its loops other names or none.

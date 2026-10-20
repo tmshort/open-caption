@@ -1,5 +1,7 @@
 // German translations of Setup, the operator page and Help (see web/shared/i18n.js). The key is the English text.
 OCI18n.add("de", {
+ "The loop name is empty. Write it after the word name, like [loop: name Intermission]. The loop has no name.": "Der Name der Schleife ist leer. Schreiben Sie ihn nach dem Wort name, etwa [loop: name Pause]. Die Schleife hat keinen Namen.",
+ "The loop name is longer than {0} characters and was cut.": "Der Name der Schleife ist länger als {0} Zeichen und wurde gekürzt.",
  "Pre-show": "Vor der Show",
  "Intermission": "Pause",
  "Post-show": "Nach der Show",

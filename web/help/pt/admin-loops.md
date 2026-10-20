@@ -60,3 +60,18 @@ The show begins in {timer}
 - Salvar o arquivo do espetáculo durante um intervalo não reinicia a contagem, nem reiniciar o programa.
 - Em uma tradução, o laço deve ter o mesmo temporizador que o arquivo principal do espetáculo; traduza as palavras em volta de `{timer}`.
 - O operador também vê o tempo restante no aviso verde. Um `{timer}` em um laço sem temporizador é mostrado como foi escrito, com um aviso.
+
+## Dar nome a um laço
+
+Dê um **nome** a um laço e o relatório do público o usa para rotulá-lo no gráfico. Sem nome, o relatório adivinha pelo lugar do laço (antes da primeira linha: *antes do espetáculo*; entre linhas: *intervalo*; depois da última linha: *depois do espetáculo*).
+
+```showfile
+[loop: 12s, name Intermission]
+[fullscreen: **INTERMISSION**]
+Back soon
+[/loop]
+```
+
+- O nome é texto livre de até 40 caracteres, sem vírgulas. O público nunca o vê.
+- Ele divide os colchetes com as outras opções, separadas por vírgulas, em qualquer ordem: `[loop: 10s, name Act 1 break, timer 15 minutes]`.
+- Só se usa o nome do arquivo do espetáculo do idioma principal; uma tradução pode dar outros nomes aos seus laços, ou nenhum.

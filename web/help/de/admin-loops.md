@@ -60,3 +60,18 @@ The show begins in {timer}
 - Das Speichern der Show-Datei während einer Pause startet den Countdown nicht neu, ebenso wenig ein Neustart des Programms.
 - In einer Übersetzung muss die Schleife denselben Timer haben wie die Haupt-Show-Datei; übersetzen Sie die Wörter um `{timer}`.
 - Der Bediener sieht die Restzeit auch im grünen Banner. Ein `{timer}` in einer Schleife ohne Timer wird wie geschrieben angezeigt, mit einer Warnung.
+
+## Eine Schleife benennen
+
+Geben Sie einer Schleife einen **Namen**, und der Publikumsbericht beschriftet sie damit in seinem Diagramm. Ohne Namen rät der Bericht nach der Stelle der Schleife (vor der ersten Zeile: *Vor der Show*; zwischen Zeilen: *Pause*; nach der letzten Zeile: *Nach der Show*).
+
+```showfile
+[loop: 12s, name Intermission]
+[fullscreen: **INTERMISSION**]
+Back soon
+[/loop]
+```
+
+- Der Name ist freier Text mit höchstens 40 Zeichen, ohne Kommas. Das Publikum sieht ihn nie.
+- Er teilt sich die Klammern mit den anderen Optionen, durch Kommas getrennt, in beliebiger Reihenfolge: `[loop: 10s, name Act 1 break, timer 15 minutes]`.
+- Es wird nur der Name aus der Show-Datei der Hauptsprache verwendet; eine Übersetzung kann ihren Schleifen andere Namen geben oder keine.

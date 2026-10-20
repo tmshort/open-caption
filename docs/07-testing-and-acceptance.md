@@ -33,7 +33,7 @@
 - Songs and voices: `~` shorthand, `[song]`, `[together]` and ` || ` (including mixed spoken/sung, unclosed blocks, escapes).
 - Security: access lists (listed, unlisted, bad entry denies all, cookie from an unlisted computer, admin address may run the show); forged `Origin`/`Sec-Fetch-Site` refused; sessions survive a restart but not a password change; the settings and support bundle never contain passwords.
 - Persistence: undo steps and last-action time survive a restart; two people saving one show file is detected.
-- **Audience report (REQ-070):** `internal/report` unit tests (devices counted once across reconnects and second tabs, early arrivals counted from the start, a different show ends the run, the graph's points and loop stretches, JSON seconds, CSV, the saved files and their names); `internal/httpapi` integration test (devices waiting in standby, a tablet joining, a phone dropping and returning, the JSON, CSV and saved report, a rehearsal not counted); browser tests (the report from START, the page, the banner link at the end of the show).
+- **Audience report (REQ-070):** `internal/report` unit tests (devices counted once across reconnects and second tabs, early arrivals counted from the start, a different show ends the run, the graph's points and loop stretches (with their names), JSON seconds, CSV, the saved files and their names); `internal/httpapi` integration test (devices waiting in standby, a tablet joining, a phone dropping and returning, the JSON, CSV and saved report, a rehearsal not counted); browser tests (the report from START, the page, the banner link at the end of the show).
 
 ## Performance targets (verified by load test)
 

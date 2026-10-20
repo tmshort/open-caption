@@ -148,6 +148,7 @@ Please silence your phones
 - Loops can't be nested. Captions, `[clear]`, `[section]` and `[note]` inside a
   loop produce a warning and are skipped.
 - The loop is **one cue** with one position in the operator list.
+- A loop can have a **name** (`[loop: 10s, name Intermission]`; see *Loop names* below).
 - **Options** go in the brackets, comma-separated, in any order: an item time (`10s`) and a timer
   (`timer 15 minutes`). See *Loop timers* below.
 
@@ -164,6 +165,21 @@ Behavior (see doc 02 for the state model):
   blank screen. NEXT then proceeds as usual.
 - **Restarting.** There is no restart command. Back "backs into" the loop: after
   NEXT ended it, or after STOP, Back restores the loop **running from its first item**.
+
+### Loop names (REQ-070)
+
+A loop can be given a name, which the **audience report** uses to label the stretch during which the loop ran (on its graph and in its list of loops).
+
+```
+[loop: 12s, name Intermission, timer 15 minutes]
+[fullscreen: **INTERMISSION**]
+Back in {timer}
+[/loop]
+```
+
+- `name <text>` (a colon after the word is allowed) is one of the loop's options, which share the brackets, separated by commas, in any order (`[loop: 10s, name Pre-show]`). The text is free, at most 40 characters (longer is cut, with a warning), and has no commas. The audience never sees it. An empty name (`[loop: name]`) is a warning and the loop has no name.
+- Only the name in the main language's show file is used. A translation may name its loops differently or not at all; `CompareStructure` ignores names.
+- Without a name the report guesses from the loop's place among the lines the audience sees (captions, images, fullscreen messages): before the first is the *pre-show*, after the last the *post-show*, between them an *intermission*.
 
 ### Loop timers (REQ-065)
 

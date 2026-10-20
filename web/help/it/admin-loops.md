@@ -60,3 +60,18 @@ The show begins in {timer}
 - Salvare il file dello spettacolo durante un intervallo non fa ripartire il conto alla rovescia, e nemmeno riavviare il programma.
 - In una traduzione, il ciclo deve avere lo stesso timer del file principale dello spettacolo; traduci le parole attorno a `{timer}`.
 - Anche l'operatore vede il tempo rimasto nel banner verde. Un `{timer}` in un ciclo senza timer viene mostrato così com'è, con un avviso.
+
+## Dare un nome a un ciclo
+
+Dai un **nome** a un ciclo e il rapporto sul pubblico lo usa per etichettarlo nel suo grafico. Senza nome, il rapporto lo indovina dalla posizione del ciclo (prima della prima riga: *prima dello spettacolo*; tra le righe: *intervallo*; dopo l'ultima riga: *dopo lo spettacolo*).
+
+```showfile
+[loop: 12s, name Intermission]
+[fullscreen: **INTERMISSION**]
+Back soon
+[/loop]
+```
+
+- Il nome è testo libero fino a 40 caratteri, senza virgole. Il pubblico non lo vede mai.
+- Condivide le parentesi con le altre opzioni, separate da virgole, in qualsiasi ordine: `[loop: 10s, name Act 1 break, timer 15 minutes]`.
+- Si usa solo il nome del file dello spettacolo della lingua principale; una traduzione può dare altri nomi ai suoi cicli, o nessuno.

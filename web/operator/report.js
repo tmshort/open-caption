@@ -30,7 +30,7 @@
     for (const kid of kids.flat()) if (kid != null && kid !== false) e.append(kid.nodeType ? kid : document.createTextNode(kid));
     return e;
   };
-  const loopName = (k) => k === 'preshow' ? __('Pre-show') : k === 'intermission' ? __('Intermission') : k === 'postshow' ? __('Post-show') : __('Loop');
+  const loopName = (k, name) => name ? name : k === 'preshow' ? __('Pre-show') : k === 'intermission' ? __('Intermission') : k === 'postshow' ? __('Post-show') : __('Loop');
   const hhmm = (ms) => new Date(ms).toLocaleTimeString(lang, { hour: '2-digit', minute: '2-digit' });
   // a "nice" step (1, 2, 5, 10, 20, 50 ...) so that about n ticks cover the range
   const niceStep = (range, n) => { const raw = Math.max(range / n, 1e-9), mag = Math.pow(10, Math.floor(Math.log(raw) / Math.LN10)), f = raw / mag; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * mag; };
@@ -50,9 +50,9 @@
     // the loops first, behind everything else
     for (const lp of r.loops || []) {
       const a = x(new Date(lp.start).getTime()), b = Math.max(a + 2, x(new Date(lp.end).getTime()));
-      kids.push(sv('rect', { class: 'band', x: a, y: T, width: b - a, height: ph }, sv('title', {}, loopName(lp.kind) + ': ' + clock(lp.start) + ' – ' + clock(lp.end))));
+      kids.push(sv('rect', { class: 'band', x: a, y: T, width: b - a, height: ph }, sv('title', {}, loopName(lp.kind, lp.name) + ': ' + clock(lp.start) + ' – ' + clock(lp.end))));
       kids.push(sv('rect', { x: a, y: T, width: b - a, height: ph, fill: 'url(#hatch)' }));
-      if (b - a >= 60) kids.push(sv('text', { x: (a + b) / 2, y: T - 8, 'text-anchor': 'middle' }, loopName(lp.kind)));
+      if (b - a >= 60) kids.push(sv('text', { x: (a + b) / 2, y: T - 8, 'text-anchor': 'middle' }, loopName(lp.kind, lp.name)));
     }
     for (let v = 0; v <= ymax; v += ystep) {
       kids.push(sv('line', { class: 'grid', x1: L, x2: W - R, y1: y(v), y2: y(v) }), sv('text', { class: 'tick', x: L - 6, y: y(v) + 4, 'text-anchor': 'end' }, String(v)));
@@ -80,7 +80,7 @@
     $('legend').replaceChildren(h('span', {}, h('i', { class: 'swatch devices' }), __('Devices connected')), (r.loops || []).length ? h('span', {}, h('i', { class: 'swatch looprun' }), __('A loop was running')) : null);
     const lt = $('loops').querySelector('tbody');
     $('loopsh').hidden = $('loops').hidden = !(r.loops || []).length;
-    lt.replaceChildren(...(r.loops || []).map((lp) => h('tr', {}, h('td', {}, loopName(lp.kind)), h('td', {}, clock(lp.start)), h('td', {}, clock(lp.end)), h('td', { class: 'num' }, span((new Date(lp.end) - new Date(lp.start)) / 1000)))));
+    lt.replaceChildren(...(r.loops || []).map((lp) => h('tr', {}, h('td', {}, loopName(lp.kind, lp.name)), h('td', {}, clock(lp.start)), h('td', {}, clock(lp.end)), h('td', { class: 'num' }, span((new Date(lp.end) - new Date(lp.start)) / 1000)))));
   }
 
   function paint(d) {

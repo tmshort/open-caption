@@ -60,3 +60,18 @@ The show begins in {timer}
 - Enregistrer le fichier du spectacle pendant un entracte ne relance pas le décompte, pas plus que le redémarrage du programme.
 - Dans une traduction, la boucle doit avoir le même minuteur que le fichier principal du spectacle ; traduisez les mots autour de `{timer}`.
 - L'opérateur voit aussi le temps restant dans le bandeau vert. Un `{timer}` dans une boucle sans minuteur est affiché tel quel, avec un avertissement.
+
+## Donner un nom à une boucle
+
+Donnez un **nom** à une boucle et le rapport sur le public s'en sert pour l'étiqueter sur son graphique. Sans nom, le rapport devine d'après la place de la boucle (avant la première ligne : *avant-spectacle* ; entre des lignes : *entracte* ; après la dernière ligne : *après-spectacle*).
+
+```showfile
+[loop: 12s, name Intermission]
+[fullscreen: **INTERMISSION**]
+Back soon
+[/loop]
+```
+
+- Le nom est un texte libre d'au plus 40 caractères, sans virgule. Le public ne le voit jamais.
+- Il partage les crochets avec les autres options, séparées par des virgules, dans n'importe quel ordre : `[loop: 10s, name Act 1 break, timer 15 minutes]`.
+- Seul le nom du fichier de spectacle de la langue principale est utilisé ; une traduction peut donner d'autres noms à ses boucles, ou aucun.

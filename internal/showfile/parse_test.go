@@ -474,3 +474,62 @@ func TestAMissingImageSaysWhereItWasLookedForOnlyWhenTheCallerNamesAFolder(t *te
 		t.Errorf("%q", got)
 	}
 }
+
+// A loop can be given a name, which the audience report uses.
+func TestLoopNameOption(t *testing.T) {
+	for in, want := range map[string]string{
+		"[loop: 10s, name Intermission]":            "Intermission",
+		"[loop: name Act 1   break, 12s]":           "Act 1 break",
+		"[loop: NAME: Pre-show, timer 7:30pm, 10s]": "Pre-show",
+		"[loop: timer 15 minutes, name Interval]":   "Interval",
+		"[loop: 10s]": "",
+	} {
+		body := "Hello"
+		if strings.Contains(in, "timer") {
+			body += " {timer}" // a loop with a timer shows it somewhere
+		}
+		r := Parse(in+"\n"+body+"\n[/loop]\nA line\n", Options{})
+		if len(r.Cues) == 0 || r.Cues[0].Kind != KindLoop || r.Cues[0].Name != want {
+			t.Errorf("%q: %+v", in, r.Cues)
+			continue
+		}
+		for _, d := range r.Diagnostics {
+			if d.Severity != SevInfo {
+				t.Errorf("%q: unexpected %s: %s", in, d.Severity, d.Message)
+			}
+		}
+	}
+	// The name does not disturb the timer or the item time.
+	r := Parse("[loop: 12s, name Break, timer 15 minutes]\n{timer}\n[/loop]\n", Options{})
+	if c := r.Cues[0]; c.Name != "Break" || c.Period != 12 || c.Timer == nil || c.Timer.Minutes != 15 {
+		t.Errorf("%+v", c)
+	}
+	// An empty or too long name is a warning, and the loop is still a loop.
+	problems := func(r Result) []Diagnostic {
+		var out []Diagnostic
+		for _, d := range r.Diagnostics {
+			if d.Severity != SevInfo {
+				out = append(out, d)
+			}
+		}
+		return out
+	}
+	r = Parse("[loop: name]\nHi\n[/loop]\n", Options{})
+	if d := problems(r); r.Cues[0].Name != "" || len(d) != 1 || !strings.Contains(d[0].Message, "loop name is empty") {
+		t.Errorf("%+v %+v", r.Cues[0], d)
+	}
+	long := strings.Repeat("x", MaxLoopNameLength+10)
+	r = Parse("[loop: name "+long+"]\nHi\n[/loop]\n", Options{})
+	if d := problems(r); len([]rune(r.Cues[0].Name)) != MaxLoopNameLength || len(d) != 1 || !strings.Contains(d[0].Message, "was cut") {
+		t.Errorf("%q %+v", r.Cues[0].Name, d)
+	}
+}
+
+// A translation may name its loops in its own words, or not at all: only the main language's name is used.
+func TestLoopNamesDoNotHaveToMatchInATranslation(t *testing.T) {
+	main := Parse("[loop: 10s, name Intermission]\nBack soon\n[/loop]\nHello\n", Options{})
+	tr := Parse("[loop: 10s, name Entracte]\nÀ tout à l'heure\n[/loop]\nBonjour\n", Options{})
+	if errs := CompareStructure(main.Cues, tr.Cues, "English"); len(errs) != 0 {
+		t.Errorf("%v", errs)
+	}
+}

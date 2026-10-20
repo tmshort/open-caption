@@ -213,7 +213,7 @@ func TestTheGraphFollowsDevicesAndLoops(t *testing.T) {
 		return time.Date(2026, 10, 20, 19, 30, 0, 0, time.UTC).Add(time.Duration(s) * time.Second)
 	}
 	pre := &LoopInfo{Cue: 0, Kind: LoopPreShow}
-	interm := &LoopInfo{Cue: 9, Kind: LoopIntermission}
+	interm := &LoopInfo{Cue: 9, Kind: LoopIntermission, Name: "Act 1 break"}
 
 	early := tr.Connect("10.0.0.1", iphone, Phone, "en", false)
 	tr.Sync(true, "s", "S", pre) // on air, with the pre-show loop running and one device waiting
@@ -238,7 +238,7 @@ func TestTheGraphFollowsDevicesAndLoops(t *testing.T) {
 		}
 	}
 	if len(cur.Loops) != 2 || cur.Loops[0].Kind != LoopPreShow || !cur.Loops[0].Start.Equal(at(0)) || !cur.Loops[0].End.Equal(at(20)) ||
-		cur.Loops[1].Kind != LoopIntermission || !cur.Loops[1].Start.Equal(at(70)) || !cur.Loops[1].End.Equal(at(100)) {
+		cur.Loops[1].Kind != LoopIntermission || cur.Loops[1].Name != "Act 1 break" || cur.Loops[0].Name != "" || !cur.Loops[1].Start.Equal(at(70)) || !cur.Loops[1].End.Equal(at(100)) {
 		t.Errorf("loops: %+v", cur.Loops)
 	}
 	// Ending the run closes the open loop, and the graph ends there.

@@ -125,7 +125,7 @@ func TestScriptHelpCoversEveryConvention(t *testing.T) {
 	}
 	// The loop timer is explained: the option, both kinds of value and the placeholder.
 	loops := topics["admin-loops"].Markdown
-	for _, want := range []string{"timer 15", "timer 7:30pm", "{timer}", "[loop: timer"} {
+	for _, want := range []string{"timer 15", "timer 7:30pm", "{timer}", "[loop: timer", "name Intermission"} {
 		if !strings.Contains(loops, want) {
 			t.Errorf("the Loops topic never shows %q", want)
 		}

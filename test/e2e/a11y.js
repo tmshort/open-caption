@@ -33,7 +33,7 @@ async function audit(page, label) {
       { id: 'cd34ef56', address: '192.168.1.21', kind: 'phone', languages: ['es'], first: t0, last: t1, connections: 1, connected: 1800, longest: 1800, now: true },
       { id: 'ef56ab78', address: '192.168.1.2', kind: 'computer', projector: true, languages: ['en'], first: t0, last: t1, connections: 1, connected: 600, longest: 600, now: false }],
     series: [{ t: t0, n: 1 }, { t: new Date(Date.now() - 3000e3).toISOString(), n: 2 }, { t: new Date(Date.now() - 2400e3).toISOString(), n: 3 }, { t: new Date(Date.now() - 600e3).toISOString(), n: 2 }, { t: t1, n: 2 }],
-    loops: [{ start: t0, end: new Date(Date.now() - 3300e3).toISOString(), kind: 'preshow', cue: 0 }, { start: new Date(Date.now() - 1800e3).toISOString(), end: new Date(Date.now() - 1200e3).toISOString(), kind: 'intermission', cue: 20 }] }));
+    loops: [{ start: t0, end: new Date(Date.now() - 3300e3).toISOString(), kind: 'preshow', cue: 0 }, { start: new Date(Date.now() - 1800e3).toISOString(), end: new Date(Date.now() - 1200e3).toISOString(), kind: 'intermission', name: 'Act 1 break', cue: 20 }] }));
   const port = await free(), B = 'http://localhost:' + port;
   const server = spawn(BIN, ['--data', dir, '--http-addr', ':' + port, '--no-browser'], { stdio: 'ignore' });
   for (let i = 0; i < 50; i++) { try { if ((await fetch(B + '/healthz')).ok) break; } catch (e) { /* wait */ } await sleep(100); }

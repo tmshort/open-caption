@@ -60,3 +60,18 @@ The show begins in {timer}
 - Guardar el archivo del espectáculo durante un descanso no reinicia la cuenta atrás, ni tampoco reiniciar el programa.
 - En una traducción, el bucle debe tener el mismo temporizador que el archivo principal del espectáculo; traduzca las palabras que rodean a `{timer}`.
 - El operador también ve el tiempo que queda en el cartel verde. Un `{timer}` en un bucle sin temporizador se muestra tal como está escrito, con una advertencia.
+
+## Poner nombre a un bucle
+
+Dé un **nombre** a un bucle y el informe del público lo usa para rotular ese bucle en su gráfico. Sin nombre, el informe lo adivina por el lugar del bucle (antes de la primera línea: *antes del espectáculo*; entre líneas: *intermedio*; después de la última línea: *después del espectáculo*).
+
+```showfile
+[loop: 12s, name Intermission]
+[fullscreen: **INTERMISSION**]
+Back soon
+[/loop]
+```
+
+- El nombre es texto libre de hasta 40 caracteres, sin comas. El público nunca lo ve.
+- Comparte los corchetes con las demás opciones, separadas por comas y en cualquier orden: `[loop: 10s, name Act 1 break, timer 15 minutes]`.
+- Solo se usa el nombre del archivo del espectáculo del idioma principal; una traducción puede dar otros nombres a sus bucles o ninguno.

@@ -13,9 +13,11 @@ var (
 	durationRe = regexp.MustCompile(`^(\d+(?:\.\d+)?)\s*s$`)
 	// "timer 15", "timer: 7:30pm", "countdown 10 minutes" (the keyword, then a space or a colon)
 	timerOptionRe = regexp.MustCompile(`(?i)^(?:timer|countdown)(?:\s+|\s*:\s*|$)`)
-	imageMdRe     = regexp.MustCompile(`^!\[(.*?)\]\((.+?)\)$`)
-	htmlTagRe     = regexp.MustCompile(`<[A-Za-z/!][^>]*>`)
-	spacesRe      = regexp.MustCompile(`\s+`)
+	// "name Intermission", "name: Act 1 break" (the keyword, then a space or a colon)
+	nameOptionRe = regexp.MustCompile(`(?i)^name(?:\s+|\s*:\s*|$)`)
+	imageMdRe    = regexp.MustCompile(`^!\[(.*?)\]\((.+?)\)$`)
+	htmlTagRe    = regexp.MustCompile(`<[A-Za-z/!][^>]*>`)
+	spacesRe     = regexp.MustCompile(`\s+`)
 )
 
 var directiveAlias = map[string]string{
@@ -417,7 +419,7 @@ func (p *parser) fullscreenBlock(start int) {
 
 func (p *parser) loop(start int, args string) {
 	cue := Cue{Kind: KindLoop, Line: start}
-	// Options, separated by commas: an item time (10s) and/or a timer (timer 15, timer 7:30pm).
+	// Options, separated by commas: an item time (10s), a name (name Intermission) and/or a timer (timer 15, timer 7:30pm).
 	for _, part := range strings.Split(args, ",") {
 		part = strings.TrimSpace(part)
 		low := strings.ToLower(part)
@@ -425,6 +427,17 @@ func (p *parser) loop(start int, args string) {
 		case part == "":
 		case durationRe.MatchString(part):
 			cue.Period, _ = strconv.ParseFloat(durationRe.FindStringSubmatch(part)[1], 64)
+		case nameOptionRe.MatchString(low):
+			name := strings.Join(strings.Fields(nameOptionRe.ReplaceAllString(part, "")), " ")
+			switch r := []rune(name); {
+			case name == "":
+				p.diag(start, SevWarning, "The loop name is empty. Write it after the word name, like [loop: name Intermission]. The loop has no name.")
+			case len(r) > MaxLoopNameLength:
+				p.diag(start, SevWarning, "The loop name is longer than %d characters and was cut.", MaxLoopNameLength)
+				cue.Name = strings.TrimSpace(string(r[:MaxLoopNameLength]))
+			default:
+				cue.Name = name
+			}
 		case timerOptionRe.MatchString(low):
 			val := strings.TrimSpace(timerOptionRe.ReplaceAllString(part, ""))
 			t, err := ParseTimer(val)

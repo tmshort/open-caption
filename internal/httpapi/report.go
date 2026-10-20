@@ -39,7 +39,11 @@ func (s *Server) syncReport() {
 	p := s.rt.OperatorPayload()
 	var loop *report.LoopInfo
 	if p.Op.Live && p.Op.Loop != nil {
-		loop = &report.LoopInfo{Cue: p.Op.Loop.Cue, Kind: loopKind(s.rt.Engine().Cues(), p.Op.Loop.Cue)}
+		cues := s.rt.Engine().Cues()
+		loop = &report.LoopInfo{Cue: p.Op.Loop.Cue, Kind: loopKind(cues, p.Op.Loop.Cue)}
+		if i := p.Op.Loop.Cue; i >= 0 && i < len(cues) {
+			loop.Name = cues[i].Name // the main language's name for it, when the show file gives one
+		}
 	}
 	s.tracker.Sync(p.Op.Live && p.Show.ID != "", p.Show.ID, p.Show.Name, loop)
 }

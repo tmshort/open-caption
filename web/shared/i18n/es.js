@@ -1,5 +1,7 @@
 // Spanish translations of Setup, the operator page and Help (see web/shared/i18n.js). The key is the English text.
 OCI18n.add("es", {
+ "The loop name is empty. Write it after the word name, like [loop: name Intermission]. The loop has no name.": "El nombre del bucle está vacío. Escríbalo después de la palabra name, como [loop: name Intermedio]. El bucle no tiene nombre.",
+ "The loop name is longer than {0} characters and was cut.": "El nombre del bucle tiene más de {0} caracteres y se recortó.",
  "Pre-show": "Antes del espectáculo",
  "Intermission": "Intermedio",
  "Post-show": "Después del espectáculo",

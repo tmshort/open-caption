@@ -32,7 +32,7 @@ scrollback lines: 200
      show file, it starts by itself as soon as the show is loaded. The operator presses
      the spacebar to end it and send the first line. Each item shows for 10 seconds
      unless it says otherwise (like the sponsors picture, which stays 15). -->
-[loop: 10s]
+[loop: 10s, name Pre-show]
 [image: welcome.png | Welcome to The Garden Party | 15s]
 **Welcome!**
 Captions will follow the show
@@ -120,7 +120,7 @@ MARGARET: ~ Milk and sugar ~ || EDWIN: ~ Lemon, thank you ~
      every screen shows the time left, counting down live: "Back in 15 min".
      For a pre-show, give a time of day instead, like [loop: timer 7:30pm]; the
      countdown then runs until that time today. -->
-[loop: 12s, timer 15 minutes]
+[loop: 12s, name Intermission, timer 15 minutes]
 [fullscreen: **INTERMISSION**]
 Back in {timer}
 ![Refreshments are in the lobby](lobby.png)
