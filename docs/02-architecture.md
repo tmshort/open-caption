@@ -270,6 +270,7 @@ and every language's lines).
   sessions.json           signed-in sessions (hashed), so a restart does not sign anyone out
   live.json               active show id and, per language: cursor, scrollback, mode, the last 10 undo steps (debounced ≤ 250 ms; written through a temporary file and renamed, one save at a time; a failed save is logged)
   tls/                    generated self-signed cert/key (if used)
+  reports/<start>-<show>.json   the audience reports (REQ-070), one file for each run of a show, written as the run goes and when it ends; the newest 30 are kept (`report.Keep`), older ones are removed when a report is saved; they list the devices' addresses and nothing depends on them, so they can be deleted by hand
 ```
 
 Default data dir: OS user-config location (`os.UserConfigDir()/open-caption`).
