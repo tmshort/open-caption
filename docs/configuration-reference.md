@@ -145,7 +145,7 @@ Who may open Setup and the operator page. The audience page is always open to ev
 |---|---|---|
 | `log.level` | `info` | `debug` (every request), `info` (events and sign-ins), `warn` or `error`. *Setup: Settings → About* |
 | `mdns.enabled` | `yes` | Announce this computer as `<name>.local` on the local network |
-| `mdns.name` | `open-caption` | The name: letters, digits and hyphens only, up to 63 characters (`.local` is added). *Setup: Run step* |
+| `mdns.name` | `open-caption` | The name: letters, digits and hyphens only, up to 63 characters (`.local` is added). *Setup: Settings → Network* |
 | `standby.message` | empty | The line the audience sees on the standby screen. Empty means "Captions will begin shortly" in each viewer's language. One line, up to 200 characters. *Setup: Settings → Audience screen* (the logo is a file chosen there, not a setting) |
 
 ### `network`

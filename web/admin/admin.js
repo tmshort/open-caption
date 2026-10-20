@@ -206,6 +206,30 @@
         h('p', { class: 'hint' }, __('Connections to this computer itself are always accepted. If a phone then cannot reach the program, clear this box.')),
         s.networkPinned ? h('p', { class: 'hint' }, __('This copy was started with --network-interfaces, which overrides these ticks each time it starts.')) : null,
         netMsg));
+    // The name this computer is announced by on the local network (<name>.local, multicast DNS): also a network setting.
+    const m = s.mdns || {};
+    const nameIn = h('input', { type: 'text', class: 'netname', maxlength: '63', size: '16', 'aria-label': __('Name'), autocapitalize: 'none', spellcheck: 'false' }); nameIn.value = m.requested || 'open-caption';
+    const useName = h('input', { type: 'checkbox', 'aria-label': __('Announce this computer by name'), onchange: () => putName(useName.checked) });
+    useName.checked = !!m.enabled;
+    const nameInfo = h('div', { class: 'namestatus' });
+    const paintName = (st) => {
+      const kids = [];
+      if (st.active) kids.push(h('p', { class: 'hint' }, __('Devices on this network can open http://{host}/', { host: st.host })));
+      if (st.error) kids.push(h('div', { class: 'check warn', role: 'alert' }, __('Could not announce this name: {error}', { error: st.error })));
+      else if (st.renamed) kids.push(h('div', { class: 'check warn', role: 'alert' }, __('Another computer on this network already uses {name}.local, so this one is http://{host}/', { name: st.requested, host: st.host })));
+      nameInfo.replaceChildren(...kids);
+    };
+    paintName(m);
+    async function putName(enabled) { // the checkbox and the Apply button both save what is shown
+      const x = await api('PUT', '/api/admin/settings/mdns', { enabled, name: nameIn.value });
+      if (!x.ok) { nameInfo.replaceChildren(h('div', { class: 'check warn', role: 'alert' }, __((x.data && x.data.error) || 'Could not change the name'))); useName.checked = !!m.enabled; return; }
+      Object.assign(m, x.data.mdns); useName.checked = !!m.enabled; nameIn.value = m.requested || nameIn.value; paintName(m); netChanged = true; toast(__('Network settings saved'));
+    }
+    const nameSec = sec('Name on the network',
+      h('p', { class: 'hint' }, __('Devices can open this computer by name instead of a number. It needs no router settings, but some guest WiFi networks block it, so keep the numeric address and QR code as the main way in.')),
+      h('label', { class: 'row' }, useName, __('Use a name')),
+      h('div', { class: 'row' }, 'http://', nameIn, __('.local '), h('button', { type: 'button', onclick: () => putName(useName.checked) }, __('Apply'))),
+      nameInfo);
     // The HTTPS certificate: where it comes from and, for an automatic one, its state (docs/10). Filled in once the program answers.
     const certBox = h('div', { class: 'certbox' });
     const paintCert = (c) => {
@@ -239,7 +263,7 @@
           h('div', { class: 'row' }, sbImg, sbNone), h('div', { class: 'row' }, sbChoose, sbFile, sbRemove, h('span', { class: 'hint' }, __('PNG, JPEG, GIF or WebP, up to 2 MB'))),
           h('label', { class: 'field' }, h('span', {}, __('Message (optional; empty uses “Captions will begin shortly” in each viewer’s language)')), sbMsg), h('div', { class: 'row' }, sbSave)),
         ]],
-      ['net', 'Network', [networkSec]],
+      ['net', 'Network', [networkSec, nameSec]],
       ['sec', 'Security', [
           !s.adminRestricted && !s.httpsAddr ? h('p', { class: 'check warn' }, __('Anyone on this WiFi can try to sign in to Setup, and passwords travel unencrypted over plain http. To limit it, set access: admin_allow in the settings file (for example [localhost]); see the usage guide.')) : null,
         sec('Change passwords',
@@ -1051,37 +1075,16 @@
     const big = h('div', { class: 'urlbig' }), qrBox = h('div', { class: 'qr' });
     const paint = () => { big.textContent = chosen || __('No address found'); qrBox.replaceChildren(chosen ? h('img', { src: '/api/admin/network/qr.png?size=512&url=' + encodeURIComponent(chosen), alt: __('QR code for {url}', { url: chosen }) }) : ''); };
     paint();
-    // Every address is one row: [radio] link, and what belongs to that address. The name row (open-caption.local) also holds its own
-    // settings: a checkbox that turns the announcement on or off and a Rename button; the row shows even while the name is off.
+    // Every address is one row: [radio] link, and what belongs to that address. The name (open-caption.local) is a row while it is being
+    // announced; whether it is, and what it is called, is set in Settings > Network.
     const m = net.data.mdns || {};
     const httpUrl = net.data.urls.find((u) => u.kind === 'http' && !u.name);
-    let portSuffix = ''; try { const pt = new URL(httpUrl.url).port; portSuffix = pt ? ':' + pt : ''; } catch (e) { /* no port to add */ }
-    async function setName(enabled, name) { // returns an error message, or '' when it worked
-      const x = await api('PUT', '/api/admin/settings/mdns', { enabled, name });
-      if (!x.ok) return __((x.data && x.data.error) || 'Could not change the name');
-      return '';
-    }
-    async function renameName() {
-      const input = h('input', { type: 'text', class: 'netname', maxlength: '63', size: '16', 'aria-label': __('Name'), autocapitalize: 'none', spellcheck: 'false' }); input.value = m.requested || 'open-caption';
-      const msg = h('div', { class: 'check warn', role: 'alert', hidden: '' });
-      for (;;) {
-        if (!await ask(__('Network name'), h('div', {}, h('div', { class: 'row' }, 'http://', input, __('.local ')), msg), __('Apply'))) return;
-        msg.hidden = true; const err = await setName(!!m.enabled, input.value);
-        if (!err) { render(); return; }
-        msg.textContent = err; msg.hidden = false;
-      }
-    }
     const radio = (u) => h('input', { type: 'radio', name: 'u', checked: u.url === chosen, onchange: () => { chosen = u.url; paint(); } });
     const link = (url) => h('a', { href: url, target: '_blank', rel: 'noopener', title: __('Opens in a new window') }, url);
     const nameU = net.data.urls.find((u) => u.name);
-    const nameRows = () => {
-      const url = nameU ? nameU.url : 'http://' + (m.requested || 'open-caption') + '.local' + portSuffix + '/';
-      const use = h('input', { type: 'checkbox', 'aria-label': __('Announce this computer by name'), onchange: async (e) => { e.target.disabled = true; const err = await setName(e.target.checked, m.requested || 'open-caption'); if (err) toast(err); render(); } });
-      use.checked = !!m.enabled;
-      const out = [h('div', { class: 'row' },
-        h('label', { class: 'row' }, nameU ? radio(nameU) : h('span', { class: 'radiogap', 'aria-hidden': 'true' }), nameU ? link(url) : h('span', { class: 'off' }, url)),
-        h('label', { class: 'row nametoggle', title: __('Devices can open this computer by name instead of a number. It needs no router settings, but some guest WiFi networks block it, so keep the numeric address and QR code as the main way in.') }, use, __('Use a name')),
-        h('button', { class: 'quiet', onclick: renameName }, __('Rename…')))];
+    const nameRows = () => { // the name is set in Settings > Network; here it is only listed when it is being announced
+      const out = [];
+      if (nameU) out.push(h('div', { class: 'row' }, h('label', { class: 'row' }, radio(nameU), link(nameU.url))));
       if (nameU && !m.error && !m.renamed) out.push(h('div', { class: 'hint namehint' }, __('If a phone cannot open this name (some Android phones and guest WiFi networks cannot), give it the numeric address or the QR code instead.')));
       if (m.error) out.push(h('div', { class: 'check warn' }, __('Could not announce this name: {error}', { error: m.error })));
       else if (m.renamed) out.push(h('div', { class: 'check warn' }, __('Another computer on this network already uses {name}.local, so this one is http://{host}/', { name: m.requested, host: m.host })));

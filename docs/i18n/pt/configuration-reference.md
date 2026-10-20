@@ -145,7 +145,7 @@ Quem pode abrir a configuração e a página do operador. A página do público 
 |---|---|---|
 | `log.level` | `info` | `debug` (cada requisição), `info` (eventos e entradas), `warn` ou `error`. *Configuração: Configurações → Sobre* |
 | `mdns.enabled` | `yes` | Anuncia este computador como `<nome>.local` na rede local |
-| `mdns.name` | `open-caption` | O nome: somente letras, dígitos e hifens, até 63 caracteres (`.local` é acrescentado). *Configuração: etapa Conduzir* |
+| `mdns.name` | `open-caption` | O nome: somente letras, dígitos e hifens, até 63 caracteres (`.local` é acrescentado). *Configuração: Configurações → Rede* |
 | `standby.message` | vazio | A linha que o público vê na tela de espera. Vazio significa «Captions will begin shortly» no idioma de cada espectador. Uma linha, até 200 caracteres. *Configuração: Configurações → Tela do público* (o logotipo é um arquivo escolhido ali, não uma configuração) |
 
 ### `network`

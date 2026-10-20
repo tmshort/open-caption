@@ -1,5 +1,6 @@
 // Spanish translations of Setup, the operator page and Help (see web/shared/i18n.js). The key is the English text.
 OCI18n.add("es", {
+ "Name on the network": "Nombre en la red",
  "not used": "no se usa",
  "used": "en uso",
  "not used: same network as {name} ({ip})": "no se usa: misma red que {name} ({ip})",
@@ -39,7 +40,6 @@ OCI18n.add("es", {
  "Log detail": "Nivel de detalle del registro",
  "Log detail: {level}": "Nivel de detalle del registro: {level}",
  "Anyone on this WiFi can try to sign in to Setup, and passwords travel unencrypted over plain http. To limit it, set access: admin_allow in the settings file (for example [localhost]); see the usage guide.": "Cualquiera en esta WiFi puede intentar iniciar sesión en Configuración, y las contraseñas viajan sin cifrar por http. Para limitarlo, defina access: admin_allow en el archivo de ajustes (por ejemplo [localhost]); consulte la guía de uso.",
- "Network name": "Nombre de red",
  "Devices can open this computer by name instead of a number. It needs no router settings, but some guest WiFi networks block it, so keep the numeric address and QR code as the main way in.": "Los dispositivos pueden abrir este equipo por su nombre en lugar de un número. No requiere ajustes del router, pero algunas redes WiFi de invitados lo bloquean; por eso conserve la dirección numérica y el código QR como vía principal.",
  "Announce as": "Anunciar como",
  "Apply": "Aplicar",

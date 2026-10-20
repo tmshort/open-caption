@@ -145,7 +145,7 @@ Qui peut ouvrir la configuration et la page de l'opérateur. La page du public e
 |---|---|---|
 | `log.level` | `info` | `debug` (chaque requête), `info` (événements et connexions), `warn` ou `error`. *Configuration : Réglages → À propos* |
 | `mdns.enabled` | `yes` | Annonce cet ordinateur sous le nom `<nom>.local` sur le réseau local |
-| `mdns.name` | `open-caption` | Le nom : lettres, chiffres et traits d'union seulement, jusqu'à 63 caractères (`.local` est ajouté). *Configuration : étape Conduire* |
+| `mdns.name` | `open-caption` | Le nom : lettres, chiffres et traits d'union seulement, jusqu'à 63 caractères (`.local` est ajouté). *Configuration : Réglages → Réseau* |
 | `standby.message` | vide | La ligne que voit le public sur l'écran d'attente. Vide signifie « Captions will begin shortly » dans la langue de chaque spectateur. Une ligne, jusqu'à 200 caractères. *Configuration : Réglages → Écran du public* (le logo est un fichier choisi là, pas un réglage) |
 
 ### `network`

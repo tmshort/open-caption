@@ -145,7 +145,7 @@ Chi può aprire la configurazione e la pagina dell'operatore. La pagina del pubb
 |---|---|---|
 | `log.level` | `info` | `debug` (ogni richiesta), `info` (eventi e accessi), `warn` o `error`. *Configurazione: Impostazioni → Informazioni* |
 | `mdns.enabled` | `yes` | Annuncia questo computer come `<nome>.local` sulla rete locale |
-| `mdns.name` | `open-caption` | Il nome: solo lettere, cifre e trattini, fino a 63 caratteri (viene aggiunto `.local`). *Configurazione: passo Conduci* |
+| `mdns.name` | `open-caption` | Il nome: solo lettere, cifre e trattini, fino a 63 caratteri (viene aggiunto `.local`). *Configurazione: Impostazioni → Rete* |
 | `standby.message` | vuoto | La riga che il pubblico vede sulla schermata di attesa. Vuoto significa «Captions will begin shortly» nella lingua di ogni spettatore. Una riga, fino a 200 caratteri. *Configurazione: Impostazioni → Schermo del pubblico* (il logo è un file scelto lì, non un'impostazione) |
 
 ### `network`

@@ -145,7 +145,7 @@ Wer die Einrichtung und die Bedienerseite öffnen darf. Die Publikumsseite ist i
 |---|---|---|
 | `log.level` | `info` | `debug` (jede Anfrage), `info` (Ereignisse und Anmeldungen), `warn` oder `error`. *Einrichtung: Einstellungen → Info* |
 | `mdns.enabled` | `yes` | Macht diesen Computer im lokalen Netz als `<Name>.local` bekannt |
-| `mdns.name` | `open-caption` | Der Name: nur Buchstaben, Ziffern und Bindestriche, bis zu 63 Zeichen (`.local` wird angehängt). *Einrichtung: Schritt Fahren* |
+| `mdns.name` | `open-caption` | Der Name: nur Buchstaben, Ziffern und Bindestriche, bis zu 63 Zeichen (`.local` wird angehängt). *Einrichtung: Einstellungen → Netzwerk* |
 | `standby.message` | leer | Die Zeile, die das Publikum auf dem Standby-Bildschirm sieht. Leer bedeutet „Captions will begin shortly“ in der Sprache jedes Zuschauers. Eine Zeile, bis zu 200 Zeichen. *Einrichtung: Einstellungen → Publikumsbildschirm* (das Logo ist eine dort gewählte Datei, keine Einstellung) |
 
 ### `network`

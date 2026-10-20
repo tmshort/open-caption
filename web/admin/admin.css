@@ -179,7 +179,6 @@ dialog menu { flex: none; }
 @media (max-width: 760px) { .qrrow { flex-wrap: wrap; } }
 .urls .row { flex-wrap: wrap; row-gap: .2rem; }
 .radiogap { display: inline-block; width: 13px; margin: 3px 3px 3px 4px; flex: none; } /* the width of a radio button, so rows without one line up */
-.nametoggle { margin-left: .6rem; cursor: pointer; }
 .off { color: var(--dim); }
 /* the show name box: a little larger than an ordinary text box, with the buttons beside it as tall */
 input.newname { font-size: 1.1rem; min-height: 2.8rem; padding: .55rem .8rem; width: 24rem; max-width: 100%; }
