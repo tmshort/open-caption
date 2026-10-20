@@ -3,7 +3,7 @@
 ## Ninguém consegue abrir o endereço
 
 - Confira se o telefone está no WiFi de visitantes do local, e não nos dados móveis.
-- Confira se o endereço é igual ao da etapa **Conduzir**. Se tiver número de porta, inclua-o.
+- Confira se o endereço é igual ao da etapa **Compartilhar**. Se tiver número de porta, inclua-o.
 - Pergunte ao local se os dispositivos do WiFi de visitantes podem alcançar este computador.
 - O firewall do computador pode estar bloqueando o programa. No Windows, permita-o em **redes privadas** quando perguntado. No macOS, permita as conexões de entrada para ele.
 - Abra o endereço neste computador usando `localhost` para testar o próprio programa.
@@ -34,8 +34,8 @@ Se você não consegue entrar de jeito nenhum, as duas senhas estão em `config.
 
 ## Olhar o registro
 
-**Conduzir → Registro recente…** mostra o que o programa registrou há pouco. Escolha *Somente problemas* para ver avisos e erros, como entradas recusadas ou um nome já usado na rede. A mesma janela define quanto detalhe é registrado (**Nível de detalhe do registro**); *Depuração* acrescenta cada requisição, o que ajuda quando algo estranho acontece. As senhas nunca são escritas no registro.
+**Compartilhar → Registro recente…** mostra o que o programa registrou há pouco. Escolha *Somente problemas* para ver avisos e erros, como entradas recusadas ou um nome já usado na rede. A mesma janela define quanto detalhe é registrado (**Nível de detalhe do registro**); *Depuração* acrescenta cada requisição, o que ajuda quando algo estranho acontece. As senhas nunca são escritas no registro.
 
 ## Pedir ajuda
 
-Baixe o **pacote de suporte** no fim da etapa Conduzir. Ele contém as configurações (sem senhas), linhas recentes do registro e informações básicas sobre este computador, e é fácil de enviar a quem mantém o programa.
+Baixe o **pacote de suporte** no fim da etapa Compartilhar. Ele contém as configurações (sem senhas), linhas recentes do registro e informações básicas sobre este computador, e é fácil de enviar a quem mantém o programa.

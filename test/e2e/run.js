@@ -429,7 +429,7 @@ async function main() {
     await guard.evaluate(() => [...document.querySelectorAll('#dlg button')].find((x) => x.textContent.includes('Hide the operator password')).click()); await sleep(300);
     check('and Hide hides it again', await guard.evaluate(() => !/Operator password: /.test(document.getElementById('dlg').innerText)));
     await guard.evaluate(() => document.getElementById('dlgok').click()); await sleep(300);
-    await step(guard, 'Run'); await sleep(900);
+    await step(guard, 'Share'); await sleep(900);
     check('the Run step lists the .local name only as a plain link row, with no on/off box or Rename button of its own', await guard.evaluate(() => !document.querySelector('.urls input[aria-label="Announce this computer by name"]') && ![...document.querySelectorAll('.urls button')].some((b) => /Rename/.test(b.textContent))));
     await guard.evaluate(() => [...document.querySelectorAll('#panel a')].find((a) => /Choose which network interfaces are used/.test(a.textContent)).click()); await guard.waitForSelector('#setpanel-net:not(.inactive)'); await sleep(200);
     check('the Network tab has the .local name: a Use a name box, the name and an Apply button', await guard.evaluate(() => { const p = document.getElementById('setpanel-net'); return /Name on the network/.test(p.innerText) && !!p.querySelector('input[aria-label="Announce this computer by name"]') && !!p.querySelector('input[aria-label="Name"]') && [...p.querySelectorAll('button')].some((b) => b.textContent === 'Apply'); }));
@@ -560,7 +560,7 @@ async function main() {
     await arch.evaluate(() => document.getElementById('dlgok').click()); await sleep(300);
     check('loading it changes nothing until Save', (await arch.evaluate(() => document.querySelector('.editor textarea').value)) !== (await api(arch, 'GET', '/api/admin/shows/' + lastId + '/showfile')).body.text);
     // The Run step no longer puts a show in front of the audience: it opens the operator page, with the show in standby.
-    await step(arch, 'Run'); await sleep(T(900));
+    await step(arch, 'Share'); await sleep(T(900));
     check('the Run step ends its list of addresses with a projector link, in a new window, by numeric address', await arch.evaluate(() => { const rows = [...document.querySelectorAll('.urls > .row')]; const p = document.querySelector('.urls a[href*="display=projector"]'); return rows.length >= 2 && !!p && p.target === '_blank' && /\/\?display=projector$/.test(p.getAttribute('href')) && rows[rows.length - 1].contains(p) && !/\.local/.test(p.getAttribute('href')); }));
     check('the Run step offers Open the Run page (the show waits in standby), not Start show', await arch.evaluate(() => { const t = document.getElementById('panel').innerText; return /Open the Run page/.test(t) && !/Start show/.test(t) && /standby/.test(t); }));
     check('buttons that are links (Open the Run page, Print a QR sign) are not underlined', await arch.evaluate(() => [...document.querySelectorAll('#panel a.btn')].length >= 1 && [...document.querySelectorAll('#panel a.btn')].every((e) => getComputedStyle(e).textDecorationLine === 'none')));
@@ -730,8 +730,8 @@ async function main() {
       await signIn(a, '#steps button');
       check(lang + ': the Setup steps are translated', (await a.evaluate(() => document.getElementById('steps').innerText)).includes(SEEN[lang]) && !(await a.evaluate(() => document.documentElement.lang !== '' && false)));
       const leaks = [], stray = [];
-      for (const step of ['Shows', 'Show file', 'Images', 'Look', 'Test', 'Run']) {
-        await a.evaluate((i) => document.querySelectorAll('#steps button')[i].click(), ['Shows', 'Show file', 'Images', 'Look', 'Test', 'Run'].indexOf(step));
+      for (const step of ['Shows', 'Show file', 'Images', 'Look', 'Test', 'Share']) {
+        await a.evaluate((i) => document.querySelectorAll('#steps button')[i].click(), ['Shows', 'Show file', 'Images', 'Look', 'Test', 'Share'].indexOf(step));
         await sleep(700); leaks.push(...(await leaksOf(a)));
         stray.push(...(await a.evaluate(() => [...document.getElementById('panel').innerText.matchAll(/\b(null|undefined|NaN|\[object Object\])\b/g)].map((m) => m[0]))));
         stray.push(...(await a.evaluate(() => [...document.querySelectorAll('input[type=file]')].filter((f) => !f.hidden).map(() => 'a raw file chooser'))));

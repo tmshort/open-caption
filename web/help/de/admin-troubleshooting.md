@@ -3,7 +3,7 @@
 ## Niemand kann die Adresse öffnen
 
 - Prüfen Sie, dass das Telefon im Gast-WLAN des Hauses ist, nicht im Mobilfunknetz.
-- Prüfen Sie, dass die Adresse mit der aus dem Schritt **Fahren** übereinstimmt. Hat sie eine Portnummer, geben Sie sie mit an.
+- Prüfen Sie, dass die Adresse mit der aus dem Schritt **Teilen** übereinstimmt. Hat sie eine Portnummer, geben Sie sie mit an.
 - Fragen Sie das Haus, ob Geräte im Gast-WLAN diesen Computer erreichen dürfen.
 - Die Firewall Ihres Computers blockiert das Programm vielleicht. Erlauben Sie es unter Windows in **privaten Netzwerken**, wenn Sie gefragt werden. Erlauben Sie unter macOS eingehende Verbindungen dafür.
 - Öffnen Sie die Adresse auf diesem Computer mit `localhost`, um das Programm selbst zu prüfen.
@@ -34,8 +34,8 @@ Wenn Sie sich gar nicht anmelden können, stehen beide Passwörter in `config.ya
 
 ## Das Protokoll ansehen
 
-**Fahren → Aktuelles Protokoll …** zeigt, was das Programm zuletzt protokolliert hat. Wählen Sie *Nur Probleme*, um Warnungen und Fehler zu sehen, etwa abgelehnte Anmeldungen oder einen im Netzwerk bereits verwendeten Namen. Dasselbe Fenster legt fest, wie viele Details protokolliert werden (**Protokoll-Detailgrad**); *Debug* fügt jede Anfrage hinzu, was hilft, wenn etwas Merkwürdiges passiert. Passwörter werden nie ins Protokoll geschrieben.
+**Teilen → Aktuelles Protokoll …** zeigt, was das Programm zuletzt protokolliert hat. Wählen Sie *Nur Probleme*, um Warnungen und Fehler zu sehen, etwa abgelehnte Anmeldungen oder einen im Netzwerk bereits verwendeten Namen. Dasselbe Fenster legt fest, wie viele Details protokolliert werden (**Protokoll-Detailgrad**); *Debug* fügt jede Anfrage hinzu, was hilft, wenn etwas Merkwürdiges passiert. Passwörter werden nie ins Protokoll geschrieben.
 
 ## Hilfe holen
 
-Laden Sie das **Supportpaket** unten im Schritt Fahren herunter. Es enthält die Einstellungen (ohne Passwörter), aktuelle Protokollzeilen und grundlegende Angaben zu diesem Computer und lässt sich leicht an die Person schicken, die das Programm betreut.
+Laden Sie das **Supportpaket** unten im Schritt Teilen herunter. Es enthält die Einstellungen (ohne Passwörter), aktuelle Protokollzeilen und grundlegende Angaben zu diesem Computer und lässt sich leicht an die Person schicken, die das Programm betreut.

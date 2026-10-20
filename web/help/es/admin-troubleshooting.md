@@ -3,7 +3,7 @@
 ## Nadie puede abrir la dirección
 
 - Compruebe que el teléfono está en la WiFi de invitados del local, no en datos móviles.
-- Compruebe que la dirección coincide con la del paso **Dirigir**. Si lleva número de puerto, inclúyalo.
+- Compruebe que la dirección coincide con la del paso **Compartir**. Si lleva número de puerto, inclúyalo.
 - Pregunte al local si los dispositivos de la WiFi de invitados pueden llegar a este equipo.
 - El cortafuegos de su equipo puede estar bloqueando el programa. En Windows, permítalo en **redes privadas** cuando se lo pida. En macOS, permita las conexiones entrantes para él.
 - Abra la dirección en este equipo usando `localhost` para comprobar el propio programa.
@@ -34,8 +34,8 @@ Si no puede iniciar sesión de ninguna manera, las dos contraseñas están en `c
 
 ## Mirar el registro
 
-**Dirigir → Registro reciente…** muestra lo que el programa ha registrado últimamente. Elija *Solo problemas* para ver avisos y errores, como inicios de sesión rechazados o un nombre ya usado en la red. La misma ventana define cuánto detalle se registra (**Nivel de detalle del registro**); *Depuración* añade cada petición, lo que ayuda cuando ocurre algo raro. Las contraseñas nunca se escriben en el registro.
+**Compartir → Registro reciente…** muestra lo que el programa ha registrado últimamente. Elija *Solo problemas* para ver avisos y errores, como inicios de sesión rechazados o un nombre ya usado en la red. La misma ventana define cuánto detalle se registra (**Nivel de detalle del registro**); *Depuración* añade cada petición, lo que ayuda cuando ocurre algo raro. Las contraseñas nunca se escriben en el registro.
 
 ## Pedir ayuda
 
-Descargue el **paquete de soporte** desde la parte inferior del paso Dirigir. Contiene los ajustes (sin contraseñas), líneas recientes del registro e información básica sobre este equipo, y es fácil de enviar a quien mantenga el programa.
+Descargue el **paquete de soporte** desde la parte inferior del paso Compartir. Contiene los ajustes (sin contraseñas), líneas recientes del registro e información básica sobre este equipo, y es fácil de enviar a quien mantenga el programa.

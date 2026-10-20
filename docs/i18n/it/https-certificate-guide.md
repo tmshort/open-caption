@@ -62,7 +62,7 @@ https:
 
 **7. Passa al certificato vero.** Cambia `directory: letsencrypt-staging` in `directory: letsencrypt` (o cancella la riga) e riavvia il programma. Il certificato vero arriva allo stesso modo. Apri `https://captions.mytheater.org/` da un telefono sul WiFi della sala: nessun avviso. (Se la porta 443 era occupata, il programma ha usato quella di riserva, `:8443`; l'indirizzo richiede allora la porta, `https://captions.mytheater.org:8443/`, e il registro mostra l'indirizzo esatto.)
 
-**8. Dai l'indirizzo alle persone.** Il passo Conduci della configurazione elenca gli indirizzi numerici e il nome `.local`, ma non ancora questo. Per stampare un cartello con codice QR per questo indirizzo, con la sessione aperta nella configurazione apri
+**8. Dai l'indirizzo alle persone.** Il passo Condividi della configurazione elenca gli indirizzi numerici e il nome `.local`, ma non ancora questo. Per stampare un cartello con codice QR per questo indirizzo, con la sessione aperta nella configurazione apri
 `http://localhost/admin?print=qr&url=https%3A%2F%2Fcaptions.mytheater.org%2F` (cambia il nome; aggiungi la porta se serve) e stampa quella pagina.
 
 ## Dopo

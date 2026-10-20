@@ -22,7 +22,7 @@ browser on a projector) shows the captions live, with no interaction required.
 - Survives a restart: the position, sign-ins and last few undo steps are kept.
 
 **For whoever sets it up**
-- A guided Setup page: show file editor with problems listed by line, image upload, look, a private rehearsal, then a Run step with the audience address, a printable QR sign and the way into the operator page.
+- A guided Setup page: show file editor with problems listed by line, image upload, look, a private rehearsal, then a Share step with the audience address, a printable QR sign and the way into the operator page.
 - Edit the show file in any program you like: download it as a plain `.md`, edit it offline, and open it again to save over the show (or import any `.md` / `.txt` file as a new show). A guide for the person preparing the show file is [Preparing a show file](web/help/admin-preparing-a-show-file.md); [Getting started](web/help/admin-getting-started.md) walks through the six steps of Setup. Both are in the app's Help too. `open-caption --check-show show.md` checks a show file from the command line, like a lint, without starting anything.
 - A show is one plain-text Markdown file (plus images): title, colours, fonts and options live in it, layered over `config.yaml` defaults. Earlier versions are kept, can be named and compared, and shows can be exported, imported, duplicated and archived.
 - Setup, the operator page, Help and all the built-in documentation are available in English, Spanish, French, German, Italian and Portuguese.
@@ -68,8 +68,8 @@ Two steps: get the program, then run it. Pick your computer's row; the guides st
 The first run creates `config.yaml` (in your user config folder; the path is printed) with random **admin** and **operator** passwords, printed once in the console, and opens Setup in your browser. When the system asks whether to allow network connections, allow them (on Windows, tick *Private networks*), or phones cannot reach the program. Then:
 
 - **Setup:** open `http://localhost/admin` (or the `:8080` address printed if port 80 was busy; on Linux a normal user cannot use port 80, so it uses 8080 unless the program is given permission, see the Linux guide). On the computer that runs the program it needs no password; elsewhere sign in with the admin password. Follow the six steps; "Create a sample show" is a good first try.
-- **Operator:** the Run page, opened from Setup's Run step (or `/operator`, with the operator password; the admin password also works). Space sends the next line.
-- **Audience:** the address shown in Setup → Run, or its QR code. Devices must be on the same WiFi.
+- **Operator:** the Run page, opened from Setup's Share step (or `/operator`, with the operator password; the admin password also works). Space sends the next line.
+- **Audience:** the address shown in Setup → Share, or its QR code. Devices must be on the same WiFi.
 - **Help:** the **Help** button on Setup and Operator. Read [Getting started](web/help/admin-getting-started.md) and [Preparing a show file](web/help/admin-preparing-a-show-file.md) (for whoever writes the show file), [docs/usage-guide.md](docs/usage-guide.md) (deployment, checklist) and [docs/venue-network-guide.md](docs/venue-network-guide.md) (the WiFi side).
 
 To stop the program, press `Ctrl`+`C` in its window. Where the settings and shows are kept, and how to back them up: see [docs/usage-guide.md](docs/usage-guide.md) (*Choose where data lives*).

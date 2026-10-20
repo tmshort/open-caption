@@ -22,7 +22,7 @@ El nombre que va después de la `|` es lo que ven los miembros del público en e
 
 Cada idioma debe tener **las mismas señales en el mismo orden**: un subtítulo sigue siendo un subtítulo, un `[clear]` sigue siendo un `[clear]`, un bucle conserva el mismo número de elementos y las voces mostradas a la vez siguen siendo el mismo número de voces. Solo cambian las palabras. Los nombres de personaje, las notas, los nombres de sección, los nombres de imagen y los tiempos de los bucles pueden ser distintos.
 
-Si una traducción deja de coincidir, el editor muestra un error con la línea donde falla, por ejemplo «La señal 4 no coincide con el archivo del espectáculo en inglés: ese archivo tiene [clear] aquí, y este tiene un subtítulo». Un idioma que no coincide **no se ofrece al público** hasta que se corrija. El archivo del espectáculo en inglés (principal) no se ve afectado, y el paso Dirigir enumera el problema.
+Si una traducción deja de coincidir, el editor muestra un error con la línea donde falla, por ejemplo «La señal 4 no coincide con el archivo del espectáculo en inglés: ese archivo tiene [clear] aquí, y este tiene un subtítulo». Un idioma que no coincide **no se ofrece al público** hasta que se corrija. El archivo del espectáculo en inglés (principal) no se ve afectado, y el paso Compartir enumera el problema.
 
 Para indicar al público qué palabras van con qué línea, mantenga las líneas sincronizadas: si el inglés divide un parlamento en tres líneas, el español también, aunque no sea así como lo dividiría ese idioma.
 

@@ -20,13 +20,13 @@ For whoever looks after the theater's WiFi. The captioning computer needs nothin
 
 ## Check before the show
 
-From a phone on the guest WiFi, open the address shown in Setup → **Run**. If the page loads and says "Captions will begin shortly" (or shows the pre-show), you are done. If not, see "Nothing loads" below.
+From a phone on the guest WiFi, open the address shown in Setup → **Share**. If the page loads and says "Captions will begin shortly" (or shows the pre-show), you are done. If not, see "Nothing loads" below.
 
 ## Making the address easier
 
 In order of effort:
 
-1. **QR code** — Setup → Run → "Print a QR sign". Put it in the lobby and the program. No network changes needed.
+1. **QR code** — Setup → Share → "Print a QR sign". Put it in the lobby and the program. No network changes needed.
 2. **Port 80** — if the program runs on port 80, the address has no `:port`. On Linux, allow it with `sudo setcap 'cap_net_bind_service=+ep' ./open-caption`.
 3. **A local name** — add a DNS host entry on the router for the captioning computer, for example `captions.theater` → `192.168.1.10`. Most routers (OpenWrt, Pi-hole, UniFi, Omada, dnsmasq-based) allow a "local DNS record" or "host override".
 4. **Send guests there automatically.** Options:
@@ -57,13 +57,13 @@ One small cost of plain HTTP: browsers only allow "keep the screen awake" on sec
 ## Nothing loads
 
 1. Is the phone on the guest WiFi (not mobile data)?
-2. Does the address include the port if the program is not on port 80? The Run step shows the correct address.
+2. Does the address include the port if the program is not on port 80? The Share step shows the correct address.
 3. Can another computer on the guest WiFi reach it (`curl http://192.168.1.10/healthz` should print `ok`)?
 4. Is guest-to-server traffic blocked by the router or access point (client isolation set to "block all" instead of "block between clients")?
 5. Is the computer's firewall blocking the program?
-6. Is the computer still awake, and still on the same address? Check for a changed address in Run.
+6. Is the computer still awake, and still on the same address? Check for a changed address in Share.
 
-Setup → Run → **Download a support bundle** collects the settings (without passwords), recent log lines and basic facts about the computer.
+Setup → Share → **Download a support bundle** collects the settings (without passwords), recent log lines and basic facts about the computer.
 
 ## Capacity
 

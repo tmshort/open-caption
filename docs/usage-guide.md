@@ -12,7 +12,7 @@ Contents: [The pieces](#the-pieces) · [Deployment recommendations](#deployment-
 |-------|------------|
 | **The server** | The `open-caption` program, running on one computer (macOS, Windows or Linux). It holds the show file and sends lines to everyone. |
 | **Setup page** (`/admin`) | Where volunteers prepare a show: show file, images, look, rehearsal. Admin password. |
-| **Operator page** (`/operator`) | Where the operator follows the show and sends lines. Operator password. Setup's **Run** step and menu link open it. |
+| **Operator page** (`/operator`) | Where the operator follows the show and sends lines. Operator password. Setup's **Open the Run page** button and **Run** menu link open it. |
 | **Audience page** (`/`) | What audiences open on their devices. No password. A browser on a projector or large monitor can show the same page for the whole room. |
 
 Everything runs on one computer. The audience, the operator and the setup volunteers all use ordinary web browsers.
@@ -68,7 +68,7 @@ The program does not care which network it is on, as long as audience devices ca
 - Ask for **guest-to-server access**: your computer must be reachable from the guest SSID, on TCP port 80 (and 443 if you enable HTTPS). "Client isolation" between guests is fine; blocking guests from reaching *your computer* is not.
 - Ask for a **reserved address** for your computer's network adapter.
 - Plug the computer into the network by **Ethernet** if at all possible.
-- Test with a phone on the guest WiFi well before the show (the Run step shows the address).
+- Test with a phone on the guest WiFi well before the show (the Share step shows the address).
 - Have Option A in a bag as a backup if the show matters.
 
 ### The captioning computer
@@ -97,7 +97,7 @@ If the computer should start the server by itself after a reboot, the [`deploy/`
 
 In order of reliability:
 
-1. **The QR code and sign** (Setup → Run → *Print a QR sign for the lobby*). Put it on the wall, in the program and on the seat-back card. This is what to rely on.
+1. **The QR code and sign** (Setup → Share → *Print a QR sign for the lobby*). Put it on the wall, in the program and on the seat-back card. This is what to rely on.
 2. **A short address.** On port 80 there is no `:port` to type. The program also announces itself as **`open-caption.local`** (change it in Setup → Settings → Network → *Use a name*): where the guest network allows it, `http://open-caption.local/` works on most phones with nothing to set up. Some guest networks block that kind of announcement, so do not print only the name; the QR sign uses the numeric address. A name on the router's own DNS (such as `captions.theater`) works everywhere but needs the venue to add it.
 3. **The access point's splash page** (a "guest portal" or "captive portal" that redirects to your address after joining). This is configured on the router or access point, not in this program. See [venue-network-guide.md](venue-network-guide.md).
 4. **DHCP option 114 and `/captive-api` (advanced, experimental).** Option 114 is a DHCP setting that points devices at a "captive portal API". The program answers that API at `/captive-api` (for example `https://<address>/captive-api`) with "this network is not captive" and the page's address. Two cautions: it **does not make phones open the captions page by themselves**, and the standard (RFC 8910/8908) requires **HTTPS with a certificate the devices trust**, so a plain `http://` setting or the program's self-signed certificate is ignored. Only set it up if the venue already uses option 114 and can provide a trusted certificate. It has not been tested on real devices.
@@ -147,7 +147,7 @@ Open the setup page and follow the six steps along the top. The **Help** button 
 3. **Images.** Upload the pictures the show file uses (PNG, JPG, GIF or WebP, ideally under 1 MB each).
 4. **Look.** Choose colors, font and text size. The defaults (white on black, large) are best for most people. Two readability fonts are built in: a dyslexia-friendly one (OpenDyslexic) and a high-legibility one (Atkinson Hyperlegible, designed for low vision). Individual audience members can also pick either for their own device from the small **Aa** control.
 5. **Test.** Run a private rehearsal: you press Space as the operator would, and see the audience screen next to it. Nothing reaches the audience.
-6. **Run.** Check the readiness list, print the QR sign, and press **Open the Run page**.
+6. **Share.** Check the readiness list, print the QR sign, and press **Open the Run page**.
 
 Opening the operator page loads the show in **standby**: the audience sees the venue's standby screen (a logo and a message, set once under **Settings → Audience screen**) and nothing of the show, so you can prepare, rehearse and check the operator page quietly. When you are ready, press **Space** (the button says **START**) on the operator page to put the show on air. **Go to standby…** takes it off again without losing its place.
 
@@ -225,7 +225,7 @@ You can edit and re-save a show file while a show is live (for example to fix a 
 ### Before the audience arrives
 
 1. Start the server and open the **Operator page**; sign in. It should say **You are in control**.
-2. In Setup → Run press **Open the Run page**. The show is loaded in standby: the audience sees the venue's standby screen. When you are ready, press **Space** (START) on the operator page to put the show on air. A pre-show loop, if the show file has one, begins on every screen then.
+2. In Setup → Share press **Open the Run page**. The show is loaded in standby: the audience sees the venue's standby screen. When you are ready, press **Space** (START) on the operator page to put the show on air. A pre-show loop, if the show file has one, begins on every screen then.
 3. Open the audience address on your own phone and, if you have one, on the projector. Check the viewer count on the operator page goes up.
 4. Put the QR sign where people can see it.
 
@@ -241,7 +241,7 @@ You can edit and re-save a show file while a show is live (for example to fix a 
 
 ### When the show ends
 
-Press `Ctrl+C` in the program's window (or stop the service). The position is saved. To run the show again from the beginning, use **Restart show…** on the operator page, or **Restart show…** in Setup → Run. Either returns the show to standby.
+Press `Ctrl+C` in the program's window (or stop the service). The position is saved. To run the show again from the beginning, use **Restart show…** on the operator page, or **Restart show…** in Setup → Share. Either returns the show to standby.
 
 ## Day-of checklist
 
@@ -253,7 +253,7 @@ Press `Ctrl+C` in the program's window (or stop the service). The position is sa
 **At the venue, an hour before**
 - [ ] Power: computer and access point plugged in; computer set to never sleep.
 - [ ] Access point on, in place, with the right name; the computer wired to it.
-- [ ] Start the program; note the address printed (and in Run).
+- [ ] Start the program; note the address printed (and in Share).
 - [ ] A phone on the audience WiFi can open the address and shows "Captions will begin shortly".
 - [ ] Setup → Test: do a quick rehearsal; operator keys work.
 - [ ] Projector browser (if used) open on `…/?display=projector`, full screen.
@@ -279,7 +279,7 @@ Press `Ctrl+C` in the program's window (or stop the service). The position is sa
 | The operator page says another operator is in control | Use **Take over**, if you are the operator. |
 | The computer froze or was restarted mid-show | Start the program again. The operator page reconnects, stays signed in and takes control back by itself, the show is where you left it, and audience devices reconnect on their own. A loop restarts from its first item. **Backspace** can still undo the last few things sent before the restart. |
 | I forgot a password | Sign in with the other one and use **Settings** in Setup, or open `config.yaml` in the data folder in any text editor. |
-| Something else | Setup → Run → **Download a support bundle**; it holds the settings (without passwords) and recent log lines. |
+| Something else | Setup → Share → **Download a support bundle**; it holds the settings (without passwords) and recent log lines. |
 
 ## Maintenance
 
@@ -288,7 +288,7 @@ Press `Ctrl+C` in the program's window (or stop the service). The position is sa
 - **Updating the program:** stop it (`Ctrl+C`), replace the program file with the newer one, and start it again with the same `--data` folder. Do not update right before a show.
 - **Reusing a show:** Setup → Shows has **Rename…** and **Duplicate…**. Duplicating makes a copy of the show file, images and look to adapt for the next run, and leaves the original alone. Rename, Duplicate, Export, Archive and Delete are in the **More ▾** menu on each show.
 - **Cleaning up:** delete shows you no longer need from Setup → Shows. Exported `.zip` files are your archive.
-- **Logs:** Setup → Run → **Recent log…** shows what the program has logged lately, filtered by level (choose *Problems only* to see warnings and errors); recent log lines are also in the support bundle; add `--log-file` to keep a file. Each line starts with its level (`INFO`, `WARN`, `ERROR`, or `DEBUG`). The default `info` records sign-ins, who took control of the operator page, shows activated and similar events; `warn` keeps only problems; `debug` also records every request, which helps when something odd is happening. Set it with `log: {level: debug}` in `config.yaml`, `--log-level debug`, or while the program is running from Setup → Settings → *Log detail*. If the program was started with `--log-level`, that flag wins at every start: Setup says so, a change made there lasts only until the next restart, and the start-up log warns when the flag and the file disagree. A log file kept with `--log-file` starts a new file at 5 MB and keeps three older ones (`open-caption.log.1` to `.3`), so it never fills the disk.
+- **Logs:** Setup → Share → **Recent log…** shows what the program has logged lately, filtered by level (choose *Problems only* to see warnings and errors); recent log lines are also in the support bundle; add `--log-file` to keep a file. Each line starts with its level (`INFO`, `WARN`, `ERROR`, or `DEBUG`). The default `info` records sign-ins, who took control of the operator page, shows activated and similar events; `warn` keeps only problems; `debug` also records every request, which helps when something odd is happening. Set it with `log: {level: debug}` in `config.yaml`, `--log-level debug`, or while the program is running from Setup → Settings → *Log detail*. If the program was started with `--log-level`, that flag wins at every start: Setup says so, a change made there lasts only until the next restart, and the start-up log warns when the flag and the file disagree. A log file kept with `--log-file` starts a new file at 5 MB and keeps three older ones (`open-caption.log.1` to `.3`), so it never fills the disk.
 - **Archiving:** in Setup → Shows, **Archive** puts a finished show away (it is kept, listed under "Archived shows", and cannot go on air) and **Restore** brings it back. **Delete** removes a show for good.
 
 ## Operator quick card

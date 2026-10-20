@@ -20,13 +20,13 @@ Pour la personne qui s'occupe du WiFi du théâtre. L'ordinateur de sous-titrage
 
 ## Vérifier avant le spectacle
 
-Depuis un téléphone sur le WiFi invités, ouvrez l'adresse affichée dans Configuration → **Conduire**. Si la page se charge et dit « Les sous-titres vont bientôt commencer » (ou montre l'avant-spectacle), c'est bon. Sinon, voir « Rien ne se charge » plus bas.
+Depuis un téléphone sur le WiFi invités, ouvrez l'adresse affichée dans Configuration → **Partager**. Si la page se charge et dit « Les sous-titres vont bientôt commencer » (ou montre l'avant-spectacle), c'est bon. Sinon, voir « Rien ne se charge » plus bas.
 
 ## Rendre l'adresse plus facile
 
 Par ordre d'effort :
 
-1. **Code QR** — Configuration → Conduire → « Imprimer une affiche avec code QR ». Placez-la dans le hall et dans le programme. Aucun changement de réseau n'est nécessaire.
+1. **Code QR** — Configuration → Partager → « Imprimer une affiche avec code QR ». Placez-la dans le hall et dans le programme. Aucun changement de réseau n'est nécessaire.
 2. **Port 80** — si le programme tourne sur le port 80, l'adresse n'a pas de `:port`. Sous Linux, autorisez-le avec `sudo setcap 'cap_net_bind_service=+ep' ./open-caption`.
 3. **Un nom local** — ajoutez sur le routeur une entrée DNS pour l'ordinateur de sous-titrage, par exemple `captions.theater` → `192.168.1.10`. La plupart des routeurs (OpenWrt, Pi-hole, UniFi, Omada, à base de dnsmasq) permettent un « enregistrement DNS local » ou une « substitution d'hôte ».
 4. **Envoyer automatiquement les invités là-bas.** Options :
@@ -57,13 +57,13 @@ Un petit inconvénient du HTTP simple : les navigateurs n'autorisent « garder l
 ## Rien ne se charge
 
 1. Le téléphone est-il sur le WiFi invités (pas sur les données mobiles) ?
-2. L'adresse inclut-elle le port si le programme n'est pas sur le port 80 ? L'étape Conduire montre la bonne adresse.
+2. L'adresse inclut-elle le port si le programme n'est pas sur le port 80 ? L'étape Partager montre la bonne adresse.
 3. Un autre ordinateur du WiFi invités peut-il le joindre (`curl http://192.168.1.10/healthz` doit afficher `ok`) ?
 4. Le trafic des invités vers le serveur est-il bloqué par le routeur ou le point d'accès (isolation des clients réglée sur « tout bloquer » au lieu de « bloquer entre clients ») ?
 5. Le pare-feu de l'ordinateur bloque-t-il le programme ?
-6. L'ordinateur est-il toujours éveillé, et toujours à la même adresse ? Cherchez un changement d'adresse dans Conduire.
+6. L'ordinateur est-il toujours éveillé, et toujours à la même adresse ? Cherchez un changement d'adresse dans Partager.
 
-Configuration → Conduire → **Télécharger un paquet de support** rassemble les réglages (sans mots de passe), les dernières lignes du journal et des informations de base sur l'ordinateur.
+Configuration → Partager → **Télécharger un paquet de support** rassemble les réglages (sans mots de passe), les dernières lignes du journal et des informations de base sur l'ordinateur.
 
 ## Capacité
 

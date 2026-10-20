@@ -7,7 +7,7 @@ Eine Show einzurichten dauert sechs Schritte. Die Schaltflächenreihe oben auf d
 3. **Bilder** — laden Sie die Bilder hoch, die die Show-Datei verwendet.
 4. **Erscheinungsbild** — wählen Sie Farben und Textgröße.
 5. **Test** — proben Sie privat, bevor jemand im Saal ist.
-6. **Fahren** — teilen Sie die Adresse mit dem Publikum und öffnen Sie die Bedienerseite, von der aus die Show gestartet wird.
+6. **Teilen** — teilen Sie die Adresse mit dem Publikum und öffnen Sie die Bedienerseite, von der aus die Show gestartet wird.
 
 ## Standby und auf Sendung gehen
 

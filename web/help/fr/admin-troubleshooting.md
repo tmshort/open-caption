@@ -3,7 +3,7 @@
 ## Personne ne peut ouvrir l'adresse
 
 - Vérifiez que le téléphone est sur le WiFi invités de la salle, pas sur les données mobiles.
-- Vérifiez que l'adresse correspond à celle de l'étape **Conduire**. Si elle comporte un numéro de port, incluez-le.
+- Vérifiez que l'adresse correspond à celle de l'étape **Partager**. Si elle comporte un numéro de port, incluez-le.
 - Demandez à la salle si les appareils du WiFi invités ont le droit d'atteindre cet ordinateur.
 - Le pare-feu de votre ordinateur bloque peut-être le programme. Sous Windows, autorisez-le sur les **réseaux privés** quand on vous le demande. Sous macOS, autorisez les connexions entrantes pour lui.
 - Ouvrez l'adresse sur cet ordinateur avec `localhost` pour vérifier le programme lui-même.
@@ -34,8 +34,8 @@ Si vous ne pouvez pas du tout vous connecter, les deux mots de passe se trouvent
 
 ## Consulter le journal
 
-**Conduire → Journal récent…** montre ce que le programme a enregistré récemment. Choisissez *Problèmes seulement* pour voir les avertissements et les erreurs, comme des connexions refusées ou un nom déjà utilisé sur le réseau. La même fenêtre règle la quantité de détails enregistrés (**Niveau de détail du journal**) ; *Débogage* ajoute chaque requête, ce qui aide quand quelque chose d'étrange se produit. Les mots de passe ne sont jamais écrits dans le journal.
+**Partager → Journal récent…** montre ce que le programme a enregistré récemment. Choisissez *Problèmes seulement* pour voir les avertissements et les erreurs, comme des connexions refusées ou un nom déjà utilisé sur le réseau. La même fenêtre règle la quantité de détails enregistrés (**Niveau de détail du journal**) ; *Débogage* ajoute chaque requête, ce qui aide quand quelque chose d'étrange se produit. Les mots de passe ne sont jamais écrits dans le journal.
 
 ## Demander de l'aide
 
-Téléchargez le **paquet de support** en bas de l'étape Conduire. Il contient les réglages (sans mots de passe), les dernières lignes du journal et des informations de base sur cet ordinateur, et il est facile à envoyer à la personne qui maintient le programme.
+Téléchargez le **paquet de support** en bas de l'étape Partager. Il contient les réglages (sans mots de passe), les dernières lignes du journal et des informations de base sur cet ordinateur, et il est facile à envoyer à la personne qui maintient le programme.

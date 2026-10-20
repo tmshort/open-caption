@@ -22,7 +22,7 @@ Il nome dopo il `|` è ciò che gli spettatori vedono nel menu delle lingue, qui
 
 Ogni lingua deve avere **le stesse battute nello stesso ordine**: un sottotitolo resta un sottotitolo, un `[clear]` resta un `[clear]`, un ciclo mantiene lo stesso numero di elementi, e le voci mostrate insieme restano lo stesso numero di voci. Cambiano solo le parole. I nomi dei personaggi, le note, i nomi delle sezioni, i nomi delle immagini e i tempi dei cicli possono essere diversi.
 
-Se una traduzione smette di coincidere, l'editor mostra un errore con la riga in cui qualcosa non torna, per esempio «La battuta 4 non corrisponde al file dello spettacolo in inglese: quel file ha [clear] qui, e questo ha un sottotitolo». Una lingua che non coincide **non viene offerta al pubblico** finché non è corretta. Il file dello spettacolo in inglese (principale) non è toccato, e il passo Conduci elenca il problema.
+Se una traduzione smette di coincidere, l'editor mostra un errore con la riga in cui qualcosa non torna, per esempio «La battuta 4 non corrisponde al file dello spettacolo in inglese: quel file ha [clear] qui, e questo ha un sottotitolo». Una lingua che non coincide **non viene offerta al pubblico** finché non è corretta. Il file dello spettacolo in inglese (principale) non è toccato, e il passo Condividi elenca il problema.
 
 Per dire al pubblico quali parole vanno con quale riga, tieni le righe in passo: se l'inglese divide una battuta in tre righe, lo fa anche lo spagnolo, anche dove non sarebbe il modo in cui la lingua la spezzerebbe.
 

@@ -20,7 +20,7 @@ Open an [issue](https://github.com/tmshort/open-caption/issues). Please include:
 - **What you did, what you expected, and what happened.** Screenshots help.
 - **The version:** run `open-caption --version`.
 - **Your system:** macOS, Windows or Linux and its version, and which browser and device show the problem (the audience page, Setup, or the operator page).
-- **A support bundle** if the problem is in the running program: Setup → Run → *Download a support bundle*. It holds the recent log lines and the settings with passwords and certificate credentials removed. Look through it before attaching.
+- **A support bundle** if the problem is in the running program: Setup → Share → *Download a support bundle*. It holds the recent log lines and the settings with passwords and certificate credentials removed. Look through it before attaching.
 - For a **show file** problem, the output of `open-caption --check-show your-show.md` and, if you can share it, a small show file that shows the problem.
 
 Do not put passwords, tokens or DNS credentials in an issue.

@@ -62,7 +62,7 @@ https:
 
 **7. Passez au vrai certificat.** Remplacez `directory: letsencrypt-staging` par `directory: letsencrypt` (ou supprimez la ligne) et redémarrez le programme. Le vrai certificat arrive de la même façon. Ouvrez `https://captions.mytheater.org/` depuis un téléphone sur le WiFi du lieu : aucun avertissement. (Si le port 443 était occupé, le programme a utilisé le port de repli, `:8443` ; l'adresse demande alors le port, `https://captions.mytheater.org:8443/`, et le journal indique l'adresse exacte.)
 
-**8. Donnez l'adresse aux gens.** L'étape Conduire de la configuration liste les adresses numériques et le nom `.local`, mais pas encore celle-ci. Pour imprimer une affiche avec code QR pour elle, une fois connecté à la configuration, ouvrez
+**8. Donnez l'adresse aux gens.** L'étape Partager de la configuration liste les adresses numériques et le nom `.local`, mais pas encore celle-ci. Pour imprimer une affiche avec code QR pour elle, une fois connecté à la configuration, ouvrez
 `http://localhost/admin?print=qr&url=https%3A%2F%2Fcaptions.mytheater.org%2F` (changez le nom ; ajoutez le port si besoin) et imprimez cette page.
 
 ## Ensuite

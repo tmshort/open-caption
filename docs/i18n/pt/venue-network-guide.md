@@ -20,13 +20,13 @@ Para quem cuida do WiFi do teatro. O computador das legendas não precisa de nad
 
 ## Conferir antes do espetáculo
 
-De um telefone no WiFi de visitantes, abra o endereço mostrado em Configuração → **Conduzir**. Se a página carregar e disser «As legendas começarão em breve» (ou mostrar o pré-espetáculo), está tudo certo. Se não, veja «Nada carrega» mais abaixo.
+De um telefone no WiFi de visitantes, abra o endereço mostrado em Configuração → **Compartilhar**. Se a página carregar e disser «As legendas começarão em breve» (ou mostrar o pré-espetáculo), está tudo certo. Se não, veja «Nada carrega» mais abaixo.
 
 ## Deixar o endereço mais fácil
 
 Em ordem de esforço:
 
-1. **Código QR** — Configuração → Conduzir → «Imprimir um cartaz com código QR». Ponha no saguão e no programa. Não é preciso mudar nada na rede.
+1. **Código QR** — Configuração → Compartilhar → «Imprimir um cartaz com código QR». Ponha no saguão e no programa. Não é preciso mudar nada na rede.
 2. **Porta 80** — se o programa roda na porta 80, o endereço não tem `:porta`. No Linux, permita-o com `sudo setcap 'cap_net_bind_service=+ep' ./open-caption`.
 3. **Um nome local** — acrescente no roteador uma entrada DNS para o computador das legendas, por exemplo `captions.theater` → `192.168.1.10`. A maioria dos roteadores (OpenWrt, Pi-hole, UniFi, Omada, baseados em dnsmasq) permite um «registro DNS local» ou «substituição de host».
 4. **Mandar os visitantes para lá automaticamente.** Opções:
@@ -57,13 +57,13 @@ Um pequeno custo do HTTP simples: os navegadores só permitem «manter a tela ac
 ## Nada carrega
 
 1. O telefone está no WiFi de visitantes (e não nos dados móveis)?
-2. O endereço inclui a porta se o programa não está na porta 80? A etapa Conduzir mostra o endereço correto.
+2. O endereço inclui a porta se o programa não está na porta 80? A etapa Compartilhar mostra o endereço correto.
 3. Outro computador no WiFi de visitantes consegue alcançá-lo (`curl http://192.168.1.10/healthz` deve imprimir `ok`)?
 4. O tráfego dos visitantes para o servidor está bloqueado pelo roteador ou ponto de acesso (isolamento de clientes em «bloquear tudo» em vez de «bloquear entre clientes»)?
 5. O firewall do computador está bloqueando o programa?
-6. O computador continua ligado, e no mesmo endereço? Procure uma mudança de endereço em Conduzir.
+6. O computador continua ligado, e no mesmo endereço? Procure uma mudança de endereço em Compartilhar.
 
-Configuração → Conduzir → **Baixar um pacote de suporte** reúne as configurações (sem senhas), linhas recentes do registro e dados básicos do computador.
+Configuração → Compartilhar → **Baixar um pacote de suporte** reúne as configurações (sem senhas), linhas recentes do registro e dados básicos do computador.
 
 ## Capacidade
 

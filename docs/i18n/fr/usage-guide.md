@@ -12,7 +12,7 @@ Sommaire : [Les éléments](#les-elements) · [Recommandations de déploiement](
 |---------|--------------|
 | **Le serveur** | Le programme `open-caption`, qui tourne sur un ordinateur (macOS, Windows ou Linux). Il conserve le fichier du spectacle et envoie les lignes à tout le monde. |
 | **Page de configuration** (`/admin`) | Là où les bénévoles préparent un spectacle : fichier du spectacle, images, apparence, répétition. Mot de passe administrateur. |
-| **Page de l'opérateur** (`/operator`) | Là où l'opérateur suit le spectacle et envoie les lignes. Mot de passe opérateur. L'étape **Conduire** de la configuration et son lien du menu l'ouvrent. |
+| **Page de l'opérateur** (`/operator`) | Là où l'opérateur suit le spectacle et envoie les lignes. Mot de passe opérateur. L'étape **Partager** de la configuration et son lien du menu l'ouvrent. |
 | **Page du public** (`/`) | Ce que le public ouvre sur ses appareils. Sans mot de passe. Un navigateur sur un projecteur ou un grand moniteur peut afficher la même page pour toute la salle. |
 
 Tout tourne sur un seul ordinateur. Le public, l'opérateur et les bénévoles de la configuration utilisent des navigateurs web ordinaires.
@@ -68,7 +68,7 @@ Le programme se moque du réseau sur lequel il est, tant que les appareils du pu
 - Demandez un **accès invités vers le serveur** : votre ordinateur doit être joignable depuis le SSID invités, sur le port TCP 80 (et 443 si vous activez HTTPS). L'« isolation des clients » entre invités convient ; empêcher les invités de joindre *votre ordinateur*, non.
 - Demandez une **adresse réservée** pour l'adaptateur réseau de votre ordinateur.
 - Branchez l'ordinateur au réseau par **Ethernet** si c'est du tout possible.
-- Testez avec un téléphone sur le WiFi invités bien avant le spectacle (l'étape Conduire affiche l'adresse).
+- Testez avec un téléphone sur le WiFi invités bien avant le spectacle (l'étape Partager affiche l'adresse).
 - Ayez l'option A dans un sac comme solution de secours si le spectacle compte.
 
 ### L'ordinateur de sous-titrage
@@ -97,7 +97,7 @@ Si l'ordinateur doit démarrer le serveur tout seul après un redémarrage, le d
 
 Par ordre de fiabilité :
 
-1. **Le code QR et l'affiche** (Configuration → Conduire → *Imprimer une affiche avec code QR pour le hall*). Mettez-la au mur, dans le programme et sur la carte au dos des fauteuils. C'est sur cela qu'il faut compter.
+1. **Le code QR et l'affiche** (Configuration → Partager → *Imprimer une affiche avec code QR pour le hall*). Mettez-la au mur, dans le programme et sur la carte au dos des fauteuils. C'est sur cela qu'il faut compter.
 2. **Une adresse courte.** Sur le port 80, il n'y a pas de `:port` à saisir. Le programme s'annonce aussi sous le nom **`open-caption.local`** (changez-le dans Configuration → Réglages → Réseau → *Utiliser un nom*) : là où le réseau invités le permet, `http://open-caption.local/` fonctionne sur la plupart des téléphones sans rien configurer. Certains réseaux invités bloquent ce type d'annonce ; n'imprimez donc pas seulement le nom : l'affiche QR utilise l'adresse numérique. Un nom dans le DNS propre du routeur (comme `captions.theater`) fonctionne partout mais demande que la salle l'ajoute.
 3. **La page d'accueil du point d'accès** (un « portail invités » ou « portail captif » qui redirige vers votre adresse après connexion). Cela se configure sur le routeur ou le point d'accès, pas dans ce programme. Voir [venue-network-guide.md](venue-network-guide.md).
 4. **Option 114 du DHCP et `/captive-api` (avancé, expérimental).** L'option 114 est un réglage DHCP qui oriente les appareils vers une « API de portail captif ». Le programme répond à cette API à `/captive-api` (par exemple `https://<adresse>/captive-api`) par « ce réseau n'est pas captif » et l'adresse de la page. Deux mises en garde : cela **ne fait pas ouvrir la page de sous-titres aux téléphones d'eux-mêmes**, et la norme (RFC 8910/8908) exige du **HTTPS avec un certificat auquel les appareils font confiance** : un réglage en `http://` simple ou le certificat auto-signé du programme est donc ignoré. Ne la configurez que si la salle utilise déjà l'option 114 et peut fournir un certificat de confiance. Elle n'a pas été testée sur de vrais appareils.
@@ -147,7 +147,7 @@ Ouvrez la page de configuration et suivez les six étapes en haut. Le bouton **A
 3. **Images.** Téléversez les images utilisées par le fichier du spectacle (PNG, JPG, GIF ou WebP, idéalement de moins de 1 Mo chacune).
 4. **Apparence.** Choisissez les couleurs, la police et la taille du texte. Les valeurs par défaut (blanc sur noir, grand) sont les meilleures pour la plupart des gens. Deux polices de lisibilité sont intégrées : une adaptée à la dyslexie (OpenDyslexic) et une de haute lisibilité (Atkinson Hyperlegible, conçue pour la basse vision). Chaque spectateur peut aussi choisir l'une ou l'autre pour son propre appareil avec le petit contrôle **Aa**.
 5. **Test.** Faites une répétition privée : vous appuyez sur Espace comme le ferait l'opérateur, et voyez l'écran du public à côté. Rien n'atteint le public.
-6. **Conduire.** Vérifiez la liste de préparation, imprimez l'affichette QR et appuyez sur **Ouvrir la page Conduire**.
+6. **Partager.** Vérifiez la liste de préparation, imprimez l'affichette QR et appuyez sur **Ouvrir la page Conduire**.
 
 Ouvrir la page de l'opérateur charge le spectacle **en attente** : le public voit l'écran d'attente du lieu (un logo et un message, réglés une seule fois sous **Réglages → Écran du public**) et rien du spectacle ; vous pouvez donc préparer, répéter et vérifier la page de l'opérateur tranquillement. Quand vous êtes prêt, appuyez sur **Espace** (le bouton indique **DÉMARRER**) sur la page de l'opérateur pour mettre le spectacle à l'antenne. **Mettre en attente…** le retire de nouveau sans perdre sa place.
 
@@ -225,7 +225,7 @@ Vous pouvez modifier et réenregistrer un fichier de spectacle pendant qu'un spe
 ### Avant l'arrivée du public
 
 1. Démarrez le serveur et ouvrez la **page de l'opérateur** ; connectez-vous. Elle doit dire **Vous avez la main**.
-2. Dans Configuration → Conduire, appuyez sur **Ouvrir la page Conduire**. Le spectacle est chargé en attente : le public voit l'écran d'attente du lieu. Quand vous êtes prêt, appuyez sur **Espace** (DÉMARRER) sur la page de l'opérateur pour le mettre à l'antenne. Une boucle d'avant-spectacle, si le fichier du spectacle en a une, commence alors sur tous les écrans.
+2. Dans Configuration → Partager, appuyez sur **Ouvrir la page Conduire**. Le spectacle est chargé en attente : le public voit l'écran d'attente du lieu. Quand vous êtes prêt, appuyez sur **Espace** (DÉMARRER) sur la page de l'opérateur pour le mettre à l'antenne. Une boucle d'avant-spectacle, si le fichier du spectacle en a une, commence alors sur tous les écrans.
 3. Ouvrez l'adresse du public sur votre propre téléphone et, si vous en avez un, sur le projecteur. Vérifiez que le nombre de spectateurs augmente sur la page de l'opérateur.
 4. Placez l'affiche QR là où les gens peuvent la voir.
 
@@ -241,7 +241,7 @@ Vous pouvez modifier et réenregistrer un fichier de spectacle pendant qu'un spe
 
 ### Quand le spectacle se termine
 
-Appuyez sur `Ctrl+C` dans la fenêtre du programme (ou arrêtez le service). La position est enregistrée. Pour relancer le spectacle depuis le début, utilisez **Redémarrer le spectacle…** sur la page de l'opérateur, ou **Redémarrer le spectacle…** dans Configuration → Conduire. Les deux le remettent en attente.
+Appuyez sur `Ctrl+C` dans la fenêtre du programme (ou arrêtez le service). La position est enregistrée. Pour relancer le spectacle depuis le début, utilisez **Redémarrer le spectacle…** sur la page de l'opérateur, ou **Redémarrer le spectacle…** dans Configuration → Partager. Les deux le remettent en attente.
 
 ## Liste de vérification du jour J
 
@@ -253,7 +253,7 @@ Appuyez sur `Ctrl+C` dans la fenêtre du programme (ou arrêtez le service). La 
 **À la salle, une heure avant**
 - [ ] Alimentation : ordinateur et point d'accès branchés ; ordinateur réglé pour ne jamais se mettre en veille.
 - [ ] Point d'accès allumé, en place, avec le bon nom ; ordinateur relié à lui par câble.
-- [ ] Lancez le programme ; notez l'adresse affichée (et dans Conduire).
+- [ ] Lancez le programme ; notez l'adresse affichée (et dans Partager).
 - [ ] Un téléphone sur le WiFi du public peut ouvrir l'adresse et affiche « Les sous-titres vont bientôt commencer ».
 - [ ] Configuration → Test : faites une courte répétition ; les touches de l'opérateur fonctionnent.
 - [ ] Navigateur du projecteur (s'il y en a un) ouvert sur `…/?display=projector`, en plein écran.
@@ -279,7 +279,7 @@ Appuyez sur `Ctrl+C` dans la fenêtre du programme (ou arrêtez le service). La 
 | La page de l'opérateur dit qu'un autre opérateur a la main | Utilisez **Reprendre la main**, si vous êtes l'opérateur. |
 | L'ordinateur s'est figé ou a redémarré en plein spectacle | Relancez le programme. La page de l'opérateur se reconnecte, reste connectée et reprend la main toute seule, le spectacle est là où vous l'avez laissé, et les appareils du public se reconnectent d'eux-mêmes. Une boucle repart de son premier élément. **Retour arrière** peut encore annuler les dernières choses envoyées avant le redémarrage. |
 | J'ai oublié un mot de passe | Connectez-vous avec l'autre et utilisez **Réglages** dans la configuration, ou ouvrez `config.yaml` dans le dossier de données avec n'importe quel éditeur de texte. |
-| Autre chose | Configuration → Conduire → **Télécharger un paquet de support** ; il contient les réglages (sans mots de passe) et les dernières lignes du journal. |
+| Autre chose | Configuration → Partager → **Télécharger un paquet de support** ; il contient les réglages (sans mots de passe) et les dernières lignes du journal. |
 
 ## Maintenance
 
@@ -288,7 +288,7 @@ Appuyez sur `Ctrl+C` dans la fenêtre du programme (ou arrêtez le service). La 
 - **Mettre à jour le programme :** arrêtez-le (`Ctrl+C`), remplacez le fichier du programme par le plus récent et relancez-le avec le même dossier `--data`. Ne mettez pas à jour juste avant un spectacle.
 - **Réutiliser un spectacle :** Configuration → Spectacles propose **Renommer…** et **Dupliquer**. Dupliquer fait une copie du fichier du spectacle, des images et de l'apparence à adapter pour la prochaine série, et laisse l'original intact. Renommer, Dupliquer, Exporter, Archiver et Supprimer se trouvent dans le menu **Plus ▾** de chaque spectacle.
 - **Faire le ménage :** supprimez les spectacles dont vous n'avez plus besoin dans Configuration → Spectacles. Les `.zip` exportés sont vos archives.
-- **Journaux :** Configuration → Conduire → **Journal récent…** montre ce que le programme a enregistré récemment, filtré par niveau (choisissez *Problèmes seulement* pour voir les avertissements et les erreurs) ; les dernières lignes du journal sont aussi dans le paquet de support ; ajoutez `--log-file` pour conserver un fichier. Chaque ligne commence par son niveau (`INFO`, `WARN`, `ERROR` ou `DEBUG`). Le niveau `info` par défaut enregistre les connexions, qui a pris la main sur la page de l'opérateur, les spectacles activés et des événements similaires ; `warn` ne garde que les problèmes ; `debug` enregistre aussi chaque requête, ce qui aide quand quelque chose d'étrange se produit. Réglez-le avec `log: {level: debug}` dans `config.yaml`, avec `--log-level debug`, ou pendant que le programme tourne depuis Configuration → Réglages → *Niveau de détail du journal*. Si le programme a été lancé avec `--log-level`, cette option l'emporte à chaque démarrage : la configuration le dit, un changement fait là ne dure que jusqu'au prochain redémarrage, et le journal de démarrage prévient quand l'option et le fichier ne sont pas d'accord. Un fichier journal conservé avec `--log-file` en commence un nouveau à 5 Mo et en garde trois plus anciens (`open-caption.log.1` à `.3`), si bien qu'il ne remplit jamais le disque.
+- **Journaux :** Configuration → Partager → **Journal récent…** montre ce que le programme a enregistré récemment, filtré par niveau (choisissez *Problèmes seulement* pour voir les avertissements et les erreurs) ; les dernières lignes du journal sont aussi dans le paquet de support ; ajoutez `--log-file` pour conserver un fichier. Chaque ligne commence par son niveau (`INFO`, `WARN`, `ERROR` ou `DEBUG`). Le niveau `info` par défaut enregistre les connexions, qui a pris la main sur la page de l'opérateur, les spectacles activés et des événements similaires ; `warn` ne garde que les problèmes ; `debug` enregistre aussi chaque requête, ce qui aide quand quelque chose d'étrange se produit. Réglez-le avec `log: {level: debug}` dans `config.yaml`, avec `--log-level debug`, ou pendant que le programme tourne depuis Configuration → Réglages → *Niveau de détail du journal*. Si le programme a été lancé avec `--log-level`, cette option l'emporte à chaque démarrage : la configuration le dit, un changement fait là ne dure que jusqu'au prochain redémarrage, et le journal de démarrage prévient quand l'option et le fichier ne sont pas d'accord. Un fichier journal conservé avec `--log-file` en commence un nouveau à 5 Mo et en garde trois plus anciens (`open-caption.log.1` à `.3`), si bien qu'il ne remplit jamais le disque.
 - **Archivage :** dans Configuration → Spectacles, **Archiver** range un spectacle terminé (il est conservé, listé sous « Spectacles archivés », et ne peut pas passer à l'antenne) et **Restaurer** le ramène. **Supprimer** retire un spectacle définitivement.
 
 ## Aide-mémoire de l'opérateur

@@ -1,10 +1,10 @@
-// Setup page: a six-step wizard (Show, Show file, Images, Look, Test, Run).
+// Setup page: a six-step wizard (Show, Show file, Images, Look, Test, Share).
 (() => {
   'use strict';
   if (window.OC_UNSUPPORTED) return; // compat.js has already shown the "too old" message
   const $ = (id) => document.getElementById(id);
   const A = { shows: [], activeId: '', cur: null, step: 'show', text: '', saved: '', analysis: null, mainAnalysis: null, lang: '', loadedLang: null, langs: [], net: null, live: false, audience: 0, rehearsing: false };
-  const STEPS = [['show', 'Shows'], ['showfile', 'Show file'], ['images', 'Images'], ['look', 'Look'], ['test', 'Test'], ['golive', 'Run']];
+  const STEPS = [['show', 'Shows'], ['showfile', 'Show file'], ['images', 'Images'], ['look', 'Look'], ['test', 'Test'], ['golive', 'Share']];
   const ICON = { caption: '💬', clear: '🧹', blank: '⬛', image: '🖼', fullscreen: '⛶', loop: '🔁', section: '📑', note: '📝' };
 
   // ---- helpers ----
@@ -172,7 +172,7 @@
     logSelect.value = s.logLevel;
     const sec = (title, ...kids) => h('section', { class: 'setsec' }, h('h3', {}, __(title)), ...kids);
     // Which of this computer's network interfaces are used (network.* in config.yaml): a setting of this computer, not of a
-    // show, so it lives here and not on the Run step. Each tick is saved as soon as it is clicked.
+    // show, so it lives here and not on the Share step. Each tick is saved as soon as it is clicked.
     const net0 = s.network || {};
     const saved = { restrictListening: !!net0.restrictListening };
     let ifaces = s.interfaces || [];
@@ -308,7 +308,7 @@
     pick(first, false);
     // Each section above has its own button (or applies as soon as you choose); this one only closes the window.
     await ask(__('Settings'), body, __('Close'), { noCancel: true, wide: true, tabbed: true });
-    if (netChanged && A.step === 'golive') render(); // the Run step lists the addresses that are offered
+    if (netChanged && A.step === 'golive') render(); // the Share step lists the addresses that are offered
   }
   // The program's recent log (the last 1000 lines it keeps in memory), so a problem can be looked at without
   // opening the log file or the support bundle.
@@ -331,7 +331,7 @@
     level.addEventListener('change', load);
     const copy = h('button', { onclick: async () => { try { await navigator.clipboard.writeText(lastLines.join('\n')); toast(__('Copied')); } catch (e) { toast(__('Select the text and copy it by hand')); } } }, __('Copy'));
     const body = h('div', {}, h('div', { class: 'row' }, h('label', { class: 'row' }, __('Show: '), level), h('label', { class: 'row' }, auto, __(' Update every few seconds')), h('button', { onclick: load }, __('Refresh')), copy),
-      pre, count, h('p', { class: 'hint' }, __('Passwords are never written to the log. Setup → Run has a support bundle with this log and more, for sending to someone who is helping.')));
+      pre, count, h('p', { class: 'hint' }, __('Passwords are never written to the log. Setup → Share has a support bundle with this log and more, for sending to someone who is helping.')));
     await load(); pre.scrollTop = pre.scrollHeight;
     const timer = setInterval(() => { if (auto.checked) load(); }, 3000);
     await ask(__('Recent log'), body, __('Close'), { noCancel: true, wide: true });
@@ -1099,7 +1099,7 @@
       h('span', { class: 'hint' }, __('(for a projector or shared screen; open it on that computer)'))) : null;
     const rows = net.data.urls.filter((u) => !u.name).map((u) => h('div', { class: 'row' }, h('label', { class: 'row' }, radio(u), link(u.url), u.public ? (u.adapter === 'wifi' ? ' (' + __('Wi-Fi') + ')' : u.adapter === 'ethernet' ? ' (' + __('Ethernet') + ')' : '') : __(' (this computer only)'))));
     const list = h('div', { class: 'urls' }, ...rows, ...nameRows(), projRow);
-    p.append(h('h2', {}, __('Run')), checks,
+    p.append(h('h2', {}, __('Share')), checks,
       h('div', { class: 'card' }, h('h3', {}, __('Tell the audience this address')), big,
         h('div', { class: 'row' }, h('button', { onclick: async () => { try { await navigator.clipboard.writeText(chosen); toast(__('Copied')); } catch (e) { toast(__('Select the address and copy it')); } } }, __('Copy address')),
           h('a', { class: 'btn', href: '/admin?print=qr&url=' + encodeURIComponent(chosen || ''), target: '_blank', rel: 'noopener' }, __('Print a QR sign for the lobby'))),

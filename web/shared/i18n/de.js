@@ -1,5 +1,6 @@
 // German translations of Setup, the operator page and Help (see web/shared/i18n.js). The key is the English text.
 OCI18n.add("de", {
+ "Share": "Teilen",
  "Name on the network": "Name im Netzwerk",
  "not used": "nicht verwendet",
  "used": "verwendet",
@@ -63,7 +64,7 @@ OCI18n.add("de", {
  "Show:": "Anzeigen:",
  "Update every few seconds": "Alle paar Sekunden aktualisieren",
  "Refresh": "Aktualisieren",
- "Passwords are never written to the log. Setup → Run has a support bundle with this log and more, for sending to someone who is helping.": "Passwörter werden nie ins Protokoll geschrieben. Unter Einrichtung → Fahren gibt es ein Supportpaket mit diesem Protokoll und mehr, das Sie an die Person schicken können, die Ihnen hilft.",
+ "Passwords are never written to the log. Setup → Share has a support bundle with this log and more, for sending to someone who is helping.": "Passwörter werden nie ins Protokoll geschrieben. Unter Einrichtung → Teilen gibt es ein Supportpaket mit diesem Protokoll und mehr, das Sie an die Person schicken können, die Ihnen hilft.",
  "Too many attempts. Wait a minute and try again.": "Zu viele Versuche. Warten Sie eine Minute und versuchen Sie es erneut.",
  "That password was not accepted.": "Dieses Passwort wurde nicht akzeptiert.",
  "No show selected": "Keine Show ausgewählt",

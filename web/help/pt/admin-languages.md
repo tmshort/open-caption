@@ -22,7 +22,7 @@ O nome depois do `|` é o que os espectadores veem no menu de idiomas, então es
 
 Cada idioma deve ter **as mesmas deixas na mesma ordem**: uma legenda continua sendo uma legenda, um `[clear]` continua sendo um `[clear]`, um laço mantém o mesmo número de itens, e vozes mostradas juntas continuam sendo o mesmo número de vozes. Só as palavras mudam. Nomes de personagens, notas, nomes de seções, nomes de imagens e tempos de laços podem ser diferentes.
 
-Se uma tradução deixar de coincidir, o editor mostra um erro com a linha em que ela se desencontra, por exemplo «A deixa 4 não coincide com o arquivo do espetáculo em inglês: aquele arquivo tem [clear] aqui, e este tem uma legenda». Um idioma que não coincide **não é oferecido ao público** até ser corrigido. O arquivo do espetáculo em inglês (principal) não é afetado, e a etapa Conduzir lista o problema.
+Se uma tradução deixar de coincidir, o editor mostra um erro com a linha em que ela se desencontra, por exemplo «A deixa 4 não coincide com o arquivo do espetáculo em inglês: aquele arquivo tem [clear] aqui, e este tem uma legenda». Um idioma que não coincide **não é oferecido ao público** até ser corrigido. O arquivo do espetáculo em inglês (principal) não é afetado, e a etapa Compartilhar lista o problema.
 
 Para dizer ao público quais palavras vão com qual linha, mantenha as linhas em compasso: se o inglês divide uma fala em três linhas, o espanhol também divide, mesmo que não seja assim que o idioma a quebraria.
 

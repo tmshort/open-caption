@@ -62,7 +62,7 @@ https:
 
 **7. Switch to the real certificate.** Change `directory: letsencrypt-staging` to `directory: letsencrypt` (or delete the line) and restart the program. The real certificate arrives the same way. Open `https://captions.mytheater.org/` from a phone on the venue WiFi: no warning. (If port 443 was busy the program used the fallback, `:8443`; the address then needs the port, `https://captions.mytheater.org:8443/`, and the log shows the exact address.)
 
-**8. Give people the address.** Setup's Run step lists the numeric addresses and the `.local` name but does not yet list this one. To print a QR sign for it, while signed in to Setup open
+**8. Give people the address.** Setup's Share step lists the numeric addresses and the `.local` name but does not yet list this one. To print a QR sign for it, while signed in to Setup open
 `http://localhost/admin?print=qr&url=https%3A%2F%2Fcaptions.mytheater.org%2F` (change the name; add the port if needed) and print that page.
 
 ## After that

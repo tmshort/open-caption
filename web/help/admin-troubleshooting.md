@@ -3,7 +3,7 @@
 ## Nobody can open the address
 
 - Check that the phone is on the venue's guest WiFi, not mobile data.
-- Check that the address matches the one in the **Run** step. If it has a port number, include it.
+- Check that the address matches the one in the **Share** step. If it has a port number, include it.
 - Ask the venue whether guest WiFi devices are allowed to reach this computer.
 - Your computer's firewall may be blocking the program. On Windows, allow it on **private networks** when asked. On macOS, allow incoming connections for it.
 - Open the address on this computer using `localhost` to check the program itself.
@@ -34,8 +34,8 @@ If you cannot sign in at all, both passwords are in `config.yaml`, in the progra
 
 ## Looking at the log
 
-**Run → Recent log…** shows what the program has logged lately. Choose *Problems only* to see warnings and errors, such as refused sign-ins or a name already used on the network. The same window sets how much detail is logged (**Log detail**); *Debug* adds every request, which helps when something odd is happening. Passwords are never written to the log.
+**Share → Recent log…** shows what the program has logged lately. Choose *Problems only* to see warnings and errors, such as refused sign-ins or a name already used on the network. The same window sets how much detail is logged (**Log detail**); *Debug* adds every request, which helps when something odd is happening. Passwords are never written to the log.
 
 ## Asking for help
 
-Download the **support bundle** from the bottom of the Run step. It contains the settings (without passwords), recent log lines and basic information about this computer, and is easy to send to whoever maintains the program.
+Download the **support bundle** from the bottom of the Share step. It contains the settings (without passwords), recent log lines and basic information about this computer, and is easy to send to whoever maintains the program.
