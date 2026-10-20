@@ -595,6 +595,35 @@ async function main() {
         check('emptying the boxes offers every address again', (await shownIps()).includes(ips[0]));
       }
     }
+    // REQ-069: two adapters on one network. The program's answers are faked in the page (this computer may have one adapter): a cable and Wi-Fi on 192.168.1.x.
+    {
+      await arch.evaluate(() => {
+        const orig = window.fetch; window.__realFetch = orig; let prefer = [];
+        const wired = () => prefer.some((x) => /^ethernet$/i.test(x));
+        const addrs = () => [{ ip: '192.168.1.138', interface: 'Wi-Fi', kind: 'wifi', shown: !wired(), hidden: wired() ? 'network' : '', instead: '192.168.1.185' },
+          { ip: '192.168.1.185', interface: 'Ethernet', kind: 'ethernet', shown: wired(), hidden: wired() ? '' : 'network', instead: '192.168.1.138' }];
+        const json = (o) => new Response(JSON.stringify(o), { status: 200, headers: { 'Content-Type': 'application/json' } });
+        window.fetch = async function (url, opt) {
+          const u = String(url), m = (opt && opt.method) || 'GET';
+          if (u === '/api/admin/settings' && m === 'GET') { const j = await (await orig.call(window, url, opt)).json(); j.addresses = addrs(); j.network = { include: [], exclude: [], prefer, restrictListening: false }; return json(j); }
+          if (u === '/api/admin/settings/network' && m === 'PUT') { prefer = JSON.parse(opt.body).prefer; return json({ saved: true, addresses: addrs() }); }
+          return orig.call(window, url, opt);
+        };
+      });
+      await arch.evaluate(() => document.getElementById('settingsbtn').click()); await arch.waitForSelector('#settab-net');
+      await arch.evaluate(() => document.getElementById('settab-net').click()); await sleep(200);
+      const rows = () => arch.evaluate(() => [...document.querySelectorAll('#setpanel-net .addrlist li')].map((li) => li.textContent.replace(/\s+/g, ' ').trim()));
+      const box = () => arch.evaluate(() => document.querySelector('textarea[aria-label="Prefer these adapters"]').value);
+      const press = async (label) => { await arch.evaluate((l) => [...document.querySelectorAll('#setpanel-net .addrlist button')].find((x) => x.textContent === l).click(), label); await sleep(T(500)); };
+      let r = await rows();
+      check('two adapters on one network: Wi-Fi is shown (it is the first), the cable says it is not used and has Use this one', /\(Wi-Fi, Wi-Fi\) shown$/.test(r[0]) && /\(Ethernet, Ethernet\) not used: same network as 192\.168\.1\.138 Use this one$/.test(r[1]), r);
+      await press('Use this one'); r = await rows();
+      check('Use this one acts at once: the cable is shown and preferred, with Stop preferring this one, and the box lists it', /not used: same network as 192\.168\.1\.185 Use this one$/.test(r[0]) && /shown, preferred Stop preferring this one$/.test(r[1]) && (await box()) === 'Ethernet', r);
+      await press('Stop preferring this one'); r = await rows();
+      check('Stop preferring this one undoes it, and the box is empty again', /\(Wi-Fi, Wi-Fi\) shown$/.test(r[0]) && (await box()) === '', r);
+      await arch.click('#dlgok'); await sleep(T(500));
+      await arch.evaluate(() => { window.fetch = window.__realFetch; });
+    }
     await step(arch, 'Show file'); await sleep(T(600));
     check('the Show file step has no second Help button (the header Help opens the same topic)', await arch.evaluate(() => ![...document.querySelectorAll('#panel button')].some((b) => /help/i.test(b.textContent))));
     // The editor grows with the window (no maximum width), and has a minimum.

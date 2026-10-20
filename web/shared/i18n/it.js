@@ -1,5 +1,8 @@
 // Italian translations of Setup, the operator page and Help (see web/shared/i18n.js). The key is the English text.
 OCI18n.add("it", {
+ "preferred": "preferito",
+ "Stop preferring this one": "Non preferire più questo",
+ "Remove this adapter from Prefer these adapters": "Rimuovi questo adattatore da Preferisci questi adattatori",
  "for example {value}": "per esempio {value}",
  "One entry per line. Leave Show only these empty to show all. In Prefer these adapters write Ethernet, Wi-Fi or an adapter name: the first that matches is used when two adapters are on the same network.": "Una voce per riga. Lascia vuoto Mostra solo questi per mostrare tutto. In Preferisci questi adattatori scrivi Ethernet, Wi-Fi o il nome di un adattatore: si usa il primo che corrisponde quando due adattatori sono sulla stessa rete.",
  "Use this adapter for its network": "Usa questo adattatore per la sua rete",

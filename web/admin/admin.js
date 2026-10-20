@@ -177,20 +177,33 @@
     const shownList = h('ul', { class: 'addrlist' });
     const pref = h('textarea', { rows: '3', spellcheck: 'false', 'aria-label': __('Prefer these adapters'), placeholder: __('for example {value}', { value: 'Ethernet' }) }); pref.value = (net0.prefer || []).join('\n');
     const kindName = (k) => k === 'wifi' ? __('Wi-Fi') : k === 'ethernet' ? __('Ethernet') : '';
+    // What is saved in config.yaml now: the row buttons change one thing at once and leave the other boxes alone.
+    const saved = { include: net0.include || [], exclude: net0.exclude || [], prefer: net0.prefer || [], restrictListening: !!net0.restrictListening };
+    const sameName = (x, y) => String(x).trim().toLowerCase() === String(y).trim().toLowerCase();
+    const isPreferred = (a) => !!a.interface && saved.prefer.some((x) => sameName(x, a.interface));
     const stateText = (a) => a.shown ? __('shown') : a.hidden === 'network' ? __('not used: same network as {ip}', { ip: a.instead }) : __('hidden');
-    const paintList = (addrs) => shownList.replaceChildren(...(addrs.length ? addrs.map((a) => h('li', { class: a.shown ? '' : 'off' }, h('b', {}, a.ip), ' ', [kindName(a.kind), a.interface].filter(Boolean).length ? '(' + [kindName(a.kind), a.interface].filter(Boolean).join(', ') + ') ' : '', stateText(a), a.current ? ' — ' + __('you are using Setup through this one') : '', a.hidden === 'network' && a.interface ? [' ', h('button', { type: 'button', class: 'usethis', title: __('Use this adapter for its network'), onclick: () => { pref.value = [a.interface].concat(pref.value.split('\n').map((x) => x.trim()).filter((x) => x && x !== a.interface)).join('\n'); pref.focus(); } }, __('Use this one'))] : '')) : [h('li', {}, __('No network address was found.'))]));
-    paintList(s.addresses || []);
+    const rowButton = (label, title, run) => [' ', h('button', { type: 'button', class: 'usethis', title, onclick: run }, label)];
+    const paintList = (addrs) => shownList.replaceChildren(...(addrs.length ? addrs.map((a) => h('li', { class: a.shown ? '' : 'off' }, h('b', {}, a.ip), ' ', [kindName(a.kind), a.interface].filter(Boolean).length ? '(' + [kindName(a.kind), a.interface].filter(Boolean).join(', ') + ') ' : '', stateText(a), isPreferred(a) ? ', ' + __('preferred') : '', a.current ? ' — ' + __('you are using Setup through this one') : '',
+      isPreferred(a) ? rowButton(__('Stop preferring this one'), __('Remove this adapter from Prefer these adapters'), () => setPrefer(saved.prefer.filter((x) => !sameName(x, a.interface))))
+        : a.hidden === 'network' && a.interface ? rowButton(__('Use this one'), __('Use this adapter for its network'), () => setPrefer([a.interface].concat(saved.prefer))) : '')) : [h('li', {}, __('No network address was found.'))]));
+    let lastAddrs = s.addresses || [];
+    const repaint = () => paintList(lastAddrs);
+    repaint();
     const inc = h('textarea', { rows: '3', spellcheck: 'false', 'aria-label': __('Show only these'), placeholder: __('for example {value}', { value: '192.168.1.0/24' }) }); inc.value = (net0.include || []).join('\n');
     const exc = h('textarea', { rows: '3', spellcheck: 'false', 'aria-label': __('Never show these'), placeholder: __('for example {value}', { value: '192.168.56.0/24' }) }); exc.value = (net0.exclude || []).join('\n');
     const restrict = h('input', { type: 'checkbox' }); restrict.checked = !!net0.restrictListening;
     const netMsg = h('div', { class: 'check warn', role: 'alert', hidden: '' });
-    const applyNet = h('button', { type: 'button', onclick: async () => {
+    // Saves the lists and shows what the program does with them; returns whether it worked.
+    async function putNet(body) {
       netMsg.hidden = true;
-      const lines = (t) => t.value.split('\n').map((x) => x.trim()).filter(Boolean);
-      const x = await api('PUT', '/api/admin/settings/network', { include: lines(inc), exclude: lines(exc), prefer: lines(pref), restrictListening: restrict.checked });
-      if (!x.ok) { netMsg.textContent = __((x.data && x.data.error) || 'Could not change the addresses'); netMsg.hidden = false; return; }
-      paintList(x.data.addresses || []); netChanged = true; toast(__('Addresses changed'));
-    } }, __('Apply'));
+      const x = await api('PUT', '/api/admin/settings/network', body);
+      if (!x.ok) { netMsg.textContent = __((x.data && x.data.error) || 'Could not change the addresses'); netMsg.hidden = false; return false; }
+      Object.assign(saved, body); lastAddrs = x.data.addresses || []; repaint(); netChanged = true; toast(__('Addresses changed'));
+      return true;
+    }
+    async function setPrefer(list) { if (await putNet(Object.assign({}, saved, { prefer: list }))) pref.value = list.join('\n'); }
+    const lines = (t) => t.value.split('\n').map((x) => x.trim()).filter(Boolean);
+    const applyNet = h('button', { type: 'button', onclick: () => putNet({ include: lines(inc), exclude: lines(exc), prefer: lines(pref), restrictListening: restrict.checked }) }, __('Apply'));
     const networkSec = sec('Network addresses',
       h('div', { class: 'addrbox' },
         h('p', { class: 'hint' }, __('These are the addresses this computer has now. The audience is given the ones marked shown: in the address list, the QR code, the HTTPS certificate and the .local name. When two adapters are on the same network (a cable and Wi-Fi), only one is used: the main connection, else the wired one.')),
