@@ -16,6 +16,7 @@
 .oc-report .chart { display: block; width: 100%; min-width: 640px; height: auto; background: var(--panel); border: 1px solid var(--line); border-radius: .5rem; }
 .oc-report .chart text { font-size: 12px; fill: var(--fg); }
 .oc-report .chart .tick { fill: var(--dim); }
+.oc-report .chart .edge { font-weight: 700; }
 .oc-report .chart .grid { stroke: var(--line); stroke-width: 1; }
 .oc-report .chart .axis { stroke: var(--dim); stroke-width: 1; }
 .oc-report .chart .area { fill: var(--accent); fill-opacity: .18; }

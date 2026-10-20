@@ -36,7 +36,7 @@
     const pts = (r.series || []).map((p) => ({ t: new Date(p.t).getTime(), n: p.n }));
     const t1 = Math.max(end, pts.length ? pts[pts.length - 1].t : 0, t0 + 60000);
     const peak = Math.max(1, r.totals.peak || 0, ...pts.map((p) => p.n));
-    const ystep = niceStep(peak, 5), ymax = Math.ceil(peak / ystep) * ystep;
+    const ystep = Math.max(1, Math.ceil(niceStep(peak, 5))), ymax = Math.ceil(peak / ystep) * ystep; // whole devices only: there is no half a device
     const x = (t) => L + (pw * (t - t0)) / (t1 - t0), y = (n) => T + ph - (ph * n) / ymax;
     const label = __('Devices connected over time, from {start} to {end}: up to {peak} at once.', { start: when(t0), end: when(t1), peak: r.totals.peak });
     const kids = [sv('title', {}, __('Devices connected over time')), sv('desc', {}, label),
@@ -51,8 +51,14 @@
       kids.push(sv('line', { class: 'grid', x1: L, x2: W - R, y1: y(v), y2: y(v) }), sv('text', { class: 'tick', x: L - 6, y: y(v) + 4, 'text-anchor': 'end' }, String(v)));
     }
     const tstep = TIME_STEPS.find((s) => (t1 - t0) / s <= 8) || TIME_STEPS[TIME_STEPS.length - 1];
+    // the start and the end are always on the axis, labelled; the round times between them are left out where they would crowd them
     for (let tk = Math.ceil(t0 / tstep) * tstep; tk <= t1; tk += tstep) {
+      if (x(tk) - x(t0) < 72 || x(t1) - x(tk) < 72) continue;
       kids.push(sv('line', { class: 'axis', x1: x(tk), x2: x(tk), y1: T + ph, y2: T + ph + 5 }), sv('text', { class: 'tick', x: x(tk), y: T + ph + 20, 'text-anchor': 'middle' }, hhmm(tk)));
+    }
+    for (const [t, name, anchor] of [[t0, __('Start'), 'start'], [t1, r.running ? __('Now') : __('End'), 'end']]) { // the text sits inside the plot, so it is never cut off
+      kids.push(sv('line', { class: 'axis', x1: x(t), x2: x(t), y1: T + ph, y2: T + ph + 5 }),
+        sv('text', { class: 'edge', x: x(t), y: T + ph + 20, 'text-anchor': anchor }, hhmm(t)), sv('text', { class: 'tick', x: x(t), y: T + ph + 34, 'text-anchor': anchor }, name));
     }
     kids.push(sv('line', { class: 'axis', x1: L, x2: W - R, y1: T + ph, y2: T + ph }), sv('line', { class: 'axis', x1: L, x2: L, y1: T, y2: T + ph }));
     if (pts.length) { // a step line (the count stays until it changes), and the area under it
