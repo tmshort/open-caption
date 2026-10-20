@@ -1,3 +1,6 @@
+// Copyright the open-caption authors
+// SPDX-License-Identifier: Apache-2.0
+
 // Package config loads, generates and validates config.yaml (see
 // docs/02-architecture.md, "Configuration").
 package config

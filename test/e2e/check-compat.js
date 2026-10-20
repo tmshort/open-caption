@@ -1,3 +1,6 @@
+// Copyright the open-caption authors
+// SPDX-License-Identifier: Apache-2.0
+
 // Checks that the browser pages stay inside the documented browser floor (docs/05): the JavaScript must parse as
 // ES2018 (async functions and object spread, so Safari 11.1 and Chrome 64), and none of the newer APIs or CSS
 // that older browsers lack may creep in without a fallback. Runs at the start of the end-to-end test.

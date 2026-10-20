@@ -1,3 +1,6 @@
+// Copyright the open-caption authors
+// SPDX-License-Identifier: Apache-2.0
+
 // Package hub fans pre-serialized server-sent-event frames out to audience
 // clients without ever blocking the publisher (docs/02-architecture.md, decision 8).
 package hub

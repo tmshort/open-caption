@@ -1,3 +1,6 @@
+/* Copyright the open-caption authors
+   SPDX-License-Identifier: Apache-2.0 */
+
 /* <dialog> for browsers that do not have it (see compat.js). Browsers that do have it ignore this. */
 dialog:not([open]) { display: none; }
 dialog.oc-fallback[open] {

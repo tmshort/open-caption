@@ -1,3 +1,6 @@
+# Copyright the open-caption authors
+# SPDX-License-Identifier: Apache-2.0
+
 <#
 .SYNOPSIS
     Builds open-caption for Windows: bin\open-caption.exe. The same job as `make build` (Windows has no make).

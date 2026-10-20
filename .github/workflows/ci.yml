@@ -1,3 +1,6 @@
+# Copyright the open-caption authors
+# SPDX-License-Identifier: Apache-2.0
+
 name: ci
 
 # Cost: macOS runners bill 10x and Windows 2x. A push to main runs the Linux jobs only; the other systems

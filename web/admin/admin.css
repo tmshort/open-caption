@@ -1,3 +1,6 @@
+/* Copyright the open-caption authors
+   SPDX-License-Identifier: Apache-2.0 */
+
 @font-face { font-family: "OpenDyslexic"; font-style: normal; font-weight: 400; font-display: swap; src: url(/static/shared/fonts/opendyslexic-400-normal.woff2) format("woff2"); }
 @font-face { font-family: "OpenDyslexic"; font-style: normal; font-weight: 700; font-display: swap; src: url(/static/shared/fonts/opendyslexic-700-normal.woff2) format("woff2"); }
 @font-face { font-family: "Atkinson Hyperlegible"; font-style: normal; font-weight: 400; font-display: swap; src: url(/static/shared/fonts/atkinson-400-normal.woff2) format("woff2"); }

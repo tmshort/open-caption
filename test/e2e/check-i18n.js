@@ -1,3 +1,6 @@
+// Copyright the open-caption authors
+// SPDX-License-Identifier: Apache-2.0
+
 // Checks that Setup, the operator page and Help are translated into every language the audience page has:
 // every English sentence the pages can show must have an entry in each dictionary (web/shared/i18n/<code>.js),
 // every dictionary must have the same entries, and placeholders ({name}) must match the English text.

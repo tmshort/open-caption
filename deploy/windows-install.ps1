@@ -1,3 +1,6 @@
+# Copyright the open-caption authors
+# SPDX-License-Identifier: Apache-2.0
+
 # Windows: run open-caption automatically at startup, using Task Scheduler.
 # Run this in an ADMINISTRATOR PowerShell window, from the folder containing open-caption.exe:
 #

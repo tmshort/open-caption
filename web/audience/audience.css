@@ -1,3 +1,6 @@
+/* Copyright the open-caption authors
+   SPDX-License-Identifier: Apache-2.0 */
+
 /* OpenDyslexic (SIL Open Font License; see web/shared/fonts/OFL-OpenDyslexic.txt). A device only downloads it if it is used. */
 @font-face { font-family: "OpenDyslexic"; font-style: normal; font-weight: 400; font-display: swap; src: url(/static/shared/fonts/opendyslexic-400-normal.woff2) format("woff2"); }
 @font-face { font-family: "OpenDyslexic"; font-style: italic; font-weight: 400; font-display: swap; src: url(/static/shared/fonts/opendyslexic-400-italic.woff2) format("woff2"); }

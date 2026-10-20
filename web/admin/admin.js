@@ -1,3 +1,6 @@
+// Copyright the open-caption authors
+// SPDX-License-Identifier: Apache-2.0
+
 // Setup page: a six-step wizard (Show, Show file, Images, Look, Test, Share), then a Report of how the show went.
 (() => {
   'use strict';

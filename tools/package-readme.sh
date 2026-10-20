@@ -1,4 +1,7 @@
 #!/bin/sh
+# Copyright the open-caption authors
+# SPDX-License-Identifier: Apache-2.0
+
 # Writes the README that goes into a release download: this repository's README.md without the parts that only
 # make sense next to the source code (they are fenced by <!-- source-only:start --> and <!-- source-only:end -->
 # comment lines, which GitHub does not show). Used by .goreleaser.yaml; run it by hand to see the result.

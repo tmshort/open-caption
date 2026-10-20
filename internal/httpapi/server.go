@@ -1,3 +1,6 @@
+// Copyright the open-caption authors
+// SPDX-License-Identifier: Apache-2.0
+
 // Package httpapi wires HTTP routes (docs/04-protocol-and-api.md).
 package httpapi
 

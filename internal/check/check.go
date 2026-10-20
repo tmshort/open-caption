@@ -1,3 +1,6 @@
+// Copyright the open-caption authors
+// SPDX-License-Identifier: Apache-2.0
+
 // Package check is the analysis of a show file that Setup's editor and the command line (open-caption --check-show)
 // share: which images a show file uses and which are missing, and the report the command line prints. The parsing
 // itself is internal/showfile; this package adds what is around it. It reads files but never starts a server.

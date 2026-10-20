@@ -1,3 +1,6 @@
+// Copyright the open-caption authors
+// SPDX-License-Identifier: Apache-2.0
+
 // Accessibility audit: runs axe-core (WCAG 2.1 A/AA and best practices) against every page and Setup step, in dark and light
 // colour schemes and at a phone width. Usage: node a11y.js   (exit 1 if any violation)
 'use strict';

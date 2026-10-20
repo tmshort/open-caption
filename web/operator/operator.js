@@ -1,3 +1,6 @@
+// Copyright the open-caption authors
+// SPDX-License-Identifier: Apache-2.0
+
 // Operator page: follows the show file, sends NEXT/BACK/STOP, shows what the audience sees.
 (() => {
   'use strict';

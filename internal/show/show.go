@@ -1,3 +1,6 @@
+// Copyright the open-caption authors
+// SPDX-License-Identifier: Apache-2.0
+
 // Package show stores shows on disk. A show is a folder holding its show file (show.md, in the show's main
 // language), optional translations (show.<lang>.md), and its images (assets/). Everything about a show other
 // than its images lives in the show file itself: its title, its look and other settings in a [settings] block,

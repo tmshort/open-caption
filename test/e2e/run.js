@@ -1,3 +1,6 @@
+// Copyright the open-caption authors
+// SPDX-License-Identifier: Apache-2.0
+
 // Browser end-to-end test: starts the built program on a free port with a throwaway data folder and drives
 // Setup, Operator and Audience pages in real Chrome. Exits non-zero if any check fails.
 //

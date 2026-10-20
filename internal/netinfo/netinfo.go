@@ -1,3 +1,6 @@
+// Copyright the open-caption authors
+// SPDX-License-Identifier: Apache-2.0
+
 // Package netinfo finds the host's addresses and manages the self-signed
 // HTTPS certificate (docs/06-deployment-and-network.md).
 package netinfo

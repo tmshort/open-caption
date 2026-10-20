@@ -1,3 +1,6 @@
+// Copyright the open-caption authors
+// SPDX-License-Identifier: Apache-2.0
+
 // Package logx adds severity levels to the standard logger: lines are written as "DEBUG …", "INFO …",
 // "WARN …" or "ERROR …", and lines below the chosen level are dropped (REQ-061).
 package logx

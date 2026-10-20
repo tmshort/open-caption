@@ -1,3 +1,6 @@
+// Copyright the open-caption authors
+// SPDX-License-Identifier: Apache-2.0
+
 // Package help loads the in-app help topics (Markdown files embedded in the
 // binary) and renders them to safe HTML (docs/05-ui-specs.md, section 4).
 package help

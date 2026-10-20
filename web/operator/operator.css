@@ -1,3 +1,6 @@
+/* Copyright the open-caption authors
+   SPDX-License-Identifier: Apache-2.0 */
+
 /* The operator page is always dark (a booth). Its palette uses the shared names; --mark is the yellow of "next", speaker names and warnings. */
 /* (the page background is a shade darker than Setup's, for the booth; everything else is Setup's dark palette) */
 :root { --bg:#0b0b0d; --panel:#1b1e24; --fg:#e8ebf0; --dim:#9aa3b0; --line:#323843; --control:#1b1e24; --input:#1b1e24; --accent:#6c9cff; --accent-fg:#0b1020; --mark:#ffd400; --ok:#4cc38a; --warn:#f0b24a; --bad:#ff7b72; --next:#1d3b6f; --toast-bottom: 6.5rem; }

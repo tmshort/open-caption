@@ -1,3 +1,6 @@
+// Copyright the open-caption authors
+// SPDX-License-Identifier: Apache-2.0
+
 // Per-character colors for speaker names. Shared by the audience page and the Setup preview
 // so both show the same colors. Colors come from a color-blind-friendly palette and are
 // lightened or darkened as needed so every name stays readable on the chosen background.

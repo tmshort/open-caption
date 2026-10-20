@@ -1,3 +1,6 @@
+// Copyright the open-caption authors
+// SPDX-License-Identifier: Apache-2.0
+
 // Audience page: renders the live state pushed by the server. No interaction is needed.
 (() => {
   'use strict';

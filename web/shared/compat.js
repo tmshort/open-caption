@@ -1,3 +1,6 @@
+// Copyright the open-caption authors
+// SPDX-License-Identifier: Apache-2.0
+
 // Compatibility for older browsers, loaded first on every page. Written in plain old JavaScript on purpose:
 // it must run (and explain itself) in a browser that cannot run the rest of the page.
 //

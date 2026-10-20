@@ -1,3 +1,6 @@
+// Copyright the open-caption authors
+// SPDX-License-Identifier: Apache-2.0
+
 // Package acme gets and renews the server's HTTPS certificate from a public certificate authority (Let's Encrypt)
 // with the DNS-01 challenge: the program publishes a TXT record in the venue's public DNS through its provider's API,
 // so it never has to be reachable from the Internet. See docs/10-acme-lets-encrypt.md.

@@ -40,6 +40,7 @@ Outside contributions: `CONTRIBUTING.md` (no code PRs accepted yet; DCO sign-off
   - tests, including the browser checks in `test/e2e/run.js` and the accessibility audit when a page changes.
   If a document is English only by design (`docs/10`, the man page), say so where it is linked rather than leaving it untranslated silently.
 - **Verify before every commit:** `gofmt`, `make lint` (`go vet ./...` and staticcheck), `go test -race ./...`, and for anything that touches the web pages `make e2e`, `node test/e2e/a11y.js` and `node test/e2e/check-i18n.js`; `make vulncheck` after changing dependencies. Then `git pull --rebase` and push.
+- **Every new source file starts with the two header lines** `Copyright the open-caption authors` and `SPDX-License-Identifier: Apache-2.0` in the file's comment style (after a shebang, `@echo off` or `<!doctype html>`; for Go, before a `//go:build` line and separated from it by a blank line). Go, JS, CSS, HTML, shell, PowerShell, batch, YAML and the Makefile are covered; Markdown, data, images and fonts are not. `go test ./deploy` checks it.
 - Don't leave a change half-documented "for a follow-up": if the documentation can't be finished with the change, the change isn't finished.
 
 ## Architecture (needs several files to see)

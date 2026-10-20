@@ -1,3 +1,6 @@
+// Copyright the open-caption authors
+// SPDX-License-Identifier: Apache-2.0
+
 // Package report counts the devices that used the audience page during one run of a show (REQ-070): from the
 // moment the operator puts the show on air until it goes back to standby, is restarted or replaced. A device is
 // told apart by its address and browser type, so a phone that drops off the WiFi and comes back is one device

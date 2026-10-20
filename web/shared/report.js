@@ -1,3 +1,6 @@
+// Copyright the open-caption authors
+// SPDX-License-Identifier: Apache-2.0
+
 // The audience report (REQ-070), drawn for both the stand-alone page (/operator/report) and Setup's Report step:
 // OCReport.build(data) returns the whole report as one element: what the numbers say, a graph of the devices over time
 // with the loops marked, the loops, the languages and a row for each device. The caller fetches the data and adds

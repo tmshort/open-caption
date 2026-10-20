@@ -1,3 +1,6 @@
+// Copyright the open-caption authors
+// SPDX-License-Identifier: Apache-2.0
+
 // Regenerates web/shared/favicon.ico and web/shared/apple-touch-icon.png from web/shared/favicon.svg.
 //   cd test/e2e && npm install && cd ../.. && CHROME=/path/to/chrome node tools/make-icons.js
 'use strict';

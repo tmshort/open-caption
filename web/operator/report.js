@@ -1,3 +1,6 @@
+// Copyright the open-caption authors
+// SPDX-License-Identifier: Apache-2.0
+
 // The stand-alone audience report page (REQ-070): the toolbar, the sign-in and loading; the report itself is drawn by
 // web/shared/report.js, which Setup's Report step uses too.
 (() => {

@@ -1,3 +1,6 @@
+/* Copyright the open-caption authors
+   SPDX-License-Identifier: Apache-2.0 */
+
 /* The audience report (web/shared/report.js), in Setup's Report step and on the stand-alone page. It uses the palette names both pages define. */
 .oc-report h2 { margin: 1rem 0 .1rem; }
 .oc-report h3 { margin: 1.6rem 0 .4rem; }

@@ -1,3 +1,6 @@
+// Copyright the open-caption authors
+// SPDX-License-Identifier: Apache-2.0
+
 // Command loadtest opens many audience (SSE) connections against a server
 // started with --dev and measures operator-to-client caption latency
 // (docs/07-testing-and-acceptance.md, performance targets).

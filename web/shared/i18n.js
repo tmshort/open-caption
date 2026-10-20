@@ -1,3 +1,6 @@
+// Copyright the open-caption authors
+// SPDX-License-Identifier: Apache-2.0
+
 // Translation of Setup, the operator page and Help into the six languages the audience page has
 // (English, Spanish, French, German, Italian, Portuguese). English text is the key: a translation is looked
 // up by the English sentence, and a sentence with no translation simply shows in English.

@@ -1,3 +1,6 @@
+/* Copyright the open-caption authors
+   SPDX-License-Identifier: Apache-2.0 */
+
 :root { --bg:#fff; --fg:#14171c; --dim:#5b6472; --line:#d9dde3; --accent:#1f5fd1; --code:#f0f2f5; }
 @media (prefers-color-scheme: dark) { :root { --bg:#14161a; --fg:#e8ebf0; --dim:#9aa3b0; --line:#323843; --accent:#7aa7ff; --code:#1f232a; } }
 * { box-sizing: border-box; }

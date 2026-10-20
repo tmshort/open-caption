@@ -1,3 +1,6 @@
+// Copyright the open-caption authors
+// SPDX-License-Identifier: Apache-2.0
+
 // The audience count in the header of Setup and the operator page: its label, and the list of connected devices it opens.
 // (Shared by both pages so they say the same thing.)
 (function () {

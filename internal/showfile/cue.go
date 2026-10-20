@@ -1,3 +1,6 @@
+// Copyright the open-caption authors
+// SPDX-License-Identifier: Apache-2.0
+
 // Package show file parses open-caption show files (a Markdown subset, see
 // docs/03-show-file-format.md) into cues. It is pure: no I/O, no network.
 package showfile

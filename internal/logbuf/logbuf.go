@@ -1,3 +1,6 @@
+// Copyright the open-caption authors
+// SPDX-License-Identifier: Apache-2.0
+
 // Package logbuf keeps the most recent log lines in memory so the support
 // bundle can include them (REQ-061).
 package logbuf

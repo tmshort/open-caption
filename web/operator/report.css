@@ -1,3 +1,6 @@
+/* Copyright the open-caption authors
+   SPDX-License-Identifier: Apache-2.0 */
+
 /* The stand-alone audience report page: light or dark like the user's system, and plain black on white when printed.
    The report itself is styled by web/shared/report.css. */
 :root { --control:#fff; --input:#fff; --bg:#f6f7f9; --panel:#fff; --fg:#14171c; --dim:#5b6472; --line:#d9dde3; --accent:#1f5fd1; --accent-fg:#fff; --ok:#14804a; --warn:#a15c00; --bad:#b3261e; }

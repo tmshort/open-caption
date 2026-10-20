@@ -1,3 +1,6 @@
+// Copyright the open-caption authors
+// SPDX-License-Identifier: Apache-2.0
+
 // Package docs embeds the user-facing guides so the program can show them in its Help pages.
 // The Markdown files in this folder are the single source of truth.
 package docs

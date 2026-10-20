@@ -1,3 +1,6 @@
+// Copyright the open-caption authors
+// SPDX-License-Identifier: Apache-2.0
+
 // Package live holds the authoritative live-show state: the cursor into the
 // show file, what the audience currently sees, undo history, and the server-side
 // loop timer. It has no network code; consumers subscribe through a sink.

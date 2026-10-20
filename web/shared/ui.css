@@ -1,3 +1,6 @@
+/* Copyright the open-caption authors
+   SPDX-License-Identifier: Apache-2.0 */
+
 /* The interface that Setup and the operator page share: type, headings, links, buttons, text boxes, focus ring, hints, the sign-in
    panel, dialogs, the help panel and the toast. Each page sets its own PALETTE (the custom properties below) and nothing here
    uses a colour that is not one of them, so the two pages cannot drift apart. Page-specific layout stays in the page's own CSS.

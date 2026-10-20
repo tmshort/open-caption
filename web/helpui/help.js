@@ -1,3 +1,6 @@
+// Copyright the open-caption authors
+// SPDX-License-Identifier: Apache-2.0
+
 // Help viewer: topic list, search, and rendered topics. Works offline (all content is served by this program).
 (() => {
   'use strict';

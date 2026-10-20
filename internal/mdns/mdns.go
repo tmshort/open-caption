@@ -1,3 +1,6 @@
+// Copyright the open-caption authors
+// SPDX-License-Identifier: Apache-2.0
+
 // Package mdns announces this computer on the local network as <name>.local (multicast DNS, RFC 6762), so
 // devices can open http://open-caption.local/ instead of a numeric address. It answers address queries for
 // that one name, checks first that no other computer already uses it, and says goodbye when it stops. It does

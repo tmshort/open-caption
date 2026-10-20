@@ -1,3 +1,6 @@
+// Copyright the open-caption authors
+// SPDX-License-Identifier: Apache-2.0
+
 // Command open-caption is an open-captioning server for community theater.
 package main
 

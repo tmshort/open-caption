@@ -1,3 +1,6 @@
+/* Copyright the open-caption authors
+   SPDX-License-Identifier: Apache-2.0 */
+
 /* The header that Setup and the operator page share, so the two look and size alike: the same type size, spacing,
    status pills, links, language menu and connection dot. Each page sets the colours it uses (--panel, --bg, --dim,
    --fg, --line, --bad, --ok); the fallbacks below are only for a page that sets none. */

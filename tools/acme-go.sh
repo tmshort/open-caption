@@ -1,4 +1,7 @@
 #!/bin/sh
+# Copyright the open-caption authors
+# SPDX-License-Identifier: Apache-2.0
+
 # Runs `go <command> ...` with the DNS providers for automatic certificates (ACME DNS-01) that you choose built in.
 #
 #   tools/acme-go.sh "<providers>" build -o bin/open-caption ./cmd/open-caption
