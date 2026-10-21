@@ -3,8 +3,9 @@
 A single-binary open-captioning server for community theater, written in Go.
 
 An operator follows the live show and presses a key to release the next caption
-line. Every audience device on the venue's WiFi (phone, tablet, desktop, or a
-browser on a projector) shows the captions live, with no app to install.
+line. It is **bring your own device (BYOD)**: the audience uses their own
+phones and tablets on the venue's WiFi (or a browser on a projector) to see the
+captions live, with no app to install and nothing to hand out.
 
 - **Audience:** open one address (or scan a QR code); large high-contrast captions, text size and dyslexia-friendly fonts, scroll back, the screen stays awake, several languages in one show.
 - **Operator:** one key does it all (Space sends the next line, Backspace undoes it); notes, loops for pre-show and intermission, songs and two voices at once; a standby screen until the show starts.
