@@ -27,14 +27,14 @@ Outside contributions: `CONTRIBUTING.md` (no code PRs accepted yet; DCO sign-off
 
 ## Spec-driven
 
-`docs/` is the source of truth (the README's *Spec-driven workflow* table lists the specifications `01`–`10`; its *Documentation* table lists the guides for users); change the spec in the same commit as behavior. Requirements are numbered `REQ-xxx`; reference them from tests and commits. Terminology: the text file a show is written in is the **show file** — never "script".
+`docs/` is the source of truth (`docs/developing.md`'s *Spec-driven workflow* table lists the specifications `01`–`10`; the README's *Documentation* table lists the guides for users); change the spec in the same commit as behavior. Requirements are numbered `REQ-xxx`; reference them from tests and commits. Terminology: the text file a show is written in is the **show file** — never "script".
 
 ## Commits and documentation (always)
 
 - **One fix or feature per commit.** Never bundle two changes: if a request has several parts, make several commits, each complete on its own (code, tests, docs, translations). Don't mix refactors or unrelated tidying into a feature or fix; give them their own commit. Commit messages have a short headline of **at most 80 characters** (a summary of the change, no detail); the detail (what changed and why, the docs and tests touched) goes in the description after a blank line. Reference `REQ-xxx` where there is one, and end with the co-author line.
 - **The documentation changes in the same commit as the behavior, never later.** Before committing, go through this list and update every place the change touches:
   - the spec in `docs/` (requirements `01`, architecture `02`, show file `03`, API `04`, UI `05`, deployment `06`, testing `07`, roadmap `08`, open questions `09`) and the specific guides (`10` certificates, `configuration-reference.md`, `usage-guide.md`, `venue-network-guide.md`, `https-certificate-guide.md`, and the English-only bare-computer build guides `build-macos.md`, `build-windows.md`, `build-linux.md`, which must be updated when the build requirements change: Go version, Node version, tools);
-  - `README.md` (features, quick start, building, the docs table) and this file;
+  - `README.md` (the short feature list, quick start, the docs table), `docs/features.md` (the full feature list) and `docs/developing.md` (building, testing, the specifications), and this file;
   - the man page `docs/open-caption.1` and the `--help` text for any command-line option (a test checks they agree with `docs/configuration-reference.md`); a new `config.yaml` setting goes in `docs/configuration-reference.md` (a test checks every key is described);
   - the in-app help (`web/help/*.md`) and the **translations**: help topics in `web/help/<lang>/` and guides (usage, venue network, HTTPS certificate, configuration reference) in `docs/i18n/<lang>/` for es, fr, de, it, pt, and on-screen text via `__('…')` in `web/shared/i18n/<lang>.js` (`node test/e2e/check-i18n.js`);
   - tests, including the browser checks in `test/e2e/run.js` and the accessibility audit when a page changes.

@@ -45,6 +45,7 @@ archives:
       - docs/venue-network-guide.md
       - docs/https-certificate-guide.md
       - docs/configuration-reference.md
+      - docs/features.md
       - docs/i18n/README.md
       - docs/i18n/*/*.md
       - web/help/*.md
