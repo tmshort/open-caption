@@ -31,7 +31,7 @@ Umbenennen, Duplizieren, Exportieren, Archivieren und Löschen finden Sie im Men
 
 ## Neu bei Show-Dateien?
 
-Eine Show-Datei ist einfach Text. Jede Zeile ist ein Untertitel, und ein Druck auf die Leertaste sendet eine Zeile. Für die ganze Arbeit, vom Stück bis zur fertigen Datei (auch das Bearbeiten im eigenen Programm und das Zurückholen der Datei), lesen Sie [Eine Show-Datei vorbereiten](topic:admin-preparing-a-show-file). Die Auszeichnungen stehen in [Eine Show-Datei schreiben](topic:admin-writing-a-show-file). Oder legen Sie die Beispiel-Show an und sehen Sie sich an, wie sie geschrieben ist. Eine Vorlage zum Herunterladen finden Sie unter [/help/sample-show.md](../../sample/sample-show.md).
+Eine Show-Datei ist einfach Text. Jede Zeile ist ein Untertitel, und ein Druck auf die Leertaste sendet eine Zeile. Für die ganze Arbeit, vom Stück bis zur fertigen Datei (auch das Bearbeiten im eigenen Programm und das Zurückholen der Datei), lesen Sie [Eine Show-Datei vorbereiten](topic:admin-preparing-a-show-file). Die Auszeichnungen stehen in [Eine Show-Datei schreiben](topic:admin-writing-a-show-file). Oder legen Sie die Beispiel-Show an und sehen Sie sich an, wie sie geschrieben ist. Eine Vorlage zum Herunterladen finden Sie unter [sample-show.md](../../sample/sample-show.md).
 
 ## Die Ausstattung planen
 

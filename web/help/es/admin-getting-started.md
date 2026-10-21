@@ -31,7 +31,7 @@ Renombrar, Duplicar, Exportar, Archivar y Eliminar están en el menú **Más ▾
 
 ## ¿Es nuevo con los archivos del espectáculo?
 
-Un archivo del espectáculo es solo texto. Cada línea es un subtítulo, y una pulsación de la barra espaciadora envía una línea. Para todo el trabajo, del guion al archivo terminado (incluido editar en su propio programa y traer el archivo de vuelta), lea [Preparar un archivo del espectáculo](topic:admin-preparing-a-show-file). Las marcas están enumeradas en [Escribir un archivo del espectáculo](topic:admin-writing-a-show-file). O cree el espectáculo de ejemplo y vea cómo está escrito. Hay un archivo de partida que puede descargar en [/help/sample-show.md](../../sample/sample-show.md).
+Un archivo del espectáculo es solo texto. Cada línea es un subtítulo, y una pulsación de la barra espaciadora envía una línea. Para todo el trabajo, del guion al archivo terminado (incluido editar en su propio programa y traer el archivo de vuelta), lea [Preparar un archivo del espectáculo](topic:admin-preparing-a-show-file). Las marcas están enumeradas en [Escribir un archivo del espectáculo](topic:admin-writing-a-show-file). O cree el espectáculo de ejemplo y vea cómo está escrito. Hay un archivo de partida que puede descargar en [sample-show.md](../../sample/sample-show.md).
 
 ## Planificar el equipo
 
