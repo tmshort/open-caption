@@ -493,3 +493,17 @@ func TestNetworkInterfacesAreCheckedAndSaved(t *testing.T) {
 		t.Errorf("an empty name is reported: %v", err)
 	}
 }
+
+// A link-local IPv6 client arrives with a zone (fe80::1%en0), which netip.Prefix.Contains never matches.
+func TestAllowListMatchesAnAddressWithAZone(t *testing.T) {
+	l, err := ParseAllowList([]string{"private"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !l.Allows(netip.MustParseAddr("fe80::abcd%en0")) {
+		t.Error("a link-local client with a zone is refused although 'private' includes fe80::/10")
+	}
+	if l.Allows(netip.MustParseAddr("2001:db8::1%en0")) {
+		t.Error("a public address with a zone must still be refused")
+	}
+}

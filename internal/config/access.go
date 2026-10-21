@@ -77,7 +77,7 @@ func (l AllowList) Allows(ip netip.Addr) bool {
 	if len(l.prefixes) == 0 {
 		return true
 	}
-	ip = ip.Unmap()
+	ip = ip.Unmap().WithZone("") // Prefix.Contains is false for an address with a zone (fe80::1%en0)
 	for _, p := range l.prefixes {
 		if p.Contains(ip) {
 			return true
