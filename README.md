@@ -55,10 +55,11 @@ The first run creates `config.yaml` (in your user config folder; the path is pri
 | [docs/configuration-reference.md](docs/configuration-reference.md) | Every `config.yaml` setting, the command-line options and environment variables |
 | [docs/features.md](docs/features.md) | Everything the program can do (English) |
 | [docs/open-caption.1](docs/open-caption.1) | The manual page (`man ./docs/open-caption.1`) (English) |
-<!-- source-only:start -->
-| [docs/developing.md](docs/developing.md) | Building, testing, and the design specifications (English) |
-<!-- source-only:end -->
 
+<!-- source-only:start -->
+For developers: [docs/developing.md](docs/developing.md) (building, testing, the design specifications; English).
+
+<!-- source-only:end -->
 The first four guides are also in Spanish, French, German, Italian and Portuguese (`docs/i18n/`), as is everything behind the app's **Help** button ([web/help/](web/help/)).
 
 ## Security
