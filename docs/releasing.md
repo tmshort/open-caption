@@ -44,7 +44,7 @@ There is no paid code signing or notarization. The release notes (written by `.g
 - `.github/workflows/release.yml` starts on a `v*` tag and runs `make release`.
 - `make release` installs the pinned GoReleaser (`GORELEASER_VERSION` in the Makefile, into `.tools/`), runs `go test ./...`, then `goreleaser release --clean`.
 - `.goreleaser.yaml` says what to build, what goes in each archive, the checksums, the release notes (the commit messages since the previous tag, plus the installing notes) and that the release is a draft.
-- `tools/package-readme.sh` makes the download's README: everything between `<!-- source-only:start -->` and `<!-- source-only:end -->` in `README.md` is left out (invisible on GitHub), so wrap anything in the README that needs the source code (build instructions, the specifications) in those markers.
+- `tools/package-readme.sh` makes the download's README: everything between `<!-- source-only:start -->` and `<!-- source-only:end -->` in `README.md` is left out (invisible on GitHub), so wrap anything in the README that needs the source code (build instructions, the specifications) in those markers (a table row cannot be fenced that way, since a comment line ends the table: end the row's last cell with `<!-- source-only-line -->` and just that line is left out).
 
 To change what is in the download, edit the `files:` list in `.goreleaser.yaml`; `go test ./deploy` then checks the result.
 
