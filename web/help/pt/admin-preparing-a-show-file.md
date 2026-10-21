@@ -4,7 +4,7 @@ Esta página é para quem transforma o texto da peça em legendas. Você não pr
 
 ## A versão curta
 
-1. Coloque o texto da peça em um arquivo de texto simples. Se quiser, comece pelo espetáculo de exemplo em [/help/sample-show.md](../../sample/sample-show.md).
+1. Coloque o texto da peça em um arquivo de texto simples. Se quiser, comece pelo espetáculo de exemplo em [sample-show.md](../../sample/sample-show.md).
 2. Faça com que **uma linha do arquivo seja uma legenda**: um toque na barra de espaço.
 3. Acrescente o que ajuda o público e o operador (nomes de personagens, descrições de sons, seções, notas).
 4. Traga o arquivo para a Configuração, leia a lista de problemas, corrija-os e salve.

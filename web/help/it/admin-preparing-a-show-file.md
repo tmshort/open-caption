@@ -4,7 +4,7 @@ Questa pagina è per chi trasforma il copione in sottotitoli. Non serve condurre
 
 ## In breve
 
-1. Metti il copione in un file di testo semplice. Se vuoi, parti dallo spettacolo di esempio in [/help/sample-show.md](../../sample/sample-show.md).
+1. Metti il copione in un file di testo semplice. Se vuoi, parti dallo spettacolo di esempio in [sample-show.md](../../sample/sample-show.md).
 2. Fai in modo che **una riga del file sia un sottotitolo**: una pressione della barra spaziatrice.
 3. Aggiungi ciò che aiuta il pubblico e l'operatore (nomi dei personaggi, descrizioni di suoni, sezioni, note).
 4. Porta il file nella Configurazione, leggi l'elenco dei problemi, correggili e salva.
