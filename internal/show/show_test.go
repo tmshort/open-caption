@@ -473,3 +473,34 @@ func TestNamedVersionsAreKeptForGood(t *testing.T) {
 		t.Errorf("%v", err)
 	}
 }
+
+// Two shows whose ids would be the same must not share a folder: the second gets another suffix and the
+// first keeps its show file.
+func TestCreateNeverReusesAnExistingShowFolder(t *testing.T) {
+	s := newStore(t)
+	calls := 0
+	old := randRead
+	randRead = func(b []byte) {
+		calls++
+		if calls <= 2 {
+			b[0], b[1] = 0xab, 0xcd
+		} else {
+			b[0], b[1] = 0x12, 0x34
+		}
+	}
+	defer func() { randRead = old }()
+	first, err := s.Create("Same Title", "First show\n")
+	if err != nil {
+		t.Fatal(err)
+	}
+	second, err := s.Create("Same Title", "Second show\n")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if first.ID == second.ID {
+		t.Fatalf("both shows got the id %q", first.ID)
+	}
+	if got := read(t, s, first.ID, ""); !strings.Contains(got, "First show") {
+		t.Errorf("the first show was overwritten:\n%s", got)
+	}
+}

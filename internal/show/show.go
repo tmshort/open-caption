@@ -291,10 +291,25 @@ func (s *Store) Create(name, initial string) (Meta, error) {
 	if base == "" {
 		base = showfile.ReadSettings(initial, false).TitleOr("show")
 	}
-	suffix := make([]byte, 2)
-	rand.Read(suffix)
-	id := slug(base) + "-" + hex.EncodeToString(suffix)
-	dir, _ := s.path(id)
+	// The id is the title plus a short random suffix; a folder that exists already belongs to another show, so
+	// try another suffix rather than writing over it.
+	var id, dir string
+	for try := 0; ; try++ {
+		suffix := make([]byte, 2)
+		randRead(suffix)
+		id = slug(base) + "-" + hex.EncodeToString(suffix)
+		dir, _ = s.path(id)
+		if err := os.MkdirAll(filepath.Dir(dir), 0o755); err != nil {
+			return Meta{}, err
+		}
+		err := os.Mkdir(dir, 0o755)
+		if err == nil {
+			break
+		}
+		if !errors.Is(err, os.ErrExist) || try >= 50 {
+			return Meta{}, err
+		}
+	}
 	if err := os.MkdirAll(filepath.Join(dir, "assets"), 0o755); err != nil {
 		return Meta{}, err
 	}
@@ -303,6 +318,9 @@ func (s *Store) Create(name, initial string) (Meta, error) {
 	}
 	return s.Get(id)
 }
+
+// randRead fills the id suffix; the tests replace it to force a collision.
+var randRead = func(b []byte) { rand.Read(b) }
 
 // Get loads a show's details from its show file(s).
 func (s *Store) Get(id string) (Meta, error) {
