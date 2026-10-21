@@ -17,6 +17,7 @@ Each line inside the loop is one item:
 - `[blank: 3s]` is a short pause on a blank screen;
 - add `| 15s` at the end of an item to change how long it stays;
 - `[loop: 10s]` sets the time for items that do not say. If you give no time, the default from `config.yaml` (10 seconds) is used.
+- an item time can be at most 3600 seconds (one hour); a longer time is cut to that, with a warning.
 
 Captions, `[clear]`, sections, notes and other loops cannot go inside a loop.
 

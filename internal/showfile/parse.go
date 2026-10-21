@@ -323,7 +323,7 @@ func (p *parser) directive(raw string, lineNo int) {
 		}
 		p.res.Cues = append(p.res.Cues, Cue{Kind: CueKind(name), Line: lineNo})
 	case "image":
-		fields, secs := splitDuration(args, false)
+		fields, secs := p.splitDuration(lineNo, args, false)
 		if len(fields) == 0 || fields[0] == "" {
 			p.diag(lineNo, SevWarning, "[image] needs a file name, e.g. [image: curtain.jpg]. The line was skipped.")
 			return
@@ -334,7 +334,7 @@ func (p *parser) directive(raw string, lineNo int) {
 			p.fullscreenBlock(lineNo)
 			return
 		}
-		fields, _ := splitDuration(args, false)
+		fields, _ := p.splitDuration(lineNo, args, false)
 		h, t := RenderInline(strings.Join(fields, " | "))
 		p.res.Cues = append(p.res.Cues, Cue{Kind: KindFullscreen, Line: lineNo, Text: t, HTML: h,
 			Item: &Item{Kind: "text", HTML: h, Text: t}})
@@ -429,7 +429,7 @@ func (p *parser) loop(start int, args string) {
 		switch {
 		case part == "":
 		case durationRe.MatchString(part):
-			cue.Period, _ = strconv.ParseFloat(durationRe.FindStringSubmatch(part)[1], 64)
+			cue.Period = p.seconds(start, durationRe.FindStringSubmatch(part)[1])
 		case nameOptionRe.MatchString(low):
 			name := strings.Join(strings.Fields(nameOptionRe.ReplaceAllString(part, "")), " ")
 			switch r := []rune(name); {
@@ -523,14 +523,14 @@ func (p *parser) loopItem(t string, lineNo int) (Item, bool) {
 		name, args := parseDirective(t)
 		switch name {
 		case "image":
-			fields, secs := splitDuration(args, false)
+			fields, secs := p.splitDuration(lineNo, args, false)
 			if len(fields) == 0 || fields[0] == "" {
 				p.diag(lineNo, SevWarning, "[image] needs a file name. The line was skipped.")
 				return Item{}, false
 			}
 			return p.imageItem(lineNo, fields[0], strings.Join(fields[1:], " | "), secs)
 		case "fullscreen":
-			fields, secs := splitDuration(args, false)
+			fields, secs := p.splitDuration(lineNo, args, false)
 			if len(fields) == 0 || fields[0] == "" {
 				p.diag(lineNo, SevWarning, "Inside a loop, [fullscreen] needs text on the same line. The line was skipped.")
 				return Item{}, false
@@ -538,7 +538,7 @@ func (p *parser) loopItem(t string, lineNo int) (Item, bool) {
 			h, pl := RenderInline(strings.Join(fields, " | "))
 			return p.timerItem(Item{Kind: "text", HTML: h, Text: pl, Seconds: secs}, lineNo), true
 		case "blank":
-			_, secs := splitDuration(args, true)
+			_, secs := p.splitDuration(lineNo, args, true)
 			return Item{Kind: "blank", Seconds: secs}, true
 		case "loop":
 			p.diag(lineNo, SevWarning, "Loops can't be nested. This line was skipped.")
@@ -547,7 +547,7 @@ func (p *parser) loopItem(t string, lineNo int) (Item, bool) {
 		}
 		return Item{}, false
 	}
-	fields, secs := splitDuration(t, false)
+	fields, secs := p.splitDuration(lineNo, t, false)
 	h, pl := RenderInline(strings.Join(fields, " | "))
 	return p.timerItem(Item{Kind: "text", HTML: h, Text: pl, Seconds: secs}, lineNo), true
 }
@@ -597,17 +597,30 @@ func splitFields(args string) []string {
 	return out
 }
 
+// MaxItemSeconds is the longest time one loop item or a loop's period may be given (as for the loop time setting);
+// a longer time is cut to it with a warning.
+const MaxItemSeconds = 3600
+
+// seconds reads a time given in seconds, cutting it to MaxItemSeconds (a huge number would overflow a duration).
+func (p *parser) seconds(lineNo int, digits string) float64 {
+	secs, _ := strconv.ParseFloat(digits, 64)
+	if secs > MaxItemSeconds {
+		p.diag(lineNo, SevWarning, "A time of %ss was cut to the most allowed, %d seconds.", digits, MaxItemSeconds)
+		return MaxItemSeconds
+	}
+	return secs
+}
+
 // splitDuration splits "a | b | 15s" into fields and a trailing duration.
 // A lone duration counts as one only when allowSole is set (e.g. [blank: 3s]).
-func splitDuration(args string, allowSole bool) ([]string, float64) {
+func (p *parser) splitDuration(lineNo int, args string, allowSole bool) ([]string, float64) {
 	f := splitFields(args)
 	if len(f) == 0 {
 		return nil, 0
 	}
 	last := f[len(f)-1]
 	if m := durationRe.FindStringSubmatch(last); m != nil && (len(f) > 1 || allowSole) {
-		secs, _ := strconv.ParseFloat(m[1], 64)
-		return f[:len(f)-1], secs
+		return f[:len(f)-1], p.seconds(lineNo, m[1])
 	}
 	return f, 0
 }

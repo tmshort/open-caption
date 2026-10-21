@@ -17,6 +17,7 @@ Chaque ligne à l'intérieur de la boucle est un élément :
 - `[blank: 3s]` est une courte pause sur un écran vide ;
 - ajoutez `| 15s` à la fin d'un élément pour changer sa durée d'affichage ;
 - `[loop: 10s]` fixe la durée des éléments qui n'en indiquent pas. Si vous n'en donnez aucune, la valeur par défaut de `config.yaml` (10 secondes) est utilisée.
+- un temps peut durer au plus 3600 secondes (une heure) ; un temps plus long est ramené à cette valeur, avec un avertissement.
 
 Les sous-titres, `[clear]`, les sections, les notes et les autres boucles ne peuvent pas figurer dans une boucle.
 

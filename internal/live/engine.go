@@ -697,7 +697,7 @@ func (e *Engine) itemDuration(cueIdx, item int) time.Duration {
 	if secs <= 0 {
 		secs = e.cfg.DefaultLoopSeconds
 	}
-	return time.Duration(secs * float64(time.Second))
+	return time.Duration(min(secs, showfile.MaxItemSeconds) * float64(time.Second)) // a huge value would overflow
 }
 
 // beginLoopLocked starts the loop at item 0. If announce, the first item is

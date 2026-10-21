@@ -8,6 +8,7 @@ OCI18n.add("pt", {
  "Open the report page": "Abrir a página do relatório",
  "The loop name is empty. Write it after the word name, like [loop: name Intermission]. The loop has no name.": "O nome do laço está vazio. Escreva-o depois da palavra name, como [loop: name Intervalo]. O laço não tem nome.",
  "The loop name is longer than {0} characters and was cut.": "O nome do laço tem mais de {0} caracteres e foi cortado.",
+ "A time of {0}s was cut to the most allowed, {1} seconds.": "Um tempo de {0}s foi cortado para o máximo permitido, {1} segundos.",
  "Pre-show": "Antes do espetáculo",
  "Intermission": "Intervalo",
  "Post-show": "Depois do espetáculo",

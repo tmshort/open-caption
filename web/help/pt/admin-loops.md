@@ -17,6 +17,7 @@ Cada linha dentro do laço é um item:
 - `[blank: 3s]` é uma pequena pausa com a tela em branco;
 - acrescente `| 15s` ao fim de um item para mudar quanto tempo ele fica;
 - `[loop: 10s]` define o tempo dos itens que não dizem nada. Se você não der tempo algum, usa-se o padrão de `config.yaml` (10 segundos).
+- um tempo pode ter no máximo 3600 segundos (uma hora); um tempo maior é cortado para esse valor, com um aviso.
 
 Legendas, `[clear]`, seções, notas e outros laços não podem ficar dentro de um laço.
 

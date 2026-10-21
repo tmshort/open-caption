@@ -17,6 +17,7 @@ Jede Zeile in der Schleife ist ein Element:
 - `[blank: 3s]` ist eine kurze Pause auf leerem Bildschirm;
 - fügen Sie am Ende eines Elements `| 15s` an, um zu ändern, wie lange es stehen bleibt;
 - `[loop: 10s]` legt die Zeit für Elemente fest, die keine angeben. Geben Sie keine Zeit an, wird der Standardwert aus `config.yaml` (10 Sekunden) verwendet.
+- eine Zeit darf höchstens 3600 Sekunden (eine Stunde) betragen; eine längere wird darauf gekürzt, mit einer Warnung.
 
 Untertitel, `[clear]`, Abschnitte, Notizen und andere Schleifen dürfen nicht in einer Schleife stehen.
 

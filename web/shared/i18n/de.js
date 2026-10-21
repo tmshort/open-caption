@@ -8,6 +8,7 @@ OCI18n.add("de", {
  "Open the report page": "Berichtsseite öffnen",
  "The loop name is empty. Write it after the word name, like [loop: name Intermission]. The loop has no name.": "Der Name der Schleife ist leer. Schreiben Sie ihn nach dem Wort name, etwa [loop: name Pause]. Die Schleife hat keinen Namen.",
  "The loop name is longer than {0} characters and was cut.": "Der Name der Schleife ist länger als {0} Zeichen und wurde gekürzt.",
+ "A time of {0}s was cut to the most allowed, {1} seconds.": "Eine Zeit von {0}s wurde auf das erlaubte Maximum von {1} Sekunden gekürzt.",
  "Pre-show": "Vor der Show",
  "Intermission": "Pause",
  "Post-show": "Nach der Show",

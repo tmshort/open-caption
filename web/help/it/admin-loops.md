@@ -17,6 +17,7 @@ Ogni riga dentro il ciclo è un elemento:
 - `[blank: 3s]` è una breve pausa su schermo vuoto;
 - aggiungi `| 15s` alla fine di un elemento per cambiare quanto resta;
 - `[loop: 10s]` imposta il tempo per gli elementi che non lo indicano. Se non dai alcun tempo, si usa il valore predefinito di `config.yaml` (10 secondi).
+- un tempo può essere al massimo di 3600 secondi (un'ora); uno più lungo viene ridotto a questo valore, con un avviso.
 
 Sottotitoli, `[clear]`, sezioni, note e altri cicli non possono stare dentro un ciclo.
 

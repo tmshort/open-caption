@@ -145,6 +145,7 @@ Please silence your phones
 - An item's display time is its trailing duration (`| 15s`); otherwise the
   loop's period (`[loop: 10s]`); otherwise `defaults.loop_item_seconds` from
   `config.yaml` (default 10 s).
+- A time can be at most 3600 seconds; a longer one is cut to 3600 with a warning.
 - Loops can't be nested. Captions, `[clear]`, `[section]` and `[note]` inside a
   loop produce a warning and are skipped.
 - The loop is **one cue** with one position in the operator list.

@@ -536,3 +536,17 @@ func TestLoopNamesDoNotHaveToMatchInATranslation(t *testing.T) {
 		t.Errorf("%v", errs)
 	}
 }
+
+func TestHugeItemTimeIsCutWithAWarning(t *testing.T) {
+	r := Parse("[loop: 99999999999s]\nHello | 99999999999s\n[blank: 7200s]\n[/loop]\n", Options{})
+	if len(r.Cues) != 1 {
+		t.Fatalf("cues: %+v", r.Cues)
+	}
+	c := r.Cues[0]
+	if c.Period != MaxItemSeconds || c.Items[0].Seconds != MaxItemSeconds || c.Items[1].Seconds != MaxItemSeconds {
+		t.Errorf("times not cut: period %v, items %v %v", c.Period, c.Items[0].Seconds, c.Items[1].Seconds)
+	}
+	if !hasDiag(r, SevWarning, "cut to the most allowed") {
+		t.Errorf("no warning: %+v", r.Diagnostics)
+	}
+}

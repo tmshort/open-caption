@@ -764,3 +764,12 @@ func TestAlignPositionsAStandbyEngineWithoutGoingOnAir(t *testing.T) {
 		t.Fatalf("Align past the end: %v", err)
 	}
 }
+
+func TestItemDurationIsCappedSoATimerCannotOverflow(t *testing.T) {
+	e := New([]showfile.Cue{{Kind: showfile.KindLoop, Period: 1e12, Items: []showfile.Item{{Kind: "text", Seconds: 1e12}}}},
+		Config{DefaultLoopSeconds: 60}, func(Event) {})
+	defer e.Close()
+	if d := e.itemDuration(0, 0); d != time.Hour {
+		t.Fatalf("duration %v, want %v", d, time.Hour)
+	}
+}

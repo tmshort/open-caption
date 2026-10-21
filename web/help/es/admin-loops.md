@@ -17,6 +17,7 @@ Cada línea dentro del bucle es un elemento:
 - `[blank: 3s]` es una breve pausa con la pantalla en blanco;
 - añada `| 15s` al final de un elemento para cambiar cuánto tiempo permanece;
 - `[loop: 10s]` fija el tiempo de los elementos que no lo indican. Si no da ningún tiempo, se usa el valor por defecto de `config.yaml` (10 segundos).
+- un tiempo puede ser como máximo de 3600 segundos (una hora); uno más largo se recorta a ese valor, con una advertencia.
 
 Los subtítulos, `[clear]`, las secciones, las notas y otros bucles no pueden ir dentro de un bucle.
 
