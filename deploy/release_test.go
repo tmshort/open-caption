@@ -71,7 +71,7 @@ func packageFiles(t *testing.T) (files map[string]string, cfg map[string]any) {
 func TestReleasePackageHoldsTheGuidesAndNotTheDesignDocuments(t *testing.T) {
 	files, _ := packageFiles(t)
 	for _, want := range []string{"README.md", "LICENSE", "NOTICE", "docs/open-caption.1", "docs/usage-guide.md", "docs/venue-network-guide.md",
-		"docs/https-certificate-guide.md", "docs/configuration-reference.md", "docs/i18n/es/usage-guide.md", "web/help/admin-getting-started.md", "deploy/open-caption.service"} {
+		"docs/https-certificate-guide.md", "docs/configuration-reference.md", "docs/features.md", "docs/i18n/es/usage-guide.md", "web/help/admin-getting-started.md", "deploy/open-caption.service"} {
 		if _, ok := files[want]; !ok {
 			t.Errorf("the release download lacks %s", want)
 		}
