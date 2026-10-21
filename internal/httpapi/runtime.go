@@ -466,13 +466,13 @@ func (rt *Runtime) State(lang string) AudState {
 	rt.mu.RLock()
 	lang = rt.resolveLangLocked(lang)
 	l := rt.langs[lang]
-	eng := l.engine
+	eng, speakers := l.engine, l.speakers // taken now: the language may be removed once the lock is released
 	rt.mu.RUnlock()
 	st := eng.Snapshot()
-	return rt.audState(lang, st, rt.preloadFor(l))
+	return rt.audState(lang, speakers, st, rt.preloadFor(l))
 }
 
-func (rt *Runtime) audState(lang string, st live.State, preload []string) AudState {
+func (rt *Runtime) audState(lang string, speakers []string, st live.State, preload []string) AudState {
 	rt.mu.RLock()
 	defer rt.mu.RUnlock()
 	if st.Scrollback == nil {
@@ -480,7 +480,7 @@ func (rt *Runtime) audState(lang string, st live.State, preload []string) AudSta
 	}
 	return AudState{Seq: st.Seq, TS: time.Now().UnixMilli(), Lang: lang, Languages: rt.languagesLocked(), Mode: st.Mode,
 		Scrollback: st.Scrollback, Fullscreen: rt.item(st.Fullscreen), Preload: preload,
-		Speakers: rt.langs[lang].speakers, Theme: rt.themeForLocked(lang), Standby: rt.standbyForLocked(st.Mode)}
+		Speakers: speakers, Theme: rt.themeForLocked(lang), Standby: rt.standbyForLocked(st.Mode)}
 }
 
 func (rt *Runtime) standbyForLocked(mode string) *StandbyView {

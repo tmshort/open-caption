@@ -370,3 +370,35 @@ func TestAnnouncementReachesEveryLanguageAndTheOperatorSeesItUntilTheNextLine(t 
 		t.Errorf("the next line should replace the announcement, operator still sees %q", o.Announcement)
 	}
 }
+
+// Reading the audience state while a language is being removed and added again must not panic (the state used
+// to look the language up a second time, after the lock was released).
+func TestStateWhileLanguagesComeAndGo(t *testing.T) {
+	s := New(testConfig(), "t")
+	defer s.Close()
+	en, es := showfile.Parse("A\nB", showfile.Options{}), showfile.Parse("a\nb", showfile.Options{})
+	rt := s.Runtime()
+	rt.SetShowLangs("demo", "Demo", "", LangFile{"en", "English", en.Cues}, []LangFile{{"es", "Español", es.Cues}}, DefaultTheme(""))
+	stop := make(chan struct{})
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+		for {
+			select {
+			case <-stop:
+				return
+			default:
+				rt.State("es")
+			}
+		}
+	}()
+	for i := 0; i < 300; i++ {
+		var others []LangFile
+		if i%2 == 0 {
+			others = []LangFile{{"es", "Español", es.Cues}}
+		}
+		rt.ReplaceLangs(LangFile{"en", "English", en.Cues}, others)
+	}
+	close(stop)
+	<-done
+}
