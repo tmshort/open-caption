@@ -6,6 +6,8 @@ package httpapi
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/tmshort/open-caption/internal/live"
+	"github.com/tmshort/open-caption/internal/showfile"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -189,5 +191,34 @@ func TestStandbyScreenIsTheVenuesOwn(t *testing.T) {
 	}
 	if resp, _ := http.Get(ts.URL + "/standby-logo"); resp.StatusCode != 404 {
 		t.Errorf("no logo: %d", resp.StatusCode)
+	}
+}
+
+// A translation added to a show that is on air catches up with the primary language: on air and at the same
+// cue, not stuck on the standby screen (a new engine starts in standby, where a jump is refused).
+func TestLanguageAddedToAShowOnAirCatchesUp(t *testing.T) {
+	s := New(testConfig(), "t")
+	s.EnableStandby()
+	defer s.Close()
+	en, es := showfile.Parse("A\nB\nC", showfile.Options{}), showfile.Parse("a\nb\nc", showfile.Options{})
+	rt := s.Runtime()
+	rt.SetShowLangs("demo", "Demo", "", LangFile{"en", "English", en.Cues}, nil, DefaultTheme(""))
+	rt.Do(func(e *live.Engine) (live.OperatorState, error) { return e.Start(-1) })
+	for i := 0; i < 2; i++ {
+		rt.Do(func(e *live.Engine) (live.OperatorState, error) { return e.Next(-1) })
+	}
+	rt.ReplaceLangs(LangFile{"en", "English", en.Cues}, []LangFile{{"es", "Español", es.Cues}})
+	st := rt.State("es")
+	var got []string
+	for _, c := range st.Scrollback {
+		got = append(got, c.Text)
+	}
+	if st.Mode == "standby" || len(got) != 2 || got[1] != "b" {
+		t.Fatalf("the new language shows mode %q and %v; want on air with a, b", st.Mode, got)
+	}
+	// and it follows the operator from here on
+	rt.Do(func(e *live.Engine) (live.OperatorState, error) { return e.Next(-1) })
+	if got := rt.State("es").Scrollback; len(got) != 3 || got[2].Text != "c" {
+		t.Fatalf("the new language does not follow the operator: %+v", got)
 	}
 }

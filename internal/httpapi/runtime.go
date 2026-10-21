@@ -584,7 +584,7 @@ func (rt *Runtime) ReplaceLangs(primary LangFile, others []LangFile) (countChang
 		return
 	}
 
-	cursor := eng.Operator().Cursor
+	op := eng.Operator()
 	all := append([]LangFile{primary}, others...)
 	rt.mu.Lock()
 	gen := rt.gen
@@ -639,11 +639,20 @@ func (rt *Runtime) ReplaceLangs(primary LangFile, others []LangFile) (countChang
 		r.eng.ReplaceCues(r.cues)
 	}
 	for _, l := range added {
-		l.engine.Jump(cursor, -1)
+		catchUp(l.engine, op)
 	}
 	rt.refreshPreload()
 	rt.notify()
 	return
+}
+
+// catchUp brings an engine that has no state of its own (a language just added to the show) to where the
+// primary language is: on air if it is, and at its cue. A new engine starts in standby, where Jump refuses.
+func catchUp(e *live.Engine, op live.OperatorState) {
+	if op.Live {
+		e.Start(-1)
+	}
+	e.Align(op.Cursor)
 }
 
 func (rt *Runtime) langsOrderHas(code string) (int, bool) {
@@ -907,7 +916,7 @@ func (rt *Runtime) Restore() bool {
 		if p, ok := sv.Langs[c]; ok {
 			e.Restore(p)
 		} else {
-			e.Jump(sv.State.Cursor, -1)
+			catchUp(e, engs[primary].Operator())
 		}
 	}
 	rt.refreshPreload()

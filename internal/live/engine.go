@@ -339,6 +339,38 @@ func (e *Engine) Jump(index int, rev int64) (OperatorState, error) {
 	if index < 0 || index > len(e.cues) {
 		return e.operatorLocked(), ErrBadCue
 	}
+	e.jumpLocked(index)
+	e.bumpLocked()
+	e.emitSnapshot()
+	return e.operatorLocked(), nil
+}
+
+// Align puts the engine at cue index whatever its mode, without changing the mode: in standby the position
+// is kept for when the show goes on air (a running loop waits as the loop to resume). It is how a language
+// added to a show catches up with the primary language.
+func (e *Engine) Align(index int) error {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	if index < 0 || index > len(e.cues) {
+		return ErrBadCue
+	}
+	standby := e.standby
+	e.standby = false
+	e.jumpLocked(index)
+	if standby {
+		e.resumeLoop = -1
+		if e.loop != nil {
+			e.resumeLoop = e.loop.cue
+		}
+		e.stopLoopLocked()
+		e.standby = true
+	}
+	e.bumpLocked()
+	e.emitSnapshot()
+	return nil
+}
+
+func (e *Engine) jumpLocked(index int) {
 	e.pushLocked()
 	st, cursor, loopCue := e.replayLocked(index)
 	e.stopLoopLocked()
@@ -349,9 +381,6 @@ func (e *Engine) Jump(index int, rev int64) (OperatorState, error) {
 		e.beginLoopLocked(loopCue, false)
 	}
 	e.touched = cursor > e.initialCursor()
-	e.bumpLocked()
-	e.emitSnapshot()
-	return e.operatorLocked(), nil
 }
 
 // SetBlank blanks or un-blanks the audience screen (ad hoc).

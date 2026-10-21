@@ -738,3 +738,29 @@ func TestAtStartMeansNothingToRestart(t *testing.T) {
 		t.Error("nothing was sent, so nothing to restart")
 	}
 }
+
+func TestAlignPositionsAStandbyEngineWithoutGoingOnAir(t *testing.T) {
+	e, _ := newStandby(t, "One\nTwo\nThree\n")
+	if _, err := e.Jump(2, -1); err != ErrStandby {
+		t.Fatalf("Jump in standby: %v, want ErrStandby", err)
+	}
+	if err := e.Align(2); err != nil {
+		t.Fatal(err)
+	}
+	op := e.Operator()
+	if op.Cursor != 2 || op.Live || !op.Standby {
+		t.Fatalf("after Align: cursor %d, live %v, standby %v; want 2, false, true", op.Cursor, op.Live, op.Standby)
+	}
+	if s := e.Snapshot(); s.Mode != ModeStandby || len(s.Scrollback) != 0 {
+		t.Fatalf("the audience must still see standby: %+v", s)
+	}
+	if _, err := e.Start(-1); err != nil {
+		t.Fatal(err)
+	}
+	if got := e.Operator().Cursor; got != 2 {
+		t.Fatalf("after Start the cursor is %d, want 2", got)
+	}
+	if err := e.Align(99); err != ErrBadCue {
+		t.Fatalf("Align past the end: %v", err)
+	}
+}
