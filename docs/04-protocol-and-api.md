@@ -194,6 +194,7 @@ the server's retained buffer, the server sends a `snapshot`. Clients treat a
   "mode": "captions",            // standby | idle | captions | blank; "standby": nothing of the show is sent (no scrollback, no fullscreen) and `standby` below is set
   "standby": { "message": "Welcome", "logo": "/standby-logo?v=1760649900" },   // only while mode is "standby"; both optional
   "scrollback": [ /* CaptionItem[] */ ],
+  "scrollbackMax": 200,          // the show's scrollback lines setting: a page keeps no more lines than this
   "fullscreen": null,            // or Item
   "preload": ["/assets/odd-couple/curtain.jpg"],
   "theme": { "bg": "#000000", "fg": "#ffffff", "accent": "#ffffff", "font": "system",  /* system | serif | mono | dyslexic | hyperlegible */

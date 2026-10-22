@@ -309,6 +309,14 @@ async function main() {
     await arrival('with few lines');
     check('~~strikethrough~~ and ***bold italic*** are drawn on the audience screen', await en.evaluate(() => { const d = document.querySelector('#captions .cap del'), b = document.querySelector('#captions .cap strong em'); return !!d && /line-through/.test(getComputedStyle(d).textDecorationLine) && d.textContent === 'Two' && !!b && b.textContent === 'Three'; }));
 
+    // A device keeps as many lines as the show's scrollback setting, however long it stays connected.
+    const lrid = (await api(op, 'POST', '/api/admin/shows', { name: 'Long run' })).body.id;
+    await api(op, 'PUT', `/api/admin/shows/${lrid}/showfile`, { text: '[settings]\nscrollback lines: 20\n[/settings]\n' + Array.from({ length: 30 }, (_, i) => 'Line ' + (i + 1)).join('\n') });
+    await api(op, 'POST', `/api/admin/shows/${lrid}/activate`, { force: true, start: true }); await sleep(T(800));
+    await nextN(30); await sleep(T(700));
+    const kept = await en.evaluate(() => { const c = document.querySelectorAll('#captions .cap'); return { n: c.length, last: c[c.length - 1].textContent }; });
+    check('a device keeps the show\'s scrollback lines (20), not a fixed number', kept.n === 20 && /Line 30/.test(kept.last), JSON.stringify(kept));
+
     // ------------------------------------------------------------------ settings & security
     // An intermission timer: the loop's {timer} counts down live on the audience screen, from the moment the loop starts.
     const tid = (await api(op, 'POST', '/api/admin/shows', { name: 'Timer test' })).body.id;

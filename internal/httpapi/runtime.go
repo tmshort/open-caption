@@ -84,11 +84,13 @@ type AudState struct {
 	Languages  []LangInfo         `json:"languages"`
 	Mode       string             `json:"mode"`
 	Scrollback []live.CaptionItem `json:"scrollback"`
-	Fullscreen *AudItem           `json:"fullscreen"`
-	Preload    []string           `json:"preload"`
-	Speakers   []string           `json:"speakers"` // order of first appearance; the position picks a character's color
-	Theme      Theme              `json:"theme"`
-	Standby    *StandbyView       `json:"standby,omitempty"` // only while the show is not on air (mode "standby")
+	// ScrollbackMax is how many lines the show keeps (scrollback lines); a device keeps no more than that either.
+	ScrollbackMax int          `json:"scrollbackMax"`
+	Fullscreen    *AudItem     `json:"fullscreen"`
+	Preload       []string     `json:"preload"`
+	Speakers      []string     `json:"speakers"` // order of first appearance; the position picks a character's color
+	Theme         Theme        `json:"theme"`
+	Standby       *StandbyView `json:"standby,omitempty"` // only while the show is not on air (mode "standby")
 }
 
 const preloadMax = 8
@@ -479,7 +481,7 @@ func (rt *Runtime) audState(lang string, speakers []string, st live.State, prelo
 		st.Scrollback = []live.CaptionItem{}
 	}
 	return AudState{Seq: st.Seq, TS: time.Now().UnixMilli(), Lang: lang, Languages: rt.languagesLocked(), Mode: st.Mode,
-		Scrollback: st.Scrollback, Fullscreen: rt.item(st.Fullscreen), Preload: preload,
+		Scrollback: st.Scrollback, ScrollbackMax: rt.engineConfigLocked(0).ScrollbackMax, Fullscreen: rt.item(st.Fullscreen), Preload: preload,
 		Speakers: speakers, Theme: rt.themeForLocked(lang), Standby: rt.standbyForLocked(st.Mode)}
 }
 
@@ -524,7 +526,7 @@ func (rt *Runtime) onEvent(gen int, lang string, ev live.Event) {
 				st.Scrollback = []live.CaptionItem{}
 			}
 			payload = AudState{Seq: st.Seq, TS: ts, Lang: lang, Languages: rt.languagesLocked(), Mode: st.Mode, Scrollback: st.Scrollback,
-				Fullscreen: rt.item(st.Fullscreen), Preload: l.lastPreload, Speakers: l.speakers, Theme: rt.themeForLocked(lang), Standby: rt.standbyForLocked(st.Mode)}
+				ScrollbackMax: rt.engineConfigLocked(0).ScrollbackMax, Fullscreen: rt.item(st.Fullscreen), Preload: l.lastPreload, Speakers: l.speakers, Theme: rt.themeForLocked(lang), Standby: rt.standbyForLocked(st.Mode)}
 		default:
 			payload = map[string]any{"seq": ev.Seq, "ts": ts}
 		}

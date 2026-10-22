@@ -10,7 +10,7 @@
   const projector = params.get('display') === 'projector';
   if (projector) document.body.classList.add('projector');
 
-  const state = { mode: 'idle', scrollback: [], fullscreen: null, theme: {}, speakers: [], lang: 'en', languages: [] };
+  const state = { mode: 'idle', scrollback: [], scrollbackMax: 200, fullscreen: null, theme: {}, speakers: [], lang: 'en', languages: [] };
 
   // The page's own labels, in the languages we have translations for (others show English).
   const I18N = {
@@ -324,7 +324,7 @@
   const on = {
     snapshot(d) {
       if (d.ts) clockSkew = d.ts - Date.now();
-      Object.assign(state, { mode: d.mode, scrollback: d.scrollback || [], fullscreen: d.fullscreen, speakers: d.speakers || [], lang: d.lang || 'en', languages: d.languages || [], standby: d.standby || null });
+      Object.assign(state, { mode: d.mode, scrollback: d.scrollback || [], scrollbackMax: d.scrollbackMax || 200, fullscreen: d.fullscreen, speakers: d.speakers || [], lang: d.lang || 'en', languages: d.languages || [], standby: d.standby || null });
       applyTheme(d.theme || {});
       applyI18n();
       buildLangMenu();
@@ -335,12 +335,13 @@
       state.mode = 'captions';
       state.fullscreen = null;
       state.scrollback.push(d.item);
+      if (state.scrollback.length > state.scrollbackMax) state.scrollback.splice(0, state.scrollback.length - state.scrollbackMax);
       document.body.classList.remove('mode-idle', 'mode-blank', 'mode-standby');
       document.body.classList.add('mode-captions');
       const box = $('captions');
       const prev = box.lastElementChild, wasAt = prev ? prev.getBoundingClientRect().top : 0;
       box.appendChild(captionEl(d.item));
-      while (box.children.length > 200) {
+      while (box.children.length > state.scrollbackMax) {
         const before = box.scrollHeight;
         box.removeChild(box.firstChild);
         if (!pinned) box.scrollTop -= before - box.scrollHeight; // keep the reader's place when old lines are trimmed

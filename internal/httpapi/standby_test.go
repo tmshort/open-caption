@@ -222,3 +222,21 @@ func TestLanguageAddedToAShowOnAirCatchesUp(t *testing.T) {
 		t.Fatalf("the new language does not follow the operator: %+v", got)
 	}
 }
+
+// The snapshot tells a device how many lines to keep: the show's scrollback setting.
+func TestSnapshotCarriesTheScrollbackLimit(t *testing.T) {
+	cfg := testConfig()
+	cfg.Audience.ScrollbackLines = 300
+	s := New(cfg, "t")
+	defer s.Close()
+	if got := s.Runtime().State("en").ScrollbackMax; got != 300 {
+		t.Errorf("scrollbackMax %d, want 300 (config.yaml)", got)
+	}
+	th := DefaultTheme("")
+	th.ScrollbackLines = 40
+	en := showfile.Parse("A", showfile.Options{})
+	s.Runtime().SetShowLangs("demo", "Demo", "", LangFile{"en", "English", en.Cues}, nil, th)
+	if got := s.Runtime().State("en").ScrollbackMax; got != 40 {
+		t.Errorf("scrollbackMax %d, want 40 (the show's setting)", got)
+	}
+}
