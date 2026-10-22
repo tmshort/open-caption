@@ -19,7 +19,7 @@ STATICCHECK_VERSION ?= v0.8.2
 TOOLS := $(CURDIR)/.tools
 
 .DEFAULT_GOAL := help
-.PHONY: help build test race fuzz vet lint vulncheck pebble pebble-test goreleaser release release-snapshot tidy e2e a11y i18n dist man acme-variants clean
+.PHONY: help build test race fuzz vet lint lint-js vulncheck pebble pebble-test goreleaser release release-snapshot tidy e2e a11y i18n dist man acme-variants clean
 
 help: ## Show this list of targets
 	@echo "open-caption: make <target>"; echo
@@ -62,6 +62,8 @@ release: goreleaser ## Build and publish the release for the tag at HEAD as a dr
 	$(TOOLS)/bin/goreleaser release --clean
 tidy: ## Tidy go.mod and go.sum (go mod tidy)
 	go mod tidy
+lint-js: ## ESLint on the page scripts, the browser tests and tools (needs Node; installs the linter with the browser tests' packages)
+	cd test/e2e && npm install --no-audit --no-fund && cd ../.. && test/e2e/node_modules/.bin/eslint .
 e2e: build ## Browser end-to-end test (needs Node and Chrome; set CHROME if not in the default place)
 	cd test/e2e && npm install --no-audit --no-fund && node run.js
 a11y: build ## Accessibility audit with axe-core in real Chrome (needs Node and Chrome)

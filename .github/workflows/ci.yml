@@ -83,6 +83,9 @@ jobs:
           cache-dependency-path: test/e2e/package-lock.json
       - run: go build -o bin/open-caption${{ runner.os == 'Windows' && '.exe' || '' }} ./cmd/open-caption
       - run: cd test/e2e && npm ci --no-audit --no-fund
+      - name: Lint the page scripts and tests (ESLint)
+        if: runner.os == 'Linux'
+        run: make lint-js
       - run: cd test/e2e && node run.js
         env:
           CHROME: ${{ runner.os == 'Linux' && '/usr/bin/google-chrome' || runner.os == 'macOS' && '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' || 'C:\Program Files\Google\Chrome\Application\chrome.exe' }}

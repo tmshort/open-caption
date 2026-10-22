@@ -5,12 +5,13 @@
 | You need | For | Notes |
 |---|---|---|
 | **Go 1.26 or later** | `make build` (on Windows, which has no make: `build.bat`), `make test`, `make race`, `make vet`, `make lint`, `make dist` | No CGO and no C compiler; `make dist` cross-compiles for macOS, Windows and Linux. |
-| **Node.js 22.12 or later** (CI uses 22) | `make e2e`, `make a11y`, `make i18n` | The first run downloads the test tools with `npm` (listed in `test/e2e/package.json`); after that the tests need no internet. They are `puppeteer-core` (drives Chrome), `axe-core` (the accessibility checker) and `acorn` (a JavaScript parser, used to check that the pages stay inside the old-browser floor). |
+| **Node.js 22.12 or later** (CI uses 22) | `make e2e`, `make a11y`, `make i18n`, `make lint-js` | The first run downloads the test tools with `npm` (listed in `test/e2e/package.json`); after that the tests need no internet. They are `puppeteer-core` (drives Chrome), `axe-core` (the accessibility checker) and `acorn` (a JavaScript parser, used to check that the pages stay inside the old-browser floor). |
 | **Google Chrome or Chromium** | `make e2e`, `make a11y` | The tests drive a real browser. They look for Chrome in its macOS location; on Linux or Windows set `CHROME` to the browser's path, for example `CHROME=/usr/bin/google-chrome make e2e`. |
 
 - `make vulncheck` runs `govulncheck` (downloaded on first use, so it needs internet) to look for known vulnerabilities in the dependencies and the Go standard library (and in the pinned tools: Pebble, which fails the check, and GoReleaser, whose findings are only shown, since they are in that build tool's own libraries); run it now and then, since new advisories appear over time. It also says when a newer release of a pinned tool exists. `govulncheck` itself is deliberately not pinned, since an old copy would miss new advisories.
 - `make test` / `make race` run the Go tests (the race detector is the one to run before committing); `make fuzz` fuzzes the show-file parser.
 - `make e2e` is the browser end-to-end test (over 200 checks). It also runs the browser-compatibility check (the pages must stay inside the old-browser floor) and the translation check.
+- `make lint-js` runs ESLint over the page scripts, the browser tests and tools (`eslint.config.mjs`); keep it at zero findings.
 - `make a11y` is the accessibility audit (axe-core, reflow and keyboard focus in both colour schemes); keep it at zero violations.
 - `make i18n` checks that every on-screen sentence is translated into all six languages (it needs Node only).
 - `make pebble-test` runs the real automatic-certificate path against Pebble, Let's Encrypt's test CA; it installs the **pinned** version (`PEBBLE_VERSION` in the Makefile) into `.tools/`, so it needs Go and internet the first time.

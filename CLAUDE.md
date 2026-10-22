@@ -12,7 +12,7 @@ A single-binary open-captioning server for community theater (Go 1.26+, no CGO).
 
 - `build.bat` (runs `build.ps1`) is `make build` for Windows, which has no make; `deploy/deploy_test.go` checks it uses the Makefile's default providers and flags, so change both together.
 - `make build` → `bin/open-caption`; run `./bin/open-caption` (first run writes `config.yaml` with random passwords; `--show-file` flag exists).
-- `make test` / `make race` (`go test -race ./...`) / `make vet` / `make lint` (`go vet` plus staticcheck at the version pinned in the Makefile; CI runs it on Linux; keep it at zero findings)
+- `make test` / `make race` (`go test -race ./...`) / `make vet` / `make lint` (`go vet` plus staticcheck at the version pinned in the Makefile; CI runs it on Linux; keep it at zero findings) / `make lint-js` (ESLint on `web/`, `test/` and `tools/`, config `eslint.config.mjs`, installed with the e2e packages; also zero findings)
 - Single test: `go test ./internal/httpapi -run TestName -count=1`
 - `make fuzz` fuzzes the show-file parser (`FuzzParse`)
 - `make e2e` — browser end-to-end suite (`test/e2e/run.js`, puppeteer-core; needs Node and Chrome, set `CHROME` if not at the default path). Chrome allows 6 connections per host, so e2e pages must be closed when finished (SSE streams stay open).
@@ -39,7 +39,7 @@ Outside contributions: `CONTRIBUTING.md` (no code PRs accepted yet; DCO sign-off
   - the in-app help (`web/help/*.md`) and the **translations**: help topics in `web/help/<lang>/` and guides (usage, venue network, HTTPS certificate, configuration reference) in `docs/i18n/<lang>/` for es, fr, de, it, pt, and on-screen text via `__('…')` in `web/shared/i18n/<lang>.js` (`node test/e2e/check-i18n.js`);
   - tests, including the browser checks in `test/e2e/run.js` and the accessibility audit when a page changes.
   If a document is English only by design (`docs/10`, the man page), say so where it is linked rather than leaving it untranslated silently.
-- **Verify before every commit:** `gofmt`, `make lint` (`go vet ./...` and staticcheck), `go test -race ./...`, and for anything that touches the web pages `make e2e`, `node test/e2e/a11y.js` and `node test/e2e/check-i18n.js`; `make vulncheck` after changing dependencies. Then `git pull --rebase` and push.
+- **Verify before every commit:** `gofmt`, `make lint` (`go vet ./...` and staticcheck), `go test -race ./...`, and for anything that touches the web pages or other JavaScript `make lint-js`, `make e2e`, `node test/e2e/a11y.js` and `node test/e2e/check-i18n.js`; `make vulncheck` after changing dependencies. Then `git pull --rebase` and push.
 - **Every new source file starts with the two header lines** `Copyright the open-caption authors` and `SPDX-License-Identifier: Apache-2.0` in the file's comment style (after a shebang, `@echo off` or `<!doctype html>`; for Go, before a `//go:build` line and separated from it by a blank line). Go, JS, CSS, HTML, shell, PowerShell, batch, YAML and the Makefile are covered; Markdown, data, images and fonts are not. `go test ./deploy` checks it.
 - Don't leave a change half-documented "for a follow-up": if the documentation can't be finished with the change, the change isn't finished.
 

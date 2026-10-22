@@ -83,6 +83,7 @@ go test -race ./...
 and for anything that touches the web pages:
 
 ```
+make lint-js     # ESLint
 make e2e
 node test/e2e/a11y.js
 node test/e2e/check-i18n.js

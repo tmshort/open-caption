@@ -9,7 +9,10 @@
     "puppeteer-core": "^25.14.0"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "acorn": "^8.19.0",
-    "axe-core": "^4.14.0"
+    "axe-core": "^4.14.0",
+    "eslint": "^10.13.0",
+    "globals": "^17.13.0"
   }
 }

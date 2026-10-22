@@ -14,7 +14,7 @@ import (
 // Every source file starts with the copyright and licence lines (CONTRIBUTING.md); this keeps a new file from
 // skipping them. Documents (Markdown), data, images and fonts have none, and neither has the one generated file.
 func TestSourceFilesHaveCopyrightHeader(t *testing.T) {
-	covered := map[string]bool{".go": true, ".js": true, ".css": true, ".html": true, ".sh": true, ".ps1": true,
+	covered := map[string]bool{".go": true, ".js": true, ".mjs": true, ".css": true, ".html": true, ".sh": true, ".ps1": true,
 		".bat": true, ".yml": true, ".yaml": true}
 	skipDir := map[string]bool{".git": true, "node_modules": true, "bin": true, "dist": true, ".tools": true}
 	skipFile := map[string]bool{"zz_providers_gen.go": true, "dependabot.yml": true}
