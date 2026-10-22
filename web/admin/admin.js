@@ -1125,6 +1125,13 @@
     let current = A.reportId || 'current';
     const sel = h('select', { 'aria-label': __('Report') });
     const csv = h('a', { class: 'btn', href: '/api/operator/report.csv', download: '' }, __('Download CSV'));
+    const del = h('button', { class: 'danger', onclick: async () => {
+      const r0 = (sel.selectedOptions[0] || {}).textContent || '';
+      if (!await confirmBox(__('Delete this report?'), __('“{name}” will be permanently deleted. Download the CSV first if you may want it back.', { name: r0 }), __('Delete'), true)) return;
+      const r = await api('DELETE', '/api/admin/reports?id=' + encodeURIComponent(current));
+      if (!r.ok) return fail(r);
+      current = A.reportId = 'current'; toast(__('The report was deleted')); await loadList(); load();
+    } }, __('Delete…'));
     const none = h('p', { hidden: '' }, __('There is no audience report yet. One is made each time the show is put on air.'));
     const body = h('div', {});
     async function loadList() {
@@ -1134,22 +1141,24 @@
       if (!items.length) sel.replaceChildren(h('option', { value: 'current' }, '—'));
       else if (!items.some((x) => x.id === current)) current = items[0].id;
       sel.value = current;
+      del.hidden = !items.length || current === 'current';
     }
     async function load() {
       clearTimeout(A.reportTimer);
       const r = await api('GET', '/api/operator/report' + (current === 'current' ? '' : '?id=' + encodeURIComponent(current)));
       if (A.step !== 'report') return;
-      if (r.status === 404) { body.replaceChildren(); none.hidden = false; return; }
+      del.hidden = current === 'current';
+      if (r.status === 404) { body.replaceChildren(); none.hidden = false; del.hidden = true; return; }
       if (!r.ok) return;
       none.hidden = true;
       body.replaceChildren(OCReport.build(r.data));
       csv.href = '/api/operator/report.csv' + (current === 'current' ? '' : '?id=' + encodeURIComponent(current));
       if (r.data.report.running) A.reportTimer = setTimeout(() => { if (A.step === 'report') load(); }, 5000);
     }
-    sel.addEventListener('change', () => { current = A.reportId = sel.value; load(); });
+    sel.addEventListener('change', () => { current = A.reportId = sel.value; del.hidden = current === 'current'; load(); });
     const print = () => { document.body.classList.add('printreport'); window.print(); document.body.classList.remove('printreport'); }; // only the report is printed, not Setup around it
     p.append(h('h2', {}, __('Audience report')),
-      h('div', { class: 'rtools noprint' }, h('label', {}, __('Report') + ' ', sel), h('button', { onclick: async () => { await loadList(); load(); } }, __('Refresh')), h('button', { onclick: print }, __('Print')), csv,
+      h('div', { class: 'rtools noprint' }, h('label', {}, __('Report') + ' ', sel), h('button', { onclick: async () => { await loadList(); load(); } }, __('Refresh')), h('button', { onclick: print }, __('Print')), csv, del,
         h('a', { class: 'btn', href: '/operator/report', target: '_blank', rel: 'noopener' }, __('Open the report page'))),
       none, body);
     await loadList(); await load();

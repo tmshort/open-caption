@@ -729,5 +729,10 @@ OCI18n.add("es", {
  "Getting a certificate; this can take a few minutes": "Obteniendo un certificado; puede tardar unos minutos",
  "Automatic certificates are not turned on.": "Los certificados automáticos no están activados.",
  "A certificate is already being fetched.": "Ya se está obteniendo un certificado.",
- "Guides and reference": "Guías y referencia"
+ "Guides and reference": "Guías y referencia",
+ "Delete this report?": "¿Eliminar este informe?",
+ "“{name}” will be permanently deleted. Download the CSV first if you may want it back.": "«{name}» se eliminará de forma permanente. Descargue antes el CSV si puede necesitarlo.",
+ "The report was deleted": "Se eliminó el informe",
+ "This report is for the show on air. Delete it after the show ends.": "Este informe es del espectáculo en el aire. Elimínelo cuando termine.",
+ "There is no such report.": "No existe ese informe."
 });

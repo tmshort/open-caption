@@ -228,6 +228,7 @@ func (s *Server) adminRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("PUT /api/admin/shows/{id}", adm(s.updateShow))
 	mux.HandleFunc("POST /api/admin/shows/{id}/duplicate", adm(s.duplicateShow))
 	mux.HandleFunc("DELETE /api/admin/shows/{id}", adm(s.deleteShow))
+	mux.HandleFunc("DELETE /api/admin/reports", adm(s.reportDelete))
 	mux.HandleFunc("GET /api/admin/shows/{id}/showfile", adm(s.getShowFile))
 	mux.HandleFunc("PUT /api/admin/shows/{id}/showfile", adm(s.putShowFile))
 	mux.HandleFunc("GET /api/admin/shows/{id}/showfile/download", adm(s.downloadShowFile))

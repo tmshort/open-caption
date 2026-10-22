@@ -143,6 +143,25 @@ func TestDeviceIDIsStableAndAnonymous(t *testing.T) {
 	}
 }
 
+func TestStoreDeletesOnlyASavedReport(t *testing.T) {
+	s := Store{Dir: t.TempDir()}
+	r := Report{ShowID: "g", Started: time.Date(2026, 10, 20, 19, 0, 0, 0, time.UTC)}
+	s.Save(r)
+	other := filepath.Join(filepath.Dir(s.Dir), "keep.json")
+	os.WriteFile(other, []byte("{}"), 0o600)
+	for _, bad := range []string{"../keep.json", "a/b.json", ".hidden.json", "x.txt", "missing.json"} {
+		if s.Delete(bad) == nil {
+			t.Errorf("%q is not a saved report", bad)
+		}
+	}
+	if _, err := os.Stat(other); err != nil {
+		t.Error("a file outside the folder was touched")
+	}
+	if err := s.Delete(Name(r)); err != nil || len(s.Names()) != 0 {
+		t.Errorf("delete: %v %v", err, s.Names())
+	}
+}
+
 func TestStoreSavesLoadsAndKeepsTheNewest(t *testing.T) {
 	dir := filepath.Join(t.TempDir(), "reports")
 	s := Store{Dir: dir}

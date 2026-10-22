@@ -161,6 +161,21 @@ func (s *Server) reportList(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{"reports": out})
 }
 
+// DELETE /api/admin/reports?id=: removes a saved report. The run in progress cannot be deleted (it is saved as it goes).
+func (s *Server) reportDelete(w http.ResponseWriter, r *http.Request) {
+	s.syncReport()
+	id := r.URL.Query().Get("id")
+	if cur, ok := s.tracker.Current(); ok && (id == "current" || id == report.Name(cur)) {
+		writeErr(w, http.StatusConflict, "This report is for the show on air. Delete it after the show ends.")
+		return
+	}
+	if err := s.reports.Delete(id); err != nil {
+		writeErr(w, http.StatusNotFound, "There is no such report.")
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"ok": true})
+}
+
 // GET /api/operator/report.csv?id=: one row for each device, for a spreadsheet.
 func (s *Server) reportCSV(w http.ResponseWriter, r *http.Request) {
 	s.syncReport()

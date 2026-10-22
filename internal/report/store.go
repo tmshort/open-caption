@@ -104,6 +104,17 @@ func (s Store) Load(name string) (Report, error) {
 	return r, nil
 }
 
+// Delete removes one saved report by its name.
+func (s Store) Delete(name string) error {
+	if name != filepath.Base(name) || !strings.HasSuffix(name, ".json") || strings.HasPrefix(name, ".") {
+		return errors.New("no such report")
+	}
+	if err := os.Remove(filepath.Join(s.Dir, name)); err != nil {
+		return errors.New("no such report")
+	}
+	return nil
+}
+
 // Latest is the newest saved report, or false when there is none.
 func (s Store) Latest() (Report, string, bool) {
 	for _, n := range s.Names() {

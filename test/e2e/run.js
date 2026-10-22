@@ -205,6 +205,7 @@ async function main() {
       const sp = await open(); await sp.goto(B + '/admin#report'); await sp.waitForSelector('#panel .oc-report', { timeout: T(10000) }).catch(() => {});
       check('Setup has the report as its seventh step, the same report with the graph, a menu of reports, Print and CSV', await sp.evaluate(() => { const b = [...document.querySelectorAll('#steps button')]; const cur = document.querySelector('#steps button[aria-current=step]'); return b.length === 7 && /Report/.test(b[6].textContent) && cur === b[6] && document.querySelectorAll('#panel #totals .card').length >= 8 && !!document.querySelector('#panel #chart path.line') && !!document.querySelector('#panel select') && [...document.querySelectorAll('#panel button')].some((x) => x.textContent === 'Print') && /report\.csv/.test(document.querySelector('#panel a[download]').getAttribute('href')); }));
       check('and the report is reachable with no show selected (it does not depend on one)', await sp.evaluate(() => !document.querySelectorAll('#steps button')[6].disabled));
+      check('the report of the run in progress has no Delete button (it is saved as it goes)', await sp.evaluate(() => { const d = [...document.querySelectorAll('#panel button')].find((x) => /^Delete/.test(x.textContent)); return !!d && d.hidden; }));
       await sp.close();
     }
     check('page labels are translated (Spanish)', (await es.evaluate(() => document.getElementById('gear').getAttribute('aria-label'))) === 'Tamaño del texto y colores');

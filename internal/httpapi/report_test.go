@@ -106,6 +106,10 @@ func TestAudienceReportCountsDevicesAcrossReconnects(t *testing.T) {
 		t.Errorf("the report page is served: %v %v", anon, err)
 	}
 
+	if code, _ := c.do("DELETE", "/api/admin/reports?id=current", nil); code != 409 {
+		t.Errorf("the report of the run in progress cannot be deleted: %d", code)
+	}
+
 	// Back to standby ends the run: the final report is kept in the data folder and is what is shown afterwards.
 	if code, _ := c.do("POST", "/api/operator/offair", nil); code != 200 {
 		t.Fatal("off air")
@@ -127,6 +131,21 @@ func TestAudienceReportCountsDevicesAcrossReconnects(t *testing.T) {
 		t.Errorf("a report is found only by the name of a saved one: %d", code)
 	}
 	phone2.Body.Close()
+
+	// A saved report can be deleted (admin only); one that is not saved, or a path, is refused.
+	name := list["reports"].([]any)[0].(map[string]any)["id"].(string)
+	if code, _ := c.do("DELETE", "/api/admin/reports?id=../config.yaml", nil); code != 404 {
+		t.Errorf("a path is not a report: %d", code)
+	}
+	if code, _ := c.do("DELETE", "/api/admin/reports?id="+name, nil); code != 200 {
+		t.Errorf("delete a saved report: %d", code)
+	}
+	if code, _ := c.do("DELETE", "/api/admin/reports?id="+name, nil); code != 404 {
+		t.Errorf("deleted twice: %d", code)
+	}
+	if code, _ := c.do("GET", "/api/operator/report?id="+name, nil); code != 404 {
+		t.Errorf("a deleted report is gone: %d", code)
+	}
 }
 
 func readAll(resp *http.Response) string {
