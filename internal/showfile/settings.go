@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"unicode/utf8"
 )
 
 // Settings are the show-wide options a show file may set in a [settings] block. A nil field means
@@ -196,7 +197,7 @@ func (s *Settings) set(name, value string) error {
 	value = strings.TrimSpace(value)
 	switch name {
 	case "title":
-		if value == "" || len(value) > 100 {
+		if value == "" || utf8.RuneCountInString(value) > 100 {
 			return fmt.Errorf("the title must be 1 to 100 characters")
 		}
 		s.Title = &value
@@ -237,8 +238,8 @@ func (s *Settings) set(name, value string) error {
 		}
 		s.SpeakerNames = &f
 	case "idle message":
-		if len(value) > MaxIdleMessage {
-			return fmt.Errorf("the idle message is too long (%d characters; the limit is %d)", len(value), MaxIdleMessage)
+		if n := utf8.RuneCountInString(value); n > MaxIdleMessage {
+			return fmt.Errorf("the idle message is too long (%d characters; the limit is %d)", n, MaxIdleMessage)
 		}
 		s.IdleMessage = &value
 	case "loop seconds":

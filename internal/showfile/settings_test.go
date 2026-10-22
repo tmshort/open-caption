@@ -268,3 +268,16 @@ func TestCaptionsBelowAnUnclosedSettingsBlockStillCount(t *testing.T) {
 		t.Error("the settings so far must be kept")
 	}
 }
+
+func TestSettingLimitsCountCharactersNotBytes(t *testing.T) {
+	msg := strings.Repeat("é", MaxIdleMessage) // twice that many bytes
+	r := Parse("[settings]\ntitle: "+strings.Repeat("Χ", 60)+"\nidle message: "+msg+"\n[/settings]\nHi\n", Options{})
+	for _, d := range r.Diagnostics {
+		if d.Severity != SevInfo {
+			t.Errorf("unexpected diagnostic: %+v", d)
+		}
+	}
+	if r.Settings.Title == nil || r.Settings.IdleMessage == nil {
+		t.Error("a title of 60 characters and an idle message at the limit must be accepted")
+	}
+}

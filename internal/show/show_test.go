@@ -504,3 +504,15 @@ func TestCreateNeverReusesAnExistingShowFolder(t *testing.T) {
 		t.Errorf("the first show was overwritten:\n%s", got)
 	}
 }
+
+// Titles are limited in characters, as the message says, not in bytes: 60 Greek letters are 120 bytes.
+func TestTitleLimitCountsCharactersNotBytes(t *testing.T) {
+	s := newStore(t)
+	greek := strings.Repeat("Χ", 60)
+	if _, err := s.Create(greek, "Hello\n"); err != nil {
+		t.Errorf("60 characters (120 bytes) refused: %v", err)
+	}
+	if _, err := s.Create(strings.Repeat("Χ", 101), "Hello\n"); !errors.Is(err, ErrBadName) {
+		t.Errorf("101 characters accepted: %v", err)
+	}
+}

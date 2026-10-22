@@ -22,6 +22,7 @@ import (
 	"strings"
 	"time"
 	"unicode"
+	"unicode/utf8"
 
 	"github.com/tmshort/open-caption/internal/showfile"
 )
@@ -157,13 +158,13 @@ func (t Theme) Normalize(d Defaults) (Theme, error) {
 		return bad("scrollback lines", errors.New("must be 20 to 2000"))
 	}
 	t.IdleMessage = strings.TrimSpace(pick(t.IdleMessage, d.IdleMessage))
-	if len(t.IdleMessage) > showfile.MaxIdleMessage {
+	if utf8.RuneCountInString(t.IdleMessage) > showfile.MaxIdleMessage {
 		return bad("idle message", errors.New("too long"))
 	}
 	clean := map[string]string{}
 	for code, msg := range t.IdleMessages {
 		msg = strings.TrimSpace(msg)
-		if !langRe.MatchString(code) || len(msg) > showfile.MaxIdleMessage {
+		if !langRe.MatchString(code) || utf8.RuneCountInString(msg) > showfile.MaxIdleMessage {
 			return bad("idle message for "+code, errors.New("not usable"))
 		}
 		if msg != "" {
@@ -256,7 +257,7 @@ func slug(name string) string {
 
 func validTitle(name string) (string, error) {
 	name = strings.TrimSpace(name)
-	if name == "" || len(name) > 100 || strings.ContainsAny(name, "\r\n") {
+	if name == "" || utf8.RuneCountInString(name) > 100 || strings.ContainsAny(name, "\r\n") {
 		return "", fmt.Errorf("%w: give the show a name (up to 100 characters)", ErrBadName)
 	}
 	return name, nil
