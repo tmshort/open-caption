@@ -294,3 +294,22 @@ func TestSkipPassesALineOnlyOnAir(t *testing.T) {
 		t.Errorf("Back undoes the skip: cursor %v, want %v", got, before["cursor"])
 	}
 }
+
+// A show waiting in standby has sent nothing, so it can be archived (as it can be deleted); once on air it cannot.
+func TestAShowInStandbyCanBeArchived(t *testing.T) {
+	_, _, c := standbyServer(t)
+	_, r := c.do("POST", "/api/admin/shows", map[string]any{"name": "Our Town"})
+	id := r["id"].(string)
+	c.do("PUT", "/api/admin/shows/"+id+"/showfile", map[string]any{"text": "Hello\nWorld\n"})
+	c.do("POST", "/api/admin/shows/"+id+"/activate", map[string]any{})
+	if code, r := c.do("POST", "/api/admin/shows/"+id+"/archive", nil); code != 200 || r["archived"] != true {
+		t.Fatalf("archive in standby: %d %v", code, r)
+	}
+	if code, _ := c.do("POST", "/api/admin/shows/"+id+"/unarchive", nil); code != 200 {
+		t.Fatalf("restore: %d", code)
+	}
+	c.do("POST", "/api/admin/shows/"+id+"/activate", map[string]any{"start": true})
+	if code, r := c.do("POST", "/api/admin/shows/"+id+"/archive", nil); code != 409 {
+		t.Errorf("archive on air: %d %v", code, r)
+	}
+}

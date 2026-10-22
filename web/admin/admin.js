@@ -489,7 +489,7 @@
           { label: __('Rename…'), run: () => renameShow(s) },
           { label: __('Duplicate…'), run: () => duplicateShow(s) },
           { label: __('Export'), run: () => saveDownload('/api/admin/shows/' + s.id + '/export', s.id + '.zip') },
-          { label: __('Archive'), run: () => archiveShow(s, true), why: s.active ? __('The show on air cannot be archived. Activate another show first.') : '', disabled: s.active, hint: __('Put this show away; you can restore it later') },
+          { label: __('Archive'), run: () => archiveShow(s, true), why: s.live ? __('The show on air cannot be archived. Activate another show first.') : '', disabled: s.live, hint: __('Put this show away; you can restore it later') },
           { sep: true },
           { label: __('Delete…'), run: () => deleteShow(s), danger: true, why: s.live ? __('This show is on air. Restart it from the Run page, or activate another show first.') : '' }])))); 
       p.append(h('h3', {}, __('Add another show')), h('div', { class: 'card row addrow' }, ...newShowForm(), h('button', { onclick: makeSample }, __('Create a sample show')), ...importButton()));

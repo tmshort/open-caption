@@ -314,7 +314,7 @@ func TestLogLevelsAndLogging(t *testing.T) {
 func TestArchivingAShow(t *testing.T) {
 	_, _, c := serverWith(t, nil)
 	keep, old := createShow(t, c, "Keep"), createShow(t, c, "Old")
-	c.do("POST", "/api/admin/shows/"+keep+"/activate", nil)
+	c.do("POST", "/api/admin/shows/"+keep+"/activate", map[string]any{"start": true})
 	if code, r := c.do("POST", "/api/admin/shows/"+keep+"/archive", nil); code != 409 {
 		t.Errorf("archiving the show on air: %d %v", code, r)
 	}

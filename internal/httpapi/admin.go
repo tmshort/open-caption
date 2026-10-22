@@ -441,8 +441,13 @@ func (s *Server) updateShow(w http.ResponseWriter, r *http.Request) {
 func (s *Server) archiveShow(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	if s.rt.ShowID() == id {
-		writeErr(w, http.StatusConflict, "This show is the one on air. Activate another show (or close this one) before archiving it.")
-		return
+		if s.rt.Engine().Operator().Live {
+			writeErr(w, http.StatusConflict, "This show is the one on air. Activate another show (or close this one) before archiving it.")
+			return
+		}
+		// In standby nothing has reached the audience, so the show is simply put away, as Delete does.
+		s.rt.SetShow("", "", "", nil, DefaultTheme(s.cfg.Defaults.IdleMessage))
+		s.rt.Flush()
 	}
 	m, err := s.store.SetArchived(id, true)
 	if err != nil {
