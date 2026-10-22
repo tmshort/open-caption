@@ -1295,7 +1295,7 @@ func (s *Server) startRehearsal(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, http.StatusTooManyRequests, "too many rehearsals are open")
 		return
 	}
-	cfg := s.cfg
+	cfg := s.snapshot()
 	cfg.Audience.MaxClients = 8
 	rt := NewRuntime(cfg)
 	if s.standby {
@@ -1321,7 +1321,7 @@ func (s *Server) settings(w http.ResponseWriter, r *http.Request) {
 	s.lmu.Unlock()
 	ns := s.networkSettings()
 	writeJSON(w, http.StatusOK, map[string]any{
-		"config": s.cfg.Redacted(), "configPath": s.cfg.Path, "dataDir": s.cfg.DataDir,
+		"config": s.snapshot().Redacted(), "configPath": s.cfg.Path, "dataDir": s.cfg.DataDir,
 		"httpAddr": l.HTTPAddr, "httpsAddr": l.HTTPSAddr, "version": s.version,
 		"canChangePasswords": s.cfg.Path != "", "standby": s.standbyView(), "logLevel": logx.Current().String(), "logLevelPinned": s.pinnedLevel, "mdns": s.MDNSStatus(),
 		"adminAllow": s.cfg.Access.AdminAllow, "operatorAllow": s.cfg.Access.OperatorAllow,
@@ -1442,7 +1442,9 @@ func (s *Server) changePasswords(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, http.StatusInternalServerError, "Could not save config.yaml: "+err.Error())
 		return
 	}
+	s.cfgMu.Lock()
 	s.cfg.AdminPassword, s.cfg.OperatorPassword = effAdmin, effOp
+	s.cfgMu.Unlock()
 	s.auth.setPasswords(newAdmin, newOp, principal(r).Token)
 	logx.Infof("passwords changed in Setup (admin: %v, operator: %v); other sessions were signed out", newAdmin != "", newOp != "")
 	writeJSON(w, http.StatusOK, map[string]any{"ok": true, "changed": map[string]bool{"admin": newAdmin != "", "operator": newOp != ""}})
@@ -1481,7 +1483,7 @@ func (s *Server) supportBundle(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(&info, "active show: %q live=%v cursor=%d of %d mode=%s\n", s.rt.ShowID(), op.Live, op.Cursor, op.Total, op.Mode)
 	put("info.txt", info.String())
 
-	if b, err := yaml.Marshal(s.cfg.Redacted()); err == nil {
+	if b, err := yaml.Marshal(s.snapshot().Redacted()); err == nil {
 		put("config.redacted.yaml", string(b))
 	}
 	if s.logs != nil {

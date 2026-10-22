@@ -42,7 +42,7 @@ func (s *Server) logoPath() string {
 
 // standbyView is the standby screen as the audience page gets it.
 func (s *Server) standbyView() StandbyView {
-	v := StandbyView{Message: s.cfg.Standby.Message, Logo: defaultLogo, Default: true}
+	v := StandbyView{Message: s.snapshot().Standby.Message, Logo: defaultLogo, Default: true}
 	if p := s.logoPath(); p != "" {
 		if st, err := os.Stat(p); err == nil {
 			v.Logo, v.Default = fmt.Sprintf("/standby-logo?v=%d", st.ModTime().UnixNano()), false
@@ -95,7 +95,9 @@ func (s *Server) setStandby(w http.ResponseWriter, r *http.Request) {
 		}
 		saved = true
 	}
+	s.cfgMu.Lock()
 	s.cfg.Standby.Message = msg
+	s.cfgMu.Unlock()
 	s.applyStandby()
 	logx.Infof("standby message changed in Setup")
 	writeJSON(w, http.StatusOK, map[string]any{"standby": s.standbyView(), "saved": saved})

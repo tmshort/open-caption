@@ -47,6 +47,9 @@ type Server struct {
 
 	pwMu  sync.Mutex // guards password changes (s.cfg passwords)
 	netMu sync.Mutex // guards s.cfg.Network
+	// cfgMu makes the settings that Setup changes while the program runs (the passwords, the standby message and
+	// network.*) safe to read as a whole: they are written, and copied (snapshot), under it.
+	cfgMu sync.RWMutex
 
 	rmu        sync.Mutex
 	rehearsals map[string]*Runtime // admin session token -> isolated rehearsal
@@ -115,6 +118,13 @@ func (s *Server) sweep() {
 
 // showDefaults are what a show uses where its show file says nothing: the built-in values as changed
 // by config.yaml (config.Load starts from the built-in values, so cfg already has both layers).
+// snapshot is a copy of the configuration that is safe to take while Setup changes a setting.
+func (s *Server) snapshot() config.Config {
+	s.cfgMu.RLock()
+	defer s.cfgMu.RUnlock()
+	return s.cfg
+}
+
 func showDefaults(cfg config.Config) show.Defaults {
 	l := cfg.Defaults.Look
 	return show.Defaults{Language: cfg.Defaults.Language, IdleMessage: cfg.Defaults.IdleMessage, LoopSeconds: cfg.Defaults.LoopItemSeconds,

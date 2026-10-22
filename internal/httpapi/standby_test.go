@@ -6,6 +6,7 @@ package httpapi
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"github.com/tmshort/open-caption/internal/live"
 	"github.com/tmshort/open-caption/internal/showfile"
 	"io"
@@ -15,6 +16,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"testing"
 )
 
@@ -239,4 +241,29 @@ func TestSnapshotCarriesTheScrollbackLimit(t *testing.T) {
 	if got := s.Runtime().State("en").ScrollbackMax; got != 40 {
 		t.Errorf("scrollbackMax %d, want 40 (the show's setting)", got)
 	}
+}
+
+// Settings that Setup changes while the program runs (the standby message, the passwords) are written while
+// other requests copy the whole configuration (the Settings page, a rehearsal start): run with -race.
+func TestChangingSettingsWhileOthersReadThemIsRaceFree(t *testing.T) {
+	_, _, c := standbyServer(t)
+	var wg sync.WaitGroup
+	run := func(f func(i int)) {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for i := 0; i < 25; i++ {
+				f(i)
+			}
+		}()
+	}
+	run(func(i int) {
+		c.do("PUT", "/api/admin/settings/standby", map[string]any{"message": fmt.Sprintf("Welcome %d", i)})
+	})
+	run(func(i int) {
+		c.do("PUT", "/api/admin/settings/passwords", map[string]any{"operator": fmt.Sprintf("operator-pw-%d", i)})
+	})
+	run(func(int) { c.do("GET", "/api/admin/settings", nil) })
+	run(func(int) { c.do("GET", "/api/admin/settings/operator-password", nil) })
+	wg.Wait()
 }

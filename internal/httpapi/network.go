@@ -18,7 +18,9 @@ import (
 // this computer's addresses are offered. The values must already be valid (config.Load checks them).
 func (s *Server) ApplyNetwork(n config.Network) {
 	s.netMu.Lock()
+	s.cfgMu.Lock()
 	s.cfg.Network = n
+	s.cfgMu.Unlock()
 	s.netMu.Unlock()
 	netinfo.SetInterfaces(n.Interfaces)
 	netinfo.SetRestrictListening(n.RestrictListening)
