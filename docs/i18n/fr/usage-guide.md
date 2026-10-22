@@ -300,6 +300,7 @@ Imprimez ceci et gardez-le près de l'opérateur.
 |--------|------|
 | **Espace** | Envoyer la ligne suivante |
 | **Retour arrière** | Annuler la dernière chose envoyée |
+| **S** | Sauter la ligne suivante sans l'envoyer (Retour arrière l'annule) |
 | **Maj+Q** | Arrêter une boucle (écran vide) |
 | **B** | Écran vide : masque tout, les sous-titres reviennent au réaffichage |
 | **C** | Effacer : efface les sous-titres pour repartir à neuf |

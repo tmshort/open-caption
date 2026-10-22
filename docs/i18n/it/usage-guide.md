@@ -300,6 +300,7 @@ Stampala e tienila accanto all'operatore.
 |-------|----|
 | **Spazio** | Invia la riga successiva |
 | **Backspace** | Annulla l'ultima cosa inviata |
+| **S** | Saltare la riga successiva senza inviarla (Backspace lo annulla) |
 | **Maiusc+Q** | Ferma un ciclo (schermo vuoto) |
 | **B** | Schermo vuoto: nasconde tutto, i sottotitoli tornano quando riattivi |
 | **C** | Cancella: cancella i sottotitoli per ripartire da zero |

@@ -6,6 +6,7 @@ These keys work whenever you are not typing in a box and no window is open.
 |-----|--------|
 | `Space`, `Right arrow`, `Page Down`, `Enter` | **Next:** send the next line; start a loop that is next; end a running loop and send the line after it. In standby it is **START**: it puts the show on air |
 | `Backspace`, `Left arrow`, `Page Up` | **Back:** undo the last action. Backing into a loop restarts it |
+| `S` | **Skip:** pass over the next line without sending it, for a line the actors cut. The audience sees nothing; **Backspace** takes the skip back |
 | `Shift+Q` | **Stop:** stop a running loop and leave a blank screen |
 | `B` | **Blank** or unblank: hide everything, and bring the same captions back when you unblank |
 | `C` | **Clear**: erase the captions, so the next line starts on an empty screen |

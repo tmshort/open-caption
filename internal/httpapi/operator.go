@@ -148,6 +148,7 @@ func (s *Server) operatorAPI(mux *http.ServeMux, prefix, role string, resolve re
 		}))
 	}
 	command("next", func(e *live.Engine, b cmdBody) (live.OperatorState, error) { return e.Next(b.rev()) })
+	command("skip", func(e *live.Engine, b cmdBody) (live.OperatorState, error) { return e.Skip(b.rev()) })
 	command("back", func(e *live.Engine, b cmdBody) (live.OperatorState, error) { return e.Back(b.rev()) })
 	command("stop", func(e *live.Engine, b cmdBody) (live.OperatorState, error) { return e.Stop(b.rev()) })
 	command("jump", func(e *live.Engine, b cmdBody) (live.OperatorState, error) { return e.Jump(b.Index, b.rev()) })

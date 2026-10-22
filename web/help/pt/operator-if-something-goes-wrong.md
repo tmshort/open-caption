@@ -2,6 +2,8 @@
 
 **A linha errada foi enviada.** Aperte **Backspace** para recolhê-la e depois aperte **Espaço** quando chegar o momento certo.
 
+**Uma linha foi cortada ou não será dita.** Aperte **S** (ou **Pular**) para passar por ela sem enviá-la; o público não vê nada, e **Backspace** desfaz o pulo.
+
 **Você perdeu o lugar.** Clique na linha que quer como a próxima e confirme «Pular para cá», ou aperte `/` e digite algumas palavras da linha.
 
 **Um aviso precisa sair.** Use **Aviso…** para pôr um texto grande em todas as telas, como «O espetáculo recomeça em instantes». Ela fica até a próxima linha. **Backspace** a remove.

@@ -22,6 +22,7 @@
 ## Key test cases
 
 - Loops: per-item duration, loop default, config default; loop first in file auto-starts; STOP→blank→NEXT; Back after ending a loop; reconnect mid-loop shows the current item; images in the next loop are preloaded.
+- Skip (REQ-030): the next line is passed over with no audience event and "last sent" unchanged, operator-only cues are stepped over, Back undoes it, the end of the show and standby are refused; the API (409 in standby); a browser check (S key, the toast, Back).
 - Auth: separate passwords; admin session works on `/operator`, operator session rejected on `/admin`; no Basic-auth challenge; cookie `Secure` only over HTTPS; HTTP and HTTPS serve the same routes with no redirect.
 - Show file: no markup → N captions; comments/blank lines ignored; CRLF; BOM; very long line; unicode/emoji/RTL passthrough; unclosed `[loop]`, raw `<b>` shown literally with an info diagnostic, `<!-- -->` comments (single- and multi-line, unclosed) never reach any client, `[note: …]` reaches only the operator view, `#` lines ignored with an info diagnostic; unknown directive; missing image with fuzzy suggestion; `\#` escape; `[[ ]]` multi-line; speaker detection positives/negatives.
 - Help: every parser directive/escape/diagnostic is documented in `web/help/` (test); every fenced example parses without errors; sample show file parses clean; opening help on `/operator` pauses show-control keys; help works with no network.

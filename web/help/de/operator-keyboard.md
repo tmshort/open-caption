@@ -6,6 +6,7 @@ Diese Tasten funktionieren, solange Sie nicht in ein Feld tippen und kein Fenste
 |-------|--------|
 | `Leertaste`, `Pfeil rechts`, `Bild ab`, `Eingabe` | **Weiter:** sendet die nächste Zeile; startet eine Schleife, die als Nächstes kommt; beendet eine laufende Schleife und sendet die Zeile danach. Im Standby ist es **START**: Es bringt die Show auf Sendung |
 | `Rücktaste`, `Pfeil links`, `Bild auf` | **Zurück:** macht die letzte Aktion rückgängig. Das Zurückgehen in eine Schleife startet sie neu |
+| `S` | **Überspringen:** geht über die nächste Zeile hinweg, ohne sie zu senden, für eine Zeile, die die Schauspieler streichen. Das Publikum sieht nichts; die **Rücktaste** nimmt das Überspringen zurück |
 | `Umschalt+Q` | **Stopp:** stoppt eine laufende Schleife und lässt einen leeren Bildschirm |
 | `B` | **Ausblenden** oder Einblenden: verbirgt alles und bringt beim Einblenden dieselben Untertitel zurück |
 | `C` | **Leeren**: löscht die Untertitel, damit die nächste Zeile auf einem leeren Bildschirm beginnt |

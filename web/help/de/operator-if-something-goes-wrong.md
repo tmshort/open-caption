@@ -2,6 +2,8 @@
 
 **Es wurde die falsche Zeile gesendet.** Drücken Sie die **Rücktaste**, um sie zurückzunehmen, und dann die **Leertaste**, wenn der richtige Moment kommt.
 
+**Eine Zeile wurde gestrichen oder wird nicht gesprochen.** Drücken Sie **S** (oder **Überspringen**), um sie zu übergehen, ohne sie zu senden; das Publikum sieht nichts, und die **Rücktaste** nimmt es zurück.
+
 **Sie haben die Stelle verloren.** Klicken Sie auf die Zeile, die als Nächstes kommen soll, und bestätigen Sie „Hierher springen“, oder drücken Sie `/` und tippen Sie ein paar Wörter aus der Zeile.
 
 **Eine Durchsage muss raus.** Mit **Durchsage …** bringen Sie großen Text auf alle Bildschirme, etwa „Die Show geht gleich weiter“. Er bleibt bis zur nächsten Zeile. Die **Rücktaste** entfernt ihn.

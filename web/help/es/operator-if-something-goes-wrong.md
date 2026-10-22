@@ -2,6 +2,8 @@
 
 **Se envió la línea equivocada.** Pulse **Retroceso** para retirarla y luego pulse **Espacio** cuando llegue el momento correcto.
 
+**Se cortó una línea o no se dirá.** Pulse **S** (o **Saltar**) para pasarla por alto sin enviarla; el público no ve nada, y **Retroceso** deshace el salto.
+
 **Ha perdido el sitio.** Haga clic en la línea que quiere que sea la siguiente y confirme «Saltar aquí», o pulse `/` y escriba unas palabras de la línea.
 
 **Hay que enviar un anuncio.** Use **Anuncio…** para poner un texto grande en todas las pantallas, como «El espectáculo se reanudará en breve». Permanece hasta la línea siguiente. **Retroceso** lo quita.

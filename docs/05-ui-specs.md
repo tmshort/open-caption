@@ -106,7 +106,7 @@ Layout (desktop): three columns of the show file as a vertical list.
 │  UPCOMING (normal)                                                            │
 │   …                                                                           │
 ├──────────────────────────────────────────────────────────────────────────────┤
-│  [◀ Back]   [   NEXT ▶  (Space)   ]   [Blank (B)] [Clear (C)] [Announcement…]      │
+│  [◀ Back]   [   NEXT ▶  (Space)   ]   [Skip (S)] [Blank (B)] [Clear (C)] [Announcement…]      │
 │  Search/jump: [____________]   Mini-map of sections                           │
 └──────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -121,6 +121,7 @@ Behavior:
   | `Space`, `→`, `Enter`, `PageDown` | **NEXT**: send the next caption; start a loop when it is next; end a running loop and send the cue after it (clickers typically send PageDown/Right) |
   | `Shift+Q` | **STOP**: stop a running loop and leave a blank screen (NEXT then continues normally) |
   | `Backspace`, `←`, `PageUp` | **Back**: undo the last action (NEXT, STOP, blank, clear, an announcement); backing into a loop restarts it |
+  | `S` | **Skip**: pass over the next line without sending it (the audience sees nothing; a toast names the line; Back undoes it). Not available in standby |
   | `B` | Toggle blank |
   | `C` | Clear screen |
   | `/` or `Ctrl+F` | Focus search/jump |

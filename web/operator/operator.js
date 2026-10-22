@@ -280,7 +280,7 @@
     document.body.classList.toggle('standby', !!o.standby);
     $('offair').disabled = !!o.standby;
     $('reset').disabled = !!o.atStart; // just started or just restarted: nothing to restart
-    ['back', 'blank', 'clear', 'message'].forEach((id) => { $(id).disabled = !!o.standby; }); // (a disabled control is exempt from the contrast rule, and says what it is)
+    ['back', 'skip', 'blank', 'clear', 'message'].forEach((id) => { $(id).disabled = !!o.standby; }); // (a disabled control is exempt from the contrast rule, and says what it is)
     $('next').firstChild.textContent = o.standby ? __('START ▶') : __('NEXT ▶');
     $('next').title = o.standby ? __('Put the show on air (Space)') : __('Next (Space)');
     renderLastSent();
@@ -304,12 +304,14 @@
     if (!isController()) { toast(__('Another operator is in control — use Take over'), 6000); return; }
     if (S.inflight) return;
     S.inflight = true;
+    const passed = name === 'skip' ? S.cues[op().nextIndex] : null; // the line a Skip passes over
     try {
       const r = await api('POST', API + '/' + name, Object.assign({ rev: op().rev }, extra));
       if (r.data.payload) setPayload(r.data.payload);
       if (r.status === 409) toast(__(r.data.error || 'Out of date — refreshed'));
       else if (r.data.notice) toast(__(r.data.notice));
       else if (!r.ok) toast(__(whyFailed(r)), 6000); // a problem stays long enough to read
+      else if (passed) { const t = passed.text || passed.label || ''; toast(t ? __('Skipped “{text}”', { text: t.length > 60 ? t.slice(0, 60) + '…' : t }) : __('Skipped'), 4000); }
       if (r.ok && name !== 'jump') clearSel();
     } catch (e) { toast(__('Connection problem — try again'), 6000); }
     finally { S.inflight = false; }
@@ -321,6 +323,7 @@
   $('stop').addEventListener('click', () => send('stop'));
   $('blank').addEventListener('click', () => send('blank', { on: op().mode !== 'blank' }));
   $('clear').addEventListener('click', () => send('clear'));
+  $('skip').addEventListener('click', () => send('skip'));
 
   // jump: select a row, then confirm
   function select(i) {
@@ -399,12 +402,13 @@
     const now = Date.now();
     const quick = now - lastKey < 120; // debounce double-fire from bouncing clickers
     // Not on air: only START (Space and the other advance keys), search, Restart and Help do anything.
-    if (op().standby && ['Backspace', 'ArrowLeft', 'PageUp', 'b', 'B', 'c', 'C', 'Q'].indexOf(e.key) >= 0) return;
+    if (op().standby && ['Backspace', 'ArrowLeft', 'PageUp', 'b', 'B', 'c', 'C', 's', 'S', 'Q'].indexOf(e.key) >= 0) return;
     switch (e.key) {
       case ' ': case 'ArrowRight': case 'PageDown': case 'Enter': if (!quick) next(); break;
       case 'Backspace': case 'ArrowLeft': case 'PageUp': if (!quick) send('back'); break;
       case 'b': case 'B': if (!e.shiftKey && !quick) send('blank', { on: op().mode !== 'blank' }); break;
       case 'c': case 'C': if (!e.shiftKey && !quick) send('clear'); break;
+      case 's': case 'S': if (!e.shiftKey && !quick) send('skip'); break;
       case 'Q': if (!quick) send('stop'); break;
       case '/': $('search').focus(); break;
       case 'Home': if (!op().atStart) $('resetdlg').showModal(); break;

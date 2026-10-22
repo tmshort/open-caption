@@ -300,6 +300,7 @@ Drucken Sie sie aus und halten Sie sie beim Operator bereit.
 |-------|---------|
 | **Leertaste** | Die nächste Zeile senden |
 | **Rücktaste** | Das zuletzt Gesendete rückgängig machen |
+| **S** | Die nächste Zeile überspringen, ohne sie zu senden (die Rücktaste nimmt es zurück) |
 | **Umschalt+Q** | Eine Schleife stoppen (leerer Bildschirm) |
 | **B** | Ausblenden: verbirgt alles, die Untertitel kommen beim Einblenden zurück |
 | **C** | Leeren: löscht die Untertitel für einen frischen Start |

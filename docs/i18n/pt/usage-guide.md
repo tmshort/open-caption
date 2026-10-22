@@ -300,6 +300,7 @@ Imprima e deixe junto do operador.
 |-------|-----|
 | **Espaço** | Enviar a próxima linha |
 | **Backspace** | Desfazer a última coisa enviada |
+| **S** | Pular a próxima linha sem enviá-la (Backspace desfaz) |
 | **Shift+Q** | Parar um laço (tela em branco) |
 | **B** | Em branco: esconde tudo, as legendas voltam ao desfazer o branco |
 | **C** | Limpar: apaga as legendas para um recomeço |

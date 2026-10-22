@@ -734,5 +734,9 @@ OCI18n.add("fr", {
  "“{name}” will be permanently deleted. Download the CSV first if you may want it back.": "« {name} » sera supprimé définitivement. Téléchargez d'abord le CSV si vous pouvez en avoir besoin.",
  "The report was deleted": "Le rapport a été supprimé",
  "This report is for the show on air. Delete it after the show ends.": "Ce rapport est celui du spectacle en direct. Supprimez-le après la fin du spectacle.",
- "There is no such report.": "Ce rapport n'existe pas."
+ "There is no such report.": "Ce rapport n'existe pas.",
+ "Skip": "Passer",
+ "Skipped": "Ligne passée",
+ "Skipped “{text}”": "Passée : « {text} »",
+ "Pass over the next line without sending it. Back undoes it (S)": "Saute la ligne suivante sans l'envoyer. Retour arrière annule (S)"
 });

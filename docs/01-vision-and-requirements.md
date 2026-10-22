@@ -57,7 +57,7 @@ Requirement numbers are stable identifiers, not a running count: they were given
 - **REQ-065** A loop can have a **countdown timer** (`[loop: timer 15 minutes]` or `[loop: timer 7:30pm]`) that the loop's text shows with `{timer}`, counting down live on every audience screen and for the operator. A number of minutes starts when the loop is entered; a time of day is today's. Devices with wrong clocks still show the right time (doc 03 *Loop timers*).
 
 ### Operator
-- **REQ-030** Spacebar (NEXT) advances to the next cue — the same command for captions, for starting a loop, and for ending a loop. **STOP** (Shift+Q) stops a running loop and leaves a blank screen. Other keys: back, blank, clear, jump (doc 05).
+- **REQ-030** Spacebar (NEXT) advances to the next cue — the same command for captions, for starting a loop, and for ending a loop. **STOP** (Shift+Q) stops a running loop and leaves a blank screen. **SKIP** (S) passes over the next line without sending it (the audience sees nothing; Back undoes it), for a line the actors cut. Other keys: back, blank, clear, jump (doc 05).
 - **REQ-031** Operator view shows already-sent cues, the current cue, and upcoming cues. Image/fullscreen cues appear as an indicator (icon + name), never the image itself.
 - **REQ-032** Operator can jump to any cue (click/search) and undo (Back) the last operator action; going forward again is just NEXT.
 - **REQ-033** Operator view shows live audience count and connection health.

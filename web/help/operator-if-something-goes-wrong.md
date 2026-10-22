@@ -2,6 +2,8 @@
 
 **The wrong line was sent.** Press **Backspace** to take it back, then press **Space** when the right moment arrives.
 
+**A line was cut or will not be said.** Press **S** (or **Skip**) to pass over it without sending it; the audience sees nothing, and **Backspace** takes the skip back.
+
 **You lost your place.** Click the line you want to be next and confirm "Jump here", or press `/` and type a few words from the line.
 
 **A message needs to go out.** Use **Announcement…** to put large text on every screen, such as "The show will resume shortly". It stays until the next line. **Backspace** removes it.

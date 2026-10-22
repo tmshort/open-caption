@@ -228,6 +228,16 @@ async function main() {
     check('the operator sees how many devices read each language', /en 1.*es 1/.test(await op.evaluate(() => document.getElementById('viewers').textContent)));
     await shot(op, '02-operator'); await shot(es, '03-audience-spanish');
 
+    // Skip passes over the next line without sending it; Back takes it back
+    {
+      const cur = () => op.evaluate(async () => (await (await fetch('/api/operator/state')).json()).payload.op.cursor);
+      const c0 = await cur(), n0 = (await caps(en)).length;
+      await op.keyboard.press('s'); await sleep(500);
+      check('Skip (S) moves past the next line without showing it, and says which', (await cur()) > c0 && (await caps(en)).length === n0 && (await caps(es)).length === n0 && /^Skipped/.test(await op.evaluate(() => document.getElementById('toast').textContent)), [c0, await cur()]);
+      await sleep(300); await op.keyboard.press('Backspace'); await sleep(500);
+      check('Back takes the skip back', (await cur()) === c0, [c0, await cur()]);
+    }
+
     // back, blank vs clear
     const cursor = () => op.evaluate(async () => (await (await fetch('/api/operator/state')).json()).payload.op.cursor);
     const c1 = await cursor(); await op.keyboard.press('Backspace'); await sleep(400);

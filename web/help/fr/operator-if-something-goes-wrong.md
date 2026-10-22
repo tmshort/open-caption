@@ -2,6 +2,8 @@
 
 **La mauvaise ligne a été envoyée.** Appuyez sur **Retour arrière** pour la retirer, puis sur **Espace** quand le bon moment arrive.
 
+**Une ligne a été coupée ou ne sera pas dite.** Appuyez sur **S** (ou **Passer**) pour la sauter sans l'envoyer ; le public ne voit rien, et **Retour arrière** annule le saut.
+
 **Vous avez perdu le fil.** Cliquez sur la ligne que vous voulez voir en suivante et confirmez « Sauter ici », ou appuyez sur `/` et saisissez quelques mots de la ligne.
 
 **Une annonce doit partir.** Utilisez **Annonce…** pour afficher un grand texte sur tous les écrans, comme « Le spectacle reprendra bientôt ». Il reste jusqu'à la ligne suivante. **Retour arrière** le supprime.

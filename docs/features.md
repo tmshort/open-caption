@@ -10,7 +10,7 @@ The full list. The [README](../README.md) has the short version; how to use each
 - Runs on older phones (about iOS 12 and up) and tells people clearly when a browser is too old.
 
 ## For the operator
-- One key does it all: Space sends the next line, Backspace undoes it, B blanks, C clears; jump to any line or section, search, and send a one-off announcement.
+- One key does it all: Space sends the next line, Backspace undoes it, S skips a line without sending it, B blanks, C clears; jump to any line or section, search, and send a one-off announcement.
 - A loaded show waits in **standby**: the audience sees your venue's own screen (a logo and a message you set once) until the operator presses START; **Go to standby** returns to it at any time without losing the place.
 - Operator notes and bookmarks the audience never sees; loops for pre-show and intermission; songs, lyrics and two voices shown at once for musicals.
 - Survives a restart: the position, sign-ins and last few undo steps are kept.

@@ -6,6 +6,7 @@ Estas teclas funcionan siempre que no esté escribiendo en un cuadro y no haya n
 |-------|--------|
 | `Espacio`, `Flecha derecha`, `Av Pág`, `Intro` | **Siguiente:** envía la línea siguiente; inicia un bucle que es el siguiente; termina un bucle en marcha y envía la línea que le sigue. En espera es **INICIAR**: pone el espectáculo en el aire |
 | `Retroceso`, `Flecha izquierda`, `Re Pág` | **Atrás:** deshace la última acción. Volver a un bucle lo reinicia |
+| `S` | **Saltar:** pasa por alto la siguiente línea sin enviarla, para una línea que los actores han cortado. El público no ve nada; **Retroceso** deshace el salto |
 | `Mayús+Q` | **Parar:** detiene un bucle en marcha y deja la pantalla en blanco |
 | `B` | **En blanco** o quitar el blanco: oculta todo, y devuelve los mismos subtítulos al quitar el blanco |
 | `C` | **Borrar**: borra los subtítulos, para que la línea siguiente empiece en una pantalla vacía |

@@ -106,6 +106,7 @@ Applying **any** audience-visible cue other than `loop` itself (caption, clear, 
 - **NEXT** = apply `cue[cursor]` (skipping over `section`/`note`), then move
   `cursor` past it. Because a loop cue is consumed when it starts, the following
   NEXT sends the cue after the loop and thereby ends it.
+- **SKIP** = move `cursor` past the next audience-visible cue *without* applying it: nothing is emitted, the audience's screen and "last sent" are unchanged, and the step is pushed on the undo history so Back takes it back. A running loop keeps running; at the end of the show it is `ErrEnd` like NEXT.
 - **STOP** (only meaningful while a loop runs): stop the loop timer, set `blank`.
   Cursor is unchanged.
 - **Pre-show:** if the first audience-visible cue is a `loop`, it starts when the show **goes on air** (START): the

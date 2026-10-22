@@ -300,6 +300,7 @@ Print this and keep it by the operator.
 |-----|------|
 | **Space** | Send the next line |
 | **Backspace** | Undo the last thing sent |
+| **S** | Skip the next line without sending it (Backspace undoes it) |
 | **Shift+Q** | Stop a loop (blank screen) |
 | **B** | Blank: hide everything, captions come back on unblank |
 | **C** | Clear: erase the captions for a fresh start |

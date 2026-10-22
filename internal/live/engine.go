@@ -283,6 +283,26 @@ func (e *Engine) Next(rev int64) (OperatorState, error) {
 	return e.operatorLocked(), nil
 }
 
+// Skip passes over the next audience-visible cue without sending it: the audience's screen does not change (nothing is
+// emitted and "last sent" stays), and the cursor moves on. Back undoes it. A running loop keeps running.
+func (e *Engine) Skip(rev int64) (OperatorState, error) {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	if err := e.checkOnAirLocked(rev); err != nil {
+		return e.operatorLocked(), err
+	}
+	idx := e.visibleFrom(e.cursor)
+	if idx < 0 {
+		e.cursor = len(e.cues)
+		return e.operatorLocked(), ErrEnd
+	}
+	e.pushLocked()
+	e.cursor = idx + 1
+	e.touched = true
+	e.rev++
+	return e.operatorLocked(), nil
+}
+
 // Back undoes the last operator action. A loop that was running restarts at item 0.
 func (e *Engine) Back(rev int64) (OperatorState, error) {
 	e.mu.Lock()

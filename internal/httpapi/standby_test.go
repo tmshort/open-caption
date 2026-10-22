@@ -267,3 +267,30 @@ func TestChangingSettingsWhileOthersReadThemIsRaceFree(t *testing.T) {
 	run(func(int) { c.do("GET", "/api/admin/settings/operator-password", nil) })
 	wg.Wait()
 }
+
+func TestSkipPassesALineOnlyOnAir(t *testing.T) {
+	_, _, c := standbyServer(t)
+	_, r := c.do("POST", "/api/admin/shows", map[string]any{"sample": true})
+	id := r["id"].(string)
+	c.do("POST", "/api/admin/shows/"+id+"/activate", map[string]any{}) // loaded in standby
+	c.do("POST", "/api/operator/claim", map[string]bool{"takeover": false})
+	if code, r := c.do("POST", "/api/operator/skip", nil); code != 409 || !strings.Contains(fmt.Sprint(r["error"]), "not on air") {
+		t.Errorf("a skip in standby: %d %v, want 409", code, r["error"])
+	}
+	c.do("POST", "/api/admin/shows/"+id+"/activate", map[string]any{"force": true, "start": true})
+	opOf := func(b map[string]any) map[string]any { return b["payload"].(map[string]any)["op"].(map[string]any) }
+	_, b := c.do("GET", "/api/operator/state", nil)
+	before := opOf(b)
+	code, b := c.do("POST", "/api/operator/skip", nil)
+	after := opOf(b)
+	if code != 200 || after["cursor"].(float64) <= before["cursor"].(float64) || after["lastAt"] != before["lastAt"] {
+		t.Errorf("skip: %d before %v after %v", code, before, after)
+	}
+	if code, _ := c.do("POST", "/api/operator/back", nil); code != 200 {
+		t.Fatal("back")
+	}
+	_, b = c.do("GET", "/api/operator/state", nil)
+	if got := opOf(b)["cursor"]; got != before["cursor"] {
+		t.Errorf("Back undoes the skip: cursor %v, want %v", got, before["cursor"])
+	}
+}

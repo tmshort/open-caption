@@ -300,6 +300,7 @@ Imprímala y téngala junto al operador.
 |-------|------|
 | **Espacio** | Enviar la línea siguiente |
 | **Retroceso** | Deshacer lo último enviado |
+| **S** | Saltar la siguiente línea sin enviarla (Retroceso lo deshace) |
 | **Mayús+Q** | Detener un bucle (pantalla en blanco) |
 | **B** | En blanco: oculta todo, los subtítulos vuelven al quitar el blanco |
 | **C** | Borrar: borra los subtítulos para empezar de cero |

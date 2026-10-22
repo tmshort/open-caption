@@ -111,6 +111,7 @@ everywhere an operator session is; the reverse is not true.
 | POST | `/api/operator/claim` | `{takeover:bool}` | Become the controlling operator |
 | POST | `/api/operator/next` | `{rev}` | NEXT: send the next cue. If the cue is a loop, starts it. If a loop is running, ends it and sends the next cue |
 | POST | `/api/operator/back` | `{rev}` | Undo the last operator action (NEXT, STOP, blank, clear, message). Backing into a loop restarts it from its first item |
+| POST | `/api/operator/skip` | `{rev}` | SKIP: pass over the next line without sending it; the audience's screen does not change (no event, "last sent" unchanged) and Back undoes it. A running loop keeps running. `notice` "End of the show" when no line is left; 409 in standby |
 | POST | `/api/operator/stop` | `{rev}` | STOP: stop a running loop and leave a blank screen |
 | POST | `/api/operator/jump` | `{index, rev}` | Set cursor to a cue; rebuilds the resulting state without replaying cues |
 | POST | `/api/operator/blank` | `{on:bool}` | Ad-hoc blank toggle |

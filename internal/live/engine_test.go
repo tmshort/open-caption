@@ -773,3 +773,48 @@ func TestItemDurationIsCappedSoATimerCannotOverflow(t *testing.T) {
 		t.Fatalf("duration %v, want %v", d, time.Hour)
 	}
 }
+
+func TestSkipPassesTheNextLineWithoutSendingIt(t *testing.T) {
+	e, r := newEngine(t, "A\n[note: n]\nB\nC\n")
+	mustNext(t, e)
+	before := e.Operator()
+	op, err := e.Skip(-1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if op.Cursor != 3 || op.NextIndex != 3 || op.Rev == before.Rev || op.LastAt != before.LastAt {
+		t.Errorf("after the skip: %+v (before %+v)", op, before)
+	}
+	if got := texts(e.Snapshot()); !reflect.DeepEqual(got, []string{"A"}) {
+		t.Errorf("the skipped line was shown: %v", got)
+	}
+	mustNext(t, e)
+	if got := texts(e.Snapshot()); !reflect.DeepEqual(got, []string{"A", "C"}) {
+		t.Errorf("the line after the skipped one comes next: %v", got)
+	}
+	if got := r.types(); !reflect.DeepEqual(got, []string{EvCaption, EvCaption}) {
+		t.Errorf("a skip tells the audience nothing: %v", got)
+	}
+	// Back undoes the send, then the skip.
+	e.Back(-1)
+	if op, _ = e.Back(-1); op.NextIndex != 2 {
+		t.Errorf("Back undoes the skip: %+v", op)
+	}
+	// Skipping the last line leaves the end of the show.
+	e.Skip(-1)
+	e.Skip(-1)
+	if _, err := e.Skip(-1); err != ErrEnd {
+		t.Errorf("err = %v, want ErrEnd", err)
+	}
+}
+
+func TestSkipNeedsTheShowOnAir(t *testing.T) {
+	e := New(parse("A\nB\n"), Config{DefaultLoopSeconds: 10, Standby: true}, func(Event) {})
+	t.Cleanup(e.Close)
+	if _, err := e.Skip(-1); err != ErrStandby {
+		t.Errorf("err = %v, want ErrStandby", err)
+	}
+	if op := e.Operator(); op.NextIndex != 0 {
+		t.Errorf("a refused skip moved the show: %+v", op)
+	}
+}

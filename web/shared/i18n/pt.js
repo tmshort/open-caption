@@ -734,5 +734,9 @@ OCI18n.add("pt", {
  "“{name}” will be permanently deleted. Download the CSV first if you may want it back.": "“{name}” será excluído permanentemente. Baixe o CSV antes, se puder precisar dele.",
  "The report was deleted": "O relatório foi excluído",
  "This report is for the show on air. Delete it after the show ends.": "Este relatório é do espetáculo no ar. Exclua-o depois que o espetáculo terminar.",
- "There is no such report.": "Esse relatório não existe."
+ "There is no such report.": "Esse relatório não existe.",
+ "Skip": "Pular",
+ "Skipped": "Pulada",
+ "Skipped “{text}”": "Pulada: “{text}”",
+ "Pass over the next line without sending it. Back undoes it (S)": "Passa pela próxima linha sem enviá-la. Backspace desfaz (S)"
 });
