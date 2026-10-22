@@ -214,6 +214,20 @@ func singMarks(l string) (string, bool) {
 	return l, false
 }
 
+// repeatedName is the first name that a group label such as "BARRY, DEE DEE & BARRY" gives twice, or "".
+func repeatedName(label string) string {
+	seen := map[string]bool{}
+	for _, n := range strings.FieldsFunc(label, func(r rune) bool { return r == ',' || r == '&' || r == '/' }) {
+		if n = strings.TrimSpace(n); n != "" {
+			if seen[n] {
+				return n
+			}
+			seen[n] = true
+		}
+	}
+	return ""
+}
+
 // part renders one voice: speaker label, ~ lyric markers, Markdown.
 func (p *parser) part(lines []string, lineNo int) Part {
 	var pt Part
@@ -221,6 +235,9 @@ func (p *parser) part(lines []string, lineNo int) Part {
 	if m := speakerRe.FindStringSubmatch(lines[0]); m != nil {
 		pt.Speaker = m[1]
 		lines[0] = m[2]
+		if dup := repeatedName(m[1]); dup != "" {
+			p.diag(lineNo, SevWarning, "The speaker label %q names %s twice. Is one of them a different character?", m[1]+":", dup)
+		}
 	} else if m := speakerOnlyRe.FindStringSubmatch(lines[0]); m != nil {
 		p.diag(lineNo, SevWarning, "%q is a speaker's name with nothing after the colon. Put the words on the same line, or write \\: if the colon is part of the text.", m[1]+":")
 	}

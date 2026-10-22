@@ -310,6 +310,7 @@ Each is reported with a line number and a plain-English message:
 - warning: `Line 17: unknown command [fade]. This line was skipped.`
 - warning: `Line 63: captions can't go inside a loop. This line was skipped.`
 - warning: `Line 12: "BARRY:" is a speaker's name with nothing after the colon. Put the words on the same line, or write \: if the colon is part of the text.` (the line is still shown as typed)
+- warning: `Line 12: The speaker label "BARRY, DEE DEE, TRENT & BARRY:" names BARRY twice. Is one of them a different character?` (a group label that gives the same name twice is probably a typo)
 - error: `Line 88: [loop] was opened but never closed.`
 - error: `Line 12: comment <!-- was opened but never closed.`
 - info: `Line 30: lines starting with # are reserved for headings and were ignored. Use <!-- comment --> for comments or [note: …] for operator notes.`

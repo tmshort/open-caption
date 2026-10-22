@@ -99,6 +99,24 @@ func TestSpeakerWithNothingAfterTheColonIsWarnedAbout(t *testing.T) {
 	}
 }
 
+func TestAGroupLabelThatNamesSomeoneTwiceIsWarnedAbout(t *testing.T) {
+	r := Parse("BARRY, DEE DEE, TRENT & BARRY: ~ And know\nDEE DEE & BARRY: Hi\nDEE DEE: Hi\nBARRY & DEE DEE & TRENT: Hi", Options{})
+	n := 0
+	for _, d := range r.Diagnostics {
+		if strings.Contains(d.Message, "names BARRY twice") {
+			n++
+			if d.Line != 1 || d.Severity != SevWarning {
+				t.Errorf("%+v", d)
+			}
+		} else if strings.Contains(d.Message, "twice") {
+			t.Errorf("needless warning: %+v", d)
+		}
+	}
+	if n != 1 {
+		t.Errorf("%d warnings, want 1: %+v", n, r.Diagnostics)
+	}
+}
+
 func TestSpeaker(t *testing.T) {
 	cases := []struct{ in, speaker, text string }{
 		{"HAMLET: To be", "HAMLET", "To be"},

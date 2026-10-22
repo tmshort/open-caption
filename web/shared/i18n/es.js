@@ -740,5 +740,6 @@ OCI18n.add("es", {
  "Skipped “{text}”": "Saltada: «{text}»",
  "Pass over the next line without sending it. Back undoes it (S)": "Pasa por alto la siguiente línea sin enviarla. Retroceso lo deshace (S)",
  "SKIPPED": "SALTADA",
- "{0} is a speaker's name with nothing after the colon. Put the words on the same line, or write \\: if the colon is part of the text.": "{0} es el nombre de un personaje sin nada después de los dos puntos. Ponga las palabras en la misma línea, o escriba \\: si los dos puntos son parte del texto."
+ "{0} is a speaker's name with nothing after the colon. Put the words on the same line, or write \\: if the colon is part of the text.": "{0} es el nombre de un personaje sin nada después de los dos puntos. Ponga las palabras en la misma línea, o escriba \\: si los dos puntos son parte del texto.",
+ "The speaker label {0} names {1} twice. Is one of them a different character?": "La etiqueta de personaje {0} nombra a {1} dos veces. ¿Alguno de ellos es otro personaje?"
 });
