@@ -1281,10 +1281,17 @@ func (s *Server) startRehearsal(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	tok := principal(r).Token
-	s.dropRehearsal(tok)
+	// The old rehearsal of this session is replaced under the same lock that inserts the new one: two starts
+	// at once (a double click, two tabs) would otherwise both find nothing to drop and the second would
+	// overwrite the first in the map, leaving its runtime running with nothing able to close it.
 	s.rmu.Lock()
+	old := s.rehearsals[tok]
+	delete(s.rehearsals, tok)
 	if len(s.rehearsals) >= maxRehearsals {
 		s.rmu.Unlock()
+		if old != nil {
+			old.Close()
+		}
 		writeErr(w, http.StatusTooManyRequests, "too many rehearsals are open")
 		return
 	}
@@ -1300,6 +1307,9 @@ func (s *Server) startRehearsal(w http.ResponseWriter, r *http.Request) {
 	rt.Claim(tok, true)
 	s.rehearsals[tok] = rt
 	s.rmu.Unlock()
+	if old != nil {
+		old.Close()
+	}
 	writeJSON(w, http.StatusOK, map[string]any{"ok": true, "showId": req.ShowID})
 }
 

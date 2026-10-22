@@ -15,8 +15,11 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"runtime"
 	"strings"
+	"sync"
 	"testing"
+	"time"
 )
 
 func adminServer(t *testing.T) (*Server, *httptest.Server, *client) {
@@ -649,5 +652,47 @@ func TestUnreadableUploadIsABadRequest(t *testing.T) {
 	resp.Body.Close()
 	if resp.StatusCode != http.StatusBadRequest {
 		t.Errorf("malformed upload: %d, want 400", resp.StatusCode)
+	}
+}
+
+// Several rehearsal starts at once from one session leave exactly one rehearsal running: the others are
+// replaced and closed, not lost in the map with their goroutines still going.
+func TestConcurrentRehearsalStartsDoNotLeakRuntimes(t *testing.T) {
+	s, _, c := adminServer(t)
+	id := createShow(t, c, "Reh")
+	c.do("PUT", "/api/admin/shows/"+id+"/showfile", map[string]string{"text": "One\nTwo"})
+	if code, _ := c.do("POST", "/api/admin/rehearsal/start", map[string]string{"showId": id}); code != 200 {
+		t.Fatal("start rehearsal")
+	}
+	settle := func() int {
+		n := runtime.NumGoroutine()
+		for i := 0; i < 40; i++ {
+			time.Sleep(25 * time.Millisecond)
+			if m := runtime.NumGoroutine(); m >= n {
+				break
+			} else {
+				n = m
+			}
+		}
+		return n
+	}
+	base := settle()
+	var wg sync.WaitGroup
+	for i := 0; i < 12; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			c.do("POST", "/api/admin/rehearsal/start", map[string]string{"showId": id})
+		}()
+	}
+	wg.Wait()
+	s.rmu.Lock()
+	n := len(s.rehearsals)
+	s.rmu.Unlock()
+	if n != 1 {
+		t.Fatalf("%d rehearsals in the map, want 1", n)
+	}
+	if after := settle(); after > base+4 {
+		t.Errorf("goroutines went from %d to %d: runtimes were leaked", base, after)
 	}
 }
