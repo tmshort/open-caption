@@ -273,11 +273,23 @@ func (s *Settings) set(name, value string) error {
 // diagnostic and the other lines still count.
 func (p *parser) settingsBlock(start int) {
 	seen := map[string]int{}
+	closed := false // is there a [/settings] below? If not, the block ends where the settings lines end
+	for _, ln := range p.lines[p.i+1:] {
+		if strings.EqualFold(strings.TrimSpace(ln), "[/settings]") {
+			closed = true
+			break
+		}
+	}
 	for p.i++; p.i < len(p.lines); p.i++ {
 		line := strings.TrimSpace(p.lines[p.i])
 		lineNo := p.i + 1
 		if line == "" {
 			continue
+		}
+		if !closed && !isSettingLine(line) {
+			p.i-- // this line is a caption, not a setting: the captions below an unclosed block still count
+			p.diag(start, SevError, "[settings] was opened but never closed with [/settings]. The settings so far were kept.")
+			return
 		}
 		if isDirective(line) {
 			if n, _ := parseDirective(line); n == "/settings" {
@@ -369,10 +381,32 @@ func blockSpans(lines []string) [][2]int {
 			open = -1
 		}
 	}
-	if open >= 0 { // unclosed: treat the rest of the file as the block so it is not duplicated
-		spans = append(spans, [2]int{open, len(lines) - 1})
+	if open >= 0 { // unclosed: the block is the settings lines after [settings], never the captions below them
+		end := open
+		for i := open + 1; i < len(lines); i++ {
+			t := strings.TrimSpace(lines[i])
+			if t == "" {
+				continue
+			}
+			if !isSettingLine(t) {
+				break
+			}
+			end = i
+		}
+		spans = append(spans, [2]int{open, end})
 	}
 	return spans
+}
+
+// isSettingLine is whether a line reads as a known "name: value" setting. It marks where an unclosed
+// [settings] block ends.
+func isSettingLine(t string) bool {
+	key, _, ok := strings.Cut(t, ":")
+	if !ok || isDirective(t) {
+		return false
+	}
+	_, known := lookupSetting(key)
+	return known
 }
 
 // insertionPoint is the line index where a new settings block goes: after leading blank lines,

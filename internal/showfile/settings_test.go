@@ -241,3 +241,30 @@ func TestArchivedSetting(t *testing.T) {
 		t.Errorf("restoring leaves no trace: %q", back)
 	}
 }
+
+// A [settings] block that was never closed must not swallow the captions below it when Setup rewrites the
+// settings (Rename, Look, Archive): the settings lines are replaced, the block is closed, the captions stay.
+func TestUpdateSettingsKeepsTheCaptionsBelowAnUnclosedBlock(t *testing.T) {
+	src := "[settings]\ntitle: X\nfont: serif\n\nHello there\nDANNY: Hi\nWorld\n"
+	out := UpdateSettings(src, false, func(s *Settings) { n := "Y"; s.Title = &n })
+	want := "[settings]\ntitle: Y\nfont: serif\n[/settings]\n\nHello there\nDANNY: Hi\nWorld\n"
+	if out != want {
+		t.Errorf("got:\n%q\nwant:\n%q", out, want)
+	}
+	if r := Parse(out, Options{}); len(r.Cues) != 3 {
+		t.Errorf("the repaired file has %d cues, want 3 (diagnostics %+v)", len(r.Cues), r.Diagnostics)
+	}
+}
+
+func TestCaptionsBelowAnUnclosedSettingsBlockStillCount(t *testing.T) {
+	r := Parse("[settings]\ntitle: X\n\nHello there\nWorld\n", Options{})
+	if len(r.Cues) != 2 || r.Cues[0].Text != "Hello there" {
+		t.Errorf("cues %+v", r.Cues)
+	}
+	if !hasDiag(r, SevError, "never closed with [/settings]") {
+		t.Errorf("the missing [/settings] must still be reported: %+v", r.Diagnostics)
+	}
+	if r.Settings.Title == nil || *r.Settings.Title != "X" {
+		t.Error("the settings so far must be kept")
+	}
+}

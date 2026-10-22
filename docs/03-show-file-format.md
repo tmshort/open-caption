@@ -52,7 +52,7 @@ Any Unicode character works as typed, so H₂O, x², 1ˢᵗ and ½ need no synta
 A show file also says how the show **looks and behaves**, so the file is self-contained: everything about a show except its
 images is in its show file(s). Settings go in a `[settings]` block, usually at the top, one `name: value` per line, ended by
 `[/settings]`. Names are not case-sensitive and `_`, `-` and spaces are interchangeable. Settings are not cues: they never
-affect the operator's list or the structure comparison between languages.
+affect the operator's list or the structure comparison between languages. If `[/settings]` is missing, an error is reported and the block ends at the last known setting line: what follows is read as captions, and Setup's rewrites (Rename, Look, Archive) close the block and keep them.
 
 | Setting (aliases) | Value | Default comes from |
 |-------------------|-------|--------------------|
