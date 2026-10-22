@@ -227,9 +227,12 @@ A block needs at least two lines (with one, it is shown as an ordinary caption a
 
 ### Speaker detection
 
-A leading label is a speaker if it matches `^[A-Z][A-Z0-9 .'\-]{0,29}:\s+\S`
-(upper-case word(s), colon, space). `HAMLET: To be, or not to be` → speaker
-`HAMLET`, text `To be, or not to be`. Mixed-case `Note: this` is not a speaker.
+A leading label is a speaker if it matches `^[A-Z][A-Z0-9 .'\-&,/()#]{0,59}:\s+\S`
+(upper-case word(s), colon, space; up to 60 characters). Besides letters, digits, spaces, `.`, `'` and `-`, a label
+may contain `&`, `,`, `/`, `(`, `)` and `#`, so a group can sing together (`DEE DEE & BARRY:`, `ALL (EXCEPT BARRY):`,
+`BARRY, ANGIE, SHELDON & TRENT:`) and a part can be numbered (`PARENT #1:`). `HAMLET: To be, or not to be` → speaker
+`HAMLET`, text `To be, or not to be`. A label is one speaker, whole: `DEE DEE & BARRY` is not split into two, so with
+`speaker names: color` it has a color of its own. Mixed-case `Note: this` is not a speaker.
 Escape with `\:`. The `speaker names` setting controls whether speakers are
 hidden, shown as a label, or shown in per-character colors (default: label, no color).
 

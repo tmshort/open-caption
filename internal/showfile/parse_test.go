@@ -82,6 +82,14 @@ func TestSpeaker(t *testing.T) {
 		{"Note: this", "", "Note: this"},
 		{"HAMLET\\: escaped", "", "HAMLET: escaped"},
 		{"TIME: 10:30", "TIME", "10:30"},
+		{"DEE DEE & BARRY: Yes!", "DEE DEE & BARRY", "Yes!"},
+		{"BARRY, ANGIE, SHELDON & TRENT: ~ Not, not not", "BARRY, ANGIE, SHELDON & TRENT", "♪ Not, not not ♪"},
+		{"ALL (EXCEPT BARRY): That's right!", "ALL (EXCEPT BARRY)", "That's right!"},
+		{"PARENT #1: No.", "PARENT #1", "No."},
+		{"KAYLEE & SHELBY / FEMALE STUDENTS: Hi", "KAYLEE & SHELBY / FEMALE STUDENTS", "Hi"},
+		{"THIRD MALE STUDENT & FIFTH FEMALE STUDENT: Hi", "THIRD MALE STUDENT & FIFTH FEMALE STUDENT", "Hi"},
+		{"(SFX): thunder", "", "(SFX): thunder"},
+		{"A LABEL THAT IS FAR TOO LONG TO BE A SPEAKER NAME, SO IT IS NOT ONE AT ALL: x", "", "A LABEL THAT IS FAR TOO LONG TO BE A SPEAKER NAME, SO IT IS NOT ONE AT ALL: x"},
 	}
 	for _, c := range cases {
 		r := Parse(c.in, Options{})

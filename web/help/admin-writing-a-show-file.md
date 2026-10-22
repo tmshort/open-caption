@@ -13,7 +13,7 @@ Long lines wrap on the screen automatically. You decide where to split a long sp
 | `***very loud***` | bold and italic text |
 | `~~old line~~` | text with a line through it (a correction, or a joke crossed out) |
 | `(thunder rumbles)` | a whole line in parentheses is shown as a sound or stage direction |
-| `HAMLET: To be, or not to be` | a speaker label above the line (the name must be in CAPITAL LETTERS followed by a colon) |
+| `HAMLET: To be, or not to be` | a speaker label above the line (the name must be in CAPITAL LETTERS followed by a colon; a group is fine too: `DEE DEE & BARRY:`, `ALL (EXCEPT BARRY):`) |
 
 Anything else is shown as typed. Links, lists, tables and headings are not supported. Raw HTML is not supported either: if you type `<b>`, it appears literally, and the page shows a note suggesting the Markdown form. Underline, superscript and subscript have no markup, but any character you can type works as it is, so write H₂O, x², 1ˢᵗ or ½ directly.
 

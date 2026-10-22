@@ -13,7 +13,7 @@ Le righe lunghe vanno a capo da sole sullo schermo. Decidi tu dove spezzare una 
 | `***very loud***` | testo in grassetto e corsivo |
 | `~~old line~~` | testo barrato (una correzione, o una battuta cancellata) |
 | `(thunder rumbles)` | un'intera riga tra parentesi viene mostrata come suono o indicazione di scena |
-| `HAMLET: To be, or not to be` | un'etichetta del personaggio sopra la riga (il nome deve essere in MAIUSCOLO seguito da due punti) |
+| `HAMLET: To be, or not to be` | un'etichetta del personaggio sopra la riga (il nome deve essere in MAIUSCOLO seguito da due punti; va bene anche un gruppo: `DEE DEE & BARRY:`, `ALL (EXCEPT BARRY):`) |
 
 Tutto il resto viene mostrato com'è scritto. Link, elenchi, tabelle e titoli non sono supportati. Neanche l'HTML puro è supportato: se scrivi `<b>`, appare letteralmente, e la pagina mostra una nota che suggerisce la forma Markdown. Sottolineatura, apici e pedici non hanno un marcatore, ma qualsiasi carattere che puoi digitare funziona così com'è: scrivi direttamente H₂O, x², 1ˢᵗ o ½.
 

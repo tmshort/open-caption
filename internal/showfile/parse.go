@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	speakerRe  = regexp.MustCompile(`^([A-Z][A-Z0-9 .'\-]{0,29}):\s+(\S.*)$`)
+	speakerRe  = regexp.MustCompile(`^([A-Z][A-Z0-9 .'\-&,/()#]{0,59}):\s+(\S.*)$`)
 	durationRe = regexp.MustCompile(`^(\d+(?:\.\d+)?)\s*s$`)
 	// "timer 15", "timer: 7:30pm", "countdown 10 minutes" (the keyword, then a space or a colon)
 	timerOptionRe = regexp.MustCompile(`(?i)^(?:timer|countdown)(?:\s+|\s*:\s*|$)`)
