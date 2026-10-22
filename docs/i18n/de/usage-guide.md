@@ -128,7 +128,7 @@ In der Reihenfolge der Zuverlässigkeit:
 
 ## Installation und Start
 
-1. **Besorgen Sie das Programm.** Laden Sie die Fassung für Ihren Computer von der Seite *Releases* des Repositorys herunter und entpacken Sie sie (oder bauen Sie sie selbst: siehe die Bauanleitungen in der README). Legen Sie es in einen Ordner, den Sie behalten, zum Beispiel `Dokumente/open-caption`.
+1. **Besorgen Sie das Programm.** Laden Sie die Fassung für Ihren Computer von der Seite *Releases* des Repositorys herunter und entpacken Sie sie (oder bauen Sie sie selbst: siehe die Bauanleitungen im Ordner `docs` des Quell-Repositorys). Legen Sie es in einen Ordner, den Sie behalten, zum Beispiel `Dokumente/open-caption`.
 2. **Erster Start.** Starten Sie es: unter Windows per Doppelklick, oder in einem Terminal `./open-caption` (macOS/Linux). Das Programm ist nicht signiert, daher kann beim ersten Start ein zusätzlicher Klick nötig sein: unter macOS *Rechtsklick → Öffnen* (oder **Trotzdem öffnen** in Systemeinstellungen → Datenschutz & Sicherheit), unter Windows *Weitere Informationen → Trotzdem ausführen* im SmartScreen-Fenster.
 3. **Notieren Sie die Passwörter.** Beim ersten Mal gibt das Programm die **Administrator-** und **Operator-**Passwörter aus und sagt, wo `config.yaml` liegt. Sie bleiben in dieser Datei.
 4. Die Einrichtungsseite öffnet sich in Ihrem Browser. Falls nicht, öffnen Sie `http://localhost/admin` (oder `http://localhost:8080/admin`, wenn die Konsole sagt, dass sie Port 8080 verwendet hat).

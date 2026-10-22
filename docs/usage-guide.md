@@ -128,7 +128,7 @@ In order of reliability:
 
 ## Installing and starting
 
-1. **Get the program.** Download the release for your computer from the repository's *Releases* page and unpack it (or build it yourself: see the build guides in the README). Put it in a folder you will keep, for example `Documents/open-caption`.
+1. **Get the program.** Download the release for your computer from the repository's *Releases* page and unpack it (or build it yourself: see the build guides in the source repository's `docs` folder). Put it in a folder you will keep, for example `Documents/open-caption`.
 2. **First start.** Run it: double-click it on Windows, or in a terminal run `./open-caption` (macOS/Linux). The program is not code-signed, so the first run may need a click: on macOS *right-click → Open* (or **Open Anyway** in System Settings → Privacy & Security), on Windows *More info → Run anyway* in the SmartScreen window.
 3. **Note the passwords.** The first time, the program prints the **admin** and **operator** passwords and where `config.yaml` is. They stay in that file.
 4. The setup page opens in your browser. If it does not, open `http://localhost/admin` (or `http://localhost:8080/admin` if the console says it used port 8080).

@@ -128,7 +128,7 @@ In ordine di affidabilità:
 
 ## Installazione e avvio
 
-1. **Procurati il programma.** Scarica la versione per il tuo computer dalla pagina *Releases* del repository e decomprimila (oppure costruiscila tu: vedi le guide alla compilazione nel README). Mettila in una cartella che conserverai, per esempio `Documenti/open-caption`.
+1. **Procurati il programma.** Scarica la versione per il tuo computer dalla pagina *Releases* del repository e decomprimila (oppure costruiscila tu: vedi le guide alla compilazione nella cartella `docs` del repository dei sorgenti). Mettila in una cartella che conserverai, per esempio `Documenti/open-caption`.
 2. **Primo avvio.** Eseguilo: doppio clic su Windows, oppure in un terminale `./open-caption` (macOS/Linux). Il programma non è firmato, quindi al primo avvio può servire un clic in più: su macOS *clic destro → Apri* (oppure **Apri comunque** in Impostazioni di Sistema → Privacy e sicurezza), su Windows *Ulteriori informazioni → Esegui comunque* nella finestra di SmartScreen.
 3. **Annota le password.** La prima volta, il programma stampa le password **amministratore** e **operatore** e dove si trova `config.yaml`. Restano in quel file.
 4. La pagina di configurazione si apre nel tuo browser. Se non succede, apri `http://localhost/admin` (o `http://localhost:8080/admin` se la console dice di aver usato la porta 8080).
