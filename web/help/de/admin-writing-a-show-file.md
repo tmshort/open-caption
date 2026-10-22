@@ -15,6 +15,8 @@ Lange Zeilen werden auf dem Bildschirm automatisch umgebrochen. Sie entscheiden,
 | `(thunder rumbles)` | eine ganze Zeile in Klammern wird als Geräusch oder Bühnenanweisung gezeigt |
 | `HAMLET: To be, or not to be` | eine Sprecher-Kennzeichnung über der Zeile (der Name muss in GROSSBUCHSTABEN stehen, gefolgt von einem Doppelpunkt; eine Gruppe geht auch: `DEE DEE & BARRY:`, `ALL (EXCEPT BARRY):`) |
 
+**Text durchstreichen.** Setzen Sie auf jede Seite zwei Tilden, `~~so~~`, und die Wörter werden durchgestrichen gezeigt. Direkt innerhalb jedes Paars muss ein Zeichen stehen, das kein Leerzeichen ist (`~~ x ~~` bleibt unverändert). Eine gesungene Zeile beginnt mit einer einzelnen `~` und einem Leerzeichen, die beiden werden also nie verwechselt; um eine normale Zeile mit einer Tilde zu beginnen, schreiben Sie `\~`.
+
 Alles andere wird so gezeigt, wie es getippt wurde. Links, Listen, Tabellen und Überschriften werden nicht unterstützt. Rohes HTML wird ebenfalls nicht unterstützt: Wenn Sie `<b>` tippen, erscheint es wörtlich, und die Seite zeigt einen Hinweis, der die Markdown-Form vorschlägt. Unterstreichung, Hoch- und Tiefstellung haben keine Auszeichnung, aber jedes Zeichen, das Sie tippen können, funktioniert so, wie es ist: Schreiben Sie H₂O, x², 1ˢᵗ oder ½ einfach direkt.
 
 ```showfile
@@ -69,7 +71,7 @@ Ein paar Regeln: Die Show-Datei einer Übersetzung darf nur `idle message` festl
 Zeigen Sie bei einem Musical die Liedtexte zwischen Noten (♪). Es gibt drei Wege, vom schnellsten zum flexibelsten:
 
 - **Tippen oder fügen Sie die Noten selbst ein.** ♪ und ♫ funktionieren überall in der Show-Datei. Im Editor fügen die Schaltflächen **♪** und **♫** sie an der Cursorposition ein.
-- **Beginnen Sie eine Zeile mit `~`.** Die Zeile wird als gesungener Text behandelt: Sie wird kursiv gezeigt, mit einem ♪ an jedem Ende, und das `~` selbst wird nicht gezeigt. Ein abschließendes `~` ist optional. Das funktioniert auch hinter einem Sprechernamen.
+- **Beginnen Sie eine Zeile mit `~`.** Die Zeile wird als gesungener Text behandelt: Sie wird kursiv gezeigt, mit einem ♪ an jedem Ende, und das `~` selbst wird nicht gezeigt. Nur das einleitende `~` ist nötig: das ♪ am Ende wird automatisch ergänzt, und ein abschließendes `~` ist erlaubt, ändert aber nichts. Das funktioniert auch hinter einem Sprechernamen.
 - **Fassen Sie ein ganzes Lied in `[song]` und `[/song]`.** Jede Zeile darin wird gesungen, Sie brauchen also kein `~` an jeder. Der Titel nach dem Doppelpunkt ist ein Lesezeichen nur für den Operator. Notizen, clear und blank dürfen weiterhin darin stehen.
 
 ```showfile

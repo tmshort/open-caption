@@ -15,6 +15,8 @@ Les longues lignes passent automatiquement à la ligne à l'écran. C'est vous q
 | `(thunder rumbles)` | une ligne entière entre parenthèses est affichée comme un bruit ou une indication de scène |
 | `HAMLET: To be, or not to be` | une étiquette de personnage au-dessus de la ligne (le nom doit être en MAJUSCULES suivi de deux-points ; un groupe convient aussi : `DEE DEE & BARRY:`, `ALL (EXCEPT BARRY):`) |
 
+**Barrer du texte.** Mettez deux tildes de chaque côté, `~~comme ceci~~`, et les mots sont affichés barrés. Il faut un caractère autre qu'une espace juste à l'intérieur de chaque paire (`~~ x ~~` reste tel quel). Une ligne chantée commence par un seul `~` suivi d'une espace, les deux ne sont donc jamais confondus ; pour commencer une ligne ordinaire par un tilde, écrivez `\~`.
+
 Tout le reste est affiché tel quel. Les liens, listes, tableaux et titres ne sont pas pris en charge. Le HTML brut non plus : si vous tapez `<b>`, il apparaît tel quel, et la page affiche une remarque suggérant la forme Markdown. Le soulignement, les exposants et les indices n'ont pas de balisage, mais tout caractère que vous pouvez saisir fonctionne tel quel : écrivez directement H₂O, x², 1ˢᵗ ou ½.
 
 ```showfile
@@ -69,7 +71,7 @@ Quelques règles : le fichier du spectacle d'une traduction ne peut définir que
 Pour une comédie musicale, affichez les paroles entre des notes de musique (♪). Il y a trois façons, de la plus rapide à la plus souple :
 
 - **Saisissez ou collez vous-même les notes.** ♪ et ♫ fonctionnent n'importe où dans le fichier du spectacle. Dans l'éditeur, les boutons **♪** et **♫** les insèrent au curseur.
-- **Commencez une ligne par `~`.** La ligne est traitée comme une parole chantée : elle est affichée en italique avec un ♪ ajouté à chaque bout, et le `~` lui-même n'est pas affiché. Un `~` de fermeture est facultatif. Cela fonctionne aussi après le nom d'un personnage.
+- **Commencez une ligne par `~`.** La ligne est traitée comme une parole chantée : elle est affichée en italique avec un ♪ ajouté à chaque bout, et le `~` lui-même n'est pas affiché. Seul le `~` d'ouverture est nécessaire : le ♪ de fin est ajouté pour vous, et un `~` de fermeture est permis mais ne change rien. Cela fonctionne aussi après le nom d'un personnage.
 - **Entourez toute une chanson de `[song]` et `[/song]`.** Chaque ligne à l'intérieur est chantée, vous n'avez donc pas besoin d'un `~` sur chacune. Le titre après les deux-points est un signet réservé à l'opérateur. Les notes, clear et blank peuvent toujours figurer à l'intérieur.
 
 ```showfile

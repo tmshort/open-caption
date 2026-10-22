@@ -15,6 +15,8 @@ Long lines wrap on the screen automatically. You decide where to split a long sp
 | `(thunder rumbles)` | a whole line in parentheses is shown as a sound or stage direction |
 | `HAMLET: To be, or not to be` | a speaker label above the line (the name must be in CAPITAL LETTERS followed by a colon; a group is fine too: `DEE DEE & BARRY:`, `ALL (EXCEPT BARRY):`) |
 
+**Crossing text out.** Put two tildes on each side, `~~like this~~`, and the words are shown with a line through them. There must be a non-space character just inside each pair (`~~ x ~~` stays as typed). A sung line starts with a single `~` followed by a space, so the two never get mixed up; to start an ordinary line with a tilde, write `\~`.
+
 Anything else is shown as typed. Links, lists, tables and headings are not supported. Raw HTML is not supported either: if you type `<b>`, it appears literally, and the page shows a note suggesting the Markdown form. Underline, superscript and subscript have no markup, but any character you can type works as it is, so write H₂O, x², 1ˢᵗ or ½ directly.
 
 ```showfile
@@ -69,7 +71,7 @@ A few rules: a translation's show file may set only `idle message` (the look is 
 For a musical, show lyrics between music notes (♪). There are three ways, from quickest to most flexible:
 
 - **Type or paste the notes yourself.** ♪ and ♫ work anywhere in the show file. In the editor, the **♪** and **♫** buttons insert them at the cursor.
-- **Start a line with `~`.** The line is treated as a sung lyric: it is shown in italics with a ♪ added at each end, and the `~` itself is not shown. A closing `~` is optional. This also works after a speaker's name.
+- **Start a line with `~`.** The line is treated as a sung lyric: it is shown in italics with a ♪ added at each end, and the `~` itself is not shown. Only the opening `~` is needed: the ♪ at the end is added for you, and a closing `~` is allowed but changes nothing. This also works after a speaker's name.
 - **Wrap a whole song in `[song]` and `[/song]`.** Every line inside is sung, so you do not need a `~` on each one. The title after the colon is a bookmark for the operator only. Notes, clears and blanks can still go inside.
 
 ```showfile

@@ -15,6 +15,8 @@ Las líneas largas se ajustan solas en la pantalla. Usted decide dónde dividir 
 | `(thunder rumbles)` | una línea entera entre paréntesis se muestra como un sonido o una acotación |
 | `HAMLET: To be, or not to be` | una etiqueta de personaje sobre la línea (el nombre debe ir en MAYÚSCULAS seguido de dos puntos; también vale un grupo: `DEE DEE & BARRY:`, `ALL (EXCEPT BARRY):`) |
 
+**Tachar texto.** Ponga dos tildes a cada lado, `~~así~~`, y las palabras se muestran con una línea encima. Debe haber un carácter que no sea un espacio justo dentro de cada pareja (`~~ x ~~` se queda tal cual). Una línea cantada empieza con una sola `~` seguida de un espacio, así que nunca se confunden; para empezar una línea normal con una tilde, escriba `\~`.
+
 Todo lo demás se muestra tal como se escribe. No se admiten enlaces, listas, tablas ni títulos. Tampoco se admite HTML sin procesar: si escribe `<b>`, aparece literalmente, y la página muestra una nota que sugiere la forma Markdown. El subrayado, los superíndices y los subíndices no tienen marca, pero cualquier carácter que pueda escribir funciona tal cual, así que escriba H₂O, x², 1ˢᵗ o ½ directamente.
 
 ```showfile
@@ -69,7 +71,7 @@ Algunas reglas: el archivo del espectáculo de una traducción solo puede defini
 Para un musical, muestre las letras entre notas musicales (♪). Hay tres formas, de la más rápida a la más flexible:
 
 - **Escriba o pegue usted mismo las notas.** ♪ y ♫ funcionan en cualquier parte del archivo del espectáculo. En el editor, los botones **♪** y **♫** las insertan en el cursor.
-- **Empiece una línea con `~`.** La línea se trata como una letra cantada: se muestra en cursiva con una ♪ añadida en cada extremo, y la propia `~` no se muestra. Una `~` de cierre es opcional. También funciona tras el nombre de un personaje.
+- **Empiece una línea con `~`.** La línea se trata como una letra cantada: se muestra en cursiva con una ♪ añadida en cada extremo, y la propia `~` no se muestra. Solo hace falta la `~` inicial: la ♪ del final se añade sola, y una `~` de cierre se admite pero no cambia nada. También funciona tras el nombre de un personaje.
 - **Envuelva una canción entera en `[song]` y `[/song]`.** Todas las líneas de dentro se cantan, así que no necesita una `~` en cada una. El título tras los dos puntos es un marcador solo para el operador. Las notas, los clear y los blank pueden seguir yendo dentro.
 
 ```showfile

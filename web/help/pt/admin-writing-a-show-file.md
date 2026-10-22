@@ -15,6 +15,8 @@ As linhas longas quebram sozinhas na tela. Você decide onde dividir uma fala lo
 | `(thunder rumbles)` | uma linha inteira entre parênteses é mostrada como um som ou uma indicação de cena |
 | `HAMLET: To be, or not to be` | um rótulo de personagem acima da linha (o nome deve estar em MAIÚSCULAS seguido de dois-pontos; um grupo também serve: `DEE DEE & BARRY:`, `ALL (EXCEPT BARRY):`) |
 
+**Riscar texto.** Coloque dois til de cada lado, `~~assim~~`, e as palavras são mostradas riscadas. Logo dentro de cada par deve haver um caractere que não seja espaço (`~~ x ~~` fica como está). Uma linha cantada começa com um único `~` seguido de espaço, então as duas coisas nunca se confundem; para começar uma linha comum com til, escreva `\~`.
+
 Todo o resto é mostrado como foi digitado. Links, listas, tabelas e títulos não são suportados. HTML puro também não: se você digitar `<b>`, ele aparece literalmente, e a página mostra uma nota sugerindo a forma Markdown. Sublinhado, sobrescrito e subscrito não têm marcação, mas qualquer caractere que você consiga digitar funciona como está: escreva H₂O, x², 1ˢᵗ ou ½ diretamente.
 
 ```showfile
@@ -69,7 +71,7 @@ Algumas regras: o arquivo do espetáculo de uma tradução só pode definir `idl
 Para um musical, mostre as letras entre notas musicais (♪). Há três maneiras, da mais rápida à mais flexível:
 
 - **Digite ou cole as notas você mesmo.** ♪ e ♫ funcionam em qualquer lugar do arquivo do espetáculo. No editor, os botões **♪** e **♫** as inserem no cursor.
-- **Comece uma linha com `~`.** A linha é tratada como uma letra cantada: é mostrada em itálico com um ♪ em cada ponta, e o próprio `~` não é mostrado. Um `~` de fechamento é opcional. Também funciona depois do nome de um personagem.
+- **Comece uma linha com `~`.** A linha é tratada como uma letra cantada: é mostrada em itálico com um ♪ em cada ponta, e o próprio `~` não é mostrado. Só o `~` inicial é necessário: o ♪ do fim é acrescentado para você, e um `~` de fechamento é permitido, mas não muda nada. Também funciona depois do nome de um personagem.
 - **Envolva uma música inteira em `[song]` e `[/song]`.** Toda linha dentro é cantada, então você não precisa de um `~` em cada uma. O título depois dos dois-pontos é um marcador só para o operador. Notas, clear e blank ainda podem ficar dentro.
 
 ```showfile

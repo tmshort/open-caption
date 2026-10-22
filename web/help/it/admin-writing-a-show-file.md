@@ -15,6 +15,8 @@ Le righe lunghe vanno a capo da sole sullo schermo. Decidi tu dove spezzare una 
 | `(thunder rumbles)` | un'intera riga tra parentesi viene mostrata come suono o indicazione di scena |
 | `HAMLET: To be, or not to be` | un'etichetta del personaggio sopra la riga (il nome deve essere in MAIUSCOLO seguito da due punti; va bene anche un gruppo: `DEE DEE & BARRY:`, `ALL (EXCEPT BARRY):`) |
 
+**Barrare il testo.** Metti due tilde per lato, `~~così~~`, e le parole vengono mostrate barrate. Subito dentro ogni coppia ci deve essere un carattere che non sia uno spazio (`~~ x ~~` resta com'è). Una riga cantata inizia con una sola `~` seguita da uno spazio, quindi le due cose non si confondono mai; per iniziare una riga normale con una tilde, scrivi `\~`.
+
 Tutto il resto viene mostrato com'è scritto. Link, elenchi, tabelle e titoli non sono supportati. Neanche l'HTML puro è supportato: se scrivi `<b>`, appare letteralmente, e la pagina mostra una nota che suggerisce la forma Markdown. Sottolineatura, apici e pedici non hanno un marcatore, ma qualsiasi carattere che puoi digitare funziona così com'è: scrivi direttamente H₂O, x², 1ˢᵗ o ½.
 
 ```showfile
@@ -69,7 +71,7 @@ Alcune regole: il file dello spettacolo di una traduzione può impostare solo `i
 Per un musical, mostra i testi tra note musicali (♪). Ci sono tre modi, dal più rapido al più flessibile:
 
 - **Scrivi o incolla tu le note.** ♪ e ♫ funzionano ovunque nel file dello spettacolo. Nell'editor, i pulsanti **♪** e **♫** le inseriscono al cursore.
-- **Inizia una riga con `~`.** La riga è trattata come un testo cantato: viene mostrata in corsivo con un ♪ aggiunto a ogni estremità, e la `~` stessa non viene mostrata. Una `~` di chiusura è facoltativa. Funziona anche dopo il nome di un personaggio.
+- **Inizia una riga con `~`.** La riga è trattata come un testo cantato: viene mostrata in corsivo con un ♪ aggiunto a ogni estremità, e la `~` stessa non viene mostrata. Serve solo la `~` iniziale: il ♪ finale viene aggiunto per te, e una `~` di chiusura è ammessa ma non cambia nulla. Funziona anche dopo il nome di un personaggio.
 - **Racchiudi un'intera canzone in `[song]` e `[/song]`.** Ogni riga all'interno è cantata, quindi non serve una `~` su ognuna. Il titolo dopo i due punti è un segnalibro solo per l'operatore. Note, clear e blank possono comunque stare all'interno.
 
 ```showfile
