@@ -233,7 +233,7 @@ may contain `&`, `,`, `/`, `(`, `)` and `#`, so a group can sing together (`DEE 
 `BARRY, ANGIE, SHELDON & TRENT:`) and a part can be numbered (`PARENT #1:`). `HAMLET: To be, or not to be` → speaker
 `HAMLET`, text `To be, or not to be`. A label is one speaker, whole: `DEE DEE & BARRY` is not split into two, so with
 `speaker names: color` it has a color of its own. Mixed-case `Note: this` is not a speaker.
-Escape with `\:`. The `speaker names` setting controls whether speakers are
+A name and colon with nothing after them (`BARRY:` alone on a line) is not a speaker: the line is shown as typed, and a warning points it out, since the words were probably meant to follow. Escape with `\:`. The `speaker names` setting controls whether speakers are
 hidden, shown as a label, or shown in per-character colors (default: label, no color).
 
 ### Languages
@@ -309,6 +309,7 @@ Each is reported with a line number and a plain-English message:
 - warning: `Line 42: image "curtian.jpg" not found. Did you mean "curtain.jpg"?`
 - warning: `Line 17: unknown command [fade]. This line was skipped.`
 - warning: `Line 63: captions can't go inside a loop. This line was skipped.`
+- warning: `Line 12: "BARRY:" is a speaker's name with nothing after the colon. Put the words on the same line, or write \: if the colon is part of the text.` (the line is still shown as typed)
 - error: `Line 88: [loop] was opened but never closed.`
 - error: `Line 12: comment <!-- was opened but never closed.`
 - info: `Line 30: lines starting with # are reserved for headings and were ignored. Use <!-- comment --> for comments or [note: …] for operator notes.`

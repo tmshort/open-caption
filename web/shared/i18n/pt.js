@@ -739,5 +739,6 @@ OCI18n.add("pt", {
  "Skipped": "Pulada",
  "Skipped “{text}”": "Pulada: “{text}”",
  "Pass over the next line without sending it. Back undoes it (S)": "Passa pela próxima linha sem enviá-la. Backspace desfaz (S)",
- "SKIPPED": "PULADA"
+ "SKIPPED": "PULADA",
+ "{0} is a speaker's name with nothing after the colon. Put the words on the same line, or write \\: if the colon is part of the text.": "{0} é o nome de um personagem sem nada depois dos dois-pontos. Coloque as palavras na mesma linha, ou escreva \\: se os dois-pontos fazem parte do texto."
 });

@@ -739,5 +739,6 @@ OCI18n.add("de", {
  "Skipped": "Übersprungen",
  "Skipped “{text}”": "Übersprungen: „{text}“",
  "Pass over the next line without sending it. Back undoes it (S)": "Geht über die nächste Zeile hinweg, ohne sie zu senden. Die Rücktaste nimmt es zurück (S)",
- "SKIPPED": "ÜBERSPRUNGEN"
+ "SKIPPED": "ÜBERSPRUNGEN",
+ "{0} is a speaker's name with nothing after the colon. Put the words on the same line, or write \\: if the colon is part of the text.": "{0} ist ein Sprechername ohne etwas nach dem Doppelpunkt. Setzen Sie den Text in dieselbe Zeile oder schreiben Sie \\:, wenn der Doppelpunkt zum Text gehört."
 });

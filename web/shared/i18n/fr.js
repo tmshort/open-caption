@@ -739,5 +739,6 @@ OCI18n.add("fr", {
  "Skipped": "Ligne passée",
  "Skipped “{text}”": "Passée : « {text} »",
  "Pass over the next line without sending it. Back undoes it (S)": "Saute la ligne suivante sans l'envoyer. Retour arrière annule (S)",
- "SKIPPED": "PASSÉE"
+ "SKIPPED": "PASSÉE",
+ "{0} is a speaker's name with nothing after the colon. Put the words on the same line, or write \\: if the colon is part of the text.": "{0} est un nom de personnage sans rien après les deux-points. Mettez les paroles sur la même ligne, ou écrivez \\: si les deux-points font partie du texte."
 });

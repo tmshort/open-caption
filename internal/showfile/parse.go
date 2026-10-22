@@ -12,8 +12,10 @@ import (
 )
 
 var (
-	speakerRe  = regexp.MustCompile(`^([A-Z][A-Z0-9 .'\-&,/()#]{0,59}):\s+(\S.*)$`)
-	durationRe = regexp.MustCompile(`^(\d+(?:\.\d+)?)\s*s$`)
+	speakerRe = regexp.MustCompile(`^([A-Z][A-Z0-9 .'\-&,/()#]{0,59}):\s+(\S.*)$`)
+	// a speaker's name and colon with nothing after them: probably the words were meant to follow
+	speakerOnlyRe = regexp.MustCompile(`^([A-Z][A-Z0-9 .'\-&,/()#]{0,59}):\s*$`)
+	durationRe    = regexp.MustCompile(`^(\d+(?:\.\d+)?)\s*s$`)
 	// "timer 15", "timer: 7:30pm", "countdown 10 minutes" (the keyword, then a space or a colon)
 	timerOptionRe = regexp.MustCompile(`(?i)^(?:timer|countdown)(?:\s+|\s*:\s*|$)`)
 	// "name Intermission", "name: Act 1 break" (the keyword, then a space or a colon)
@@ -219,6 +221,8 @@ func (p *parser) part(lines []string, lineNo int) Part {
 	if m := speakerRe.FindStringSubmatch(lines[0]); m != nil {
 		pt.Speaker = m[1]
 		lines[0] = m[2]
+	} else if m := speakerOnlyRe.FindStringSubmatch(lines[0]); m != nil {
+		p.diag(lineNo, SevWarning, "%q is a speaker's name with nothing after the colon. Put the words on the same line, or write \\: if the colon is part of the text.", m[1]+":")
 	}
 	_, shorthand := singMarks(lines[0])
 	pt.Sung = p.song || shorthand

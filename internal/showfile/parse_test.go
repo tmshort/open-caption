@@ -75,6 +75,30 @@ func TestHeadingsReserved(t *testing.T) {
 	}
 }
 
+func TestSpeakerWithNothingAfterTheColonIsWarnedAbout(t *testing.T) {
+	for _, in := range []string{"BARRY:", "DEE DEE & BARRY: ", "ALL (EXCEPT BARRY):"} {
+		r := Parse(in, Options{})
+		if !hasDiag(r, SevWarning, "nothing after the colon") {
+			t.Errorf("%q: no warning: %+v", in, r.Diagnostics)
+		}
+	}
+	for _, in := range []string{"BARRY: Hi", "BARRY: ~", "Note:", "BARRY\\:", "TIME: 10:30"} {
+		if r := Parse(in, Options{}); hasDiag(r, SevWarning, "nothing after the colon") {
+			t.Errorf("%q: needless warning", in)
+		}
+	}
+	// the line is still a caption, as typed, and the warning names its line
+	r := Parse("A: x\n\nBARRY:\n~ la la", Options{})
+	if len(r.Cues) != 3 || r.Cues[1].Text != "BARRY:" {
+		t.Errorf("cues: %+v", r.Cues)
+	}
+	for _, d := range r.Diagnostics {
+		if strings.Contains(d.Message, "nothing after the colon") && d.Line != 3 {
+			t.Errorf("line %d, want 3", d.Line)
+		}
+	}
+}
+
 func TestSpeaker(t *testing.T) {
 	cases := []struct{ in, speaker, text string }{
 		{"HAMLET: To be", "HAMLET", "To be"},
