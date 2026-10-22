@@ -234,7 +234,9 @@ async function main() {
       const c0 = await cur(), n0 = (await caps(en)).length;
       await op.keyboard.press('s'); await sleep(500);
       check('Skip (S) moves past the next line without showing it, and says which', (await cur()) > c0 && (await caps(en)).length === n0 && (await caps(es)).length === n0 && /^Skipped/.test(await op.evaluate(() => document.getElementById('toast').textContent)), [c0, await cur()]);
+      check('the skipped line is marked SKIPPED in the list', await op.evaluate(() => { const li = document.querySelector('#list .cue.skipped'); return !!li && /SKIPPED/.test(li.textContent); }));
       await sleep(300); await op.keyboard.press('Backspace'); await sleep(500);
+      check('and the mark goes with the skip', await op.evaluate(() => !document.querySelector('#list .cue.skipped')));
       check('Back takes the skip back', (await cur()) === c0, [c0, await cur()]);
     }
 

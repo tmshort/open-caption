@@ -738,5 +738,6 @@ OCI18n.add("pt", {
  "Skip": "Pular",
  "Skipped": "Pulada",
  "Skipped “{text}”": "Pulada: “{text}”",
- "Pass over the next line without sending it. Back undoes it (S)": "Passa pela próxima linha sem enviá-la. Backspace desfaz (S)"
+ "Pass over the next line without sending it. Back undoes it (S)": "Passa pela próxima linha sem enviá-la. Backspace desfaz (S)",
+ "SKIPPED": "PULADA"
 });

@@ -818,3 +818,35 @@ func TestSkipNeedsTheShowOnAir(t *testing.T) {
 		t.Errorf("a refused skip moved the show: %+v", op)
 	}
 }
+
+func TestSkippedLinesAreRemembered(t *testing.T) {
+	e, _ := newEngine(t, "A\nB\nC\nD\nE\n")
+	mustNext(t, e) // A
+	op, _ := e.Skip(-1)
+	if !reflect.DeepEqual(op.Skipped, []int{1}) {
+		t.Fatalf("skipped %v", op.Skipped)
+	}
+	mustNext(t, e) // C
+	e.Skip(-1)     // D
+	if op = e.Operator(); !reflect.DeepEqual(op.Skipped, []int{1, 3}) {
+		t.Fatalf("skipped %v", op.Skipped)
+	}
+	// They survive a restart.
+	e2, _ := newEngine(t, "A\nB\nC\nD\nE\n")
+	e2.Restore(e.Export())
+	if got := e2.Operator().Skipped; !reflect.DeepEqual(got, []int{1, 3}) {
+		t.Errorf("after a restart: %v", got)
+	}
+	// Back takes the last skip away, and going back past one makes the line unsent again.
+	if op, _ = e.Back(-1); !reflect.DeepEqual(op.Skipped, []int{1}) {
+		t.Errorf("Back: %v", op.Skipped)
+	}
+	e.Skip(-1)
+	if op, _ = e.Jump(1, -1); len(op.Skipped) != 0 {
+		t.Errorf("a jump back to the skipped line: %v", op.Skipped)
+	}
+	e.Skip(-1)
+	if op, _ = e.Reset(-1); len(op.Skipped) != 0 {
+		t.Errorf("Reset: %v", op.Skipped)
+	}
+}

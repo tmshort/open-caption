@@ -738,5 +738,6 @@ OCI18n.add("fr", {
  "Skip": "Passer",
  "Skipped": "Ligne passée",
  "Skipped “{text}”": "Passée : « {text} »",
- "Pass over the next line without sending it. Back undoes it (S)": "Saute la ligne suivante sans l'envoyer. Retour arrière annule (S)"
+ "Pass over the next line without sending it. Back undoes it (S)": "Saute la ligne suivante sans l'envoyer. Retour arrière annule (S)",
+ "SKIPPED": "PASSÉE"
 });

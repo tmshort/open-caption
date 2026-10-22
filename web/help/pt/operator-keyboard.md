@@ -6,7 +6,7 @@ Estas teclas funcionam sempre que você não estiver digitando numa caixa e nenh
 |-------|------|
 | `Espaço`, `Seta para a direita`, `Page Down`, `Enter` | **Próximo:** envia a próxima linha; inicia um laço que é o próximo; encerra um laço em andamento e envia a linha seguinte a ele. Em espera é **INICIAR**: coloca o espetáculo no ar |
 | `Backspace`, `Seta para a esquerda`, `Page Up` | **Voltar:** desfaz a última ação. Voltar a um laço o reinicia |
-| `S` | **Pular:** passa pela próxima linha sem enviá-la, para uma linha que os atores cortaram. O público não vê nada; **Backspace** desfaz o pulo |
+| `S` | **Pular:** passa pela próxima linha sem enviá-la, para uma linha que os atores cortaram. O público não vê nada, e a linha fica marcada como **PULADA** na lista; **Backspace** desfaz o pulo |
 | `Shift+Q` | **Parar:** para um laço em andamento e deixa a tela em branco |
 | `B` | **Em branco** ou desfazer o branco: esconde tudo, e traz de volta as mesmas legendas ao desfazer |
 | `C` | **Limpar**: apaga as legendas, para que a próxima linha comece numa tela vazia |

@@ -6,7 +6,7 @@ Questi tasti funzionano quando non stai scrivendo in una casella e nessuna fines
 |-------|--------|
 | `Spazio`, `Freccia destra`, `Pag giù`, `Invio` | **Avanti:** invia la riga successiva; avvia un ciclo che è il prossimo; termina un ciclo in corso e invia la riga che lo segue. In attesa è **AVVIA**: mette lo spettacolo in onda |
 | `Backspace`, `Freccia sinistra`, `Pag su` | **Indietro:** annulla l'ultima azione. Tornare in un ciclo lo riavvia |
-| `S` | **Salta:** supera la riga successiva senza inviarla, per una riga che gli attori hanno tagliato. Il pubblico non vede nulla; **Backspace** annulla il salto |
+| `S` | **Salta:** supera la riga successiva senza inviarla, per una riga che gli attori hanno tagliato. Il pubblico non vede nulla, e la riga è segnata come **SALTATA** nell'elenco; **Backspace** annulla il salto |
 | `Maiusc+Q` | **Stop:** ferma un ciclo in corso e lascia lo schermo vuoto |
 | `B` | **Schermo vuoto** o riattiva: nasconde tutto, e riporta gli stessi sottotitoli quando riattivi |
 | `C` | **Cancella**: cancella i sottotitoli, così la riga successiva inizia su uno schermo vuoto |

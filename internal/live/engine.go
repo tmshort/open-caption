@@ -119,6 +119,8 @@ type OperatorState struct {
 	Announcement string      `json:"announcement,omitempty"`
 	LastAt       int64       `json:"lastAt"` // unix ms of the operator's last action (0 = none yet)
 	Loop         *LoopStatus `json:"loop"`
+	// Skipped lists the cues the operator passed over without sending (Skip), so the page can show them as skipped.
+	Skipped []int `json:"skipped,omitempty"`
 }
 
 // Config tunes the engine.
@@ -141,6 +143,7 @@ type snapshot struct {
 	st      State
 	cursor  int
 	loopCue int // -1: no loop was running
+	skipped []int
 }
 
 type loopRun struct {
@@ -170,6 +173,7 @@ type Engine struct {
 	standby    bool
 	resumeLoop int
 	lastAt     int64 // unix ms of the last operator action (0 = none yet)
+	skipped    []int // cues passed over with Skip, ascending; all are before the cursor
 }
 
 // New creates an engine in its initial state (auto-starting a leading loop).
@@ -240,7 +244,8 @@ func (e *Engine) Operator() OperatorState {
 
 func (e *Engine) operatorLocked() OperatorState {
 	o := OperatorState{Seq: e.st.Seq, Rev: e.rev, Cursor: e.cursor, NextIndex: e.visibleFrom(e.cursor),
-		Total: len(e.cues), Live: e.liveLocked(), Standby: e.standby, Mode: e.st.Mode, LastAt: e.lastAt}
+		Total: len(e.cues), Live: e.liveLocked(), Standby: e.standby, Mode: e.st.Mode, LastAt: e.lastAt,
+		Skipped: append([]int(nil), e.skipped...)}
 	if f := e.st.Fullscreen; f != nil && f.Announcement && !e.standby {
 		o.Announcement = f.Text
 	}
@@ -298,6 +303,7 @@ func (e *Engine) Skip(rev int64) (OperatorState, error) {
 	}
 	e.pushLocked()
 	e.cursor = idx + 1
+	e.skipped = append(e.skipped, idx)
 	e.touched = true
 	e.rev++
 	return e.operatorLocked(), nil
@@ -321,6 +327,7 @@ func (e *Engine) Back(rev int64) (OperatorState, error) {
 	e.st = s.st.clone()
 	e.st.Seq = seq
 	e.cursor = s.cursor
+	e.skipped = append([]int(nil), s.skipped...)
 	e.touched = e.cursor > e.initialCursor()
 	if s.loopCue >= 0 && s.loopCue < len(e.cues) {
 		e.beginLoopLocked(s.loopCue, false)
@@ -390,6 +397,17 @@ func (e *Engine) Align(index int) error {
 	return nil
 }
 
+// dropFrom is the skipped cues before index.
+func dropFrom(skipped []int, index int) []int {
+	var out []int
+	for _, i := range skipped {
+		if i < index {
+			out = append(out, i)
+		}
+	}
+	return out
+}
+
 func (e *Engine) jumpLocked(index int) {
 	e.pushLocked()
 	st, cursor, loopCue := e.replayLocked(index)
@@ -397,6 +415,7 @@ func (e *Engine) jumpLocked(index int) {
 	seq := e.st.Seq
 	e.st, e.cursor = st, cursor
 	e.st.Seq = seq
+	e.skipped = dropFrom(e.skipped, index) // going back makes the lines from there on unsent again
 	if loopCue >= 0 {
 		e.beginLoopLocked(loopCue, false)
 	}
@@ -506,7 +525,7 @@ func (e *Engine) Reset(rev int64) (OperatorState, error) {
 		return e.operatorLocked(), err
 	}
 	e.stopLoopLocked()
-	e.history = nil
+	e.history, e.skipped = nil, nil
 	e.st.Scrollback = nil
 	e.initialLocked()
 	e.bumpLocked()
@@ -527,6 +546,11 @@ func (e *Engine) ReplaceCues(cues []showfile.Cue) (countChanged bool) {
 	}
 	e.cues = cues
 	e.history = nil
+	if countChanged {
+		e.skipped = nil // the numbers no longer mean the same cues
+	} else {
+		e.skipped = dropFrom(e.skipped, len(cues))
+	}
 	if e.standby && (e.resumeLoop < 0 || e.resumeLoop >= len(cues) || cues[e.resumeLoop].Kind != showfile.KindLoop) {
 		e.resumeLoop = -1 // the loop that would have started is gone
 	}
@@ -591,7 +615,7 @@ func (e *Engine) pushLocked() {
 	if e.loop != nil {
 		lc = e.loop.cue
 	}
-	e.history = append(e.history, snapshot{st: e.st.clone(), cursor: e.cursor, loopCue: lc})
+	e.history = append(e.history, snapshot{st: e.st.clone(), cursor: e.cursor, loopCue: lc, skipped: append([]int(nil), e.skipped...)})
 	if len(e.history) > historyMax {
 		e.history = e.history[len(e.history)-historyMax:]
 	}
@@ -785,6 +809,7 @@ type Persisted struct {
 	// (Saved files from before standby existed have neither: the show carries on as it was, on air.)
 	Standby    bool  `json:"standby,omitempty"`
 	ResumeLoop int   `json:"resumeLoop,omitempty"`
+	Skipped    []int `json:"skipped,omitempty"` // cues passed over with Skip
 	LastAt     int64 `json:"lastAt,omitempty"`
 	// History holds the most recent undo steps so Back still works after a restart.
 	History []HistoryEntry `json:"history,omitempty"`
@@ -795,6 +820,7 @@ type HistoryEntry struct {
 	State   State `json:"state"`
 	Cursor  int   `json:"cursor"`
 	LoopCue int   `json:"loopCue"`
+	Skipped []int `json:"skipped,omitempty"`
 }
 
 // persistedHistory is how many undo steps survive a restart (kept small: each holds the screen's captions).
@@ -806,10 +832,10 @@ func (e *Engine) Export() Persisted {
 	defer e.mu.Unlock()
 	p := Persisted{Cursor: e.cursor, Rev: e.rev, NextID: e.nextID, Seq: e.st.Seq, Mode: e.st.Mode,
 		Scrollback: append([]CaptionItem(nil), e.st.Scrollback...), Fullscreen: e.st.Fullscreen,
-		LoopCue: -1, Touched: e.touched, LastAt: e.lastAt, Standby: e.standby, ResumeLoop: e.resumeLoop}
+		LoopCue: -1, Touched: e.touched, LastAt: e.lastAt, Standby: e.standby, ResumeLoop: e.resumeLoop, Skipped: append([]int(nil), e.skipped...)}
 	from := max(0, len(e.history)-persistedHistory)
 	for _, h := range e.history[from:] {
-		p.History = append(p.History, HistoryEntry{State: h.st.clone(), Cursor: h.cursor, LoopCue: h.loopCue})
+		p.History = append(p.History, HistoryEntry{State: h.st.clone(), Cursor: h.cursor, LoopCue: h.loopCue, Skipped: h.skipped})
 	}
 	if e.loop != nil {
 		p.LoopCue, p.LoopDeadline = e.loop.cue, e.loop.deadline
@@ -826,13 +852,14 @@ func (e *Engine) Restore(p Persisted) {
 	e.lastAt = p.LastAt
 	for _, h := range p.History {
 		if h.Cursor >= 0 && h.Cursor <= len(e.cues) && h.LoopCue < len(e.cues) {
-			e.history = append(e.history, snapshot{st: h.State.clone(), cursor: h.Cursor, loopCue: h.LoopCue})
+			e.history = append(e.history, snapshot{st: h.State.clone(), cursor: h.Cursor, loopCue: h.LoopCue, skipped: dropFrom(h.Skipped, len(e.cues))})
 		}
 	}
 	if p.Cursor < 0 || p.Cursor > len(e.cues) {
 		p.Cursor = len(e.cues)
 	}
 	e.cursor, e.rev, e.nextID, e.touched = p.Cursor, p.Rev, p.NextID, p.Touched
+	e.skipped = dropFrom(p.Skipped, p.Cursor)
 	e.standby, e.resumeLoop = p.Standby && e.cfg.Standby, -1
 	if e.standby {
 		e.resumeLoop = p.ResumeLoop

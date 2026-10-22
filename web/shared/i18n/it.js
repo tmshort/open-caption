@@ -738,5 +738,6 @@ OCI18n.add("it", {
  "Skip": "Salta",
  "Skipped": "Saltata",
  "Skipped “{text}”": "Saltata: «{text}»",
- "Pass over the next line without sending it. Back undoes it (S)": "Supera la riga successiva senza inviarla. Backspace annulla (S)"
+ "Pass over the next line without sending it. Back undoes it (S)": "Supera la riga successiva senza inviarla. Backspace annulla (S)",
+ "SKIPPED": "SALTATA"
 });

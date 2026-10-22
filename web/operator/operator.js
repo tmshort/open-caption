@@ -244,6 +244,11 @@
       li.classList.toggle('now', i === now && !o.standby); // nothing is on the audience screens while in standby
       li.classList.toggle('next', i === o.nextIndex);
       li.classList.toggle('sel', i === S.sel);
+      // a line passed over with Skip: struck through, and says so in words
+      const skipped = !!o.skipped && o.skipped.indexOf(i) >= 0, tag = li.querySelector('.skiptag');
+      li.classList.toggle('skipped', skipped);
+      if (skipped && !tag) { const t = document.createElement('span'); t.className = 'chip skiptag'; t.textContent = __('SKIPPED'); li.querySelector('.body').prepend(t); }
+      else if (!skipped && tag) tag.remove();
       // a running loop: a small play triangle beside the item the audience is looking at now
       const shown = o.loop && o.loop.cue === i ? o.loop.item : -1;
       li.querySelectorAll('.items li').forEach((it, k) => { it.classList.toggle('playing', k === shown); if (k === shown) it.setAttribute('aria-current', 'true'); else it.removeAttribute('aria-current'); });

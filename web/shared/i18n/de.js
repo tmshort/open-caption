@@ -738,5 +738,6 @@ OCI18n.add("de", {
  "Skip": "Überspringen",
  "Skipped": "Übersprungen",
  "Skipped “{text}”": "Übersprungen: „{text}“",
- "Pass over the next line without sending it. Back undoes it (S)": "Geht über die nächste Zeile hinweg, ohne sie zu senden. Die Rücktaste nimmt es zurück (S)"
+ "Pass over the next line without sending it. Back undoes it (S)": "Geht über die nächste Zeile hinweg, ohne sie zu senden. Die Rücktaste nimmt es zurück (S)",
+ "SKIPPED": "ÜBERSPRUNGEN"
 });

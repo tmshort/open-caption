@@ -6,7 +6,7 @@ Ces touches fonctionnent dès que vous ne tapez pas dans une zone de saisie et q
 |--------|--------|
 | `Espace`, `Flèche droite`, `Page suivante`, `Entrée` | **Suivant :** envoie la ligne suivante ; démarre une boucle qui est la suivante ; termine une boucle en cours et envoie la ligne qui la suit. En attente, c'est **DÉMARRER** : il met le spectacle à l'antenne |
 | `Retour arrière`, `Flèche gauche`, `Page précédente` | **Retour :** annule la dernière action. Revenir dans une boucle la redémarre |
-| `S` | **Passer :** saute la ligne suivante sans l'envoyer, pour une ligne que les acteurs ont coupée. Le public ne voit rien ; **Retour arrière** annule le saut |
+| `S` | **Passer :** saute la ligne suivante sans l'envoyer, pour une ligne que les acteurs ont coupée. Le public ne voit rien, et la ligne est marquée **PASSÉE** dans la liste ; **Retour arrière** annule le saut |
 | `Maj+Q` | **Arrêt :** arrête une boucle en cours et laisse un écran vide |
 | `B` | **Écran vide** ou réaffichage : masque tout, et ramène les mêmes sous-titres quand vous réaffichez |
 | `C` | **Effacer** : efface les sous-titres, pour que la ligne suivante commence sur un écran vide |

@@ -738,5 +738,6 @@ OCI18n.add("es", {
  "Skip": "Saltar",
  "Skipped": "Saltada",
  "Skipped “{text}”": "Saltada: «{text}»",
- "Pass over the next line without sending it. Back undoes it (S)": "Pasa por alto la siguiente línea sin enviarla. Retroceso lo deshace (S)"
+ "Pass over the next line without sending it. Back undoes it (S)": "Pasa por alto la siguiente línea sin enviarla. Retroceso lo deshace (S)",
+ "SKIPPED": "SALTADA"
 });

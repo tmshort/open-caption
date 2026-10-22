@@ -26,6 +26,8 @@ button small { display: block; font-size: .65em; opacity: .9; font-weight: 400; 
 .cue.stage .txt, .cue.sung .txt, .cue .part.sung .txt { font-style: italic; }
 .cue .part { padding-left: .6rem; border-left: 3px solid #4a5a7a; margin-top: .15rem; }
 .cue.sent { color: #6e737d; }
+.cue.skipped .txt, .cue.skipped .part, .cue.skipped .chip:not(.skiptag) { text-decoration: line-through; }
+.cue.skipped .skiptag { background: #3a3000; color: #ffe08a; text-decoration: none; }
 .cue.now { color: var(--fg); border-left-color: #2ecc71; background: #10201a; }
 .cue.now .gut::before { content: "●"; color: var(--ok); }
 .cue.next { background: var(--next); border-left-color: var(--mark); font-size: 1.35em; color: #fff; padding-block: .9rem; }
