@@ -105,7 +105,6 @@
   // ---- rendering ----
   function applyTheme(t) {
     state.theme = t || {};
-    const r = document.documentElement.style;
     paintLocal();
     $('idle').textContent = t.idleMessage || '';
   }

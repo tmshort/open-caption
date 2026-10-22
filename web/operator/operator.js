@@ -268,7 +268,6 @@
     $('show').textContent = (REHEARSAL ? __('REHEARSAL') + ' — ' : '') + (p.show.name || p.show.id || __('No show loaded'));
     if (!REHEARSAL) document.title = __('Run') + ' — ' + (p.show.name || p.show.id || __('No show loaded')) + ' (' + (o.live ? __('ON AIR') : __('STANDBY')) + ')';
     const live = $('live'); live.textContent = o.live ? '● ' + __('ON AIR') : __('STANDBY'); live.classList.toggle('on', o.live); live.classList.toggle('standby', !!o.standby);
-    const langs = p.languages || [];
     $('viewers').textContent = OCClients.label(p); // languages nobody is using are left out
     $('viewers').title = OCClients.title(p.audience);
     const mine = isController();

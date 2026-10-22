@@ -32,7 +32,7 @@
     try { r = await fetch(path, opt); } catch (e) {
       // The program is not answering (restarting, or the WiFi dropped): say so rather than leave a blank panel.
       toast(__('Could not reach the program. Check the connection, then try again.'), 6000);
-      throw new Error('network');
+      throw new Error('network', { cause: e });
     }
     let data = {};
     try { data = await r.json(); } catch (e) { /* empty */ }

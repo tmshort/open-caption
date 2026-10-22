@@ -43,7 +43,7 @@ for (const f of ['admin/index.html', 'operator/index.html', 'operator/report.htm
 
 // 3. Messages the server sends (errors, notes about the show file): a Go format becomes a {0}, {1} template.
 const unescape = (s) => s.replace(/\\"/g, '"').replace(/\\n/g, '\n').replace(/\\\\/g, '\\');
-const tmpl = (fmt) => { let i = 0; return unescape(fmt).replace(/^%w: /, '').replace(/%%/g, '\u0000').replace(/%[-+# 0-9.]*[a-zA-Z]/g, () => '{' + i++ + '}').replace(/\u0000/g, '%'); };
+const tmpl = (fmt) => { let i = 0; return unescape(fmt).replace(/^%w: /, '').replace(/%%/g, '\u0000').replace(/%[-+# 0-9.]*[a-zA-Z]/g, () => '{' + i++ + '}').split('\u0000').join('%'); };
 const goFiles = (dir) => fs.readdirSync(path.join(root, dir)).filter((n) => n.endsWith('.go') && !n.endsWith('_test.go')).map((n) => path.join(root, dir, n));
 const STR = '"((?:[^"\\\\]|\\\\.)*)"';
 for (const f of [...goFiles('internal/httpapi'), ...goFiles('internal/showfile'), ...goFiles('internal/show')]) {

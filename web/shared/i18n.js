@@ -156,6 +156,6 @@
   window.__ = t;
 
   // Load the dictionary now, before the page's own script (which comes next) runs.
-  if (lang !== 'en') document.write('<script src="/static/shared/i18n/' + lang + '.js"><\/script>');
+  if (lang !== 'en') document.write('<script src="/static/shared/i18n/' + lang + '.js"></script>');
   document.documentElement.setAttribute('lang', lang);
 })();
