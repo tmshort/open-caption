@@ -93,21 +93,22 @@ Layout (desktop): three columns of the show file as a vertical list.
 **Standby and on air (REQ-066).** A loaded show opens in **standby**: the header badge says `STANDBY` (blue; `● ON AIR` once on air), a blue banner says `STANDBY — the audience sees the standby screen. Press Space (START) to put the show on air; it carries on from where it is.`, and the **NEXT ▶** button becomes **START ▶** in the same place with the same key (Space and the other advance keys, or a click). Back, Blank, Clear, Announcement and Stop are disabled and their keys do nothing; search, Restart and Help still work. **Go to standby…** (header, disabled in standby) asks first, then returns the audience to the standby screen with the position kept; START resumes. **Restart show…** goes back to the beginning *and* to standby; it is disabled (as is Home, and Setup's **Restart show…**) while the show is already at the start in standby with nothing sent (`atStart`, `fresh`), since there is nothing to restart.
 
 ```
-┌ header: Show name • ● ON AIR • 83 viewers • Controller: you • [Takeover] ──────┐
+┌ header: Show name • ● ON AIR • 83 viewers • Controller: you • [Takeover] ────┐
 │  SENT (dimmed, scrolls up)                                                   │
-│   …                                                                           │
-│   OSCAR: Felix, you're late.                                                  │
-│  ─────────────── on screen now ───────────────                                │
-│ ▶ FELIX: I'm so sorry,  (just sent)                                           │
-│  ═════════════ NEXT (press Space) ═════════════                               │
-│  ► (lights fade)                                                              │
-│    [🖼 IMAGE: curtain.jpg]                                                     │
-│    📑 Act 2, Scene 1                                                          │
-│  UPCOMING (normal)                                                            │
-│   …                                                                           │
+│   …                                                                          │
+│   OSCAR: Felix, you're late.                                                 │
+│   Please silence your phones.   [SKIPPED]  (struck through)                  │
+│ ────────────────────────────── on screen now ─────────────────────────────── │
+│ ▶ FELIX: I'm so sorry,  (just sent)                                          │
+│ ════════════════════════════ NEXT (press Space) ════════════════════════════ │
+│  ► (lights fade)                                                             │
+│    [IMAGE: curtain.jpg]                                                      │
+│    [SECTION: Act 2, Scene 1]                                                 │
+│  UPCOMING (normal)                                                           │
+│   …                                                                          │
 ├──────────────────────────────────────────────────────────────────────────────┤
-│  [◀ Back]   [   NEXT ▶  (Space)   ]   [Skip (S)] [Blank (B)] [Clear (C)] [Announcement…]      │
-│  Search/jump: [____________]   Mini-map of sections                           │
+│ [◀ Back]  [     NEXT ▶ (Space)     ]  [Skip (S)]  [Blank (B)]  [Clear (C)]   │
+│  Search/jump: [____________]   [Announcement…]   Mini-map of sections        │
 └──────────────────────────────────────────────────────────────────────────────┘
 ```
 
