@@ -53,6 +53,7 @@ missing images: curtain.jpg (line 8 of show.md)
 - Ogni problema ha la forma `file:line: severity: message` (gravità `error`, `warning` o `note`), quella che capiscono gli editor e i sistemi di integrazione continua. Una riga che riguarda tutto il file non ha numero di riga.
 - I file dopo il primo sono **traduzioni**: ciascuno viene analizzato come traduzione e confrontato con il file principale (lo stesso numero e tipo di indicazioni, nello stesso ordine), come fa la configurazione. La lingua è la riga `[language]` del file o il suo nome (`show.es.md`); due file per la stessa lingua sono un errore.
 - Le immagini vengono controllate nella cartella `assets` accanto al file principale, oppure in `--assets FOLDER`. Senza cartella non vengono controllate, e il rapporto lo dice. Un'immagine mancante indica la cartella in cui è stata cercata (l'editor della configurazione dice invece di caricarla nel passo Immagini).
+- Un'immagine della cartella che nessun file dello spettacolo mostra viene elencata come `unused images (…): name.png` e contata come nota, non come avviso (il passo Immagini della configurazione dice «Non usata» sotto). Le immagini usate solo da una traduzione contano come usate.
 - `-` come nome del file legge lo standard input.
 - **Stato di uscita:** `0` nessun errore, `1` errori (o avvisi con `--strict`), `2` un file non si è potuto leggere. Metti le altre opzioni (`--assets`, `--strict`) **prima** di `--check-show`: i file che lo seguono sono traduzioni.
 

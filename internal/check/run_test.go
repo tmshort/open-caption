@@ -127,3 +127,29 @@ func TestImageUseAndMissingImagesAreShared(t *testing.T) {
 		t.Error("never nil: the editor sends [] in JSON")
 	}
 }
+
+func TestImagesNoShowFileUsesAreListedAsUnused(t *testing.T) {
+	dir := t.TempDir()
+	png := "\x89PNG\r\n\x1a\n"
+	write(t, dir, "assets/used.png", png)
+	write(t, dir, "assets/spare.png", png)
+	write(t, dir, "assets/only-in-spanish.png", png)
+	main := write(t, dir, "show.md", clean+"[image: used.png]\n")
+	es := write(t, dir, "show.es.md", "[language: es]\n"+clean+"[image: only-in-spanish.png]\n")
+	code, out := run(t, Options{Files: []string{main, es}})
+	if code != OK || !strings.Contains(out, "unused images (in the folder, but no show file shows them): spare.png\n") || strings.Contains(out, "used.png,") {
+		t.Errorf("exit %d\n%s", code, out)
+	}
+	if !strings.Contains(out, "0 errors, 0 warnings, 3 notes\n") {
+		t.Errorf("an unused image is a note, not a warning:\n%s", out)
+	}
+	// Nothing to report when every image is used, or when images are not checked.
+	write(t, dir, "assets/spare.png", "")
+	os.Remove(filepath.Join(dir, "assets", "spare.png"))
+	if _, out = run(t, Options{Files: []string{main, es}}); strings.Contains(out, "unused images") {
+		t.Errorf("all used:\n%s", out)
+	}
+	if _, out = run(t, Options{Files: []string{write(t, t.TempDir(), "x.md", clean)}}); strings.Contains(out, "unused images") {
+		t.Errorf("not checked:\n%s", out)
+	}
+}

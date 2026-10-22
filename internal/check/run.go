@@ -73,6 +73,7 @@ func Run(w io.Writer, o Options) int {
 
 	errs, warns, notes := 0, 0, 0
 	var missingImages []string
+	usedAll := map[string]bool{} // images any of the files shows
 	var mainRes *showfile.Result
 	mainName := ""
 	seenLang := map[string]string{}
@@ -133,6 +134,9 @@ func Run(w io.Writer, o Options) int {
 			}
 		}
 		if checkImages {
+			for name := range ImageUse(res.Cues) {
+				usedAll[name] = true
+			}
 			for _, m := range MissingImages(ImageUse(res.Cues), have) {
 				missingImages = append(missingImages, fmt.Sprintf("%s (line%s %s of %s)", m.Name, plural(len(m.Lines)), joinInts(m.Lines), label))
 			}
@@ -158,6 +162,18 @@ func Run(w io.Writer, o Options) int {
 	fmt.Fprintln(w, assetsNote)
 	if len(missingImages) > 0 {
 		fmt.Fprintf(w, "missing images: %s\n", strings.Join(missingImages, "; "))
+	}
+	if checkImages {
+		var unused []string
+		for _, n := range names {
+			if !usedAll[n] {
+				unused = append(unused, n)
+			}
+		}
+		if len(unused) > 0 { // Setup's Images step says "Not used" under each of these
+			fmt.Fprintf(w, "unused images (in the folder, but no show file shows them): %s\n", strings.Join(unused, ", "))
+			notes++
+		}
 	}
 	fmt.Fprintf(w, "%s, %s, %s\n", count(errs, "error"), count(warns, "warning"), count(notes, "note"))
 	switch {

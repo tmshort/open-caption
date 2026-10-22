@@ -53,6 +53,7 @@ missing images: curtain.jpg (line 8 of show.md)
 - Jedes Problem hat die Form `file:line: severity: message` (Schweregrad `error`, `warning` oder `note`), die Editoren und CI-Systeme verstehen. Eine Zeile über die ganze Datei hat keine Zeilennummer.
 - Dateien nach der ersten sind **Übersetzungen**: Jede wird als Übersetzung geparst und mit der Hauptdatei verglichen (gleiche Anzahl und Art von Stichwörtern in derselben Reihenfolge), wie es die Einrichtung tut. Die Sprache steht in der Zeile `[language]` der Datei oder in ihrem Namen (`show.es.md`); zwei Dateien für eine Sprache sind ein Fehler.
 - Bilder werden im Ordner `assets` neben der Hauptdatei geprüft oder in `--assets FOLDER`. Ohne Ordner werden sie nicht geprüft, und der Bericht sagt das. Ein fehlendes Bild nennt den Ordner, in dem gesucht wurde (der Editor der Einrichtung sagt stattdessen, man solle es im Schritt Bilder hochladen).
+- Ein Bild im Ordner, das keine Show-Datei zeigt, wird als `unused images (…): name.png` aufgeführt und als Hinweis gezählt, nicht als Warnung (der Schritt Bilder der Einrichtung schreibt darunter „Nicht verwendet“). Bilder, die nur eine Übersetzung verwendet, gelten als verwendet.
 - `-` als Dateiname liest die Standardeingabe.
 - **Exit-Status:** `0` keine Fehler, `1` Fehler (oder Warnungen mit `--strict`), `2` eine Datei konnte nicht gelesen werden. Setzen Sie andere Optionen (`--assets`, `--strict`) **vor** `--check-show`: Die Dateien danach sind Übersetzungen.
 
