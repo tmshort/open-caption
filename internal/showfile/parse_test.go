@@ -117,6 +117,25 @@ func TestAGroupLabelThatNamesSomeoneTwiceIsWarnedAbout(t *testing.T) {
 	}
 }
 
+func TestALabelNotInCapitalsIsWarnedAboutWhenTheNameIsASpeaker(t *testing.T) {
+	r := Parse("Barry: before the name is used\nBARRY: Hi\nDee Dee: Hello\nNote: this\nBarry\\: escaped\nBarry & Emma: x", Options{})
+	var got []int
+	for _, d := range r.Diagnostics {
+		if strings.Contains(d.Message, "not in capitals") {
+			got = append(got, d.Line)
+			if d.Severity != SevWarning || !strings.Contains(d.Message, `"Barry:"`) || !strings.Contains(d.Message, "BARRY:") {
+				t.Errorf("%+v", d)
+			}
+		}
+	}
+	if len(got) != 1 || got[0] != 1 {
+		t.Errorf("warned on lines %v, want [1] (the others are not speakers elsewhere)", got)
+	}
+	if len(r.Cues) != 6 || r.Cues[0].Speaker != "" || r.Cues[0].Text != "Barry: before the name is used" {
+		t.Errorf("the line is still shown as typed: %+v", r.Cues[0])
+	}
+}
+
 func TestSpeaker(t *testing.T) {
 	cases := []struct{ in, speaker, text string }{
 		{"HAMLET: To be", "HAMLET", "To be"},

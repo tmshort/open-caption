@@ -14,6 +14,8 @@ import (
 var (
 	speakerRe = regexp.MustCompile(`^([A-Z][A-Z0-9 .'\-&,/()#]{0,59}):\s+(\S.*)$`)
 	// a speaker's name and colon with nothing after them: probably the words were meant to follow
+	// a label with lower-case letters, like "Barry: Hi": not a speaker, unless the name is a speaker elsewhere
+	mixedLabelRe  = regexp.MustCompile(`^([A-Za-z][A-Za-z0-9 .'\-&,/()#]{0,59}):\s+\S`)
 	speakerOnlyRe = regexp.MustCompile(`^([A-Z][A-Z0-9 .'\-&,/()#]{0,59}):\s*$`)
 	durationRe    = regexp.MustCompile(`^(\d+(?:\.\d+)?)\s*s$`)
 	// "timer 15", "timer: 7:30pm", "countdown 10 minutes" (the keyword, then a space or a colon)
@@ -49,6 +51,14 @@ type parser struct {
 	loopTimer *Timer // the timer of the [loop] being read
 
 	together *togetherBlock // inside [together] ... [/together]: lines are voices shown at once
+
+	speakers map[string]bool // the speaker labels found
+	notCaps  []labelAt       // lines that start like "Barry: text", checked against speakers when the file has been read
+}
+
+type labelAt struct {
+	line  int
+	label string
 }
 
 type togetherBlock struct {
@@ -67,6 +77,11 @@ func Parse(src string, opts Options) Result {
 	src = stripComments(src, &res)
 	p := &parser{lines: strings.Split(src, "\n"), res: &res, opts: opts}
 	p.run()
+	for _, c := range p.notCaps {
+		if up := strings.ToUpper(c.label); p.speakers[up] {
+			p.diag(c.line, SevWarning, "%q is not in capitals, so it is shown as text, not as the speaker %s. Write the name in capitals.", c.label+":", up+":")
+		}
+	}
 	if p.song {
 		p.diag(p.songLine, SevError, "[song] was opened but never closed with [/song]. The lyrics so far were kept.")
 	}
@@ -235,9 +250,15 @@ func (p *parser) part(lines []string, lineNo int) Part {
 	if m := speakerRe.FindStringSubmatch(lines[0]); m != nil {
 		pt.Speaker = m[1]
 		lines[0] = m[2]
+		if p.speakers == nil {
+			p.speakers = map[string]bool{}
+		}
+		p.speakers[m[1]] = true
 		if dup := repeatedName(m[1]); dup != "" {
 			p.diag(lineNo, SevWarning, "The speaker label %q names %s twice. Is one of them a different character?", m[1]+":", dup)
 		}
+	} else if m := mixedLabelRe.FindStringSubmatch(lines[0]); m != nil && m[1] != strings.ToUpper(m[1]) {
+		p.notCaps = append(p.notCaps, labelAt{lineNo, m[1]})
 	} else if m := speakerOnlyRe.FindStringSubmatch(lines[0]); m != nil {
 		p.diag(lineNo, SevWarning, "%q is a speaker's name with nothing after the colon. Put the words on the same line, or write \\: if the colon is part of the text.", m[1]+":")
 	}

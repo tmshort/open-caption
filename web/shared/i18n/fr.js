@@ -741,5 +741,6 @@ OCI18n.add("fr", {
  "Pass over the next line without sending it. Back undoes it (S)": "Saute la ligne suivante sans l'envoyer. Retour arrière annule (S)",
  "SKIPPED": "PASSÉE",
  "{0} is a speaker's name with nothing after the colon. Put the words on the same line, or write \\: if the colon is part of the text.": "{0} est un nom de personnage sans rien après les deux-points. Mettez les paroles sur la même ligne, ou écrivez \\: si les deux-points font partie du texte.",
- "The speaker label {0} names {1} twice. Is one of them a different character?": "L'étiquette de personnage {0} nomme {1} deux fois. L'un des deux est-il un autre personnage ?"
+ "The speaker label {0} names {1} twice. Is one of them a different character?": "L'étiquette de personnage {0} nomme {1} deux fois. L'un des deux est-il un autre personnage ?",
+ "{0} is not in capitals, so it is shown as text, not as the speaker {1}. Write the name in capitals.": "{0} n'est pas en majuscules, donc il est affiché comme du texte et non comme le personnage {1}. Écrivez le nom en majuscules."
 });

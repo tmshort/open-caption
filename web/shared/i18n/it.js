@@ -741,5 +741,6 @@ OCI18n.add("it", {
  "Pass over the next line without sending it. Back undoes it (S)": "Supera la riga successiva senza inviarla. Backspace annulla (S)",
  "SKIPPED": "SALTATA",
  "{0} is a speaker's name with nothing after the colon. Put the words on the same line, or write \\: if the colon is part of the text.": "{0} è il nome di un personaggio senza nulla dopo i due punti. Metti le parole sulla stessa riga, o scrivi \\: se i due punti fanno parte del testo.",
- "The speaker label {0} names {1} twice. Is one of them a different character?": "L'etichetta del personaggio {0} nomina {1} due volte. Uno dei due è un altro personaggio?"
+ "The speaker label {0} names {1} twice. Is one of them a different character?": "L'etichetta del personaggio {0} nomina {1} due volte. Uno dei due è un altro personaggio?",
+ "{0} is not in capitals, so it is shown as text, not as the speaker {1}. Write the name in capitals.": "{0} non è in maiuscolo, quindi viene mostrato come testo e non come il personaggio {1}. Scrivi il nome in maiuscolo."
 });
