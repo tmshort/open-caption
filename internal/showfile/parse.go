@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"unicode/utf8"
 )
 
 var (
@@ -313,6 +314,21 @@ func (p *parser) caption(lines []string, lineNo int) {
 	p.addVoices([]Part{p.part(lines, lineNo)}, lineNo)
 }
 
+// LongCaption is the length, in characters, above which a caption line is reported as long: on a phone it wraps over
+// several lines and is slow to read.
+const LongCaption = 100
+
+// checkLength reports the longest line of a caption when it is over LongCaption characters.
+func (p *parser) checkLength(lineNo int, text string) {
+	longest := 0
+	for _, l := range strings.Split(text, "\n") {
+		longest = max(longest, utf8.RuneCountInString(l))
+	}
+	if longest > LongCaption {
+		p.diag(lineNo, SevInfo, "This caption line is %d characters long. On a phone it wraps over several lines; consider splitting it into shorter lines.", longest)
+	}
+}
+
 // addVoices appends a caption made of one voice, or of several shown together.
 func (p *parser) addVoices(parts []Part, lineNo int) {
 	switch len(parts) {
@@ -320,10 +336,14 @@ func (p *parser) addVoices(parts []Part, lineNo int) {
 		return
 	case 1:
 		pt := parts[0]
+		p.checkLength(lineNo, pt.Text)
 		p.res.Cues = append(p.res.Cues, Cue{Kind: KindCaption, Line: lineNo, Speaker: pt.Speaker, HTML: pt.HTML, Text: pt.Text, Stage: pt.Stage, Sung: pt.Sung})
 		return
 	}
 	c := Cue{Kind: KindCaption, Line: lineNo, Parts: parts, Sung: true}
+	for _, pt := range parts {
+		p.checkLength(lineNo, pt.Text)
+	}
 	var hs, ts []string
 	for _, pt := range parts {
 		c.Sung = c.Sung && pt.Sung

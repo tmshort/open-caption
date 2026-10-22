@@ -742,5 +742,6 @@ OCI18n.add("de", {
  "SKIPPED": "ÜBERSPRUNGEN",
  "{0} is a speaker's name with nothing after the colon. Put the words on the same line, or write \\: if the colon is part of the text.": "{0} ist ein Sprechername ohne etwas nach dem Doppelpunkt. Setzen Sie den Text in dieselbe Zeile oder schreiben Sie \\:, wenn der Doppelpunkt zum Text gehört.",
  "The speaker label {0} names {1} twice. Is one of them a different character?": "Die Sprecher-Kennzeichnung {0} nennt {1} zweimal. Ist einer davon eine andere Figur?",
- "{0} is not in capitals, so it is shown as text, not as the speaker {1}. Write the name in capitals.": "{0} steht nicht in Großbuchstaben, daher wird es als Text angezeigt und nicht als Sprecher {1}. Schreiben Sie den Namen in Großbuchstaben."
+ "{0} is not in capitals, so it is shown as text, not as the speaker {1}. Write the name in capitals.": "{0} steht nicht in Großbuchstaben, daher wird es als Text angezeigt und nicht als Sprecher {1}. Schreiben Sie den Namen in Großbuchstaben.",
+ "This caption line is {0} characters long. On a phone it wraps over several lines; consider splitting it into shorter lines.": "Diese Untertitelzeile ist {0} Zeichen lang. Auf einem Telefon wird sie über mehrere Zeilen umbrochen; erwägen Sie, sie in kürzere Zeilen zu teilen."
 });

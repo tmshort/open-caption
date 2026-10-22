@@ -742,5 +742,6 @@ OCI18n.add("fr", {
  "SKIPPED": "PASSÉE",
  "{0} is a speaker's name with nothing after the colon. Put the words on the same line, or write \\: if the colon is part of the text.": "{0} est un nom de personnage sans rien après les deux-points. Mettez les paroles sur la même ligne, ou écrivez \\: si les deux-points font partie du texte.",
  "The speaker label {0} names {1} twice. Is one of them a different character?": "L'étiquette de personnage {0} nomme {1} deux fois. L'un des deux est-il un autre personnage ?",
- "{0} is not in capitals, so it is shown as text, not as the speaker {1}. Write the name in capitals.": "{0} n'est pas en majuscules, donc il est affiché comme du texte et non comme le personnage {1}. Écrivez le nom en majuscules."
+ "{0} is not in capitals, so it is shown as text, not as the speaker {1}. Write the name in capitals.": "{0} n'est pas en majuscules, donc il est affiché comme du texte et non comme le personnage {1}. Écrivez le nom en majuscules.",
+ "This caption line is {0} characters long. On a phone it wraps over several lines; consider splitting it into shorter lines.": "Cette ligne de sous-titre compte {0} caractères. Sur un téléphone, elle passe sur plusieurs lignes ; pensez à la couper en lignes plus courtes."
 });

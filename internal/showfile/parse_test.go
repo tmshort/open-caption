@@ -4,6 +4,7 @@
 package showfile
 
 import (
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -617,5 +618,23 @@ func TestHugeItemTimeIsCutWithAWarning(t *testing.T) {
 	}
 	if !hasDiag(r, SevWarning, "cut to the most allowed") {
 		t.Errorf("no warning: %+v", r.Diagnostics)
+	}
+}
+
+func TestVeryLongCaptionLinesGetAHint(t *testing.T) {
+	long := strings.Repeat("word ", 20) + "end" // 103 characters
+	exactly := strings.Repeat("a", LongCaption)
+	r := Parse("SHORT: Hi\n"+exactly+"\nBOB: "+long+"\n[[\nfine\n"+long+"\n]]\nA: ~ "+long+" || B: ok", Options{})
+	var lines []int
+	for _, d := range r.Diagnostics {
+		if strings.Contains(d.Message, "characters long") {
+			lines = append(lines, d.Line)
+			if d.Severity != SevInfo {
+				t.Errorf("%+v", d)
+			}
+		}
+	}
+	if !reflect.DeepEqual(lines, []int{3, 4, 8}) {
+		t.Errorf("hints on lines %v, want [3 4 8] (the exact limit is fine)", lines)
 	}
 }
