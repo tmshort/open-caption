@@ -516,3 +516,38 @@ func TestTitleLimitCountsCharactersNotBytes(t *testing.T) {
 		t.Errorf("101 characters accepted: %v", err)
 	}
 }
+
+func TestListIsSortedByNameWhateverIsEdited(t *testing.T) {
+	s := newStore(t)
+	names := func() string {
+		list, err := s.List()
+		if err != nil {
+			t.Fatal(err)
+		}
+		var n []string
+		for _, m := range list {
+			n = append(n, m.Name)
+		}
+		return strings.Join(n, ",")
+	}
+	var ids []string
+	for _, n := range []string{"zebra", "Apple", "mango", "apple pie"} {
+		m, err := s.Create(n, "")
+		if err != nil {
+			t.Fatal(err)
+		}
+		ids = append(ids, m.ID)
+	}
+	want := "Apple,apple pie,mango,zebra"
+	if got := names(); got != want {
+		t.Fatalf("got %s, want %s", got, want)
+	}
+	// Changing a show (its settings, so the show file) makes it the most recently updated; the order stays.
+	look := Theme{}
+	if _, err := s.Update(ids[0], nil, &look); err != nil {
+		t.Fatal(err)
+	}
+	if got := names(); got != want {
+		t.Errorf("after an edit: got %s, want %s", got, want)
+	}
+}

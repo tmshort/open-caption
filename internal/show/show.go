@@ -384,7 +384,7 @@ func translationCode(name string) (string, bool) {
 	return code, langRe.MatchString(code)
 }
 
-// List returns all shows, most recently updated first.
+// List returns all shows, sorted by name (then id).
 func (s *Store) List() ([]Meta, error) {
 	ents, err := os.ReadDir(s.dir)
 	if err != nil {
@@ -399,7 +399,14 @@ func (s *Store) List() ([]Meta, error) {
 			out = append(out, m)
 		}
 	}
-	sort.Slice(out, func(i, j int) bool { return out[i].Updated.After(out[j].Updated) })
+	// By name, so the list stays where it is whatever is edited or put on air (the time of the last change is shown, not sorted on).
+	sort.Slice(out, func(i, j int) bool {
+		a, b := strings.ToLower(out[i].Name), strings.ToLower(out[j].Name)
+		if a != b {
+			return a < b
+		}
+		return out[i].ID < out[j].ID
+	})
 	return out, nil
 }
 

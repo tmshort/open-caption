@@ -62,7 +62,7 @@ everywhere an operator session is; the reverse is not true.
 
 | Method | Path | Description |
 |--------|------|-------------|
-| GET | `/api/admin/shows` | List shows |
+| GET | `/api/admin/shows` | List shows, sorted by name (case does not matter, then by id), so the list keeps its order whichever show is edited or on air |
 | POST | `/api/admin/shows` | Create `{name}` (the title is written into the new show file's `[settings]`) or `{sample: true}` |
 | GET/PUT/DELETE | `/api/admin/shows/{id}` | `GET`: `name` (the show file's title), `language`, `updated`, `lookSaved`, and `theme`, the **resolved** look (show file over config defaults; includes `loopSeconds`, `scrollbackLines` and per-language `idleMessages`). `PUT {name?, theme?}` rewrites the show file(s)' `[settings]` (a saved `theme` writes every look setting; each translation's `idle message` goes in its own file) and applies the change to the show on air. `DELETE` removes the show |
 | POST | `/api/admin/shows/{id}/duplicate` | `{name?}` copy show files (every language), images and look |
