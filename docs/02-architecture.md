@@ -272,11 +272,12 @@ and every language's lines).
   sessions.json           signed-in sessions (hashed), so a restart does not sign anyone out
   live.json               active show id and, per language: cursor, scrollback, mode, the last 10 undo steps (debounced ≤ 250 ms; written through a temporary file and renamed, one save at a time; a failed save is logged)
   tls/                    generated self-signed cert/key (if used)
-  reports/<start>-<show>.json   the audience reports (REQ-070), one file for each run of a show, written as the run goes and when it ends; the newest 30 are kept (`report.Keep`), older ones are removed when a report is saved; they list the devices' addresses and nothing depends on them, so they can be deleted by hand
+  reports/YYYYMMDD-HHMMSS.nnnnnnnnn-<show>.json   the audience reports (REQ-070), one file for each run of a show; nanoseconds distinguish rapid restarts of the same show. The file is written as the run goes and when it ends; the newest 30 are kept (`report.Keep`), older ones are removed when a report is saved. They list the devices' addresses and nothing depends on them, so they can be deleted by hand
 ```
 
 Default data dir: OS user-config location (`os.UserConfigDir()/open-caption`).
 The parsed cue list is derived from the show file on load, not stored.
+Going off air, resetting, or re-activating a show closes its report immediately, even if the same show ID goes on air again before the next two-second report tick. Activating into standby starts no new report until START. CSV download names use seconds for readability; the stored JSON files retain nanoseconds.
 
 ## Error handling principles
 

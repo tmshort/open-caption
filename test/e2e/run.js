@@ -297,7 +297,8 @@ async function main() {
     await en.bringToFront(); // background tabs do not deliver scroll events
     const pos = () => en.evaluate(() => { const c = document.getElementById('captions'); return { top: Math.round(c.scrollTop), max: c.scrollHeight - c.clientHeight, btn: document.getElementById('live').hidden ? '' : document.getElementById('live').textContent }; });
     check('following the live captions, the button is hidden', (await pos()).btn === '' && (await pos()).max > 100, await pos());
-    await en.evaluate(() => { document.getElementById('captions').scrollTop = 120; }); await sleep(300);
+    await en.evaluate(() => { const c = document.getElementById('captions'); c.dispatchEvent(new Event('wheel')); c.scrollTop = 120; });
+    await en.waitForFunction(() => { const c = document.getElementById('captions'); return c.scrollTop <= 130 && !document.getElementById('live').hidden; });
     const up = await pos();
     check('scrolling up shows "back to live"', up.btn.includes('Back to live'), up);
     await nextN(2); await sleep(500);
@@ -515,7 +516,7 @@ async function main() {
     await nolock.setViewport({ width: 420, height: 760 });
     nolock.on('pageerror', (e) => errs.push(e.message));
     await nolock.evaluateOnNewDocument(() => { delete Navigator.prototype.wakeLock; }); // as on any browser over plain http
-    await nolock.goto(B + '/'); await nolock.waitForSelector('video');
+    await nolock.goto(B + '/', { waitUntil: 'domcontentloaded' }); await nolock.waitForSelector('video');
     await nolock.waitForFunction(() => document.documentElement.dataset.awake === 'video', { timeout: 6000 }).catch(() => {});
     const vid = await nolock.evaluate(() => { const v = document.querySelector('video'); return v ? { playing: !v.paused, muted: v.muted, loop: v.loop, src: v.currentSrc.split('/').pop(), tag: document.documentElement.dataset.awake, ready: v.readyState } : null; });
     check('a hidden looping video is started instead', vid && vid.playing && vid.muted && vid.loop && /^nosleep\.(mp4|webm)$/.test(vid.src) && vid.tag === 'video', vid);

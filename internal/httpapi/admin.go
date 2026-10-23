@@ -916,10 +916,18 @@ func (s *Server) activateShow(w http.ResponseWriter, r *http.Request) {
 			"live": true, "activeId": s.rt.ShowID()})
 		return
 	}
-	s.rt.SetShowLangs(id, l.meta.Name, l.assets, l.primary, l.others, themeToRuntime(l.meta.Theme))
-	if req.Start {
-		s.rt.Do(func(e *live.Engine) (live.OperatorState, error) { return e.Start(-1) })
-	}
+	func() {
+		s.reportMu.Lock()
+		defer s.reportMu.Unlock()
+		s.syncReportLocked() // capture the run being replaced, even if it began since the last report tick
+		s.rt.SetShowLangs(id, l.meta.Name, l.assets, l.primary, l.others, themeToRuntime(l.meta.Theme))
+		s.tracker.Sync(false, "", "", nil) // a restart is a new run even when it loads the same show ID
+		// Without Start the new show stays in standby; its next run begins when the operator puts it on air.
+		if req.Start {
+			s.rt.Do(func(e *live.Engine) (live.OperatorState, error) { return e.Start(-1) })
+		}
+		s.syncReportLocked()
+	}()
 	s.rt.Flush()
 	logx.Infof("show %q activated (%d language(s))", l.meta.Name, 1+len(l.others))
 	skipped := []string{}

@@ -162,6 +162,27 @@ func TestStoreDeletesOnlyASavedReport(t *testing.T) {
 	}
 }
 
+func TestReportsStartedWithinOneSecondHaveDistinctFiles(t *testing.T) {
+	s := Store{Dir: t.TempDir()}
+	start := time.Date(2026, 10, 20, 19, 0, 0, 0, time.UTC)
+	for _, at := range []time.Time{start, start.Add(time.Nanosecond)} {
+		if err := s.Save(Report{ShowID: "garden", Started: at}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if got := s.Names(); len(got) != 2 || got[0] == got[1] {
+		t.Fatalf("same-second reports overwritten: %v", got)
+	}
+	first := Report{ShowID: "garden party/../x", Started: start}
+	second := Report{ShowID: first.ShowID, Started: start.Add(time.Nanosecond)}
+	if Name(first) == Name(second) || DownloadName(first) != DownloadName(second) {
+		t.Fatalf("stored names must differ, readable downloads may match: %q, %q; %q, %q", Name(first), Name(second), DownloadName(first), DownloadName(second))
+	}
+	if got, want := DownloadName(first), "audience-report-"+start.Local().Format("20060102-150405")+"-garden-party-x.csv"; got != want {
+		t.Fatalf("unreadable or unsafe CSV name: %q", got)
+	}
+}
+
 func TestStoreSavesLoadsAndKeepsTheNewest(t *testing.T) {
 	dir := filepath.Join(t.TempDir(), "reports")
 	s := Store{Dir: dir}

@@ -35,6 +35,7 @@ type Server struct {
 	pinnedLevel               string           // the --log-level / OPEN_CAPTION_LOG_LEVEL value, if one was given
 	tracker                   *report.Tracker  // the devices that used the audience page during the run of the show (REQ-070)
 	reports                   report.Store     // where the finished reports are kept
+	reportMu                  sync.Mutex       // orders periodic report checks with operator commands and activation
 	pinnedNetwork             bool             // --network-interfaces / --network-restrict was given
 	logs                      interface {
 		String() string
