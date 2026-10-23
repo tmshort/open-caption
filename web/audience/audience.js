@@ -387,7 +387,8 @@
     if (es) es.close();
     const q = params.get('lang') ? '?lang=' + encodeURIComponent(params.get('lang')) : '';
     // A rehearsal (started from Setup) streams from a private, authenticated endpoint.
-    es = new EventSource(params.has('rehearsal') ? '/api/admin/rehearsal/events' : '/events' + q + (projector ? (q ? '&' : '?') + 'display=projector' : ''));
+    const path = params.has('rehearsal') ? '/api/admin/rehearsal/events' : '/events';
+    es = new EventSource(path + q + (projector ? (q ? '&' : '?') + 'display=projector' : ''));
     lastEvent = Date.now();
     es.onopen = () => { backoff = 500; setOnline(true); };
     es.onerror = () => {
