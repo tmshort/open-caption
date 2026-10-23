@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"github.com/tmshort/open-caption/internal/config"
 	"image"
+	"image/color"
 	"image/png"
 	"io"
 	"mime/multipart"
@@ -20,6 +21,8 @@ import (
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/tmshort/open-caption/internal/live"
 )
 
 func adminServer(t *testing.T) (*Server, *httptest.Server, *client) {
@@ -41,6 +44,119 @@ func pngData(t *testing.T) []byte {
 	var b bytes.Buffer
 	png.Encode(&b, image.NewRGBA(image.Rect(0, 0, 4, 4)))
 	return b.Bytes()
+}
+
+func TestReplacingLiveImageRefreshesAudienceURL(t *testing.T) {
+	s, ts, c := adminServer(t)
+	id := createShow(t, c, "Images")
+	if code, _ := c.do("PUT", "/api/admin/shows/"+id+"/showfile", map[string]string{"text": "[image: slide.png]"}); code != 200 {
+		t.Fatalf("save show file: %d", code)
+	}
+	if code, _ := c.upload(id, map[string][]byte{"slide.png": pngData(t)}); code != 200 {
+		t.Fatalf("upload first image: %d", code)
+	}
+	if code, _ := c.do("POST", "/api/admin/shows/"+id+"/activate", nil); code != 200 {
+		t.Fatalf("activate: %d", code)
+	}
+	if _, err := s.rt.Do(func(e *live.Engine) (live.OperatorState, error) { return e.Next(-1) }); err != nil {
+		t.Fatal(err)
+	}
+	audience := connect(t, ts.URL)
+	first := audience.nextEvent(t)
+	oldURL := first.Data["fullscreen"].(map[string]any)["src"].(string)
+	if !strings.Contains(oldURL, "?v=") {
+		t.Fatalf("image URL has no version: %q", oldURL)
+	}
+	img := image.NewRGBA(image.Rect(0, 0, 4, 4))
+	img.Set(0, 0, color.RGBA{R: 255, A: 255})
+	var replacement bytes.Buffer
+	if err := png.Encode(&replacement, img); err != nil {
+		t.Fatal(err)
+	}
+	if code, _ := c.upload(id, map[string][]byte{"slide.png": replacement.Bytes()}); code != 200 {
+		t.Fatalf("replace image: %d", code)
+	}
+	var fresh sseEvent
+	for {
+		fresh = audience.nextEvent(t)
+		if fresh.Type == "snapshot" {
+			break
+		}
+	}
+	newURL := fresh.Data["fullscreen"].(map[string]any)["src"].(string)
+	if newURL == oldURL {
+		t.Fatalf("live audience still has cached URL %q", newURL)
+	}
+	resp, err := http.Get(ts.URL + newURL)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resp.Body.Close()
+	got, err := io.ReadAll(resp.Body)
+	if err != nil || !bytes.Equal(got, replacement.Bytes()) {
+		t.Fatalf("replacement content: %v (%v)", got, err)
+	}
+}
+
+func TestActiveAssetChangesOnlyNotifyAffectedViewers(t *testing.T) {
+	s, _, c := adminServer(t)
+	s.EnableStandby()
+	id := createShow(t, c, "Image updates")
+	if code, _ := c.do("PUT", "/api/admin/shows/"+id+"/showfile", map[string]string{"text": "[image: slide.png]\n[image: later.png]"}); code != 200 {
+		t.Fatalf("save show file: %d", code)
+	}
+	if code, _ := c.do("POST", "/api/admin/shows/"+id+"/activate", map[string]bool{"start": true}); code != 200 {
+		t.Fatalf("activate: %d", code)
+	}
+	if _, err := s.rt.Do(func(e *live.Engine) (live.OperatorState, error) { return e.Next(-1) }); err != nil {
+		t.Fatal(err)
+	}
+	h := s.rt.HubFor(s.rt.PrimaryLang())
+	cl := h.Subscribe()
+	defer h.Unsubscribe(cl)
+	if code, _ := c.upload(id, map[string][]byte{"spare.png": pngData(t)}); code != 200 {
+		t.Fatalf("upload unused image: %d", code)
+	}
+	if code, _ := c.do("DELETE", "/api/admin/shows/"+id+"/assets/spare.png", nil); code != 200 {
+		t.Fatalf("delete unused image: %d", code)
+	}
+	select {
+	case frame := <-cl.C:
+		t.Fatalf("unused image changed the audience screen: %s", frame.Data)
+	default:
+	}
+	oldPreload := s.rt.State(s.rt.PrimaryLang()).Preload[0]
+	if code, _ := c.upload(id, map[string][]byte{"later.png": pngData(t)}); code != 200 {
+		t.Fatalf("upload upcoming image: %d", code)
+	}
+	if next := s.rt.State(s.rt.PrimaryLang()).Preload[0]; next == oldPreload {
+		t.Fatalf("upcoming image kept its old preload URL: %q", next)
+	}
+	select {
+	case frame := <-cl.C:
+		if !bytes.Contains(frame.Data, []byte("event: preload")) {
+			t.Fatalf("upcoming image sent a full snapshot: %s", frame.Data)
+		}
+	default:
+		t.Fatal("upcoming image did not refresh the preload hint")
+	}
+	select {
+	case frame := <-cl.C:
+		t.Fatalf("unexpected extra event for an upcoming image: %s", frame.Data)
+	default:
+	}
+	if code, _ := c.upload(id, map[string][]byte{"slide.png": pngData(t)}); code != 200 {
+		t.Fatalf("upload on-screen image: %d", code)
+	}
+	if code, _ := c.do("DELETE", "/api/admin/shows/"+id+"/assets/slide.png", nil); code != 409 {
+		t.Fatalf("deleted image used by show on air: %d", code)
+	}
+	if _, err := s.rt.Do(func(e *live.Engine) (live.OperatorState, error) { return e.OffAir(-1) }); err != nil {
+		t.Fatal(err)
+	}
+	if code, _ := c.do("DELETE", "/api/admin/shows/"+id+"/assets/slide.png", nil); code != 200 {
+		t.Fatalf("could not delete referenced image in standby: %d", code)
+	}
 }
 
 func (c *client) upload(id string, files map[string][]byte) (int, map[string]any) {

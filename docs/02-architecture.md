@@ -61,6 +61,7 @@
   - `fullscreen`: optional item (text or image) overlaying everything
   - `preload`: upcoming image URLs
   - `theme`, `lang`, `seq`
+- **Image URLs**: each active show's referenced image has an in-memory version. Replacing one changes its URL so browser caches fetch the new bytes. Upcoming-image hints change only when their URLs change; viewers receive a new snapshot only when that image is on their screen. An image referenced by the show on air cannot be deleted until its show file references are removed; deletion in standby is allowed.
 - **OperatorState** (operator-only): `cursor` (index of the next cue), `history` stack for undo, loop status, controller id, audience count.
 
 **On air, standby, off air (REQ-066).** A show that is loaded (activated) waits in **standby**: the audience is

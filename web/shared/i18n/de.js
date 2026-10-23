@@ -3,6 +3,7 @@
 
 // German translations of Setup, the operator page and Help (see web/shared/i18n.js). The key is the English text.
 OCI18n.add("de", {
+ "This image is used by the active show. Remove its references from the show file before deleting it.": "Dieses Bild wird von der aktiven Aufführung verwendet. Entfernen Sie die Verweise darauf aus der Showdatei, bevor Sie es löschen.",
  "Start": "Beginn",
  "End": "Ende",
  "Open the report page": "Berichtsseite öffnen",

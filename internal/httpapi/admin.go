@@ -842,7 +842,11 @@ func (s *Server) uploadAssets(w http.ResponseWriter, r *http.Request) {
 		saved = append(saved, a)
 	}
 	if len(saved) > 0 && s.rt.ShowID() == id {
-		s.rt.refreshPreload()
+		names := make([]string, 0, len(saved))
+		for _, asset := range saved {
+			names = append(names, asset.Name)
+		}
+		s.rt.RefreshAssets(id, names)
 	}
 	writeJSON(w, http.StatusOK, map[string]any{"saved": saved, "failed": failed})
 }
@@ -873,9 +877,18 @@ func (s *Server) getAsset(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) deleteAsset(w http.ResponseWriter, r *http.Request) {
-	if err := s.store.DeleteAsset(r.PathValue("id"), r.PathValue("file")); err != nil {
+	id := r.PathValue("id")
+	name := r.PathValue("file")
+	if s.rt.AssetInUse(id, name) {
+		writeErr(w, http.StatusConflict, "This image is used by the active show. Remove its references from the show file before deleting it.")
+		return
+	}
+	if err := s.store.DeleteAsset(id, name); err != nil {
 		storeErr(w, err)
 		return
+	}
+	if s.rt.ShowID() == id {
+		s.rt.RefreshAssets(id, []string{name})
 	}
 	writeJSON(w, http.StatusOK, map[string]any{"ok": true})
 }
