@@ -95,6 +95,9 @@ func TestAudienceReportCountsDevicesAcrossReconnects(t *testing.T) {
 	if err != nil || resp.StatusCode != 200 || !strings.HasPrefix(resp.Header.Get("Content-Type"), "text/csv") || !strings.Contains(resp.Header.Get("Content-Disposition"), "audience-report-") {
 		t.Fatalf("csv: %v %v", resp, err)
 	}
+	if strings.Contains(resp.Header.Get("Content-Disposition"), ".000000000") {
+		t.Errorf("CSV download name contains storage-only nanoseconds: %s", resp.Header.Get("Content-Disposition"))
+	}
 	rows, err := csv.NewReader(strings.NewReader(strings.TrimPrefix(readAll(resp), "\xef\xbb\xbf"))).ReadAll()
 	if err != nil || len(rows) != 4 || rows[0][0] != "Device" {
 		t.Errorf("csv rows: %v %v", rows, err)

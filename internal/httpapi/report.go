@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"net/http"
 	"path/filepath"
-	"strings"
 	"time"
 
 	"github.com/tmshort/open-caption/internal/logx"
@@ -39,16 +38,27 @@ func (s *Server) newReporting() {
 // goes off the air, is restarted or is replaced. It is cheap, and called whenever a device connects and every
 // couple of seconds.
 func (s *Server) syncReport() {
-	p := s.rt.OperatorPayload()
+	s.reportMu.Lock()
+	defer s.reportMu.Unlock()
+	s.syncReportLocked()
+}
+
+// syncReportLocked reads the show and updates the tracker as one ordered check (caller holds reportMu).
+func (s *Server) syncReportLocked() {
+	s.rt.mu.RLock()
+	eng := s.rt.langs[s.rt.primary].engine
+	id, name := s.rt.showID, s.rt.showName
+	s.rt.mu.RUnlock()
+	op := eng.Operator()
 	var loop *report.LoopInfo
-	if p.Op.Live && p.Op.Loop != nil {
-		cues := s.rt.Engine().Cues()
-		loop = &report.LoopInfo{Cue: p.Op.Loop.Cue, Kind: loopKind(cues, p.Op.Loop.Cue)}
-		if i := p.Op.Loop.Cue; i >= 0 && i < len(cues) {
+	if op.Live && op.Loop != nil {
+		cues := eng.Cues()
+		loop = &report.LoopInfo{Cue: op.Loop.Cue, Kind: loopKind(cues, op.Loop.Cue)}
+		if i := op.Loop.Cue; i >= 0 && i < len(cues) {
 			loop.Name = cues[i].Name // the main language's name for it, when the show file gives one
 		}
 	}
-	s.tracker.Sync(p.Op.Live && p.Show.ID != "", p.Show.ID, p.Show.Name, loop)
+	s.tracker.Sync(op.Live && id != "", id, name, loop)
 }
 
 // loopKind says what a loop is by where it stands in the show file: before the first line the audience sees it is the
@@ -184,7 +194,7 @@ func (s *Server) reportCSV(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, http.StatusNotFound, "There is no audience report yet. One is made each time the show is put on air.")
 		return
 	}
-	name := "audience-report-" + strings.TrimSuffix(report.Name(rep), ".json") + ".csv"
+	name := report.DownloadName(rep)
 	w.Header().Set("Content-Type", "text/csv; charset=utf-8")
 	w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="%s"`, name))
 	w.Header().Set("Cache-Control", "no-store")

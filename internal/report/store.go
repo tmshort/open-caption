@@ -28,8 +28,16 @@ var unsafe = regexp.MustCompile(`[^A-Za-z0-9_-]+`)
 
 // Name is the file name (without the folder) a report is saved under: when it started, then the show.
 func Name(r Report) string {
-	return r.Started.Local().Format("20060102-150405.000000000") + "-" + strings.Trim(unsafe.ReplaceAllString(r.ShowID, "-"), "-") + ".json"
+	return r.Started.Local().Format("20060102-150405.000000000") + "-" + safeShowID(r.ShowID) + ".json"
 }
+
+// DownloadName is readable in a browser's downloads list; the stored JSON name has finer precision
+// because two runs of the same show can start within one second.
+func DownloadName(r Report) string {
+	return "audience-report-" + r.Started.Local().Format("20060102-150405") + "-" + safeShowID(r.ShowID) + ".csv"
+}
+
+func safeShowID(id string) string { return strings.Trim(unsafe.ReplaceAllString(id, "-"), "-") }
 
 // Save writes the report (replacing one with the same name, so a run saved while going on is replaced by the final
 // one), and removes the oldest beyond Keep.

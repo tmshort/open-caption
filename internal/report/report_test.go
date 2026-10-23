@@ -173,6 +173,14 @@ func TestReportsStartedWithinOneSecondHaveDistinctFiles(t *testing.T) {
 	if got := s.Names(); len(got) != 2 || got[0] == got[1] {
 		t.Fatalf("same-second reports overwritten: %v", got)
 	}
+	first := Report{ShowID: "garden party/../x", Started: start}
+	second := Report{ShowID: first.ShowID, Started: start.Add(time.Nanosecond)}
+	if Name(first) == Name(second) || DownloadName(first) != DownloadName(second) {
+		t.Fatalf("stored names must differ, readable downloads may match: %q, %q; %q, %q", Name(first), Name(second), DownloadName(first), DownloadName(second))
+	}
+	if got, want := DownloadName(first), "audience-report-"+start.Local().Format("20060102-150405")+"-garden-party-x.csv"; got != want {
+		t.Fatalf("unreadable or unsafe CSV name: %q", got)
+	}
 }
 
 func TestStoreSavesLoadsAndKeepsTheNewest(t *testing.T) {
