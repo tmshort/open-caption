@@ -4,7 +4,7 @@
 
 | You need | For | Notes |
 |---|---|---|
-| **Go 1.26 or later** | `make build` (on Windows, which has no make: `build.bat`), `make test`, `make race`, `make vet`, `make lint`, `make dist` | No CGO and no C compiler; `make dist` cross-compiles for macOS, Windows and Linux. |
+| **Go 1.26 or later** | `make build` (on Windows, which has no make: `build.bat`), `make test`, `make race`, `make vet`, `make lint`, `make dist` | No CGO and no C compiler; `make dist` cross-compiles for macOS, Windows and Linux. `go.mod` names a `toolchain` (the Go release that has the standard-library security fixes `make vulncheck` looks for); a Go 1.21 or later downloads it by itself when yours is older, and `GOTOOLCHAIN=local` turns that off. Raise it when `make vulncheck` reports a fix in a newer Go. |
 | **Node.js 22.12 or later** (CI uses 22) | `make e2e`, `make a11y`, `make i18n`, `make lint-js` | The first run downloads the test tools with `npm` (listed in `test/e2e/package.json`); after that the tests need no internet. They are `puppeteer-core` (drives Chrome), `axe-core` (the accessibility checker) and `acorn` (a JavaScript parser, used to check that the pages stay inside the old-browser floor). |
 | **Google Chrome or Chromium** | `make e2e`, `make a11y` | The tests drive a real browser. They look for Chrome in its macOS location; on Linux or Windows set `CHROME` to the browser's path, for example `CHROME=/usr/bin/google-chrome make e2e`. |
 
