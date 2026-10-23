@@ -587,11 +587,11 @@ func (rt *Runtime) setAssetURLsLocked(files []LangFile) {
 	rt.assetURLs = versions
 }
 
-// AssetInUse reports whether the active show's cues still reference an image.
+// AssetInUse reports whether the show on air still references an image.
 func (rt *Runtime) AssetInUse(showID, name string) bool {
 	rt.mu.RLock()
 	defer rt.mu.RUnlock()
-	return rt.showID == showID && rt.assetURLs[name] != ""
+	return rt.showID == showID && rt.assetURLs[name] != "" && rt.langs[rt.primary].engine.Operator().Live
 }
 
 // RefreshAssets gives changed images new URLs, updates affected preloads and sends a snapshot only when

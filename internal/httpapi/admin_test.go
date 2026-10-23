@@ -100,11 +100,12 @@ func TestReplacingLiveImageRefreshesAudienceURL(t *testing.T) {
 
 func TestActiveAssetChangesOnlyNotifyAffectedViewers(t *testing.T) {
 	s, _, c := adminServer(t)
+	s.EnableStandby()
 	id := createShow(t, c, "Image updates")
 	if code, _ := c.do("PUT", "/api/admin/shows/"+id+"/showfile", map[string]string{"text": "[image: slide.png]\n[image: later.png]"}); code != 200 {
 		t.Fatalf("save show file: %d", code)
 	}
-	if code, _ := c.do("POST", "/api/admin/shows/"+id+"/activate", nil); code != 200 {
+	if code, _ := c.do("POST", "/api/admin/shows/"+id+"/activate", map[string]bool{"start": true}); code != 200 {
 		t.Fatalf("activate: %d", code)
 	}
 	if _, err := s.rt.Do(func(e *live.Engine) (live.OperatorState, error) { return e.Next(-1) }); err != nil {
@@ -144,8 +145,17 @@ func TestActiveAssetChangesOnlyNotifyAffectedViewers(t *testing.T) {
 		t.Fatalf("unexpected extra event for an upcoming image: %s", frame.Data)
 	default:
 	}
+	if code, _ := c.upload(id, map[string][]byte{"slide.png": pngData(t)}); code != 200 {
+		t.Fatalf("upload on-screen image: %d", code)
+	}
 	if code, _ := c.do("DELETE", "/api/admin/shows/"+id+"/assets/slide.png", nil); code != 409 {
-		t.Fatalf("deleted image used by active show: %d", code)
+		t.Fatalf("deleted image used by show on air: %d", code)
+	}
+	if _, err := s.rt.Do(func(e *live.Engine) (live.OperatorState, error) { return e.OffAir(-1) }); err != nil {
+		t.Fatal(err)
+	}
+	if code, _ := c.do("DELETE", "/api/admin/shows/"+id+"/assets/slide.png", nil); code != 200 {
+		t.Fatalf("could not delete referenced image in standby: %d", code)
 	}
 }
 

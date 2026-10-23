@@ -168,7 +168,7 @@ may request the same file at once, clients fetch upcoming images ahead of time.
 The snapshot and `preload` events list the next few image URLs after the
 cursor (including images in the next loop); the page fetches them in the
 background at low priority so they're in cache before they're shown.
-When an image referenced by the active show is uploaded or replaced, its versioned URL changes. The server sends a new `preload` hint if the image is upcoming, and a `snapshot` to viewers of a language showing it now. Uploading an unrelated image does not rebuild audience screens. Setup refuses to delete an image still referenced by the active show's cues (`409`); remove the reference from the show file first.
+When an image referenced by the active show is uploaded or replaced, its versioned URL changes. The server sends a new `preload` hint if the image is upcoming, and a `snapshot` to viewers of a language showing it now. Uploading an unrelated image does not rebuild audience screens. Setup refuses to delete an image still referenced by the show on air (`409`); in standby, deletion is allowed. A rehearsal keeps the image URLs assigned when it starts, so an image replaced during a rehearsal may remain cached for up to 60 seconds; starting a new rehearsal assigns fresh URLs.
 
 If the client reconnects with `Last-Event-ID` and the gap isn't covered by
 the server's retained buffer, the server sends a `snapshot`. Clients treat a
