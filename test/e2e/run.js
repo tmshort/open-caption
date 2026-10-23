@@ -154,12 +154,18 @@ async function main() {
     section('Rehearsal never reaches the audience');
     await step(admin, 'Test'); await sleep(500); await click(admin, 'Start rehearsal');
     await admin.waitForSelector('.reh iframe'); await sleep(1500);
-    const rehearsalAudience = admin.frames().find((f) => f.url().includes('rehearsal=1') && !f.url().includes('/operator'));
-    await rehearsalAudience.waitForSelector('#langmenu button');
-    await rehearsalAudience.evaluate(() => document.querySelector('#langmenu button[lang="es"]').click());
-    await admin.waitForFunction(() => [...document.querySelectorAll('.reh iframe')].some((f) => f.contentDocument && f.contentDocument.documentElement.lang === 'es'));
+    const rehearsalAudience = await open();
+    await rehearsalAudience.goto(B + '/?rehearsal=1');
+    await rehearsalAudience.waitForSelector('#langbtn:not([hidden])');
+    await rehearsalAudience.click('#langbtn');
+    await Promise.all([
+      rehearsalAudience.waitForNavigation({ waitUntil: 'domcontentloaded' }),
+      rehearsalAudience.click('#langmenu button[lang="es"]'),
+    ]);
+    await rehearsalAudience.waitForFunction(() => document.documentElement.lang === 'es');
     check('the rehearsal language picker switches the private audience stream',
-      await admin.evaluate(() => [...document.querySelectorAll('.reh iframe')].some((f) => f.contentWindow && f.contentWindow.location.search.includes('lang=es') && f.contentDocument.documentElement.lang === 'es')));
+      await rehearsalAudience.evaluate(() => location.search.includes('lang=es') && document.documentElement.lang === 'es'));
+    await rehearsalAudience.close();
     // The rehearsal frames can reload once while the page settles: retry if one is detached.
     for (let attempt = 0; attempt < 4; attempt++) {
       try {
