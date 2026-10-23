@@ -707,14 +707,18 @@ async function main() {
     };
     const noDialog = () => { delete HTMLDialogElement.prototype.showModal; delete Element.prototype.replaceChildren; };
     const oldAdmin = await old(noDialog, '/admin'); await signIn(oldAdmin, '#steps button');
-    await oldAdmin.waitForFunction(() => [...document.querySelectorAll('button')].some((x) => x.textContent.includes('Rename')), { timeout: 15000 });
-    await click(oldAdmin, 'Rename'); await oldAdmin.waitForFunction(() => document.getElementById('dlg').hasAttribute('open'));
+    // Setup may redraw this button while loading; find and click it in the same browser turn.
+    const clickOldRename = () => oldAdmin.waitForFunction(() => {
+      const button = [...document.querySelectorAll('button')].find((x) => x.textContent.includes('Rename'));
+      if (button) button.click();
+      return !!button;
+    }, { timeout: 15000 });
+    await clickOldRename(); await oldAdmin.waitForFunction(() => document.getElementById('dlg').hasAttribute('open'));
     const shown = await oldAdmin.evaluate(() => { const d = document.getElementById('dlg'), r = d.getBoundingClientRect(); return { fixed: getComputedStyle(d).position === 'fixed', w: r.width, onScreen: r.left >= 0 && r.top >= 0 && r.right <= innerWidth && r.bottom <= innerHeight, hasShowModal: typeof HTMLDialogElement !== 'undefined' && !!HTMLDialogElement.prototype.showModal }; });
     check('without <dialog> support the dialog still appears, centred over the page', shown.fixed && shown.w > 200 && shown.onScreen && !shown.hasShowModal, shown);
     await oldAdmin.keyboard.press('Escape'); await sleep(200);
     check('Escape closes it', await oldAdmin.evaluate(() => !document.getElementById('dlg').hasAttribute('open')));
-    await oldAdmin.waitForFunction(() => [...document.querySelectorAll('button')].some((x) => x.textContent.includes('Rename')), { timeout: 15000 });
-    await click(oldAdmin, 'Rename'); await oldAdmin.waitForFunction(() => document.getElementById('dlg').hasAttribute('open'));
+    await clickOldRename(); await oldAdmin.waitForFunction(() => document.getElementById('dlg').hasAttribute('open'));
     await oldAdmin.evaluate(() => { const i = document.querySelector('#dlgbody input'); i.value = 'Renamed in an old browser'; });
     await oldAdmin.click('#dlgok'); await oldAdmin.waitForFunction(() => document.getElementById('panel').innerText.includes('Renamed in an old browser'), { timeout: 8000 }).catch(() => {});
     check('and its buttons work (OK renames the show)', (await oldAdmin.evaluate(() => document.getElementById('panel').innerText)).includes('Renamed in an old browser'));
