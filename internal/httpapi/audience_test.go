@@ -113,7 +113,7 @@ func TestSnapshotThenCaptions(t *testing.T) {
 	}
 	ev = c.nextEvent(t)
 	fs := ev.Data["item"].(map[string]any)
-	if ev.Type != "fullscreen" || fs["kind"] != "image" || fs["src"] != "/assets/demo/curtain.jpg" {
+	if src, _ := fs["src"].(string); ev.Type != "fullscreen" || fs["kind"] != "image" || !strings.HasPrefix(src, "/assets/demo/curtain.jpg?v=") {
 		t.Fatalf("%+v", ev)
 	}
 }
@@ -126,7 +126,7 @@ func TestLateJoinerSeesScrollbackAndPreload(t *testing.T) {
 	snap := c.next(t)
 	sb := snap.Data["scrollback"].([]any)
 	pre := snap.Data["preload"].([]any)
-	if len(sb) != 2 || len(pre) != 1 || pre[0] != "/assets/demo/curtain.jpg" {
+	if len(sb) != 2 || len(pre) != 1 || !strings.HasPrefix(pre[0].(string), "/assets/demo/curtain.jpg?v=") {
 		t.Fatalf("%+v", snap.Data)
 	}
 }
