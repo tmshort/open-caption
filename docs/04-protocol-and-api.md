@@ -13,7 +13,7 @@ All JSON is UTF-8.
 |--------|------|-------------|
 | GET | `/` | Audience page (single HTML shell + JS) |
 | GET | `/events` | SSE stream of live state (below) |
-| GET | `/assets/{showId}/{file}` | Image assets of the active show (cacheable) |
+| GET | `/assets/{showId}/{file}` | Image assets of the active show (cacheable; audience URLs carry `?v=<version>` and change when an image is replaced) |
 | GET | `/healthz` | `200 ok` |
 | GET | `/standby-logo` | The venue's standby logo image (PNG, JPEG, GIF or WebP) if one was uploaded in Setup (`404` otherwise; the audience page then shows the built-in `[oc]` mark, `/static/shared/favicon.svg`). The address carries `?v=<modified time>` so a new logo is fetched at once |
 | GET | `/favicon.ico` | The browser tab icon (browsers ask for it at the root) |
@@ -168,6 +168,7 @@ may request the same file at once, clients fetch upcoming images ahead of time.
 The snapshot and `preload` events list the next few image URLs after the
 cursor (including images in the next loop); the page fetches them in the
 background at low priority so they're in cache before they're shown.
+When an image referenced by the active show is uploaded or replaced, its versioned URL changes. The server sends a new `preload` hint if the image is upcoming, and a `snapshot` to viewers of a language showing it now. Uploading an unrelated image does not rebuild audience screens. Setup refuses to delete an image still referenced by the active show's cues (`409`); remove the reference from the show file first.
 
 If the client reconnects with `Last-Event-ID` and the gap isn't covered by
 the server's retained buffer, the server sends a `snapshot`. Clients treat a
@@ -181,7 +182,7 @@ the server's retained buffer, the server sends a `snapshot`. Clients treat a
 
 // Item (fullscreen)
 { "kind": "text", "html": "<strong>INTERMISSION</strong>" }
-{ "kind": "image", "src": "/assets/odd-couple/curtain.jpg", "caption": "Act 1" }
+{ "kind": "image", "src": "/assets/odd-couple/curtain.jpg?v=abc-1", "caption": "Act 1" }
 { "kind": "blank" }
 // a text item of a loop that has a timer: HTML holds <span data-timer> where {timer} was written, and
 // deadline is when the countdown ends (unix ms, the server's clock); the page fills the span in every second
@@ -198,7 +199,7 @@ the server's retained buffer, the server sends a `snapshot`. Clients treat a
   "scrollback": [ /* CaptionItem[] */ ],
   "scrollbackMax": 200,          // the show's scrollback lines setting: a page keeps no more lines than this
   "fullscreen": null,            // or Item
-  "preload": ["/assets/odd-couple/curtain.jpg"],
+  "preload": ["/assets/odd-couple/curtain.jpg?v=abc-1"],
   "theme": { "bg": "#000000", "fg": "#ffffff", "accent": "#ffffff", "font": "system",  /* system | serif | mono | dyslexic | hyperlegible */
              "scalePct": 100, "speakers": "label", "idleMessage": "Captions will begin shortly" }
 }

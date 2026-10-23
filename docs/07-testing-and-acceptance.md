@@ -32,6 +32,7 @@
 - Rehearsal: commands on `/api/admin/rehearsal/*` never reach audience clients or change `live.json`, even while a real show is live.
 - Security: first-run passwords never appear in any HTTP response; beyond `audience.max_clients`, `/events` returns 503.
 - SSE: slow client doesn't delay others; overflow closes the slow client; heartbeat arrives; late joiner receives scrollback.
+- Images: replacing an image on screen changes its URL and snapshot; replacing an upcoming image updates its preload URL without rebuilding the screen; unrelated uploads do neither; deleting an image referenced by the active show is refused.
 
 - Languages: a translation that does not match the main show file is reported with its own line number and is not offered; one keypress sends the same cue to every language and a language that drifts is moved back; negotiation by `?lang=`, `Accept-Language` quality values, regional fallback; devices on a language a new show lacks are told to reload; per-language state survives a restart.
 - Songs and voices: `~` shorthand, `[song]`, `[together]` and ` || ` (including mixed spoken/sung, unclosed blocks, escapes).

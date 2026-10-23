@@ -9,7 +9,6 @@ import (
 	"encoding/json"
 	"net/url"
 	"os"
-	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -112,18 +111,21 @@ type Runtime struct {
 	// OpHub carries operator-level state updates (/api/operator/stream).
 	OpHub *hub.Hub
 
-	mu        sync.RWMutex
-	gen       int
-	showID    string
-	showName  string
-	assetBase string // URL prefix for image assets ("" = /assets/<showID>/)
-	cuesVer   int
-	assetsDir string
-	theme     Theme
-	primary   string              // the language the operator sees
-	order     []string            // language codes, primary first
-	langs     map[string]*langRT  // languages of the active show
-	hubs      map[string]*hub.Hub // one per language code; kept across shows so connected devices stay put
+	mu         sync.RWMutex
+	gen        int
+	showID     string
+	showName   string
+	assetBase  string // URL prefix for image assets ("" = /assets/<showID>/)
+	assetStamp string // process-specific prefix, so a restart cannot reuse a cached image URL
+	assetSeq   uint64
+	assetURLs  map[string]string // referenced image name -> version; guarded by mu
+	cuesVer    int
+	assetsDir  string
+	theme      Theme
+	primary    string              // the language the operator sees
+	order      []string            // language codes, primary first
+	langs      map[string]*langRT  // languages of the active show
+	hubs       map[string]*hub.Hub // one per language code; kept across shows so connected devices stay put
 
 	standbyMode bool        // shows start in standby (see live.Config.Standby)
 	standby     StandbyView // the venue's standby screen
@@ -148,7 +150,8 @@ const controllerLease = 30 * time.Second
 func NewRuntime(cfg config.Config) *Runtime {
 	rt := &Runtime{cfg: cfg, OpHub: hub.New(0), hubs: map[string]*hub.Hub{}, langs: map[string]*langRT{},
 		theme: DefaultTheme(cfg.Defaults.IdleMessage), streams: map[string]int{},
-		opDirty: make(chan struct{}, 1), saveDirty: make(chan struct{}, 1), quit: make(chan struct{})}
+		assetStamp: strconv.FormatInt(time.Now().UnixNano(), 36),
+		opDirty:    make(chan struct{}, 1), saveDirty: make(chan struct{}, 1), quit: make(chan struct{})}
 	rt.SetShow("", "", "", nil, rt.theme)
 	rt.wg.Add(1)
 	go rt.opLoop()
@@ -329,6 +332,8 @@ func (rt *Runtime) SetShowLangs(id, name, assetsDir string, primary LangFile, ot
 	gen := rt.gen
 	old := rt.langs
 	rt.showID, rt.showName, rt.assetsDir, rt.theme = id, name, assetsDir, theme
+	rt.assetURLs = nil // activating a show gives its images fresh URLs, even if the ID is unchanged
+	rt.setAssetURLsLocked(append([]LangFile{primary}, others...))
 	rt.primary = primary.Code
 	rt.langs = map[string]*langRT{}
 	rt.order = nil
@@ -451,10 +456,8 @@ func (rt *Runtime) item(it *showfile.Item) *AudItem {
 			base = "/assets/" + url.PathEscape(rt.showID) + "/"
 		}
 		src := base + url.PathEscape(it.Image)
-		if info, err := os.Stat(filepath.Join(rt.assetsDir, it.Image)); err == nil {
-			// The file may be replaced while a show is on air. A new URL bypasses cached copies
-			// without making every audience device download every image on each loop cycle.
-			src += "?v=" + strconv.FormatInt(info.ModTime().UnixNano(), 10)
+		if version := rt.assetURLs[it.Image]; version != "" {
+			src += "?v=" + version
 		}
 		return &AudItem{Kind: "image", Src: src, Caption: it.Caption}
 	case "text":
@@ -557,15 +560,71 @@ func (rt *Runtime) SetAssetBase(base string) {
 	rt.mu.Unlock()
 }
 
-// RefreshAssets updates preloads and the image currently on screen after an asset is changed.
-func (rt *Runtime) RefreshAssets() {
-	rt.refreshPreload()
-	rt.mu.RLock()
-	hubs := make(map[string]*hub.Hub, len(rt.hubs))
-	for code, h := range rt.hubs {
-		hubs[code] = h
+// setAssetURLsLocked keeps versions for images still referenced by the show file, and gives newly referenced
+// images a version. The caller holds rt.mu for writing.
+func (rt *Runtime) setAssetURLsLocked(files []LangFile) {
+	versions := make(map[string]string)
+	add := func(it showfile.Item) {
+		if it.Kind != "image" || versions[it.Image] != "" {
+			return
+		}
+		versions[it.Image] = rt.assetURLs[it.Image]
+		if versions[it.Image] == "" {
+			rt.assetSeq++
+			versions[it.Image] = rt.assetStamp + "-" + strconv.FormatUint(rt.assetSeq, 36)
+		}
 	}
-	rt.mu.RUnlock()
+	for _, file := range files {
+		for _, cue := range file.Cues {
+			if cue.Item != nil {
+				add(*cue.Item)
+			}
+			for _, it := range cue.Items {
+				add(it)
+			}
+		}
+	}
+	rt.assetURLs = versions
+}
+
+// AssetInUse reports whether the active show's cues still reference an image.
+func (rt *Runtime) AssetInUse(showID, name string) bool {
+	rt.mu.RLock()
+	defer rt.mu.RUnlock()
+	return rt.showID == showID && rt.assetURLs[name] != ""
+}
+
+// RefreshAssets gives changed images new URLs, updates affected preloads and sends a snapshot only when
+// one of those images is currently on screen. No file access is needed while an audience request is served.
+func (rt *Runtime) RefreshAssets(showID string, names []string) {
+	rt.mu.Lock()
+	if rt.showID != showID {
+		rt.mu.Unlock()
+		return
+	}
+	changed := make(map[string]bool)
+	for _, name := range names {
+		if rt.assetURLs[name] != "" {
+			rt.assetSeq++
+			rt.assetURLs[name] = rt.assetStamp + "-" + strconv.FormatUint(rt.assetSeq, 36)
+			changed[name] = true
+		}
+	}
+	langs := make(map[string]*langRT, len(rt.langs))
+	for code, l := range rt.langs {
+		langs[code] = l
+	}
+	rt.mu.Unlock()
+	if len(changed) == 0 {
+		return
+	}
+	rt.refreshPreload()
+	hubs := make(map[string]*hub.Hub)
+	for code, l := range langs {
+		if it := l.engine.Snapshot().Fullscreen; it != nil && it.Kind == "image" && changed[it.Image] {
+			hubs[code] = rt.HubFor(code)
+		}
+	}
 	rt.pushToAll(hubs)
 }
 
@@ -608,6 +667,7 @@ func (rt *Runtime) ReplaceLangs(primary LangFile, others []LangFile) (countChang
 	op := eng.Operator()
 	all := append([]LangFile{primary}, others...)
 	rt.mu.Lock()
+	rt.setAssetURLsLocked(all)
 	gen := rt.gen
 	rt.cuesVer++
 	rt.primary = primary.Code
