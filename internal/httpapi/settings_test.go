@@ -27,6 +27,7 @@ import (
 	"time"
 
 	"github.com/tmshort/open-caption/internal/config"
+	"github.com/tmshort/open-caption/internal/live"
 	"github.com/tmshort/open-caption/internal/netinfo"
 )
 
@@ -312,9 +313,11 @@ func TestLogLevelsAndLogging(t *testing.T) {
 }
 
 func TestArchivingAShow(t *testing.T) {
-	_, _, c := serverWith(t, nil)
+	s, _, c := serverWith(t, nil)
 	keep, old := createShow(t, c, "Keep"), createShow(t, c, "Old")
+	c.do("PUT", "/api/admin/shows/"+keep+"/showfile", map[string]any{"text": "Hello\nWorld\n"})
 	c.do("POST", "/api/admin/shows/"+keep+"/activate", map[string]any{"start": true})
+	s.rt.Do(func(e *live.Engine) (live.OperatorState, error) { return e.Next(-1) }) // a line sent: on air
 	if code, r := c.do("POST", "/api/admin/shows/"+keep+"/archive", nil); code != 409 {
 		t.Errorf("archiving the show on air: %d %v", code, r)
 	}
