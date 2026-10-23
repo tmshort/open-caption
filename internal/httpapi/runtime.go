@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"net/url"
 	"os"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -449,7 +450,13 @@ func (rt *Runtime) item(it *showfile.Item) *AudItem {
 		if base == "" {
 			base = "/assets/" + url.PathEscape(rt.showID) + "/"
 		}
-		return &AudItem{Kind: "image", Src: base + url.PathEscape(it.Image), Caption: it.Caption}
+		src := base + url.PathEscape(it.Image)
+		if info, err := os.Stat(filepath.Join(rt.assetsDir, it.Image)); err == nil {
+			// The file may be replaced while a show is on air. A new URL bypasses cached copies
+			// without making every audience device download every image on each loop cycle.
+			src += "?v=" + strconv.FormatInt(info.ModTime().UnixNano(), 10)
+		}
+		return &AudItem{Kind: "image", Src: src, Caption: it.Caption}
 	case "text":
 		return &AudItem{Kind: "text", HTML: it.HTML, Deadline: it.Deadline}
 	}
@@ -548,6 +555,18 @@ func (rt *Runtime) SetAssetBase(base string) {
 	rt.mu.Lock()
 	rt.assetBase = base
 	rt.mu.Unlock()
+}
+
+// RefreshAssets updates preloads and the image currently on screen after an asset is changed.
+func (rt *Runtime) RefreshAssets() {
+	rt.refreshPreload()
+	rt.mu.RLock()
+	hubs := make(map[string]*hub.Hub, len(rt.hubs))
+	for code, h := range rt.hubs {
+		hubs[code] = h
+	}
+	rt.mu.RUnlock()
+	rt.pushToAll(hubs)
 }
 
 // SetTheme changes the look and pushes it to every connected client.

@@ -842,7 +842,7 @@ func (s *Server) uploadAssets(w http.ResponseWriter, r *http.Request) {
 		saved = append(saved, a)
 	}
 	if len(saved) > 0 && s.rt.ShowID() == id {
-		s.rt.refreshPreload()
+		s.rt.RefreshAssets()
 	}
 	writeJSON(w, http.StatusOK, map[string]any{"saved": saved, "failed": failed})
 }
@@ -873,9 +873,13 @@ func (s *Server) getAsset(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) deleteAsset(w http.ResponseWriter, r *http.Request) {
-	if err := s.store.DeleteAsset(r.PathValue("id"), r.PathValue("file")); err != nil {
+	id := r.PathValue("id")
+	if err := s.store.DeleteAsset(id, r.PathValue("file")); err != nil {
 		storeErr(w, err)
 		return
+	}
+	if s.rt.ShowID() == id {
+		s.rt.RefreshAssets()
 	}
 	writeJSON(w, http.StatusOK, map[string]any{"ok": true})
 }
