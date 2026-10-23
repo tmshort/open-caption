@@ -86,7 +86,7 @@ everywhere an operator session is; the reverse is not true.
 | POST | `/api/admin/shows/{id}/activate` | `{force?, start?}`: load the show **in standby** (blocked if a show is on air unless `force`; 409 if the show is archived). `start: true` also puts it on air at once (automation and tests; Setup never does) |
 | POST | `/api/admin/rehearsal/start` | Create an isolated rehearsal engine for this session (doc 02) |
 | POST | `/api/admin/rehearsal/{next,back,stop,jump,blank,clear,reset}` | Same bodies/semantics as `/api/operator/*`, applied to the rehearsal engine only |
-| GET | `/api/admin/rehearsal/events` | SSE of the rehearsal's audience-view events (drives the preview pane) |
+| GET | `/api/admin/rehearsal/events` | SSE of the rehearsal's audience-view events (drives the preview pane). `?lang=<code>` selects the rehearsal language, and `?display=projector` marks a projector client in the rehearsal clients list |
 | GET | `/api/admin/settings` | Effective config (passwords redacted), settings file and data folder locations, listening ports, `adminAllow`/`operatorAllow` and whether they restrict anyone |
 | PUT | `/api/admin/settings/passwords` | `{admin?, operator?}` (min 6 characters, different from each other) written to `config.yaml`, effective at once; signs out others using a changed password |
 | GET | `/api/admin/settings/operator-password` | The current operator password (for handing over) |
