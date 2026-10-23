@@ -144,7 +144,7 @@ func (s *Server) operatorAPI(mux *http.ServeMux, prefix, role string, resolve re
 
 	command := func(name string, fn func(*live.Engine, cmdBody) (live.OperatorState, error)) {
 		mux.HandleFunc("POST "+prefix+name, guard(func(w http.ResponseWriter, r *http.Request, rt *Runtime) {
-			runCommand(w, r, rt, fn)
+			s.runCommand(w, r, rt, fn)
 		}))
 	}
 	command("next", func(e *live.Engine, b cmdBody) (live.OperatorState, error) { return e.Next(b.rev()) })
@@ -204,7 +204,7 @@ func (s *Server) operatorState(w http.ResponseWriter, r *http.Request, rt *Runti
 	})
 }
 
-func runCommand(w http.ResponseWriter, r *http.Request, rt *Runtime, fn func(*live.Engine, cmdBody) (live.OperatorState, error)) {
+func (s *Server) runCommand(w http.ResponseWriter, r *http.Request, rt *Runtime, fn func(*live.Engine, cmdBody) (live.OperatorState, error)) {
 	p := principal(r)
 	if !rt.IsController(p.Token) {
 		writeJSON(w, http.StatusConflict, map[string]any{"error": "another operator is in control", "payload": rt.OperatorPayload()})
@@ -216,6 +216,9 @@ func runCommand(w http.ResponseWriter, r *http.Request, rt *Runtime, fn func(*li
 		return
 	}
 	_, err := rt.Do(func(e *live.Engine) (live.OperatorState, error) { return fn(e, body) })
+	if rt == s.rt {
+		s.syncReport() // capture even a brief off-air/reset interval between timer ticks
+	}
 	logx.Debugf("operator command %s: %v", r.URL.Path, err)
 	resp := map[string]any{"payload": rt.OperatorPayload()}
 	code := http.StatusOK

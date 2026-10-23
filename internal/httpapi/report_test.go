@@ -185,6 +185,45 @@ func TestRehearsalViewersAreNotCounted(t *testing.T) {
 	}
 }
 
+func TestRapidRestartsOfSameShowCreateSeparateReports(t *testing.T) {
+	_, _, c := standbyServer(t)
+	_, created := c.do("POST", "/api/admin/shows", map[string]any{"sample": true})
+	id := created["id"].(string)
+	if code, _ := c.do("POST", "/api/admin/shows/"+id+"/activate", map[string]any{}); code != 200 {
+		t.Fatalf("activate: %d", code)
+	}
+	c.do("POST", "/api/operator/claim", map[string]any{"takeover": true})
+	if code, _ := c.do("POST", "/api/operator/onair", nil); code != 200 {
+		t.Fatalf("on air: %d", code)
+	}
+	if code, _ := c.do("POST", "/api/operator/reset", nil); code != 200 {
+		t.Fatalf("reset: %d", code)
+	}
+	if code, _ := c.do("POST", "/api/operator/onair", nil); code != 200 {
+		t.Fatalf("on air again: %d", code)
+	}
+	if code, _ := c.do("POST", "/api/admin/shows/"+id+"/activate", map[string]any{"force": true, "start": true}); code != 200 {
+		t.Fatalf("restart same show: %d", code)
+	}
+	code, body := c.do("GET", "/api/operator/reports", nil)
+	if code != 200 {
+		t.Fatalf("list reports: %d", code)
+	}
+	items := body["reports"].([]any)
+	if len(items) != 3 {
+		t.Fatalf("want two finished runs and one current run, got %v", items)
+	}
+	seen := map[string]bool{}
+	for i, raw := range items {
+		item := raw.(map[string]any)
+		name := item["id"].(string)
+		if seen[name] || item["running"] != (i == 0) {
+			t.Fatalf("duplicate or wrong run state: %v", items)
+		}
+		seen[name] = true
+	}
+}
+
 func TestLoopsAreNamedByWhereTheyStand(t *testing.T) {
 	cue := func(k showfile.CueKind) showfile.Cue { return showfile.Cue{Kind: k} }
 	cues := []showfile.Cue{cue(showfile.KindLoop), cue(showfile.KindNote), cue(showfile.KindCaption), cue(showfile.KindSection), cue(showfile.KindLoop), cue(showfile.KindImage), cue(showfile.KindLoop)}

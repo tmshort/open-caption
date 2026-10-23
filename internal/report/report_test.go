@@ -162,6 +162,19 @@ func TestStoreDeletesOnlyASavedReport(t *testing.T) {
 	}
 }
 
+func TestReportsStartedWithinOneSecondHaveDistinctFiles(t *testing.T) {
+	s := Store{Dir: t.TempDir()}
+	start := time.Date(2026, 10, 20, 19, 0, 0, 0, time.UTC)
+	for _, at := range []time.Time{start, start.Add(time.Nanosecond)} {
+		if err := s.Save(Report{ShowID: "garden", Started: at}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if got := s.Names(); len(got) != 2 || got[0] == got[1] {
+		t.Fatalf("same-second reports overwritten: %v", got)
+	}
+}
+
 func TestStoreSavesLoadsAndKeepsTheNewest(t *testing.T) {
 	dir := filepath.Join(t.TempDir(), "reports")
 	s := Store{Dir: dir}
