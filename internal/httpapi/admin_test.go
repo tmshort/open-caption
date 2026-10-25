@@ -410,13 +410,13 @@ func TestNetworkAndQR(t *testing.T) {
 		t.Fatal(code)
 	}
 	urls := r["urls"].([]any)
-	var sawLocal8080, sawHTTPS bool
+	var sawLocal8080, sawHTTPSLocal bool
 	for _, u := range urls {
 		url := u.(map[string]any)["url"].(string)
 		sawLocal8080 = sawLocal8080 || url == "http://localhost:8080/"
-		sawHTTPS = sawHTTPS || url == "https://localhost/"
+		sawHTTPSLocal = sawHTTPSLocal || strings.HasPrefix(url, "https://localhost")
 	}
-	if !sawLocal8080 || !sawHTTPS {
+	if !sawLocal8080 || sawHTTPSLocal { // https://localhost is never offered: no certificate names it
 		t.Errorf("urls: %v", urls)
 	}
 	w := toJSON(r["warnings"])

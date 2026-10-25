@@ -1196,7 +1196,9 @@ func (s *Server) network(w http.ResponseWriter, r *http.Request) {
 		for _, ip := range ips {
 			urls = append(urls, urlInfo{URL: hostURL(scheme, ip.String(), bound, def), Kind: scheme, Host: ip.String(), Public: true, Adapter: adapterOf[ip.String()]})
 		}
-		urls = append(urls, urlInfo{URL: hostURL(scheme, "localhost", bound, def), Kind: scheme, Host: "localhost"})
+		if scheme == "http" { // https://localhost never matches the certificate, so a browser always refuses it
+			urls = append(urls, urlInfo{URL: hostURL(scheme, "localhost", bound, def), Kind: scheme, Host: "localhost"})
+		}
 	}
 	add("http", l.HTTPAddr, "80")
 	if st := s.MDNSStatus(); st.Active && l.HTTPAddr != "" {
