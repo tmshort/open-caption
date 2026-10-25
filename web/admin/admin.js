@@ -1076,7 +1076,7 @@
       isActive ? h('button', { class: 'quiet', disabled: !!((A.shows || []).find((x) => x.id === show.id) || {}).fresh, title: ((A.shows || []).find((x) => x.id === show.id) || {}).fresh ? __('The show is at the start and in standby, so there is nothing to restart') : null, onclick: () => restartShow(show) }, __('Restart show…')) : null);
     const checks = h('div', { class: 'card ready' }, checklist, startBox);
     const urls = net.data.urls.filter((u) => u.public);
-    let chosen = (urls.find((u) => u.kind === 'http' && !u.name) || urls.find((u) => u.kind === 'http') || urls[0] || net.data.urls[0] || {}).url; // the numeric address is the safest to print
+    let chosen = (urls.find((u) => u.cert) || urls.find((u) => u.kind === 'http' && !u.name) || urls.find((u) => u.kind === 'http') || urls[0] || net.data.urls[0] || {}).url; // the numeric address is the safest to print
     const big = h('div', { class: 'urlbig' }), qrBox = h('div', { class: 'qr' });
     const paint = () => { big.textContent = chosen || __('No address found'); qrBox.replaceChildren(chosen ? h('img', { src: '/api/admin/network/qr.png?size=512&url=' + encodeURIComponent(chosen), alt: __('QR code for {url}', { url: chosen }) }) : ''); };
     paint();
@@ -1102,16 +1102,28 @@
     const projU = projBase ? { url: projBase + (projBase.includes('?') ? '&' : '?') + 'display=projector' } : null;
     const projRow = projU ? h('div', { class: 'row projrow' }, h('label', { class: 'row' }, radio(projU), link(projU.url)),
       h('span', { class: 'hint' }, __('(for a projector or shared screen; open it on that computer)'))) : null;
-    const rows = net.data.urls.filter((u) => !u.name).map((u) => h('div', { class: 'row' }, h('label', { class: 'row' }, radio(u), link(u.url), u.public ? (u.adapter === 'wifi' ? ' (' + __('Wi-Fi') + ')' : u.adapter === 'ethernet' ? ' (' + __('Ethernet') + ')' : '') : __(' (this computer only)'))));
+    const where = (u) => (u.adapter === 'wifi' ? ' (' + __('Wi-Fi') + ')' : u.adapter === 'ethernet' ? ' (' + __('Ethernet') + ')' : '');
+    const addrRow = (u) => h('div', { class: 'row' }, h('label', { class: 'row' }, radio(u), link(u.url), where(u)));
+    const numeric = (kind) => net.data.urls.filter((u) => !u.name && !u.cert && u.public && u.kind === kind).map(addrRow);
+    const certRows = net.data.urls.filter((u) => u.cert).map(addrRow);
+    const hasHttps = net.data.urls.some((u) => u.kind === 'https');
+    const group = (title, ...kids) => h('div', { class: 'urlgroup' }, h('h4', { class: 'urlhead' }, title), ...kids);
+    // localhost is of no use to the audience: one quiet line instead of rows
+    const here = net.data.urls.filter((u) => !u.public && !u.name);
+    const hereLine = here.length ? h('div', { class: 'hint localonly' }, __('This computer only:'), ' ', ...here.flatMap((u, i) => (i ? [' · ', link(u.url)] : [link(u.url)]))) : null;
     // The audience report of the last run (how many devices used the service), when there is one.
     const reportLink = h('p', { class: 'hint', hidden: '' }, h('a', { href: '#report', onclick: (e) => { e.preventDefault(); go('report'); window.scrollTo(0, 0); } }, __('Audience report')), ' ', __('(how many devices used the audience page during the last run of the show)'));
     api('GET', '/api/operator/report').then((x) => { if (x.ok) reportLink.hidden = false; }).catch(() => {});
-    const list = h('div', { class: 'urls' }, ...rows, ...nameRows(), projRow);
+    const plain = [...numeric('http'), ...nameRows()];
+    const list = h('div', { class: 'urls' },
+      ...(hasHttps ? [group(__('Secure (https)'), ...certRows, ...(certRows.length ? [h('div', { class: 'hint namehint' }, __('The name in the HTTPS certificate. It works on devices that can find this computer by that name.'))] : []), ...numeric('https')),
+        group(__('Plain (http)'), ...plain)] : plain),
+      projRow);
     p.append(h('h2', {}, __('Share')), checks,
       h('div', { class: 'card' }, h('h3', {}, __('Tell the audience this address')), big,
         h('div', { class: 'row' }, h('button', { onclick: async () => { try { await navigator.clipboard.writeText(chosen); toast(__('Copied')); } catch (e) { toast(__('Select the address and copy it')); } } }, __('Copy address')),
           h('a', { class: 'btn', href: '/admin?print=qr&url=' + encodeURIComponent(chosen || ''), target: '_blank', rel: 'noopener' }, __('Print a QR sign for the lobby'))),
-        h('div', { class: 'row qrrow' }, qrBox, list),
+        h('div', { class: 'row qrrow' }, qrBox, list), hereLine,
         ...(net.data.warnings || []).map((w) => h('div', { class: 'check warn' }, w)),
         h('p', { class: 'hint' }, __('Audience devices must be on the same WiFi as this computer. Devices connected right now: '), h('b', { id: 'audcount' }, String(A.audience))),
         reportLink,

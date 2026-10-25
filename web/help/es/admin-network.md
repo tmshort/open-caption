@@ -24,7 +24,7 @@ Un equipo con cable y WiFi a la vez, o con máquinas virtuales o una VPN, tiene 
 
 ## HTTP y HTTPS
 
-Las direcciones `http://` sencillas funcionan en todos los dispositivos y son la opción por defecto. HTTPS se puede activar en `config.yaml`; con un certificado autofirmado cada dispositivo muestra una advertencia de seguridad la primera vez. HTTP sencillo es más simple para un público.
+Las direcciones `http://` sencillas funcionan en todos los dispositivos y son la opción por defecto. HTTPS se puede activar en `config.yaml`; con un certificado autofirmado cada dispositivo muestra una advertencia de seguridad la primera vez. HTTP sencillo es más simple para un público. Cuando HTTPS está activado, el paso **Compartir** lista las direcciones en dos grupos, *Seguro (https)* y *Sin cifrar (http)*; con un certificado de un nombre real (automático o propio), ese nombre aparece primero y es con el que empiezan la dirección grande, **Copiar dirección** y el código QR. Los dispositivos deben poder encontrar este ordenador por ese nombre (por ejemplo mediante el servicio de nombres del propio router del local).
 
 ## Si el puerto está ocupado
 

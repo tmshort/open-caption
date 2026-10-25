@@ -7,8 +7,10 @@ import (
 	"archive/zip"
 	"bytes"
 	"crypto/sha256"
+	"crypto/x509"
 	"encoding/hex"
 	"encoding/json"
+	"encoding/pem"
 	"errors"
 	"fmt"
 	"github.com/tmshort/open-caption/internal/logx"
@@ -1161,8 +1163,9 @@ type urlInfo struct {
 	URL    string `json:"url"`
 	Kind   string `json:"kind"` // "http" | "https"
 	Host   string `json:"host"`
-	Public bool   `json:"public"` // reachable from other devices (not localhost)
-	Name   bool   `json:"name"`   // a local network name (open-caption.local) rather than a numeric address
+	Public bool   `json:"public"`         // reachable from other devices (not localhost)
+	Name   bool   `json:"name"`           // a local network name (open-caption.local) rather than a numeric address
+	Cert   bool   `json:"cert,omitempty"` // a DNS name from the HTTPS certificate (https.acme.domain, or the names in https.cert_file)
 	// Adapter is the kind of network adapter a numeric address belongs to ("ethernet", "wifi" or "other"), so Setup can say which.
 	Adapter string `json:"adapter,omitempty"`
 }
@@ -1200,6 +1203,13 @@ func (s *Server) network(w http.ResponseWriter, r *http.Request) {
 		urls = append([]urlInfo{{URL: hostURL("http", st.Host, l.HTTPAddr, "80"), Kind: "http", Host: st.Host, Public: true, Name: true}}, urls...)
 	}
 	add("https", l.HTTPSAddr, "443")
+	if l.HTTPSAddr != "" {
+		var named []urlInfo
+		for _, n := range s.certificateNames() {
+			named = append(named, urlInfo{URL: hostURL("https", n, l.HTTPSAddr, "443"), Kind: "https", Host: n, Public: true, Cert: true})
+		}
+		urls = append(named, urls...)
+	}
 
 	var warnings []string
 	if len(ips) == 0 {
@@ -1217,6 +1227,49 @@ func (s *Server) network(w http.ResponseWriter, r *http.Request) {
 	}
 	writeJSON(w, http.StatusOK, map[string]any{"hostname": host, "ips": ipStrings(ips), "urls": urls, "warnings": warnings,
 		"audience": s.rt.AudienceCount(), "mdns": s.MDNSStatus()})
+}
+
+// certificateNames are the DNS names a browser accepts for the HTTPS certificate: the ACME domain, or the names in the
+// certificate file (a wildcard cannot be typed as an address, so it is left out). A self-signed certificate has none.
+func (s *Server) certificateNames() []string {
+	h := s.cfg.HTTPS
+	if !h.Enabled {
+		return nil
+	}
+	if h.ACME.Enabled {
+		if h.ACME.Domain != "" {
+			return []string{h.ACME.Domain}
+		}
+		return nil
+	}
+	if h.CertFile == "" {
+		return nil
+	}
+	b, err := os.ReadFile(h.CertFile)
+	if err != nil {
+		return nil
+	}
+	for {
+		var blk *pem.Block
+		blk, b = pem.Decode(b)
+		if blk == nil {
+			return nil
+		}
+		if blk.Type != "CERTIFICATE" {
+			continue
+		}
+		cert, err := x509.ParseCertificate(blk.Bytes) // the first certificate in the file is the server's own
+		if err != nil {
+			return nil
+		}
+		var out []string
+		for _, n := range cert.DNSNames {
+			if n != "" && !strings.Contains(n, "*") {
+				out = append(out, strings.ToLower(n))
+			}
+		}
+		return out
+	}
 }
 
 func portOf(addr string) string {

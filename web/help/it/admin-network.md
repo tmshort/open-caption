@@ -24,7 +24,7 @@ Un computer con cavo e WiFi insieme, o con macchine virtuali o una VPN, ha più 
 
 ## HTTP e HTTPS
 
-Gli indirizzi `http://` semplici funzionano su ogni dispositivo e sono la scelta predefinita. HTTPS si può attivare in `config.yaml`; con un certificato autofirmato ogni dispositivo mostra un avviso di sicurezza la prima volta. L'HTTP semplice è più semplice per un pubblico.
+Gli indirizzi `http://` semplici funzionano su ogni dispositivo e sono la scelta predefinita. HTTPS si può attivare in `config.yaml`; con un certificato autofirmato ogni dispositivo mostra un avviso di sicurezza la prima volta. L'HTTP semplice è più semplice per un pubblico. Quando HTTPS è attivo, il passaggio **Condividi** elenca gli indirizzi in due gruppi, *Sicuro (https)* e *Non cifrato (http)*; con un certificato per un nome vero (automatico o il tuo), quel nome è elencato per primo ed è quello con cui partono l'indirizzo grande, **Copia indirizzo** e il codice QR. I dispositivi devono poter trovare questo computer con quel nome (per esempio tramite il servizio di nomi del router del locale).
 
 ## Se la porta è occupata
 

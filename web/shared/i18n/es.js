@@ -744,5 +744,9 @@ OCI18n.add("es", {
  "{0} is a speaker's name with nothing after the colon. Put the words on the same line, or write \\: if the colon is part of the text.": "{0} es el nombre de un personaje sin nada después de los dos puntos. Ponga las palabras en la misma línea, o escriba \\: si los dos puntos son parte del texto.",
  "The speaker label {0} names {1} twice. Is one of them a different character?": "La etiqueta de personaje {0} nombra a {1} dos veces. ¿Alguno de ellos es otro personaje?",
  "{0} is not in capitals, so it is shown as text, not as the speaker {1}. Write the name in capitals.": "{0} no está en mayúsculas, así que se muestra como texto y no como el personaje {1}. Escriba el nombre en mayúsculas.",
- "This caption line is {0} characters long. On a phone it wraps over several lines; consider splitting it into shorter lines.": "Esta línea de subtítulo tiene {0} caracteres. En un teléfono se divide en varias líneas; considere dividirla en líneas más cortas."
+ "This caption line is {0} characters long. On a phone it wraps over several lines; consider splitting it into shorter lines.": "Esta línea de subtítulo tiene {0} caracteres. En un teléfono se divide en varias líneas; considere dividirla en líneas más cortas.",
+  "Secure (https)": "Seguro (https)",
+  "Plain (http)": "Sin cifrar (http)",
+  "This computer only:": "Solo este ordenador:",
+  "The name in the HTTPS certificate. It works on devices that can find this computer by that name.": "El nombre del certificado HTTPS. Funciona en los dispositivos que pueden encontrar este ordenador por ese nombre."
 });

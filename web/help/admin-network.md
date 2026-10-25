@@ -24,7 +24,7 @@ A computer with a cable and WiFi at once, or with virtual machines or a VPN, has
 
 ## HTTP and HTTPS
 
-Plain `http://` addresses work on every device and are the default. HTTPS can be turned on in `config.yaml`; with a self-signed certificate each device shows a security warning the first time. Plain HTTP is simpler for an audience.
+Plain `http://` addresses work on every device and are the default. HTTPS can be turned on in `config.yaml`; with a self-signed certificate each device shows a security warning the first time. Plain HTTP is simpler for an audience. When HTTPS is on, the **Share** step lists the addresses in two groups, *Secure (https)* and *Plain (http)*; with a certificate for a real name (automatic or your own), that name is listed first and is what the big address, **Copy address** and the QR code start with. Devices need to be able to find this computer by that name (for example through the venue router's own name service).
 
 ## If the port is busy
 

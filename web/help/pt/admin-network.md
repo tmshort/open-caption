@@ -24,7 +24,7 @@ Um computador com cabo e WiFi ao mesmo tempo, ou com máquinas virtuais ou uma V
 
 ## HTTP e HTTPS
 
-Endereços `http://` simples funcionam em todos os dispositivos e são o padrão. O HTTPS pode ser ativado em `config.yaml`; com um certificado autoassinado, cada dispositivo mostra um aviso de segurança na primeira vez. O HTTP simples é mais simples para um público.
+Endereços `http://` simples funcionam em todos os dispositivos e são o padrão. O HTTPS pode ser ativado em `config.yaml`; com um certificado autoassinado, cada dispositivo mostra um aviso de segurança na primeira vez. O HTTP simples é mais simples para um público. Quando o HTTPS está ativado, a etapa **Compartilhar** lista os endereços em dois grupos, *Seguro (https)* e *Sem criptografia (http)*; com um certificado para um nome verdadeiro (automático ou o seu), esse nome aparece primeiro e é com ele que começam o endereço grande, **Copiar endereço** e o código QR. Os dispositivos precisam conseguir encontrar este computador por esse nome (por exemplo pelo serviço de nomes do roteador do local).
 
 ## Se a porta estiver ocupada
 

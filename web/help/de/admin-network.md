@@ -24,7 +24,7 @@ Ein Computer mit Kabel und WLAN zugleich, oder mit virtuellen Maschinen oder ein
 
 ## HTTP und HTTPS
 
-Einfache `http://`-Adressen funktionieren auf jedem Gerät und sind die Voreinstellung. HTTPS lässt sich in `config.yaml` einschalten; bei einem selbstsignierten Zertifikat zeigt jedes Gerät beim ersten Mal eine Sicherheitswarnung. Einfaches HTTP ist für ein Publikum einfacher.
+Einfache `http://`-Adressen funktionieren auf jedem Gerät und sind die Voreinstellung. HTTPS lässt sich in `config.yaml` einschalten; bei einem selbstsignierten Zertifikat zeigt jedes Gerät beim ersten Mal eine Sicherheitswarnung. Einfaches HTTP ist für ein Publikum einfacher. Ist HTTPS eingeschaltet, listet der Schritt **Teilen** die Adressen in zwei Gruppen, *Gesichert (https)* und *Unverschlüsselt (http)*; bei einem Zertifikat für einen echten Namen (automatisch oder Ihr eigenes) steht dieser Name zuerst und ist die Voreinstellung für die große Adresse, **Adresse kopieren** und den QR-Code. Die Geräte müssen diesen Computer unter diesem Namen finden können (zum Beispiel über den Namensdienst des Routers im Haus).
 
 ## Wenn der Port belegt ist
 

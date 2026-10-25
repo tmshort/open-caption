@@ -24,7 +24,7 @@ Un ordinateur branché par câble et en WiFi à la fois, ou avec des machines vi
 
 ## HTTP et HTTPS
 
-Les adresses `http://` simples fonctionnent sur tous les appareils et sont le choix par défaut. HTTPS peut être activé dans `config.yaml` ; avec un certificat auto-signé, chaque appareil affiche un avertissement de sécurité la première fois. Le HTTP simple est plus simple pour un public.
+Les adresses `http://` simples fonctionnent sur tous les appareils et sont le choix par défaut. HTTPS peut être activé dans `config.yaml` ; avec un certificat auto-signé, chaque appareil affiche un avertissement de sécurité la première fois. Le HTTP simple est plus simple pour un public. Lorsque HTTPS est activé, l'étape **Partager** liste les adresses en deux groupes, *Sécurisée (https)* et *Non chiffrée (http)* ; avec un certificat pour un vrai nom (automatique ou le vôtre), ce nom est listé en premier et c'est par lui que commencent la grande adresse, **Copier l'adresse** et le code QR. Les appareils doivent pouvoir trouver cet ordinateur par ce nom (par exemple grâce au service de noms du routeur de la salle).
 
 ## Si le port est occupé
 
