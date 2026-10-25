@@ -1222,7 +1222,7 @@ func (s *Server) network(w http.ResponseWriter, r *http.Request) {
 	if l.HTTPAddr != "" && l.HTTPConfigured != "" && portOf(l.HTTPAddr) != portOf(l.HTTPConfigured) {
 		warnings = append(warnings, fmt.Sprintf("Port %s was not available, so the server is using port %s. Audience addresses must include the port.", portOf(l.HTTPConfigured), portOf(l.HTTPAddr)))
 	}
-	if l.HTTPSAddr != "" && s.cfg.HTTPS.CertFile == "" {
+	if l.HTTPSAddr != "" && s.cfg.HTTPS.CertFile == "" && !s.cfg.HTTPS.ACME.Enabled {
 		warnings = append(warnings, "HTTPS is using a self-signed certificate. Each device shows a security warning the first time. Plain http:// avoids this.")
 	}
 	writeJSON(w, http.StatusOK, map[string]any{"hostname": host, "ips": ipStrings(ips), "urls": urls, "warnings": warnings,
@@ -1322,6 +1322,11 @@ func (s *Server) ownHost(h string) bool {
 	}
 	for _, a := range netinfo.AllAddresses() { // every address, also one that is not offered: it still reaches this computer
 		if a.IP.String() == h {
+			return true
+		}
+	}
+	for _, n := range s.certificateNames() { // the name in the HTTPS certificate is offered as an address too
+		if strings.EqualFold(h, n) {
 			return true
 		}
 	}

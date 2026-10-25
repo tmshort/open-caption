@@ -11,8 +11,10 @@ import (
 	"crypto/x509/pkix"
 	"encoding/pem"
 	"math/big"
+	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 )
@@ -65,5 +67,19 @@ func TestTheCertificateNameIsOfferedAsAnAddress(t *testing.T) {
 	s.cfg.HTTPS.ACME.Enabled, s.cfg.HTTPS.ACME.Domain = true, "show.example.org"
 	if got := certURLs(); len(got) != 1 || got[0] != "https://show.example.org:8443/" {
 		t.Fatalf("acme: %v", got)
+	}
+	// A QR code can be made for it, and an automatic certificate is not called self-signed.
+	if code, _ := c.do("GET", "/api/admin/network/qr.png?url="+url.QueryEscape("https://show.example.org:8443/"), nil); code != 200 {
+		t.Errorf("QR code for the certificate name: %d", code)
+	}
+	if code, _ := c.do("GET", "/api/admin/network/qr.png?url="+url.QueryEscape("https://other.example.org/"), nil); code != 400 {
+		t.Errorf("QR code for a name that is not this server's: %d", code)
+	}
+	if _, r := c.do("GET", "/api/admin/network", nil); strings.Contains(toJSON(r["warnings"]), "self-signed") {
+		t.Errorf("an automatic certificate was called self-signed: %v", r["warnings"])
+	}
+	s.cfg.HTTPS.ACME.Enabled = false
+	if _, r := c.do("GET", "/api/admin/network", nil); !strings.Contains(toJSON(r["warnings"]), "self-signed") {
+		t.Errorf("a self-signed certificate was not reported: %v", r["warnings"])
 	}
 }
