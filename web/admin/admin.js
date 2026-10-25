@@ -1114,7 +1114,7 @@
     // The audience report of the last run (how many devices used the service), when there is one.
     const reportLink = h('p', { class: 'hint', hidden: '' }, h('a', { href: '#report', onclick: (e) => { e.preventDefault(); go('report'); window.scrollTo(0, 0); } }, __('Audience report')), ' ', __('(how many devices used the audience page during the last run of the show)'));
     api('GET', '/api/operator/report').then((x) => { if (x.ok) reportLink.hidden = false; }).catch(() => {});
-    const plain = [...numeric('http'), ...nameRows()];
+    const plain = [...nameRows(), ...numeric('http')]; // the .local name first, then the numeric addresses
     const list = h('div', { class: 'urls' },
       ...(hasHttps ? [group(__('Secure (https)'), ...certRows, ...(certRows.length ? [h('div', { class: 'hint namehint' }, __('The name in the HTTPS certificate. It works on devices that can find this computer by that name.'))] : []), ...numeric('https')),
         group(__('Plain (http)'), ...plain)] : plain),
