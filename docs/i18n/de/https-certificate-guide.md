@@ -58,7 +58,7 @@ https:
 
 **5. Üben Sie zuerst mit dem Testdienst.** `letsencrypt-staging` ist der Testdienst von Let's Encrypt: Er funktioniert genau wie der echte, aber seine Zertifikate werden von Browsern **nicht als vertrauenswürdig anerkannt** (eine Warnung ist zu erwarten), und die Limits sind großzügig. Starten Sie das Programm.
 
-**6. Prüfen Sie, dass es geklappt hat.** Öffnen Sie **Einrichtung → Einstellungen → Sicherheit → Zertifikat**. Der Status wechselt innerhalb weniger Minuten von *Warten auf das erste Zertifikat* zu **Gültig** und zeigt den Namen, den Aussteller und das Ablaufdatum. Das Protokoll des Programms nennt `HTTPS: got a certificate for … valid until …`. Steht dort *Der letzte Versuch ist fehlgeschlagen*, lesen Sie **Letztes Problem** und die Tabelle unten.
+**6. Prüfen Sie, dass es geklappt hat.** Öffnen Sie **Einrichtung → Einstellungen → Zertifikat**. Der Status wechselt innerhalb weniger Minuten von *Warten auf das erste Zertifikat* zu **Gültig** und zeigt den Namen, den Aussteller und das Ablaufdatum. Das Protokoll des Programms nennt `HTTPS: got a certificate for … valid until …`. Steht dort *Der letzte Versuch ist fehlgeschlagen*, lesen Sie **Letztes Problem** und die Tabelle unten.
 
 **7. Wechseln Sie zum echten Zertifikat.** Ändern Sie `directory: letsencrypt-staging` in `directory: letsencrypt` (oder löschen Sie die Zeile) und starten Sie das Programm neu. Das echte Zertifikat kommt auf dieselbe Weise. Öffnen Sie `https://captions.mytheater.org/` von einem Handy im WLAN des Hauses: keine Warnung. (War Port 443 belegt, nutzte das Programm den Ersatz, `:8443`; die Adresse braucht dann den Port, `https://captions.mytheater.org:8443/`, und das Protokoll nennt die genaue Adresse.)
 
@@ -69,7 +69,7 @@ https:
 
 - **Die Erneuerung ist automatisch.** Das Programm prüft etwa zweimal am Tag und erneuert, wenn noch 30 Tage oder weniger bleiben. Sie müssen nichts tun.
 - **Fällt das Internet im Haus aus,** geht nichts kaputt: Das Programm liefert weiter das Zertifikat, das es hat, und versucht es eine Stunde später erneut. Bevor das allererste Zertifikat eintrifft (oder wenn keines kommt), erhalten die Handys das selbstsignierte.
-- **Jetzt erneuern** (Einrichtung → Einstellungen → Sicherheit → Zertifikat) holt sofort ein neues Zertifikat. Nutzen Sie es, nachdem Sie ein Problem behoben haben.
+- **Jetzt erneuern** (Einrichtung → Einstellungen → Zertifikat) holt sofort ein neues Zertifikat. Nutzen Sie es, nachdem Sie ein Problem behoben haben.
 - **Das DNS-Token ändern:** Bearbeiten Sie `/etc/open-caption/dns.env`. Die Datei wird beim nächsten Versuch neu gelesen, ein Neustart ist also nicht nötig.
 - **Ausschalten:** Setzen Sie `acme: enabled: no` und starten Sie neu. HTTPS verwendet dann das selbstsignierte Zertifikat (oder Ihre eigenen Dateien).
 

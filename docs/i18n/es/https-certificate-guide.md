@@ -58,7 +58,7 @@ https:
 
 **5. Practique primero con el servicio de pruebas.** `letsencrypt-staging` es el servicio de pruebas de Let's Encrypt: funciona exactamente como el real, pero sus certificados **no son de confianza para los navegadores** (se espera una advertencia) y tiene límites generosos. Inicie el programa.
 
-**6. Compruebe que ha funcionado.** Abra **Configuración → Ajustes → Seguridad → Certificado**. El estado pasa de *Esperando el primer certificado* a **Válido** en pocos minutos, y muestra el nombre, quién lo emitió y la fecha de caducidad. El registro del programa dice `HTTPS: got a certificate for … valid until …`. Si dice *El último intento falló*, lea **Último problema** y la tabla de más abajo.
+**6. Compruebe que ha funcionado.** Abra **Configuración → Ajustes → Certificado**. El estado pasa de *Esperando el primer certificado* a **Válido** en pocos minutos, y muestra el nombre, quién lo emitió y la fecha de caducidad. El registro del programa dice `HTTPS: got a certificate for … valid until …`. Si dice *El último intento falló*, lea **Último problema** y la tabla de más abajo.
 
 **7. Pase al certificado real.** Cambie `directory: letsencrypt-staging` por `directory: letsencrypt` (o borre la línea) y reinicie el programa. El certificado real llega de la misma manera. Abra `https://captions.mytheater.org/` desde un teléfono en el WiFi del local: sin advertencias. (Si el puerto 443 estaba ocupado, el programa usó el alternativo, `:8443`; entonces la dirección necesita el puerto, `https://captions.mytheater.org:8443/`, y el registro muestra la dirección exacta.)
 
@@ -69,7 +69,7 @@ https:
 
 - **La renovación es automática.** El programa comprueba unas dos veces al día y renueva cuando faltan 30 días o menos. No tiene que hacer nada.
 - **Si se cae Internet en el local,** no se rompe nada: el programa sigue sirviendo el certificado que tiene y lo intenta de nuevo una hora después. Antes de que llegue el primer certificado (o si nunca llega) los teléfonos reciben el autofirmado.
-- **Renovar ahora** (Configuración → Ajustes → Seguridad → Certificado) obtiene un certificado nuevo de inmediato. Úselo después de resolver un problema.
+- **Renovar ahora** (Configuración → Ajustes → Certificado) obtiene un certificado nuevo de inmediato. Úselo después de resolver un problema.
 - **Cambiar el token de DNS:** edite `/etc/open-caption/dns.env`. Se vuelve a leer en el siguiente intento, así que no hace falta reiniciar.
 - **Desactivarlo:** ponga `acme: enabled: no` y reinicie. HTTPS usará entonces el certificado autofirmado (o sus propios archivos).
 

@@ -257,7 +257,7 @@
     const loadCert = async () => { const x = await api('GET', '/api/admin/settings/certificate'); if (x.ok) { paintCert(x.data); return x.data; } };
     const poll = (tries) => { if (tries <= 0) return; setTimeout(async () => { if (!certBox.isConnected) return; const c = await loadCert(); if (c && c.status && c.status.state === 'renewing' || tries === 100) poll(tries - 1); }, 3000); };
     loadCert();
-    // Three tabs, so the window is short and the controls people come for are one click away; the title, the tabs and Close stay in
+    // Five tabs, so the window is short and the controls people come for are one click away; the title, the tabs and Close stay in
     // view while a tab scrolls. Every tab stays in the page (only hidden), so something typed but not yet saved survives a switch.
     const tabDefs = [
       ['aud', 'Audience screen', [
@@ -276,8 +276,8 @@
                 h('label', { class: 'field' }, h('span', {}, __('New operator password')), opPw),
                 h('div', { class: 'row' }, changePw, reveal), shown)
             : h('p', { class: 'hint' }, __('This copy was started without a settings file, so passwords cannot be changed here.'))),
-        sec('Certificate', certBox),
       ]],
+      ['cert', 'Certificate', [sec('Certificate', certBox)]],
       ['abt', 'About', [
         sec('About this copy',
           h('table', { class: 'cheat' },

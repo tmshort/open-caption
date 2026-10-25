@@ -449,7 +449,7 @@ async function main() {
     const guard = await open(); await guard.goto(B + '/admin'); await guard.waitForSelector('#pw'); await guard.type('#pw', ADMIN); await guard.keyboard.press('Enter'); await guard.waitForSelector('#steps button');
     await click(guard, 'Settings'); await sleep(600);
     const tab = async (id) => { await guard.evaluate((i) => document.getElementById('settab-' + i).click(), id); await sleep(150); };
-    check('Settings has four tabs, with Close in view', await guard.evaluate(() => { const t = [...document.querySelectorAll('#dlg [role=tab]')].map((x) => x.textContent); const c = document.getElementById('dlgok').getBoundingClientRect(); return t.join('|') === 'Audience screen|Network|Security|About' && c.bottom <= innerHeight && c.top >= 0; }));
+    check('Settings has five tabs, with Close in view', await guard.evaluate(() => { const t = [...document.querySelectorAll('#dlg [role=tab]')].map((x) => x.textContent); const c = document.getElementById('dlgok').getBoundingClientRect(); return t.join('|') === 'Audience screen|Network|Security|Certificate|About' && c.bottom <= innerHeight && c.top >= 0; }));
     await tab('abt');
     {
       const sizes = [];
@@ -457,7 +457,7 @@ async function main() {
       check('the Settings window is as tall as its tallest tab, so no tab scrolls and it never changes size', sizes.every((z) => !z.scrolls) && sizes.every((z) => z.dlg === sizes[0].dlg), sizes);
     }
     await guard.focus('#settab-abt'); await guard.keyboard.press('ArrowLeft'); await sleep(150);
-    check('the arrow keys move between the tabs (and the selected tab says so)', await guard.evaluate(() => document.activeElement.id === 'settab-sec' && document.activeElement.getAttribute('aria-selected') === 'true' && document.getElementById('setpanel-sec').classList.contains('inactive') === false && document.getElementById('setpanel-abt').classList.contains('inactive')));
+    check('the arrow keys move between the tabs (and the selected tab says so)', await guard.evaluate(() => document.activeElement.id === 'settab-cert' && document.activeElement.getAttribute('aria-selected') === 'true' && document.getElementById('setpanel-cert').classList.contains('inactive') === false && document.getElementById('setpanel-abt').classList.contains('inactive')));
     await tab('abt');
     check('Settings tells you Setup is open to the whole network', (await guard.evaluate(() => document.getElementById('dlg').innerText)).includes('any computer on the network'));
     await tab('aud');

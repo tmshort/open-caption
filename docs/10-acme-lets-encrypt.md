@@ -18,7 +18,7 @@ Let's Encrypt must see that you control the name before it issues a certificate.
 3. It waits for the record to spread, and the CA looks it up in public DNS.
 4. The CA issues the certificate; the program deletes the record, keeps the certificate in `<data-dir>/tls/acme/` and starts serving it, with no restart.
 
-Renewal is automatic: the program checks about every 12 hours (with a little random spread) and renews when `renew_before_days` (default 30) or fewer remain. A failed try is retried an hour later (CAs limit failed attempts) and **the previous certificate keeps serving**; before the first one arrives, connections get the self-signed certificate, so HTTPS is never down. The state is in Setup → Settings → Security → Certificate, with **Renew now**.
+Renewal is automatic: the program checks about every 12 hours (with a little random spread) and renews when `renew_before_days` (default 30) or fewer remain. A failed try is retried an hour later (CAs limit failed attempts) and **the previous certificate keeps serving**; before the first one arrives, connections get the self-signed certificate, so HTTPS is never down. The state is in Setup → Settings → Certificate, with **Renew now**.
 
 The venue network needs **outbound** access only: to the CA (`acme-v02.api.letsencrypt.org`), to the DNS provider's API, and to public DNS. The public name must resolve, from the audience's phones, to the computer's address (an `A` record such as `captions.mytheater.org → 192.168.1.20`; a certificate is valid even when the name points at a private address). Some networks refuse public names that answer with private addresses ("DNS rebinding protection"), so the numeric address and QR code stay the main way in.
 

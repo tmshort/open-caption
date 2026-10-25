@@ -58,7 +58,7 @@ https:
 
 **5. Practice with the staging service first.** `letsencrypt-staging` is Let's Encrypt's test service: it works exactly like the real one, but its certificates are **not trusted by browsers** (a warning is expected) and it has generous limits. Start the program.
 
-**6. Check that it worked.** Open **Setup → Settings → Security → Certificate**. The state goes from *Waiting for the first certificate* to **Valid** within a few minutes, and shows the name, who issued it and the expiry date. The program's log says `HTTPS: got a certificate for … valid until …`. If it says *The last attempt failed*, read **Last problem** and the table below.
+**6. Check that it worked.** Open **Setup → Settings → Certificate**. The state goes from *Waiting for the first certificate* to **Valid** within a few minutes, and shows the name, who issued it and the expiry date. The program's log says `HTTPS: got a certificate for … valid until …`. If it says *The last attempt failed*, read **Last problem** and the table below.
 
 **7. Switch to the real certificate.** Change `directory: letsencrypt-staging` to `directory: letsencrypt` (or delete the line) and restart the program. The real certificate arrives the same way. Open `https://captions.mytheater.org/` from a phone on the venue WiFi: no warning. (If port 443 was busy the program used the fallback, `:8443`; the address then needs the port, `https://captions.mytheater.org:8443/`, and the log shows the exact address.)
 
@@ -69,7 +69,7 @@ https:
 
 - **Renewal is automatic.** The program checks about twice a day and renews when 30 days or fewer remain. You do not need to do anything.
 - **If the Internet is down at the venue,** nothing breaks: the program keeps serving the certificate it has and tries again an hour later. Before the very first certificate arrives (or if one never does) phones get the self-signed one.
-- **Renew now** (Setup → Settings → Security → Certificate) fetches a new certificate immediately. Use it after fixing a problem.
+- **Renew now** (Setup → Settings → Certificate) fetches a new certificate immediately. Use it after fixing a problem.
 - **Changing the DNS token:** edit `/etc/open-caption/dns.env`. It is read again at the next attempt, so no restart is needed.
 - **Turning it off:** set `acme: enabled: no` and restart. HTTPS then uses the self-signed certificate (or your own files).
 
