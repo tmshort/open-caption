@@ -154,6 +154,7 @@ async function main() {
     section('Rehearsal never reaches the audience');
     await step(admin, 'Test'); await sleep(500); await click(admin, 'Start rehearsal');
     await admin.waitForSelector('.reh iframe'); await sleep(1500);
+    check('the Next button turns blue as soon as a rehearsal is running', await admin.evaluate(() => { const b = document.querySelector('#nextstep button'); return !!b && b.classList.contains('primary'); }));
     const rehearsalAudience = await open();
     try {
       await rehearsalAudience.goto(B + '/?rehearsal=1');

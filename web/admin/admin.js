@@ -429,6 +429,7 @@
   }
 
   function refreshNav() {
+    nextStep(); // its highlight follows the same ticks, so it changes the moment a step is completed (a rehearsal started, the look saved)
     const nav = $('steps'); nav.replaceChildren();
     STEPS.forEach(([id, rawLabel], i) => { const label = __(rawLabel);
       nav.append(h('button', { class: (A.step === id ? 'on ' : '') + (done(id) ? 'done' : ''), onclick: () => go(id), disabled: id !== 'show' && id !== 'report' && !A.cur, // the report of the last show does not depend on the show being worked on
