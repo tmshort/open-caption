@@ -808,5 +808,7 @@ OCI18n.add("it", {
   "Active: {name}": "Attivo: {name}",
   "The show you are working on. The audience gets the active show; this one becomes the active show when you open the Run page for it.": "Lo spettacolo su cui lavori. Il pubblico riceve lo spettacolo attivo; questo diventa quello attivo quando apri la pagina Conduci per esso.",
   "The audience is seeing this show now": "Il pubblico sta vedendo questo spettacolo adesso",
-  "Loaded and waiting in standby: the audience sees the standby screen until the operator presses START": "Caricato e in attesa: il pubblico vede la schermata di attesa finché l'operatore non preme AVVIA"
+  "Loaded and waiting in standby: the audience sees the standby screen until the operator presses START": "Caricato e in attesa: il pubblico vede la schermata di attesa finché l'operatore non preme AVVIA",
+  "The HTTPS server is listening on {addr}.": "Il server HTTPS è in ascolto su {addr}.",
+  "The program wanted {wanted} for HTTPS but it was in use by another program, so it is using {actual}. Every https address must include that port number (the Share step shows them). To use the usual port, close the other program and restart this one.": "Il programma voleva usare {wanted} per HTTPS, ma era occupata da un altro programma, quindi usa {actual}. Ogni indirizzo https deve includere quel numero di porta (il passo Condividi li mostra). Per usare la porta consueta, chiudi l'altro programma e riavvia questo."
 });

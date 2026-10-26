@@ -366,6 +366,8 @@
         : { text: __('This computer has no network address. Check that it is connected to the venue’s network, by cable or WiFi.'), fix: settings('net') };
       case 'port': return c.status === 'ok' ? { text: __('The web server is listening on {addr}.', { addr: p.addr }) }
         : { text: __('The program wanted {wanted} but it was in use by another program, so it is using {actual}. Every address must include that port number (the Share step shows them). To use the usual port, close the other program and restart this one.', { wanted: p.wanted, actual: p.actual }) };
+      case 'port-https': return c.status === 'ok' ? { text: __('The HTTPS server is listening on {addr}.', { addr: p.addr }) }
+        : { text: __('The program wanted {wanted} for HTTPS but it was in use by another program, so it is using {actual}. Every https address must include that port number (the Share step shows them). To use the usual port, close the other program and restart this one.', { wanted: p.wanted, actual: p.actual }) };
       case 'https': switch (p.state) {
         case 'off': return { text: __('HTTPS is off, so devices use plain http. That is fine on a venue network.') };
         case 'self-signed': return { text: __('HTTPS uses a certificate the program made itself, so browsers warn the first time. Devices can use the plain http address instead, or you can set up a trusted certificate.'), fix: settings('cert') };

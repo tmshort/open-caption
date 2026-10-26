@@ -62,6 +62,14 @@ func (s *Server) troubleshoot(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	if s.cfg.HTTPS.Enabled && l.HTTPSAddr != "" {
+		if l.HTTPSConfigured != "" && !samePort(l.HTTPSConfigured, l.HTTPSAddr) {
+			add("port-https", "warn", "wanted", l.HTTPSConfigured, "actual", l.HTTPSAddr)
+		} else {
+			add("port-https", "ok", "addr", l.HTTPSAddr)
+		}
+	}
+
 	// 3. HTTPS and its certificate
 	switch {
 	case !s.cfg.HTTPS.Enabled:

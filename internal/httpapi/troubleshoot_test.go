@@ -92,4 +92,25 @@ func TestPortCheckComparesPortsNotAddressSpelling(t *testing.T) {
 	if got := check(":80", "[::]:8080"); got != "warn" {
 		t.Errorf("falling back to another port was reported as %q", got)
 	}
+	// HTTPS has its own port, and its own check (when HTTPS is on)
+	s.cfg.HTTPS.Enabled = true
+	checkTLS := func(wanted, actual string) string {
+		s.SetListeners(Listeners{HTTPConfigured: ":80", HTTPAddr: "[::]:80", HTTPSConfigured: wanted, HTTPSAddr: actual})
+		_, m := c.do("GET", "/api/admin/troubleshoot", nil)
+		f := findings(m)["port-https"]
+		if f == nil {
+			return "missing"
+		}
+		return f["status"].(string)
+	}
+	if got := checkTLS(":443", "[::]:443"); got != "ok" {
+		t.Errorf("the HTTPS port asked for was reported as %q", got)
+	}
+	if got := checkTLS(":443", "[::]:8443"); got != "warn" {
+		t.Errorf("the HTTPS fallback port was reported as %q", got)
+	}
+	s.cfg.HTTPS.Enabled = false
+	if got := checkTLS(":443", "[::]:443"); got != "missing" {
+		t.Errorf("an HTTPS port was reported while HTTPS is off: %q", got)
+	}
 }
