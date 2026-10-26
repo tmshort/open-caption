@@ -17,7 +17,7 @@
 | Shutdown | `cmd/open-caption` starts the real binary, puts a show on air, sends it Ctrl+C (Ctrl+Break on Windows) and checks it saves its position and exits 0, on Linux, macOS and Windows |
 | Integration | httptest servers: login/roles/rate limit/cookie flags, access lists, forged-request refusal, operator flow and takeover, audience SSE (snapshot-then-events, late joiner, loops, 503), languages in lockstep, rehearsal isolation, persistence across restart, settings/passwords, edit conflicts, export/import | `go test ./...` |
 | Load | N SSE clients + the operator advancing; latency percentiles, dropped clients | `cmd/loadtest` (`./bin/open-caption --dev …`); CI runs it with 200 clients on every push |
-| Browser end-to-end | Real Chrome against the built program: Setup (sample show, edit conflict, Look), rehearsal isolation, live show with two languages, Back/Blank/Clear, songs and voices together, speaker colors, fonts, help pauses keys, scroll-back, language menu, Settings/password change, restart survival | `make e2e` (needs Node + Chrome; runs in CI as a separate job) |
+| Browser end-to-end | Real Chrome against the built program: Setup (sample show, edit conflict, Look), rehearsal isolation, live show with two languages, Back/Blank/Clear, songs and voices together, speaker colors, speaker names beside the text reaching a live audience page, a shared screen shrinking a crowded caption to fit, fonts, help pauses keys, scroll-back, language menu, Settings/password change, restart survival | `make e2e` (needs Node + Chrome; runs in CI as a separate job) |
 | Manual device | iPhone Safari, iPad Safari, Android Chrome, desktop Chrome/Firefox/Edge, a projector, a full house on real WiFi | Acceptance checklist below |
 
 ## Key test cases

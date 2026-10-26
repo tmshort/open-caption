@@ -370,6 +370,23 @@ async function main() {
 
     // ------------------------------------------------------------------ settings & security
     // An intermission timer: the loop's {timer} counts down live on the audience screen, from the moment the loop starts.
+    // A show file that puts the names beside the text reaches the audience; a shared screen shrinks a crowded caption to fit
+    {
+      const crowd = '[settings]\nspeaker position: beside\n[/settings]\nALICE: Hello\n[together]\n' + 'ABCDEFGH'.split('').map((c, i) => `${c}${i}: voice number ${i + 1} sings along`).join('\n') + '\n[/together]\nALICE: Goodbye\n';
+      const pid = (await api(op, 'POST', '/api/admin/shows', { name: 'Position test' })).body.id;
+      await api(op, 'PUT', `/api/admin/shows/${pid}/showfile`, { text: crowd });
+      await api(op, 'POST', `/api/admin/shows/${pid}/activate`, { force: true, start: true }); await sleep(T(800));
+      const aud = await open({ viewport: { width: 420, height: 300 } }); await aud.goto(B + '/'); await sleep(T(900));
+      const proj = await open({ viewport: { width: 420, height: 300 } }); await proj.goto(B + '/?display=projector'); await sleep(T(900));
+      await nextN(1); await sleep(T(700));
+      check('a show file that puts names beside the text reaches the audience page', await aud.evaluate(() => { const s = document.querySelector('.cap .spk'); return document.body.classList.contains('spk-beside') && !!s && getComputedStyle(s).display === 'inline'; }));
+      await nextN(1); await sleep(T(900));
+      const crowded = await proj.evaluate(() => { const c = document.getElementById('captions'), l = c.lastElementChild, cr = c.getBoundingClientRect(), lr = l.getBoundingClientRect(); return { voices: l.querySelectorAll('.part').length, fit: parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--fit')), top: lr.top >= cr.top - 1, bottom: lr.bottom <= cr.bottom + 1 }; });
+      check('a shared screen shows all eight voices of a crowded caption, shrunk to fit', crowded.voices === 8 && crowded.fit < 1 && crowded.fit >= 0.4 && crowded.top && crowded.bottom, crowded);
+      await nextN(1); await sleep(T(900));
+      check('and the text is full size again for the next ordinary caption', await proj.evaluate(() => parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--fit')) === 1));
+      await aud.close(); await proj.close(); await en.bringToFront(); // a background tab is throttled, which the timer checks below would feel
+    }
     const tid = (await api(op, 'POST', '/api/admin/shows', { name: 'Timer test' })).body.id;
     await api(op, 'PUT', `/api/admin/shows/${tid}/showfile`, { text: '[loop: timer 15 minutes]\n**INTERMISSION**\nBack in {timer}\n[/loop]\nWelcome back' });
     await api(op, 'POST', `/api/admin/shows/${tid}/activate`, { force: true, start: true });
