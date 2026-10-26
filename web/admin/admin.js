@@ -1079,7 +1079,8 @@
     const urls = net.data.urls.filter((u) => u.public);
     let chosen = (urls.find((u) => u.cert) || urls.find((u) => u.kind === 'http' && !u.name) || urls.find((u) => u.kind === 'http') || urls[0] || net.data.urls[0] || {}).url; // the numeric address is the safest to print
     const big = h('div', { class: 'urlbig' }), qrBox = h('div', { class: 'qr' });
-    const paint = () => { big.textContent = chosen || __('No address found'); qrBox.replaceChildren(chosen ? h('img', { src: '/api/admin/network/qr.png?size=512&url=' + encodeURIComponent(chosen), alt: __('QR code for {url}', { url: chosen }) }) : ''); };
+    const printLink = h('a', { class: 'btn', id: 'printsign', target: '_blank', rel: 'noopener' }, __('Print a QR sign for the lobby'));
+    const paint = () => { printLink.href = '/admin?print=qr&url=' + encodeURIComponent(chosen || ''); big.textContent = chosen || __('No address found'); qrBox.replaceChildren(chosen ? h('img', { src: '/api/admin/network/qr.png?size=512&url=' + encodeURIComponent(chosen), alt: __('QR code for {url}', { url: chosen }) }) : ''); };
     paint();
     // Every address is one row: [radio] link, and what belongs to that address. The name (open-caption.local) is a row while it is being
     // announced; whether it is, and what it is called, is set in Settings > Network.
@@ -1123,7 +1124,7 @@
     p.append(h('h2', {}, __('Share')), checks,
       h('div', { class: 'card' }, h('h3', {}, __('Tell the audience this address')), big,
         h('div', { class: 'row' }, h('button', { onclick: async () => { try { await navigator.clipboard.writeText(chosen); toast(__('Copied')); } catch (e) { toast(__('Select the address and copy it')); } } }, __('Copy address')),
-          h('a', { class: 'btn', href: '/admin?print=qr&url=' + encodeURIComponent(chosen || ''), target: '_blank', rel: 'noopener' }, __('Print a QR sign for the lobby'))),
+          printLink),
         h('div', { class: 'row qrrow' }, qrBox, list), hereLine,
         ...(net.data.warnings || []).map((w) => h('div', { class: 'check warn' }, w)),
         h('p', { class: 'hint' }, __('Audience devices must be on the same WiFi as this computer. Devices connected right now: '), h('b', { id: 'audcount' }, String(A.audience))),
