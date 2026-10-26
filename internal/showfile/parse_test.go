@@ -77,20 +77,20 @@ func TestHeadingsReserved(t *testing.T) {
 }
 
 func TestSpeakerWithNothingAfterTheColonIsWarnedAbout(t *testing.T) {
-	for _, in := range []string{"BARRY:", "DEE DEE & BARRY: ", "ALL (EXCEPT BARRY):"} {
+	for _, in := range []string{"BOB:", "ALICE & BOB: ", "ALL (EXCEPT BOB):"} {
 		r := Parse(in, Options{})
 		if !hasDiag(r, SevWarning, "nothing after the colon") {
 			t.Errorf("%q: no warning: %+v", in, r.Diagnostics)
 		}
 	}
-	for _, in := range []string{"BARRY: Hi", "BARRY: ~", "Note:", "BARRY\\:", "TIME: 10:30"} {
+	for _, in := range []string{"BOB: Hi", "BOB: ~", "Note:", "BOB\\:", "TIME: 10:30"} {
 		if r := Parse(in, Options{}); hasDiag(r, SevWarning, "nothing after the colon") {
 			t.Errorf("%q: needless warning", in)
 		}
 	}
 	// the line is still a caption, as typed, and the warning names its line
-	r := Parse("A: x\n\nBARRY:\n~ la la", Options{})
-	if len(r.Cues) != 3 || r.Cues[1].Text != "BARRY:" {
+	r := Parse("A: x\n\nBOB:\n~ la la", Options{})
+	if len(r.Cues) != 3 || r.Cues[1].Text != "BOB:" {
 		t.Errorf("cues: %+v", r.Cues)
 	}
 	for _, d := range r.Diagnostics {
@@ -101,10 +101,10 @@ func TestSpeakerWithNothingAfterTheColonIsWarnedAbout(t *testing.T) {
 }
 
 func TestAGroupLabelThatNamesSomeoneTwiceIsWarnedAbout(t *testing.T) {
-	r := Parse("BARRY, DEE DEE, TRENT & BARRY: ~ And know\nDEE DEE & BARRY: Hi\nDEE DEE: Hi\nBARRY & DEE DEE & TRENT: Hi", Options{})
+	r := Parse("BOB, ALICE, CAROL & BOB: ~ And know\nALICE & BOB: Hi\nALICE: Hi\nBOB & ALICE & CAROL: Hi", Options{})
 	n := 0
 	for _, d := range r.Diagnostics {
-		if strings.Contains(d.Message, "names BARRY twice") {
+		if strings.Contains(d.Message, "names BOB twice") {
 			n++
 			if d.Line != 1 || d.Severity != SevWarning {
 				t.Errorf("%+v", d)
@@ -119,12 +119,12 @@ func TestAGroupLabelThatNamesSomeoneTwiceIsWarnedAbout(t *testing.T) {
 }
 
 func TestALabelNotInCapitalsIsWarnedAboutWhenTheNameIsASpeaker(t *testing.T) {
-	r := Parse("Barry: before the name is used\nBARRY: Hi\nDee Dee: Hello\nNote: this\nBarry\\: escaped\nBarry & Emma: x", Options{})
+	r := Parse("Bob: before the name is used\nBOB: Hi\nAlice: Hello\nNote: this\nBob\\: escaped\nBob & Emma: x", Options{})
 	var got []int
 	for _, d := range r.Diagnostics {
 		if strings.Contains(d.Message, "not in capitals") {
 			got = append(got, d.Line)
-			if d.Severity != SevWarning || !strings.Contains(d.Message, `"Barry:"`) || !strings.Contains(d.Message, "BARRY:") {
+			if d.Severity != SevWarning || !strings.Contains(d.Message, `"Bob:"`) || !strings.Contains(d.Message, "BOB:") {
 				t.Errorf("%+v", d)
 			}
 		}
@@ -132,7 +132,7 @@ func TestALabelNotInCapitalsIsWarnedAboutWhenTheNameIsASpeaker(t *testing.T) {
 	if len(got) != 1 || got[0] != 1 {
 		t.Errorf("warned on lines %v, want [1] (the others are not speakers elsewhere)", got)
 	}
-	if len(r.Cues) != 6 || r.Cues[0].Speaker != "" || r.Cues[0].Text != "Barry: before the name is used" {
+	if len(r.Cues) != 6 || r.Cues[0].Speaker != "" || r.Cues[0].Text != "Bob: before the name is used" {
 		t.Errorf("the line is still shown as typed: %+v", r.Cues[0])
 	}
 }
@@ -144,9 +144,9 @@ func TestSpeaker(t *testing.T) {
 		{"Note: this", "", "Note: this"},
 		{"HAMLET\\: escaped", "", "HAMLET: escaped"},
 		{"TIME: 10:30", "TIME", "10:30"},
-		{"DEE DEE & BARRY: Yes!", "DEE DEE & BARRY", "Yes!"},
-		{"BARRY, ANGIE, SHELDON & TRENT: ~ Not, not not", "BARRY, ANGIE, SHELDON & TRENT", "♪ Not, not not ♪"},
-		{"ALL (EXCEPT BARRY): That's right!", "ALL (EXCEPT BARRY)", "That's right!"},
+		{"ALICE & BOB: Yes!", "ALICE & BOB", "Yes!"},
+		{"BOB, DAVE, ERIN & CAROL: ~ Not, not not", "BOB, DAVE, ERIN & CAROL", "♪ Not, not not ♪"},
+		{"ALL (EXCEPT BOB): That's right!", "ALL (EXCEPT BOB)", "That's right!"},
 		{"PARENT #1: No.", "PARENT #1", "No."},
 		{"KAYLEE & SHELBY / FEMALE STUDENTS: Hi", "KAYLEE & SHELBY / FEMALE STUDENTS", "Hi"},
 		{"THIRD MALE STUDENT & FIFTH FEMALE STUDENT: Hi", "THIRD MALE STUDENT & FIFTH FEMALE STUDENT", "Hi"},

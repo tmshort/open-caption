@@ -230,11 +230,11 @@ A block needs at least two lines (with one, it is shown as an ordinary caption a
 
 A leading label is a speaker if it matches `^[A-Z][A-Z0-9 .'\-&,/()#]{0,59}:\s+\S`
 (upper-case word(s), colon, space; up to 60 characters). Besides letters, digits, spaces, `.`, `'` and `-`, a label
-may contain `&`, `,`, `/`, `(`, `)` and `#`, so a group can sing together (`DEE DEE & BARRY:`, `ALL (EXCEPT BARRY):`,
-`BARRY, ANGIE, SHELDON & TRENT:`) and a part can be numbered (`PARENT #1:`). `HAMLET: To be, or not to be` → speaker
-`HAMLET`, text `To be, or not to be`. A label is one speaker, whole: `DEE DEE & BARRY` is not split into two, so with
+may contain `&`, `,`, `/`, `(`, `)` and `#`, so a group can sing together (`ALICE & BOB:`, `ALL (EXCEPT BOB):`,
+`BOB, DAVE, ERIN & CAROL:`) and a part can be numbered (`PARENT #1:`). `HAMLET: To be, or not to be` → speaker
+`HAMLET`, text `To be, or not to be`. A label is one speaker, whole: `ALICE & BOB` is not split into two, so with
 `speaker names: color` it has a color of its own. Mixed-case `Note: this` is not a speaker.
-A name and colon with nothing after them (`BARRY:` alone on a line) is not a speaker: the line is shown as typed, and a warning points it out, since the words were probably meant to follow. A label in mixed case (`Barry: Hi`) is plain text, with a warning when the same name is a speaker elsewhere in the file. Escape with `\:`. The `speaker names` setting controls whether speakers are
+A name and colon with nothing after them (`BOB:` alone on a line) is not a speaker: the line is shown as typed, and a warning points it out, since the words were probably meant to follow. A label in mixed case (`Bob: Hi`) is plain text, with a warning when the same name is a speaker elsewhere in the file. Escape with `\:`. The `speaker names` setting controls whether speakers are
 hidden, shown as a label, or shown in per-character colors (default: label, no color).
 
 ### Languages
@@ -310,9 +310,9 @@ Each is reported with a line number and a plain-English message:
 - warning: `Line 42: image "curtian.jpg" not found. Did you mean "curtain.jpg"?`
 - warning: `Line 17: unknown command [fade]. This line was skipped.`
 - warning: `Line 63: captions can't go inside a loop. This line was skipped.`
-- warning: `Line 12: "BARRY:" is a speaker's name with nothing after the colon. Put the words on the same line, or write \: if the colon is part of the text.` (the line is still shown as typed)
-- warning: `Line 12: The speaker label "BARRY, DEE DEE, TRENT & BARRY:" names BARRY twice. Is one of them a different character?` (a group label that gives the same name twice is probably a typo)
-- warning: `Line 40: "Barry:" is not in capitals, so it is shown as text, not as the speaker BARRY:. Write the name in capitals.` (only when the file also uses that name as a speaker, so ordinary words such as `Note:` are left alone)
+- warning: `Line 12: "BOB:" is a speaker's name with nothing after the colon. Put the words on the same line, or write \: if the colon is part of the text.` (the line is still shown as typed)
+- warning: `Line 12: The speaker label "BOB, ALICE, CAROL & BOB:" names BOB twice. Is one of them a different character?` (a group label that gives the same name twice is probably a typo)
+- warning: `Line 40: "Bob:" is not in capitals, so it is shown as text, not as the speaker BOB:. Write the name in capitals.` (only when the file also uses that name as a speaker, so ordinary words such as `Note:` are left alone)
 - info: `Line 52: This caption line is 132 characters long. On a phone it wraps over several lines; consider splitting it into shorter lines.` (a caption line over `LongCaption`, 100 characters; for a `[[ ]]` block or voices shown together, the longest line)
 - warning: `Line 60: This caption shows 5 voices at once. A phone stacks them and a shared screen may not have room for them all; consider splitting it into two captions.` (voices shown together, `[together]` or ` || `, from `ManyVoices`, 5)
 - error: `Line 88: [loop] was opened but never closed.`

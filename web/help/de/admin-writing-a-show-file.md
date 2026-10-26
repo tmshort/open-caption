@@ -15,7 +15,7 @@ Um eine Show-Datei zu prüfen oder in einem eigenen Texteditor vorzubereiten, si
 | `***very loud***` | fetter und kursiver Text |
 | `~~old line~~` | durchgestrichener Text (eine Korrektur oder ein durchgestrichener Scherz) |
 | `(thunder rumbles)` | eine ganze Zeile in Klammern wird als Geräusch oder Bühnenanweisung gezeigt |
-| `HAMLET: To be, or not to be` | eine Sprecher-Kennzeichnung über der Zeile (der Name muss in GROSSBUCHSTABEN stehen, gefolgt von einem Doppelpunkt; eine Gruppe geht auch: `DEE DEE & BARRY:`, `ALL (EXCEPT BARRY):`) |
+| `HAMLET: To be, or not to be` | eine Sprecher-Kennzeichnung über der Zeile (der Name muss in GROSSBUCHSTABEN stehen, gefolgt von einem Doppelpunkt; eine Gruppe geht auch: `ALICE & BOB:`, `ALL (EXCEPT BOB):`) |
 
 **Text durchstreichen.** Setzen Sie auf jede Seite zwei Tilden, `~~so~~`, und die Wörter werden durchgestrichen gezeigt. Direkt innerhalb jedes Paars muss ein Zeichen stehen, das kein Leerzeichen ist (`~~ x ~~` bleibt unverändert). Eine gesungene Zeile beginnt mit einer einzelnen `~` und einem Leerzeichen, die beiden werden also nie verwechselt; um eine normale Zeile mit einer Tilde zu beginnen, schreiben Sie `\~`.
 

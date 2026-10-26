@@ -15,7 +15,7 @@ Para comprobar un archivo del espectáculo, o para prepararlo en su propio edito
 | `***very loud***` | texto en negrita y cursiva |
 | `~~old line~~` | texto tachado (una corrección, o un chiste tachado) |
 | `(thunder rumbles)` | una línea entera entre paréntesis se muestra como un sonido o una acotación |
-| `HAMLET: To be, or not to be` | una etiqueta de personaje sobre la línea (el nombre debe ir en MAYÚSCULAS seguido de dos puntos; también vale un grupo: `DEE DEE & BARRY:`, `ALL (EXCEPT BARRY):`) |
+| `HAMLET: To be, or not to be` | una etiqueta de personaje sobre la línea (el nombre debe ir en MAYÚSCULAS seguido de dos puntos; también vale un grupo: `ALICE & BOB:`, `ALL (EXCEPT BOB):`) |
 
 **Tachar texto.** Ponga dos tildes a cada lado, `~~así~~`, y las palabras se muestran con una línea encima. Debe haber un carácter que no sea un espacio justo dentro de cada pareja (`~~ x ~~` se queda tal cual). Una línea cantada empieza con una sola `~` seguida de un espacio, así que nunca se confunden; para empezar una línea normal con una tilde, escriba `\~`.
 

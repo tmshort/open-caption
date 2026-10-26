@@ -15,7 +15,7 @@ Pour vérifier un fichier du spectacle, ou le préparer dans votre propre édite
 | `***very loud***` | texte en gras et en italique |
 | `~~old line~~` | texte barré (une correction, ou une blague biffée) |
 | `(thunder rumbles)` | une ligne entière entre parenthèses est affichée comme un bruit ou une indication de scène |
-| `HAMLET: To be, or not to be` | une étiquette de personnage au-dessus de la ligne (le nom doit être en MAJUSCULES suivi de deux-points ; un groupe convient aussi : `DEE DEE & BARRY:`, `ALL (EXCEPT BARRY):`) |
+| `HAMLET: To be, or not to be` | une étiquette de personnage au-dessus de la ligne (le nom doit être en MAJUSCULES suivi de deux-points ; un groupe convient aussi : `ALICE & BOB:`, `ALL (EXCEPT BOB):`) |
 
 **Barrer du texte.** Mettez deux tildes de chaque côté, `~~comme ceci~~`, et les mots sont affichés barrés. Il faut un caractère autre qu'une espace juste à l'intérieur de chaque paire (`~~ x ~~` reste tel quel). Une ligne chantée commence par un seul `~` suivi d'une espace, les deux ne sont donc jamais confondus ; pour commencer une ligne ordinaire par un tilde, écrivez `\~`.
 

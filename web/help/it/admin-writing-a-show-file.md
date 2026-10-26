@@ -15,7 +15,7 @@ Per controllare un file dello spettacolo, o prepararlo nel tuo editor di testo, 
 | `***very loud***` | testo in grassetto e corsivo |
 | `~~old line~~` | testo barrato (una correzione, o una battuta cancellata) |
 | `(thunder rumbles)` | un'intera riga tra parentesi viene mostrata come suono o indicazione di scena |
-| `HAMLET: To be, or not to be` | un'etichetta del personaggio sopra la riga (il nome deve essere in MAIUSCOLO seguito da due punti; va bene anche un gruppo: `DEE DEE & BARRY:`, `ALL (EXCEPT BARRY):`) |
+| `HAMLET: To be, or not to be` | un'etichetta del personaggio sopra la riga (il nome deve essere in MAIUSCOLO seguito da due punti; va bene anche un gruppo: `ALICE & BOB:`, `ALL (EXCEPT BOB):`) |
 
 **Barrare il testo.** Metti due tilde per lato, `~~così~~`, e le parole vengono mostrate barrate. Subito dentro ogni coppia ci deve essere un carattere che non sia uno spazio (`~~ x ~~` resta com'è). Una riga cantata inizia con una sola `~` seguita da uno spazio, quindi le due cose non si confondono mai; per iniziare una riga normale con una tilde, scrivi `\~`.
 

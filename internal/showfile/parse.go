@@ -15,7 +15,7 @@ import (
 var (
 	speakerRe = regexp.MustCompile(`^([A-Z][A-Z0-9 .'\-&,/()#]{0,59}):\s+(\S.*)$`)
 	// a speaker's name and colon with nothing after them: probably the words were meant to follow
-	// a label with lower-case letters, like "Barry: Hi": not a speaker, unless the name is a speaker elsewhere
+	// a label with lower-case letters, like "Bob: Hi": not a speaker, unless the name is a speaker elsewhere
 	mixedLabelRe  = regexp.MustCompile(`^([A-Za-z][A-Za-z0-9 .'\-&,/()#]{0,59}):\s+\S`)
 	speakerOnlyRe = regexp.MustCompile(`^([A-Z][A-Z0-9 .'\-&,/()#]{0,59}):\s*$`)
 	durationRe    = regexp.MustCompile(`^(\d+(?:\.\d+)?)\s*s$`)
@@ -56,7 +56,7 @@ type parser struct {
 	speakers   map[string]bool  // the speaker labels found
 	labels     []string         // the speaker labels in order of first appearance
 	labelLines map[string][]int // the lines each label was used on
-	notCaps    []labelAt        // lines that start like "Barry: text", checked against speakers when the file has been read
+	notCaps    []labelAt        // lines that start like "Bob: text", checked against speakers when the file has been read
 }
 
 type labelAt struct {
@@ -233,7 +233,7 @@ func singMarks(l string) (string, bool) {
 	return l, false
 }
 
-// repeatedName is the first name that a group label such as "BARRY, DEE DEE & BARRY" gives twice, or "".
+// repeatedName is the first name that a group label such as "BOB, ALICE & BOB" gives twice, or "".
 func repeatedName(label string) string {
 	seen := map[string]bool{}
 	for _, n := range strings.FieldsFunc(label, func(r rune) bool { return r == ',' || r == '&' || r == '/' }) {

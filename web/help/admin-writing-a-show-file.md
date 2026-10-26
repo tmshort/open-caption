@@ -15,7 +15,7 @@ To check a show file, or to prepare one in your own text editor, see [Preparing 
 | `***very loud***` | bold and italic text |
 | `~~old line~~` | text with a line through it (a correction, or a joke crossed out) |
 | `(thunder rumbles)` | a whole line in parentheses is shown as a sound or stage direction |
-| `HAMLET: To be, or not to be` | a speaker label above the line (the name must be in CAPITAL LETTERS followed by a colon; a group is fine too: `DEE DEE & BARRY:`, `ALL (EXCEPT BARRY):`) |
+| `HAMLET: To be, or not to be` | a speaker label above the line (the name must be in CAPITAL LETTERS followed by a colon; a group is fine too: `ALICE & BOB:`, `ALL (EXCEPT BOB):`) |
 
 **Crossing text out.** Put two tildes on each side, `~~like this~~`, and the words are shown with a line through them. There must be a non-space character just inside each pair (`~~ x ~~` stays as typed). A sung line starts with a single `~` followed by a space, so the two never get mixed up; to start an ordinary line with a tilde, write `\~`.
 

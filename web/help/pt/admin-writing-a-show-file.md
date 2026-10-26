@@ -15,7 +15,7 @@ Para verificar um arquivo do espetáculo, ou prepará-lo no seu próprio editor 
 | `***very loud***` | texto em negrito e itálico |
 | `~~old line~~` | texto riscado (uma correção, ou uma piada riscada) |
 | `(thunder rumbles)` | uma linha inteira entre parênteses é mostrada como um som ou uma indicação de cena |
-| `HAMLET: To be, or not to be` | um rótulo de personagem acima da linha (o nome deve estar em MAIÚSCULAS seguido de dois-pontos; um grupo também serve: `DEE DEE & BARRY:`, `ALL (EXCEPT BARRY):`) |
+| `HAMLET: To be, or not to be` | um rótulo de personagem acima da linha (o nome deve estar em MAIÚSCULAS seguido de dois-pontos; um grupo também serve: `ALICE & BOB:`, `ALL (EXCEPT BOB):`) |
 
 **Riscar texto.** Coloque dois til de cada lado, `~~assim~~`, e as palavras são mostradas riscadas. Logo dentro de cada par deve haver um caractere que não seja espaço (`~~ x ~~` fica como está). Uma linha cantada começa com um único `~` seguido de espaço, então as duas coisas nunca se confundem; para começar uma linha comum com til, escreva `\~`.
 
