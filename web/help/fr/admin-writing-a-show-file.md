@@ -154,6 +154,8 @@ Une ligne entre crochets est une commande. Les noms ne distinguent pas les majus
 | `[language: es]` | Marque un fichier de spectacle traduit. Voir [Langues](topic:admin-languages) |
 | `[settings]` … `[/settings]` | Le titre et l'apparence du spectacle. Voir *Réglages du spectacle* plus haut |
 
+Les options de durée n'ont de sens que dans une [boucle](topic:admin-loops) : `| 15s` après une image ou un texte plein écran, et `[blank: 3s]`. En dehors d'une boucle, une image ou un texte plein écran reste affiché jusqu'à ce que l'opérateur passe à la suite, la durée est ignorée, et une durée sur `[blank]` est signalée par un avertissement.
+
 ```showfile
 [clear]
 (Lights up on the garden.)

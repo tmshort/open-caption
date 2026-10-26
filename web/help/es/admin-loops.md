@@ -31,7 +31,7 @@ La lista del operador muestra un bucle como una sola entrada que se despliega pa
 
 ## Un temporizador de cuenta atrás
 
-Dé un **temporizador** a un bucle y las pantallas del público pueden mostrar cuánto tiempo queda, contando hacia atrás en directo («Volvemos en 15 min»). Escriba `timer` en las opciones del bucle y ponga `{timer}` en cualquier texto de ese bucle donde deba aparecer el tiempo.
+Dé un **temporizador** a un bucle y las pantallas del público pueden mostrar cuánto tiempo queda, contando hacia atrás en directo («Volvemos en 15 min»). Escriba `timer` (o `countdown`) en las opciones del bucle y ponga `{timer}` en cualquier texto de ese bucle donde deba aparecer el tiempo.
 
 ```showfile
 [loop: timer 15 minutes]

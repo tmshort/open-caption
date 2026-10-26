@@ -31,7 +31,7 @@ Die Liste des Operators zeigt eine Schleife als einen Eintrag, der sich aufklapp
 
 ## Ein Countdown-Timer
 
-Geben Sie einer Schleife einen **Timer**, dann können die Bildschirme des Publikums anzeigen, wie viel Zeit noch bleibt, live heruntergezählt („Weiter in 15 min“). Schreiben Sie `timer` in die Optionen der Schleife und setzen Sie `{timer}` in einen beliebigen Text dieser Schleife, wo die Zeit erscheinen soll.
+Geben Sie einer Schleife einen **Timer**, dann können die Bildschirme des Publikums anzeigen, wie viel Zeit noch bleibt, live heruntergezählt („Weiter in 15 min“). Schreiben Sie `timer` (oder `countdown`) in die Optionen der Schleife und setzen Sie `{timer}` in einen beliebigen Text dieser Schleife, wo die Zeit erscheinen soll.
 
 ```showfile
 [loop: timer 15 minutes]

@@ -154,6 +154,8 @@ Una línea entre corchetes es un comando. Los nombres no distinguen mayúsculas 
 | `[language: es]` | Marca un archivo del espectáculo traducido. Consulte [Idiomas](topic:admin-languages) |
 | `[settings]` … `[/settings]` | El título y el aspecto del espectáculo. Consulte *Ajustes del espectáculo* más arriba |
 
+Las opciones de tiempo solo tienen sentido dentro de un [bucle](topic:admin-loops): `| 15s` tras una imagen o un texto a pantalla completa, y `[blank: 3s]`. Fuera de un bucle, una imagen o un texto a pantalla completa permanece hasta que el operador pasa a la siguiente línea, el tiempo se ignora, y un tiempo en `[blank]` se señala como advertencia.
+
 ```showfile
 [clear]
 (Lights up on the garden.)

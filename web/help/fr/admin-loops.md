@@ -31,7 +31,7 @@ La liste de l'opérateur montre une boucle comme une seule entrée qui se dépli
 
 ## Un minuteur de compte à rebours
 
-Donnez un **minuteur** à une boucle et les écrans du public peuvent afficher le temps qui reste, décompté en direct (« Retour dans 15 min »). Écrivez `timer` dans les options de la boucle, puis placez `{timer}` dans un texte de cette boucle à l'endroit où le temps doit apparaître.
+Donnez un **minuteur** à une boucle et les écrans du public peuvent afficher le temps qui reste, décompté en direct (« Retour dans 15 min »). Écrivez `timer` (ou `countdown`) dans les options de la boucle, puis placez `{timer}` dans un texte de cette boucle à l'endroit où le temps doit apparaître.
 
 ```showfile
 [loop: timer 15 minutes]

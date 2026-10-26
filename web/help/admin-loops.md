@@ -31,7 +31,7 @@ The operator's list shows a loop as one entry that expands to list its items. Se
 
 ## A countdown timer
 
-Give a loop a **timer** and the audience screens can show how much time is left, counting down live ("Back in 15 min"). Write `timer` in the loop's options, then put `{timer}` in any text of that loop where the time should appear.
+Give a loop a **timer** and the audience screens can show how much time is left, counting down live ("Back in 15 min"). Write `timer` (or `countdown`) in the loop's options, then put `{timer}` in any text of that loop where the time should appear.
 
 ```showfile
 [loop: timer 15 minutes]

@@ -31,7 +31,7 @@ L'elenco dell'operatore mostra un ciclo come una sola voce che si espande per el
 
 ## Un timer con conto alla rovescia
 
-Dai un **timer** a un ciclo e gli schermi del pubblico possono mostrare quanto tempo manca, contando alla rovescia in diretta («Si riprende tra 15 min»). Scrivi `timer` nelle opzioni del ciclo, poi metti `{timer}` in un testo di quel ciclo dove deve comparire il tempo.
+Dai un **timer** a un ciclo e gli schermi del pubblico possono mostrare quanto tempo manca, contando alla rovescia in diretta («Si riprende tra 15 min»). Scrivi `timer` (o `countdown`) nelle opzioni del ciclo, poi metti `{timer}` in un testo di quel ciclo dove deve comparire il tempo.
 
 ```showfile
 [loop: timer 15 minutes]

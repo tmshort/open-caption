@@ -154,6 +154,8 @@ Uma linha entre colchetes é um comando. Os nomes não diferenciam maiúsculas d
 | `[language: es]` | Marca um arquivo do espetáculo traduzido. Veja [Idiomas](topic:admin-languages) |
 | `[settings]` … `[/settings]` | O título e a aparência do espetáculo. Veja *Configurações do espetáculo* acima |
 
+As opções de tempo só fazem sentido dentro de um [laço](topic:admin-loops): `| 15s` depois de uma imagem ou de um texto em tela cheia, e `[blank: 3s]`. Fora de um laço, uma imagem ou um texto em tela cheia fica até o operador passar adiante, o tempo é ignorado, e um tempo em `[blank]` é apontado como aviso.
+
 ```showfile
 [clear]
 (Lights up on the garden.)

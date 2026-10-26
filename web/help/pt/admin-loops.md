@@ -31,7 +31,7 @@ A lista do operador mostra um laço como uma única entrada que se expande para 
 
 ## Um temporizador de contagem regressiva
 
-Dê um **temporizador** a um laço e as telas do público podem mostrar quanto tempo falta, contando ao vivo («Voltamos em 15 min»). Escreva `timer` nas opções do laço e ponha `{timer}` em qualquer texto desse laço onde o tempo deva aparecer.
+Dê um **temporizador** a um laço e as telas do público podem mostrar quanto tempo falta, contando ao vivo («Voltamos em 15 min»). Escreva `timer` (ou `countdown`) nas opções do laço e ponha `{timer}` em qualquer texto desse laço onde o tempo deva aparecer.
 
 ```showfile
 [loop: timer 15 minutes]
