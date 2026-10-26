@@ -13,6 +13,18 @@ Then open the repository's **Releases** page, check the draft (the notes, the fi
 
 Before tagging: the work is committed and pushed, `main` is what you want to ship, and `go test -race ./...` and `make e2e` pass. (The release also runs `go test ./...` itself and stops if it fails.)
 
+## With Claude Code: `/release`
+
+In a Claude Code session in this repository, `/release v1.2.3` does the whole sequence (the skill is `.claude/skills/release/SKILL.md`):
+
+1. checks the version is new and says whether it is the highest (published as **Latest**) or a patch for an older line (published, but **not** as Latest), and that `HEAD` is pushed, clean and has passed CI;
+2. creates the signed tag (`git tag -s -m "v1.2.3" v1.2.3`, like the earlier ones) and pushes it;
+3. writes the release notes, **Enhancements** and **Fixes** with up to four bullets each, from the commits since the previous version, and asks you to approve them (it redoes them until you do);
+4. waits for the `ci` and `release` runs on the tag, and for the draft with its six files;
+5. puts the approved notes at the top of the draft (above the install instructions and the changelog) and publishes it.
+
+It stops, and publishes nothing, if a check or a run fails; it never moves or deletes a tag or release by itself.
+
 ## What a release contains
 
 One download per platform, named `open-caption_<version>_<system>_<arch>`:
