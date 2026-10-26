@@ -240,6 +240,29 @@ func TestClaimsTheNameAndAnswersAddressQueries(t *testing.T) {
 	}
 }
 
+// A browser on the same computer asks through that computer's resolver, so the question comes from our own address.
+func TestAnswersQuestionsFromThisComputerItself(t *testing.T) {
+	b := &bus{}
+	n := b.add("192.168.1.10")
+	start(t, n, "open-caption")
+	n.mu.Lock()
+	before := len(n.sent)
+	n.mu.Unlock()
+	n.in <- packet{query(t, "open-caption.local.", dnsmessage.TypeA, false), &net.UDPAddr{IP: n.addr(), Port: 5353}}
+	var got []byte
+	for i := 0; i < 100 && got == nil; i++ {
+		time.Sleep(5 * time.Millisecond)
+		n.mu.Lock()
+		if len(n.sent) > before {
+			got = n.sent[len(n.sent)-1]
+		}
+		n.mu.Unlock()
+	}
+	if p := parse(t, got); len(p.as) != 1 || !p.as[0].Equal(net.ParseIP("192.168.1.10")) {
+		t.Errorf("a question from this computer was not answered: %+v", p)
+	}
+}
+
 func parseAny(p []byte) []net.IP {
 	defer func() { recover() }()
 	var out []net.IP

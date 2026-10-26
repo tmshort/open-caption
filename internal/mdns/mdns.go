@@ -315,13 +315,17 @@ func (r *Responder) receive() {
 
 // handle reacts to one packet: answers questions for our name, and notices another computer claiming it.
 func (r *Responder) handle(pkt []byte, ifIndex int, src *net.UDPAddr) {
-	if src != nil && r.env.isOurs(src.IP) {
-		return // our own packet coming back
-	}
+	// A packet from one of this computer's own addresses is either our own looped-back traffic or a question from this
+	// computer's resolver (a browser here asking for open-caption.local, which must be answered). Our own traffic is
+	// answers and probes, so those are ignored below.
+	own := src != nil && r.env.isOurs(src.IP)
 	var p dnsmessage.Parser
 	h, err := p.Start(pkt)
 	if err != nil {
 		return
+	}
+	if own && h.Response {
+		return // our own announcement coming back
 	}
 	label := r.Name()
 	if label == "" {
@@ -374,6 +378,9 @@ func (r *Responder) handle(pkt []byte, ifIndex int, src *net.UDPAddr) {
 	if p.SkipAllAnswers() == nil {
 		_, aerr := p.AuthorityHeader()
 		hasAuth = aerr == nil
+	}
+	if hasAuth && own {
+		return // our own probe coming back
 	}
 	if hasAuth && !r.isReady() {
 		r.markConflict()
