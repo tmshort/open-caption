@@ -206,7 +206,7 @@ Il passo **Aspetto** della configurazione scrive questo blocco per te, e puoi mo
 
 ### Controllare i nomi dei personaggi
 
-Fai clic su **Personaggi…** sopra l'editor per vedere tutti i nomi usati come personaggio, i più usati per primi, con il numero di righe di ciascuno. È il modo rapido per trovare un nome scritto male: **BARY** con una riga accanto a **BARRY** con quaranta è segnalato con *Intendevi BARRY?*. Fai clic su un nome per andare alla sua prima riga, o su **Mostra le righe** per andare a una qualsiasi. Un gruppo come `DEE DEE & BARRY:` conta per ciascuno dei suoi nomi.
+Fai clic su **Personaggi…** sopra l'editor per vedere tutti i nomi usati come personaggio, i più usati per primi, con il numero di righe di ciascuno. È il modo rapido per trovare un nome scritto male: **BARY** con una riga accanto a **BARRY** con quaranta è segnalato con *Intendevi BARRY?*. Fai clic su un nome per andare alla sua prima riga. Un gruppo come `DEE DEE & BARRY:` conta per ciascuno dei suoi nomi.
 
 ### Tornare indietro
 

@@ -27,7 +27,7 @@ OPHELIA: My *lord*?
 
 ## Checking the character names
 
-Click **Characters…** above the editor to see every name used as a speaker, the most used first, with how many lines each speaks on. It is the quick way to find a misspelled name: **BARY** with one line beside **BARRY** with forty is marked *Did you mean BARRY?*. Click a name to go to its first line, or **Show the lines** to go to any of them. A group such as `DEE DEE & BARRY:` counts for each of its names.
+Click **Characters…** above the editor to see every name used as a speaker, the most used first, with how many lines each speaks on. It is the quick way to find a misspelled name: **BARY** with one line beside **BARRY** with forty is marked *Did you mean BARRY?*. Click a name to go to its first line. A group such as `DEE DEE & BARRY:` counts for each of its names.
 
 ## Going back to an earlier version
 

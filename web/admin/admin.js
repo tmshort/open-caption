@@ -785,16 +785,14 @@
       await ask(A.lang ? __('Earlier versions ({name})', { name: cur.name }) : __('Earlier versions'), body, __('Close'), { noCancel: true, wide: true });
     }
     // The names that speak in this show file, to spot a misspelled one: most lines first, a name one letter off from a more used
-    // name is marked, and each name goes to its first line (or any other) in the editor.
+    // name is marked, and each name goes to its first line in the editor.
     async function showCharacters() {
       const a = A.analysis, chars = a.characters || [];
       const go = (line) => { $('dlg').close('cancel'); jump(line); };
       const list = h('ul', { class: 'chars' }, ...chars.map((c) => {
-        const lines = h('div', { class: 'charlines', hidden: '' }, ...c.lines.map((n) => h('button', { class: 'quiet', onclick: () => go(n) }, __('Line {n}', { n }))));
-        const more = h('button', { class: 'quiet', 'aria-expanded': 'false', onclick: () => { lines.hidden = !lines.hidden; more.setAttribute('aria-expanded', String(!lines.hidden)); more.textContent = lines.hidden ? __('Show the lines') : __('Hide the lines'); } }, __('Show the lines'));
         const swatch = c.label && window.OCSpeakers ? h('span', { class: 'swatch', 'aria-hidden': 'true', style: 'background:' + OCSpeakers.forName(c.name, a.speakers, '#000000') }) : h('span', { class: 'swatch none', 'aria-hidden': 'true' });
         return h('li', { class: c.similar ? 'maybe' : '' }, swatch, h('button', { class: 'charname', title: __('Go to its first line'), onclick: () => go(c.lines[0]) }, c.name),
-          h('span', { class: 'hint' }, __('{n} line(s)', { n: c.lines.length })), c.similar ? h('span', { class: 'check warn' }, __('Did you mean {name}?', { name: c.similar })) : null, more, lines);
+          h('span', { class: 'hint' }, __('{n} line(s)', { n: c.lines.length })), c.similar ? h('span', { class: 'check warn' }, __('Did you mean {name}?', { name: c.similar })) : null);
       }));
       const body = h('div', {}, h('p', { class: 'hint' }, __('Every name used as a speaker in this show file, the most used first. A name that is one letter off from a name used more is probably a misspelling. A group such as DEE DEE & BARRY counts for each of its names. Click a name to go to its first line.')),
         chars.length ? list : h('p', {}, __('No speaker names found. A speaker name is written in capitals before a colon, like BARRY: Hello.')));

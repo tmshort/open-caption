@@ -758,7 +758,5 @@ OCI18n.add("de", {
   "No speaker names found. A speaker name is written in capitals before a colon, like BARRY: Hello.": "Keine Sprechernamen gefunden. Ein Sprechername steht in Großbuchstaben vor einem Doppelpunkt, etwa BARRY: Hallo.",
   "Go to its first line": "Zur ersten Zeile gehen",
   "{n} line(s)": "{n} Zeile(n)",
-  "Did you mean {name}?": "Meinten Sie {name}?",
-  "Show the lines": "Zeilen anzeigen",
-  "Hide the lines": "Zeilen ausblenden"
+  "Did you mean {name}?": "Meinten Sie {name}?"
 });

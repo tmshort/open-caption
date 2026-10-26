@@ -206,7 +206,7 @@ El paso **Aspecto** de Configuración escribe este bloque por usted, y también 
 
 ### Revisar los nombres de los personajes
 
-Haga clic en **Caracteres…** sobre el editor para ver todos los nombres usados como personaje, los más usados primero, con el número de líneas de cada uno. Es la forma rápida de encontrar un nombre mal escrito: **BARY** con una línea junto a **BARRY** con cuarenta se marca con *¿Quiso decir BARRY?*. Haga clic en un nombre para ir a su primera línea, o en **Mostrar las líneas** para ir a cualquiera de ellas. Un grupo como `DEE DEE & BARRY:` cuenta para cada uno de sus nombres.
+Haga clic en **Caracteres…** sobre el editor para ver todos los nombres usados como personaje, los más usados primero, con el número de líneas de cada uno. Es la forma rápida de encontrar un nombre mal escrito: **BARY** con una línea junto a **BARRY** con cuarenta se marca con *¿Quiso decir BARRY?*. Haga clic en un nombre para ir a su primera línea. Un grupo como `DEE DEE & BARRY:` cuenta para cada uno de sus nombres.
 
 ### Volver atrás
 

@@ -758,7 +758,5 @@ OCI18n.add("it", {
   "No speaker names found. A speaker name is written in capitals before a colon, like BARRY: Hello.": "Nessun nome di personaggio trovato. Un nome si scrive in maiuscolo prima dei due punti, come BARRY: Ciao.",
   "Go to its first line": "Vai alla sua prima riga",
   "{n} line(s)": "{n} riga/righe",
-  "Did you mean {name}?": "Intendevi {name}?",
-  "Show the lines": "Mostra le righe",
-  "Hide the lines": "Nascondi le righe"
+  "Did you mean {name}?": "Intendevi {name}?"
 });

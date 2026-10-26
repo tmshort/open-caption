@@ -219,5 +219,3 @@ a.quiet { background: none; border: none; color: var(--dim); text-decoration: no
 .chars .swatch { width: .9rem; height: .9rem; border-radius: 50%; border: 1px solid var(--line); flex: none; }
 .chars .swatch.none { background: transparent; border-style: dashed; }
 .chars .charname { font-weight: 700; }
-.chars .charlines { flex-basis: 100%; display: flex; flex-wrap: wrap; gap: .2rem .4rem; }
-.chars .charlines[hidden] { display: none; }

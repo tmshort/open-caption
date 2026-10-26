@@ -206,7 +206,7 @@ L'étape **Apparence** de la configuration écrit ce bloc pour vous, et vous pou
 
 ### Vérifier les noms des personnages
 
-Cliquez sur **Personnages…** au-dessus de l'éditeur pour voir tous les noms utilisés comme personnage, les plus utilisés d'abord, avec le nombre de lignes de chacun. C'est le moyen rapide de repérer un nom mal orthographié : **BARY** avec une ligne à côté de **BARRY** avec quarante est signalé par *Vouliez-vous dire BARRY ?*. Cliquez sur un nom pour aller à sa première ligne, ou sur **Afficher les lignes** pour aller à n'importe laquelle. Un groupe comme `DEE DEE & BARRY:` compte pour chacun de ses noms.
+Cliquez sur **Personnages…** au-dessus de l'éditeur pour voir tous les noms utilisés comme personnage, les plus utilisés d'abord, avec le nombre de lignes de chacun. C'est le moyen rapide de repérer un nom mal orthographié : **BARY** avec une ligne à côté de **BARRY** avec quarante est signalé par *Vouliez-vous dire BARRY ?*. Cliquez sur un nom pour aller à sa première ligne. Un groupe comme `DEE DEE & BARRY:` compte pour chacun de ses noms.
 
 ### Revenir en arrière
 

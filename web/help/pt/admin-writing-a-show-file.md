@@ -27,7 +27,7 @@ OPHELIA: My *lord*?
 
 ## Conferir os nomes dos personagens
 
-Clique em **Personagens…** acima do editor para ver todos os nomes usados como personagem, os mais usados primeiro, com o número de linhas de cada um. É a forma rápida de achar um nome escrito errado: **BARY** com uma linha ao lado de **BARRY** com quarenta é marcado com *Você quis dizer BARRY?*. Clique em um nome para ir à primeira linha dele, ou em **Mostrar as linhas** para ir a qualquer uma. Um grupo como `DEE DEE & BARRY:` conta para cada um de seus nomes.
+Clique em **Personagens…** acima do editor para ver todos os nomes usados como personagem, os mais usados primeiro, com o número de linhas de cada um. É a forma rápida de achar um nome escrito errado: **BARY** com uma linha ao lado de **BARRY** com quarenta é marcado com *Você quis dizer BARRY?*. Clique em um nome para ir à primeira linha dele. Um grupo como `DEE DEE & BARRY:` conta para cada um de seus nomes.
 
 ## Voltar a uma versão anterior
 
