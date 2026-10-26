@@ -114,7 +114,21 @@ async function main() {
   check('and the QR code for it is drawn too', await p.evaluate(() => { const i = document.querySelector('.qr img'); return !!i && i.complete && i.naturalWidth > 0; }));
   const tabText = await certTab(p);
   check('Settings > Certificate says the certificate files are used', /certificate files named in the settings file/.test(tabText), tabText);
+  // The session cookie is Secure over https (and a reload keeps the browser signed in); over plain http it is not Secure
+  // (Chrome would still keep a Secure cookie on 127.0.0.1, but a browser on the venue's real address would drop it, and nobody
+  // could stay signed in).
+  const sess = (await p.cookies()).filter((c) => c.httpOnly);
+  check('over https the session cookie is Secure, HttpOnly and SameSite=Strict', sess.length === 1 && sess[0].secure && sess[0].sameSite === 'Strict', sess);
+  await p.reload(); await p.waitForSelector('#steps button');
+  check('and a reload over https keeps the browser signed in', await p.evaluate(() => !document.getElementById('login') || document.getElementById('login').hidden));
   await p.close();
+  const hp = await open();
+  await hp.goto(`http://127.0.0.1:${a.http}/admin`); await hp.waitForSelector('#pw'); await hp.type('#pw', PW); await hp.keyboard.press('Enter'); await hp.waitForSelector('#steps button');
+  const plainSess = (await hp.cookies()).filter((c) => c.httpOnly);
+  check('over plain http the session cookie is not Secure', plainSess.length === 1 && !plainSess[0].secure && plainSess[0].sameSite === 'Strict', plainSess);
+  await hp.reload(); await hp.waitForSelector('#steps button');
+  check('and a reload over plain http keeps the browser signed in', await hp.evaluate(() => !document.getElementById('login') || document.getElementById('login').hidden));
+  await hp.close();
 
   // ---- the audience page over https
   const aud = await open(420);
