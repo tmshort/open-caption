@@ -15,7 +15,7 @@ A single-binary open-captioning server for community theater (Go 1.26+, no CGO).
 - `make test` / `make race` (`go test -race ./...`) / `make vet` / `make lint` (`go vet` plus staticcheck at the version pinned in the Makefile; CI runs it on Linux; keep it at zero findings) / `make lint-js` (ESLint on `web/`, `test/` and `tools/`, config `eslint.config.mjs`, installed with the e2e packages; also zero findings)
 - Single test: `go test ./internal/httpapi -run TestName -count=1`
 - `make fuzz` fuzzes the show-file parser (`FuzzParse`)
-- `make e2e` — browser end-to-end suite (`test/e2e/run.js`, puppeteer-core; needs Node and Chrome, set `CHROME` if not at the default path). Chrome allows 6 connections per host, so e2e pages must be closed when finished (SSE streams stay open).
+- `make e2e` — browser end-to-end suite (`test/e2e/run.js` over plain http, then `test/e2e/https.js` with HTTPS on and a generated certificate, which needs `openssl` and is skipped without it; puppeteer-core; needs Node and Chrome, set `CHROME` if not at the default path). Chrome allows 6 connections per host, so e2e pages must be closed when finished (SSE streams stay open).
 - Log with `internal/logx` (`logx.Infof/Warnf/Errorf/Debugf`), not `log.Printf`; level comes from `log.level` / `--log-level`.
 - `config.Load` is strict (unknown YAML keys are errors) and reports all problems at once via `*config.ProblemsError`; add new settings to `normalize()`.
 - `tools/make-icons.js` regenerates `favicon.ico` / `apple-touch-icon.png` from `web/shared/favicon.svg`.

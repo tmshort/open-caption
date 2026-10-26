@@ -10,7 +10,7 @@
 
 - `make vulncheck` runs `govulncheck` (downloaded on first use, so it needs internet) to look for known vulnerabilities in the dependencies and the Go standard library (and in the pinned tools: Pebble, which fails the check, and GoReleaser, whose findings are only shown, since they are in that build tool's own libraries); run it now and then, since new advisories appear over time. It also says when a newer release of a pinned tool exists. `govulncheck` itself is deliberately not pinned, since an old copy would miss new advisories.
 - `make test` / `make race` run the Go tests (the race detector is the one to run before committing); `make fuzz` fuzzes the show-file parser.
-- `make e2e` is the browser end-to-end test (over 200 checks). It also runs the browser-compatibility check (the pages must stay inside the old-browser floor) and the translation check.
+- `make e2e` is the browser end-to-end test (over 200 checks over plain http, then `test/e2e/https.js` with HTTPS on, which needs `openssl` and is skipped without it). It also runs the browser-compatibility check (the pages must stay inside the old-browser floor) and the translation check.
 - `make lint-js` runs ESLint over the page scripts, the browser tests and tools (`eslint.config.mjs`); keep it at zero findings.
 - `make a11y` is the accessibility audit (axe-core, reflow and keyboard focus in both colour schemes); keep it at zero violations.
 - `make i18n` checks that every on-screen sentence is translated into all six languages (it needs Node only).

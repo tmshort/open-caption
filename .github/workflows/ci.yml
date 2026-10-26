@@ -90,6 +90,11 @@ jobs:
         env:
           CHROME: ${{ runner.os == 'Linux' && '/usr/bin/google-chrome' || runner.os == 'macOS' && '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' || 'C:\Program Files\Google\Chrome\Application\chrome.exe' }}
           OC_SHOTS: ''
+      - name: HTTPS in the browser (certificate file and self-signed)
+        if: runner.os == 'Linux'
+        run: cd test/e2e && node https.js
+        env:
+          CHROME: /usr/bin/google-chrome
       - name: Accessibility audit (axe-core, reflow, keyboard focus)
         if: runner.os == 'Linux'
         run: cd test/e2e && node a11y.js

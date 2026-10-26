@@ -64,8 +64,8 @@ tidy: ## Tidy go.mod and go.sum (go mod tidy)
 	go mod tidy
 lint-js: ## ESLint on the page scripts, the browser tests and tools (needs Node; installs the linter with the browser tests' packages)
 	cd test/e2e && npm install --no-audit --no-fund && cd ../.. && test/e2e/node_modules/.bin/eslint .
-e2e: build ## Browser end-to-end test (needs Node and Chrome; set CHROME if not in the default place)
-	cd test/e2e && npm install --no-audit --no-fund && node run.js
+e2e: build ## Browser end-to-end tests, plain http and then HTTPS (needs Node and Chrome, and openssl for the HTTPS part; set CHROME if not in the default place)
+	cd test/e2e && npm install --no-audit --no-fund && node run.js && node https.js
 a11y: build ## Accessibility audit with axe-core in real Chrome (needs Node and Chrome)
 	cd test/e2e && npm install --no-audit --no-fund && node a11y.js
 i18n: ## Check every sentence is translated into all six languages (needs Node)

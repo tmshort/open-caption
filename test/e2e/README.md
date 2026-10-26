@@ -9,6 +9,10 @@ labels), Back / Blank / Clear, songs and voices shown together, per-character co
 font, help pausing the operator keys, scroll-back with "back to live", Settings (changing a password), and a
 server restart (still signed in, position kept, undo still works).
 
+`https.js` is the same kind of test with HTTPS on (a generated certificate file naming a host, and the program's own
+self-signed one): the Share step's Secure/Plain groups, the QR code and lobby sign, and Settings → Certificate. It needs
+the `openssl` command and is skipped without it. `make e2e` runs both.
+
 ```
 make build
 cd test/e2e && npm install && node run.js
