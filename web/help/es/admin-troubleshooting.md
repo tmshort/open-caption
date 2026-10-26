@@ -2,7 +2,7 @@
 
 ## El botón Solucionar problemas
 
-El botón **Solucionar problemas**, arriba en Configuración, junto a Configuración, es el lugar por donde empezar cuando la gente no puede conectarse o algo parece ir mal. Muestra lo que el programa sabe: si este ordenador tiene una dirección de red que dar, qué puerto obtuvo realmente el servidor web, si HTTPS y su certificado están en orden, si el nombre `.local` se anuncia, si se puede guardar el archivo de configuración, si cada idioma coincide con el archivo principal del show y cuántos dispositivos están conectados. Cada comprobación se marca **OK**, **Nota**, **Revisar** o **Problema**, y las que se pueden arreglar tienen un botón que lleva al ajuste correcto. Debajo están los últimos avisos y errores del registro, un enlace al registro completo y el paquete de soporte.
+El botón **Solucionar problemas**, arriba en la pantalla de Configuración, junto a Ajustes, es el lugar por donde empezar cuando la gente no puede conectarse o algo parece ir mal. Muestra lo que el programa sabe: si este ordenador tiene una dirección de red que dar, qué puerto obtuvo realmente el servidor web, si HTTPS y su certificado están en orden, si el nombre `.local` se anuncia, si se puede guardar el archivo de configuración, si cada idioma coincide con el archivo principal del show y cuántos dispositivos están conectados. Cada comprobación se marca **OK**, **Nota**, **Revisar** o **Problema**, y las que se pueden arreglar tienen un botón que lleva al ajuste correcto. Debajo están los últimos avisos y errores del registro, un enlace al registro completo y el paquete de soporte.
 
 Cuando el programa registra avisos o errores nuevos, aparece un número en el botón hasta que lo abra.
 
