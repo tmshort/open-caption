@@ -53,7 +53,7 @@ Pushing starts the `ci` and `release` workflows for the tag.
 - Label: what was wrong and what happens now.
 ```
 
-- **Show the bullets to the maintainer and ask for approval** (AskUserQuestion: *Approve* / *Change it*). If they want changes (or give free text), redo the bullets and ask again. Do not touch the release until they approve.
+- **Show the bullets to the maintainer and ask for approval.** Text written before a question can go unseen, so put the complete notes (both sections, every bullet, exactly as they will appear) in the *preview* of the *Approve* option of the AskUserQuestion call, with the options *Approve* / *Change it*, and also print them in your message. Never ask "approve the notes?" without the notes visible in the question itself. If they want changes (or give free text), redo the bullets and ask again. Do not touch the release until they approve.
 
 ## 5. Wait for the builds
 
