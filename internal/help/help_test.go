@@ -546,3 +546,16 @@ func TestSampleShowLinkWorksOnGitHubAndInTheApp(t *testing.T) {
 		t.Errorf("the file the topics link to is missing: %v", err)
 	}
 }
+
+// A topic can link to another as a file beside it, which GitHub can follow; in the program it is the same link as topic:.
+func TestTopicFileLinksWorkLikeTopicLinks(t *testing.T) {
+	want := `<a href="#admin-loops" data-topic="admin-loops">Loops</a>`
+	for _, in := range []string{"topic:admin-loops", "admin-loops.md"} {
+		if got := link("Loops", in); got != want {
+			t.Errorf("%s: %s", in, got)
+		}
+	}
+	if got := link("x", "admin-nonsense/../evil.md"); strings.Contains(got, "<a") {
+		t.Errorf("a path that is not a topic file became a link: %s", got)
+	}
+}

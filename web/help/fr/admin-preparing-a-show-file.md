@@ -1,6 +1,6 @@
 # Préparer un fichier de spectacle
 
-Cette page s'adresse à la personne qui transforme le texte de la pièce en sous-titres. Vous n'avez pas à conduire le spectacle ni à connaître quoi que ce soit du réseau. Un fichier de spectacle est un fichier texte ordinaire : vous pouvez l'écrire avec le programme de votre choix, sur n'importe quel ordinateur, et l'apporter dans la Configuration quand il est prêt. [Écrire un fichier de spectacle](topic:admin-writing-a-show-file) énumère tous les marquages possibles ; cette page explique comment s'y prendre.
+Cette page s'adresse à la personne qui transforme le texte de la pièce en sous-titres. Vous n'avez pas à conduire le spectacle ni à connaître quoi que ce soit du réseau. Un fichier de spectacle est un fichier texte ordinaire : vous pouvez l'écrire avec le programme de votre choix, sur n'importe quel ordinateur, et l'apporter dans la Configuration quand il est prêt. [Écrire un fichier de spectacle](admin-writing-a-show-file.md) énumère tous les marquages possibles ; cette page explique comment s'y prendre.
 
 ## En bref
 
@@ -58,7 +58,7 @@ Pour créer un **nouveau spectacle** à partir d'un fichier, utilisez **Importer
 - Vous pouvez vérifier un fichier de spectacle sans ouvrir la configuration : sur l'ordinateur de sous-titrage, lancez `open-caption --check-show show.md` (ajoutez ensuite les traductions, par exemple `show.es.md`). Il affiche les mêmes problèmes avec leurs numéros de ligne et se termine avec un statut non nul s'il y a des erreurs, ce qui permet de l'utiliser pendant l'édition ou dans un script. `open-caption --help` liste les options.
 - Le panneau à côté de l'éditeur montre ce que l'opérateur va parcourir, une ligne par appui sur la barre d'espace. Vérifiez que le nombre de lignes est celui que vous attendez.
 - Lancez l'étape **Test** pour voir les sous-titres comme le public les verra, sur un téléphone comme sur un grand écran.
-- Si d'autres personnes travaillent aussi sur le fichier du spectacle, voyez *Si deux personnes modifient le même fichier* dans [Écrire un fichier de spectacle](topic:admin-writing-a-show-file).
+- Si d'autres personnes travaillent aussi sur le fichier du spectacle, voyez *Si deux personnes modifient le même fichier* dans [Écrire un fichier de spectacle](admin-writing-a-show-file.md).
 
 ## Avant de passer la main
 

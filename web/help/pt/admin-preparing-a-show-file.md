@@ -1,6 +1,6 @@
 # Preparar um arquivo do espetáculo
 
-Esta página é para quem transforma o texto da peça em legendas. Você não precisa operar a apresentação nem saber nada sobre redes. Um arquivo do espetáculo é um arquivo de texto comum: você pode escrevê-lo no programa que preferir, em qualquer computador, e trazê-lo para a Configuração quando estiver pronto. [Escrever um arquivo do espetáculo](topic:admin-writing-a-show-file) lista todas as marcações que você pode usar; esta página trata de como fazer o trabalho.
+Esta página é para quem transforma o texto da peça em legendas. Você não precisa operar a apresentação nem saber nada sobre redes. Um arquivo do espetáculo é um arquivo de texto comum: você pode escrevê-lo no programa que preferir, em qualquer computador, e trazê-lo para a Configuração quando estiver pronto. [Escrever um arquivo do espetáculo](admin-writing-a-show-file.md) lista todas as marcações que você pode usar; esta página trata de como fazer o trabalho.
 
 ## A versão curta
 
@@ -58,7 +58,7 @@ Para começar um **espetáculo novo** a partir de um arquivo, use **Importar um 
 - Você pode conferir um arquivo do espetáculo sem abrir a configuração: no computador das legendas, execute `open-caption --check-show show.md` (acrescente depois as traduções, por exemplo `show.es.md`). Ele mostra os mesmos problemas com os números de linha e termina com um status diferente de zero se houver erros, então dá para usá-lo enquanto você edita ou em um script. `open-caption --help` lista as opções.
 - O painel ao lado do editor mostra o que o operador vai percorrer, uma linha por toque na barra de espaço. Confira se o número de linhas é o que você espera.
 - Execute a etapa **Teste** para ver as legendas como o público as verá, em um telefone além de uma tela grande.
-- Se outras pessoas também trabalham no arquivo do espetáculo, veja *Se duas pessoas editam o mesmo arquivo* em [Escrever um arquivo do espetáculo](topic:admin-writing-a-show-file).
+- Se outras pessoas também trabalham no arquivo do espetáculo, veja *Se duas pessoas editam o mesmo arquivo* em [Escrever um arquivo do espetáculo](admin-writing-a-show-file.md).
 
 ## Antes de entregar
 

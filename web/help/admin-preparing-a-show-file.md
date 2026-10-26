@@ -1,6 +1,6 @@
 # Preparing a show file
 
-This page is for the person who turns the script into captions. You do not need to run the show or know anything about the network. A show file is an ordinary text file, so you can write it in any program you like, on any computer, and bring it into Setup when it is ready. [Writing a show file](topic:admin-writing-a-show-file) lists every marking you can use; this page is about how to go about the job.
+This page is for the person who turns the script into captions. You do not need to run the show or know anything about the network. A show file is an ordinary text file, so you can write it in any program you like, on any computer, and bring it into Setup when it is ready. [Writing a show file](admin-writing-a-show-file.md) lists every marking you can use; this page is about how to go about the job.
 
 ## The short version
 
@@ -58,7 +58,7 @@ To start a **new show** from a file, use **Import a show** on the Shows step and
 - You can check a show file without opening Setup: on the captioning computer run `open-caption --check-show show.md` (add translations after it, for example `show.es.md`). It prints the same problems with their line numbers and exits with a non-zero status when there are errors, so you can use it while you edit or in a script. `open-caption --help` lists the options.
 - The panel beside the editor shows what the operator will step through, one row per press of the spacebar. Check that the count of rows is what you expect.
 - Run the **Test** step to see the captions as the audience will, on a phone as well as on a large screen.
-- If other people also work on the show file, see *If two people edit the same show file* in [Writing a show file](topic:admin-writing-a-show-file).
+- If other people also work on the show file, see *If two people edit the same show file* in [Writing a show file](admin-writing-a-show-file.md).
 
 ## Before you hand over
 

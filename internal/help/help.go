@@ -394,6 +394,10 @@ func renderList(lines []string, i int) (string, int) {
 
 var topicHref = regexp.MustCompile(`^(admin|operator)-[a-z0-9-]+$`)
 
+// topicFile is a link to a topic written as the file beside it, which is what GitHub can follow (topic: links are
+// plain text there): [Writing a show file](admin-writing-a-show-file.md).
+var topicFile = regexp.MustCompile(`^((?:admin|operator)-[a-z0-9-]+)\.md$`)
+
 // Aliases maps file names used in Markdown links (for example "usage-guide.md") to topic ids,
 // so documents written for GitHub keep working when shown in the app.
 var Aliases = map[string]string{
@@ -435,6 +439,9 @@ func link(text, href string) string {
 	switch {
 	case strings.HasPrefix(base, "topic:") && topicHref.MatchString(base[6:]):
 		return `<a href="#` + base[6:] + `" data-topic="` + base[6:] + `"` + fragAttr + `>` + label + "</a>"
+	case topicFile.MatchString(base):
+		id := topicFile.FindStringSubmatch(base)[1]
+		return `<a href="#` + id + `" data-topic="` + id + `"` + fragAttr + `>` + label + "</a>"
 	case rel == "sample/sample-show.md": // the starter file, as GitHub shows it; in the app it is the download
 		return `<a href="/help/sample-show.md">` + label + "</a>"
 	case pathLinks[rel] != "":

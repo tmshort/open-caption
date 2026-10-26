@@ -1,6 +1,6 @@
 # Preparar un archivo del espectáculo
 
-Esta página es para quien convierte el guion en subtítulos. No necesita dirigir la función ni saber nada de redes. Un archivo del espectáculo es un archivo de texto corriente, así que puede escribirlo con el programa que prefiera, en cualquier ordenador, y traerlo a Configuración cuando esté listo. [Escribir un archivo del espectáculo](topic:admin-writing-a-show-file) enumera todas las marcas que puede usar; esta página trata de cómo abordar el trabajo.
+Esta página es para quien convierte el guion en subtítulos. No necesita dirigir la función ni saber nada de redes. Un archivo del espectáculo es un archivo de texto corriente, así que puede escribirlo con el programa que prefiera, en cualquier ordenador, y traerlo a Configuración cuando esté listo. [Escribir un archivo del espectáculo](admin-writing-a-show-file.md) enumera todas las marcas que puede usar; esta página trata de cómo abordar el trabajo.
 
 ## La versión corta
 
@@ -58,7 +58,7 @@ Para empezar un **espectáculo nuevo** a partir de un archivo, use **Importar un
 - Puede comprobar un archivo de espectáculo sin abrir la configuración: en el equipo de subtitulado ejecute `open-caption --check-show show.md` (añada después las traducciones, por ejemplo `show.es.md`). Muestra los mismos problemas con sus números de línea y termina con un estado distinto de cero si hay errores, así que puede usarlo mientras edita o en un script. `open-caption --help` lista las opciones.
 - El panel junto al editor muestra lo que recorrerá el operador, una fila por cada pulsación de la barra espaciadora. Compruebe que el número de filas es el que espera.
 - Ejecute el paso **Prueba** para ver los subtítulos como los verá el público, en un teléfono además de en una pantalla grande.
-- Si otras personas también trabajan en el archivo del espectáculo, vea *Si dos personas editan el mismo archivo* en [Escribir un archivo del espectáculo](topic:admin-writing-a-show-file).
+- Si otras personas también trabajan en el archivo del espectáculo, vea *Si dos personas editan el mismo archivo* en [Escribir un archivo del espectáculo](admin-writing-a-show-file.md).
 
 ## Antes de entregarlo
 

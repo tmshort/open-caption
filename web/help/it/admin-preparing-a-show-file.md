@@ -1,6 +1,6 @@
 # Preparare un file dello spettacolo
 
-Questa pagina è per chi trasforma il copione in sottotitoli. Non serve condurre lo spettacolo né sapere nulla della rete. Un file dello spettacolo è un normale file di testo: puoi scriverlo con il programma che preferisci, su qualsiasi computer, e portarlo nella Configurazione quando è pronto. [Scrivere un file dello spettacolo](topic:admin-writing-a-show-file) elenca tutti i marcatori che puoi usare; questa pagina spiega come affrontare il lavoro.
+Questa pagina è per chi trasforma il copione in sottotitoli. Non serve condurre lo spettacolo né sapere nulla della rete. Un file dello spettacolo è un normale file di testo: puoi scriverlo con il programma che preferisci, su qualsiasi computer, e portarlo nella Configurazione quando è pronto. [Scrivere un file dello spettacolo](admin-writing-a-show-file.md) elenca tutti i marcatori che puoi usare; questa pagina spiega come affrontare il lavoro.
 
 ## In breve
 
@@ -58,7 +58,7 @@ Per iniziare uno **spettacolo nuovo** da un file, usa **Importa uno spettacolo**
 - Puoi controllare un file dello spettacolo senza aprire la configurazione: sul computer dei sottotitoli esegui `open-caption --check-show show.md` (aggiungi dopo le traduzioni, per esempio `show.es.md`). Mostra gli stessi problemi con i numeri di riga e termina con uno stato diverso da zero se ci sono errori, così puoi usarlo mentre modifichi o in uno script. `open-caption --help` elenca le opzioni.
 - Il pannello accanto all'editor mostra ciò che l'operatore percorrerà, una riga per ogni pressione della barra spaziatrice. Controlla che il numero di righe sia quello che ti aspetti.
 - Esegui il passaggio **Prova** per vedere i sottotitoli come li vedrà il pubblico, su un telefono oltre che su uno schermo grande.
-- Se anche altre persone lavorano al file dello spettacolo, vedi *Se due persone modificano lo stesso file* in [Scrivere un file dello spettacolo](topic:admin-writing-a-show-file).
+- Se anche altre persone lavorano al file dello spettacolo, vedi *Se due persone modificano lo stesso file* in [Scrivere un file dello spettacolo](admin-writing-a-show-file.md).
 
 ## Prima di consegnare
 
