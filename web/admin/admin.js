@@ -577,7 +577,7 @@
     } else {
       if (!current.length) p.append(h('div', { class: 'card empty' }, h('p', { class: 'big' }, __('All your shows are archived. Create a new show below, or restore one from the archive.'))));
       current.forEach((s) => p.append(h('div', { class: 'card show' },
-        h('div', { class: 'name' }, s.name, ' ', s.active ? h('span', { class: 'badge active' }, __('ACTIVE')) : null, ' ', s.live ? h('span', { class: 'badge live' }, __('ON AIR')) : null,
+        h('div', { class: 'name' }, s.name, ' ', s.live ? h('span', { class: 'badge live' }, __('ON AIR')) : s.active ? h('span', { class: 'badge standby' }, __('ACTIVE') + ' · ' + __('STANDBY')) : null,
           h('div', { class: 'hint' }, __('Updated {when}', { when: new Date(s.updated).toLocaleString(OCI18n.lang) }))),
         h('button', { class: A.cur === s.id ? '' : 'primary', onclick: () => { setCur(s.id); go('showfile'); } }, A.cur === s.id ? __('Continue with this show') : __('Work on this show')),
         moreMenu(s.name, [

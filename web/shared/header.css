@@ -17,7 +17,7 @@ header h1 span { color: var(--dim, #8b909a); font-weight: 400; }
   background: var(--bg, #0b0b0d); border: 1px solid var(--line, #3a3a44); color: inherit;
 }
 .pill.live, .badge.on, .badge.live { background: #b3261e; border-color: #b3261e; color: #fff; font-weight: 700; } /* the same red on both pages (each page's own --bad differs) */
-.badge.standby { background: #1d3b6f; border-color: #1d3b6f; color: #cfe0ff; font-weight: 700; }
+.pill.standby, .badge.standby { background: #f0b24a; border-color: #f0b24a; color: #231500; font-weight: 700; } /* standby is amber (red is on air; green is OK), the same on both pages */
 /* the audience count is a button that lists the connected devices, drawn as the pill it was */
 header button.pill { min-height: 0; padding: .1rem .6rem; font: inherit; font-size: .85rem; line-height: 1.4; cursor: pointer; color: inherit; background: var(--bg, #0b0b0d); border: 1px solid var(--line, #3a3a44); border-radius: 99px; }
 header button.pill:hover { border-color: var(--accent, #ffd400); }

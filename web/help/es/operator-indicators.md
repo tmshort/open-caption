@@ -4,7 +4,7 @@
 |-----------|---------------|
 | Barra roja bajo la cabecera, «Se perdió la conexión con el programa» | La página no puede comunicarse con el programa. Se reconecta sola y la barra desaparece; no se pierde nada |
 | **● EN VIVO** | El espectáculo está en el aire: el público lo ve |
-| **EN ESPERA** y un cartel azul | El público ve la pantalla de espera del local y nada del espectáculo. **Espacio** (**INICIAR**) lo pone en el aire |
+| **EN ESPERA** y un cartel ámbar | El público ve la pantalla de espera del local y nada del espectáculo. **Espacio** (**INICIAR**) lo pone en el aire |
 | Icono de personas y un número | Cuántos dispositivos del público están conectados. Con varios idiomas, el número va seguido de una cuenta por idioma, como `(en 60 · es 23)` |
 | **Usted tiene el control** | Sus teclas controlan el espectáculo |
 | **Otro operador tiene el control** | Puede mirar pero no enviar. **Asumir el control** se lo quita |

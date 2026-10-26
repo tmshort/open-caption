@@ -565,6 +565,9 @@ async function main() {
         await work(act.name);
         const p2 = await pills();
         check('and there is only the Active pill when the show being worked on is the active one', p2.w === null && p2.a && p2.a.startsWith('Active: ' + act.name), p2);
+        await step(guard, 'Shows'); await sleep(600);
+        const badge = await guard.evaluate((n) => { const c = [...document.querySelectorAll('.card.show')].find((x) => x.querySelector('.name').firstChild.textContent.trim() === n); const b = c.querySelector('.badge'); return b ? { text: b.textContent, cls: b.className, bg: getComputedStyle(b).backgroundColor } : null; }, act.name);
+        check('the active show\'s card says its state in the state colour: amber for standby, red for on air (never green)', !!badge && ((/ACTIVE · STANDBY/.test(badge.text) && /standby/.test(badge.cls) && badge.bg === 'rgb(240, 178, 74)') || (/ON AIR/.test(badge.text) && /live/.test(badge.cls) && badge.bg === 'rgb(179, 38, 30)')), badge);
       }
     }
     await click(guard, 'Settings'); await sleep(600);

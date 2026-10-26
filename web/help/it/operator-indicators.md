@@ -4,7 +4,7 @@
 |-----------|----------------|
 | Barra rossa sotto l'intestazione, «Connessione al programma persa» | La pagina non riesce a raggiungere il programma. Si ricollega da sola e la barra scompare; non si perde nulla |
 | **● IN ONDA** | Lo spettacolo è in onda: il pubblico lo vede |
-| **IN ATTESA** e un banner blu | Il pubblico vede la schermata di attesa della sala e nulla dello spettacolo. **Spazio** (**AVVIA**) lo mette in onda |
+| **IN ATTESA** e un banner ambra | Il pubblico vede la schermata di attesa della sala e nulla dello spettacolo. **Spazio** (**AVVIA**) lo mette in onda |
 | Icona di persone e un numero | Quanti dispositivi del pubblico sono connessi. Con più lingue il numero è seguito da un conteggio per lingua, come `(en 60 · es 23)` |
 | **Hai il controllo** | I tuoi tasti controllano lo spettacolo |
 | **Un altro operatore ha il controllo** | Puoi guardare ma non inviare. **Subentra** glielo toglie |

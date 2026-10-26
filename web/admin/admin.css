@@ -24,7 +24,6 @@ main.wide { max-width: none; } /* the Show file step grows with the window */
 .empty .row { justify-content: center; margin-top: 1rem; }
 .show { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
 .show .name { font-weight: 600; font-size: 1.05rem; flex: 1 1 14rem; }
-.badge.active { background: var(--ok); border-color: var(--ok); color: #fff; font-weight: 700; } /* the shape and size of every badge and pill are in header.css */  /* .badge.live is in header.css, the same red as the LIVE pill */
 
 /* script editor */
 .langtabs { display: flex; gap: .3rem; flex-wrap: wrap; margin: 0 0 .8rem; align-items: center; }
@@ -193,7 +192,6 @@ dialog menu { flex: none; }
 input.newname { font-size: 1.1rem; min-height: 2.8rem; padding: .55rem .8rem; width: 24rem; max-width: 100%; }
 .addrow > button { min-height: 2.8rem; }
 a.quiet { background: none; border: none; color: var(--dim); text-decoration: none; padding: .3rem .5rem; }
-@media (prefers-color-scheme: dark) { .badge.active { color: #08140d; } } /* dark text on the lighter green of the dark theme */
 .namehint { margin: -.2rem 0 .4rem 1.9rem; }
 .urlhead { margin: .6rem 0 .1rem; font-size: .95rem; }
 .urlgroup:first-child .urlhead { margin-top: 0; }
@@ -239,6 +237,5 @@ a.quiet { background: none; border: none; color: var(--dim); text-decoration: no
 /* the header's "Working on: … · Active: …" pill can hold two show names */
 #working { max-width: min(30rem, 40vw); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* the header's two show pills: standby is green, on air is the red of .pill.live (header.css); the text says the state too */
-.pill.standby { background: #1b6b43; border-color: #1b6b43; color: #fff; font-weight: 700; }
+/* the header's two show pills: standby (amber) and on air (red) are in header.css; the text says the state too */
 #active { max-width: min(30rem, 40vw); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

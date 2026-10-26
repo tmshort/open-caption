@@ -4,7 +4,7 @@
 |---------------|-----------------|
 | Roter Balken unter der Kopfzeile, „Verbindung zum Programm verloren“ | Die Seite erreicht das Programm nicht. Sie verbindet sich von selbst neu und der Balken verschwindet; es geht nichts verloren |
 | **● AUF SENDUNG** | Die Show ist auf Sendung: das Publikum sieht sie |
-| **STANDBY** und ein blaues Banner | Das Publikum sieht den Standby-Bildschirm des Hauses und nichts von der Show. Die **Leertaste** (**START**) bringt sie auf Sendung |
+| **STANDBY** und ein bernsteinfarbenes Banner | Das Publikum sieht den Standby-Bildschirm des Hauses und nichts von der Show. Die **Leertaste** (**START**) bringt sie auf Sendung |
 | Personensymbol und eine Zahl | Wie viele Publikumsgeräte verbunden sind. Bei mehreren Sprachen folgt auf die Zahl eine Zählung je Sprache, etwa `(en 60 · es 23)` |
 | **Sie haben die Steuerung** | Ihre Tasten steuern die Show |
 | **Ein anderer Operator hat die Steuerung** | Sie können zusehen, aber nichts senden. **Übernehmen** nimmt sie ihm ab |

@@ -4,7 +4,7 @@
 |-------------------|----------------------|
 | Barre rouge sous l'en-tête, « Connexion au programme perdue » | La page ne peut pas joindre le programme. Elle se reconnecte toute seule et la barre disparaît ; rien n'est perdu |
 | **● EN DIRECT** | Le spectacle est à l'antenne : le public le voit |
-| **EN ATTENTE** et un bandeau bleu | Le public voit l'écran d'attente du lieu et rien du spectacle. **Espace** (**DÉMARRER**) le met à l'antenne |
+| **EN ATTENTE** et un bandeau ambre | Le public voit l'écran d'attente du lieu et rien du spectacle. **Espace** (**DÉMARRER**) le met à l'antenne |
 | Icône de personnes et un nombre | Combien d'appareils du public sont connectés. Avec plusieurs langues, le nombre est suivi d'un décompte par langue, comme `(en 60 · es 23)` |
 | **Vous avez la main** | Vos touches pilotent le spectacle |
 | **Un autre opérateur a la main** | Vous pouvez regarder mais pas envoyer. **Reprendre la main** la lui retire |
