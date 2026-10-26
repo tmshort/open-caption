@@ -277,7 +277,7 @@ func tlsConfig(ctx context.Context, cfg config.Config, api *httpapi.Server) *tls
 		logx.Infof("HTTPS: automatic certificate for %s from %s with DNS provider %s", a.Domain, a.Directory, a.DNS.Provider)
 		return &tls.Config{GetCertificate: m.GetCertificate, MinVersion: tls.VersionTLS12}
 	}
-	logx.Warnf("HTTPS is using a self-signed certificate: browsers will show a warning until it is accepted")
+	logx.Infof("HTTPS is using a self-signed certificate: browsers will show a warning until it is accepted (Setup's Share step says so too; docs/https-certificate-guide.md explains how to get a trusted one)")
 	return &tls.Config{Certificates: []tls.Certificate{cert}, MinVersion: tls.VersionTLS12}
 }
 
