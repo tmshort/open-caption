@@ -11,6 +11,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/tmshort/open-caption/internal/showfile"
 )
 
 func testDefaults() Defaults {
@@ -549,5 +551,20 @@ func TestListIsSortedByNameWhateverIsEdited(t *testing.T) {
 	}
 	if got := names(); got != want {
 		t.Errorf("after an edit: got %s, want %s", got, want)
+	}
+}
+
+func TestSpeakerPositionLayers(t *testing.T) {
+	var d Defaults
+	if got := d.Resolve(showfile.Settings{}).SpeakerPosition; got != "above" {
+		t.Errorf("default = %q, want above", got)
+	}
+	d.Look.SpeakerPosition = "column"
+	if got := d.Resolve(showfile.Settings{}).SpeakerPosition; got != "column" {
+		t.Errorf("config default = %q, want column", got)
+	}
+	beside := "beside"
+	if got := d.Resolve(showfile.Settings{SpeakerPosition: &beside}).SpeakerPosition; got != "beside" {
+		t.Errorf("show file = %q, want beside", got)
 	}
 }

@@ -258,8 +258,8 @@ OCI18n.add("es", {
  "Monospace": "Monoespaciada",
  "Dyslexia-friendly (OpenDyslexic)": "Apta para dislexia (OpenDyslexic)",
  "High legibility (Atkinson Hyperlegible)": "Alta legibilidad (Atkinson Hyperlegible)",
- "Show above the line (in the speaker name color)": "Mostrar sobre la línea (con el color de los nombres de personaje)",
- "Show above the line, a different color for each character": "Mostrar sobre la línea, con un color distinto para cada personaje",
+ "Show (in the speaker name color)": "Mostrar (con el color de los nombres de personaje)",
+ "Show, a different color for each character": "Mostrar, con un color distinto para cada personaje",
  "Hide": "Ocultar",
  "Phone preview": "Vista previa en teléfono",
  "Projector preview": "Vista previa en proyector",
@@ -758,5 +758,10 @@ OCI18n.add("es", {
   "No speaker names found. A speaker name is written in capitals before a colon, like ALICE: Hello.": "No se encontraron nombres de personaje. Un nombre se escribe en mayúsculas antes de dos puntos, como ALICE: Hola.",
   "Go to its first line": "Ir a su primera línea",
   "{n} line(s)": "{n} línea(s)",
-  "Did you mean {name}?": "¿Quiso decir {name}?"
+  "Did you mean {name}?": "¿Quiso decir {name}?",
+  "Speaker name position": "Posición del nombre de personaje",
+  "Above the line": "Sobre la línea",
+  "Beside the text, on the same line": "Junto al texto, en la misma línea",
+  "In a column to the left of the text": "En una columna a la izquierda del texto",
+  "{0} is not a speaker-name position: use above (over the line), beside (on the same line) or column (in a column left of the text)": "{0} no es una posición del nombre de personaje: use above (sobre la línea), beside (en la misma línea) o column (en una columna a la izquierda del texto)"
 });

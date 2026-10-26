@@ -61,6 +61,7 @@ type Theme struct {
 	Font            string  `json:"font"`
 	ScalePct        int     `json:"scalePct"`
 	Speakers        string  `json:"speakers"`
+	SpeakerPosition string  `json:"speakerPosition"` // above | beside | column
 	IdleMessage     string  `json:"idleMessage"`
 	LoopSeconds     float64 `json:"loopSeconds"`
 	ScrollbackLines int     `json:"scrollbackLines"`
@@ -101,6 +102,12 @@ func (d Defaults) Resolve(s showfile.Settings) Theme {
 	if s.SpeakerNames != nil {
 		t.Speakers = *s.SpeakerNames
 	}
+	if s.SpeakerPosition != nil {
+		t.SpeakerPosition = *s.SpeakerPosition
+	}
+	if t.SpeakerPosition == "" {
+		t.SpeakerPosition = "above"
+	}
 	if s.IdleMessage != nil && strings.TrimSpace(*s.IdleMessage) != "" {
 		t.IdleMessage = *s.IdleMessage
 	}
@@ -138,6 +145,9 @@ func (t Theme) Normalize(d Defaults) (Theme, error) {
 	}
 	if t.Speakers, err = showfile.NormalizeSpeakerNames(pick(t.Speakers, def.Speakers)); err != nil {
 		return bad("speaker names", err)
+	}
+	if t.SpeakerPosition, err = showfile.NormalizeSpeakerPosition(pick(t.SpeakerPosition, pick(def.SpeakerPosition, "above"))); err != nil {
+		return bad("speaker position", err)
 	}
 	if t.ScalePct == 0 {
 		t.ScalePct = def.ScalePct
@@ -441,6 +451,7 @@ func (s *Store) Update(id string, name *string, look *Theme) (Meta, error) {
 		if look != nil {
 			st.Background, st.TextColor, st.SpeakerColor, st.Font = &th.BG, &th.FG, &th.Accent, &th.Font
 			st.TextSize, st.SpeakerNames, st.IdleMessage = &th.ScalePct, &th.Speakers, &th.IdleMessage
+			st.SpeakerPosition = &th.SpeakerPosition
 			st.LoopSeconds, st.ScrollbackLines = &th.LoopSeconds, &th.ScrollbackLines
 		}
 	})

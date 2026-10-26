@@ -63,6 +63,7 @@ affect the operator's list or the structure comparison between languages. If `[/
 | `font` | `system` (default, clean, sans), `serif`, `mono` (monospace), `dyslexic` (dyslexia friendly, OpenDyslexic), `hyperlegible` (high legibility, Atkinson) | `defaults.look.font` |
 | `text size` (size, scale) | 50–300, optionally with `%` | `defaults.look.text_size_percent` |
 | `speaker names` (speakers) | `label` (one color), `color` (a different color per character), `hidden` | `defaults.look.speaker_names` |
+| `speaker position` (speaker placement) | `above` (the name over the line), `beside` (on the same line, before the text, bold), `column` (a column left of the text); voices shown together always use `beside` | `defaults.look.speaker_position` |
 | `idle message` (idle) | up to 200 characters; shown before the first line is sent | `defaults.idle_message` |
 | `loop seconds` (loop time) | seconds, more than 0 and at most 3600 | `defaults.loop_item_seconds` |
 | `scrollback lines` (scrollback) | 20–2000 | `audience.scrollback_lines` |

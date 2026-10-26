@@ -122,6 +122,7 @@ What a show uses when its own show file does not say. A show file's `[settings]`
 | `defaults.look.font` | `system` | `system`, `serif`, `mono`, `dyslexic` or `hyperlegible` |
 | `defaults.look.text_size_percent` | `100` | Caption text size, 50 to 300 |
 | `defaults.look.speaker_names` | `label` | `label` (names in one colour), `color` (a different colour for each character) or `hidden` |
+| `defaults.look.speaker_position` | `above` | `above` (the name over the line), `beside` (on the same line, before the text) or `column` (in a column to the left of the text) |
 
 ### `audience`
 

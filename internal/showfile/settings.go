@@ -22,6 +22,7 @@ type Settings struct {
 	Font            *string  `json:"font,omitempty"`
 	TextSize        *int     `json:"textSize,omitempty"` // percent
 	SpeakerNames    *string  `json:"speakerNames,omitempty"`
+	SpeakerPosition *string  `json:"speakerPosition,omitempty"`
 	IdleMessage     *string  `json:"idleMessage,omitempty"`
 	LoopSeconds     *float64 `json:"loopSeconds,omitempty"`
 	ScrollbackLines *int     `json:"scrollbackLines,omitempty"`
@@ -42,7 +43,7 @@ func (s Settings) TitleOr(fallback string) string {
 
 // LookSet reports whether any of the look settings (colors, font, size, speaker names) are set.
 func (s Settings) LookSet() bool {
-	return s.Background != nil || s.TextColor != nil || s.SpeakerColor != nil || s.Font != nil || s.TextSize != nil || s.SpeakerNames != nil
+	return s.Background != nil || s.TextColor != nil || s.SpeakerColor != nil || s.Font != nil || s.TextSize != nil || s.SpeakerNames != nil || s.SpeakerPosition != nil
 }
 
 // setting describes one key of the [settings] block.
@@ -62,6 +63,7 @@ var settingTable = []setting{
 	{name: "font", aliases: []string{"typeface"}, help: "system, serif, mono, dyslexic or hyperlegible."},
 	{name: "text size", aliases: []string{"size", "font size", "scale"}, help: "Caption size as a percentage, 50 to 300 (100 is normal)."},
 	{name: "speaker names", aliases: []string{"speakers", "speaker style"}, help: "label (one color), color (a different color for each character) or hidden."},
+	{name: "speaker position", aliases: []string{"speaker placement", "name position", "speaker name position"}, help: "above (the name over the line), beside (on the same line, before the text) or column (in a column to the left of the text)."},
 	{name: "idle message", aliases: []string{"idle", "pre-show message", "preshow message", "message before the show starts"}, translated: true, help: "Text shown before the first line is sent."},
 	{name: "loop seconds", aliases: []string{"loop time", "default loop seconds", "loop item seconds"}, help: "How long each item of a [loop] stays when it does not say."},
 	{name: "scrollback lines", aliases: []string{"scrollback", "lines kept"}, help: "How many captions a viewer can scroll back through (20 to 2000)."},
@@ -162,6 +164,20 @@ func NormalizeSpeakerNames(v string) (string, error) {
 	return "", fmt.Errorf("%q is not a speaker-name style: use label (one color), color (a different color for each character) or hidden", v)
 }
 
+var positionAliases = map[string]string{
+	"above": "above", "over": "above", "on top": "above", "own line": "above", "line above": "above",
+	"beside": "beside", "inline": "beside", "in line": "beside", "same line": "beside", "next to": "beside", "before": "beside", "before the text": "beside",
+	"column": "column", "hanging": "column", "left": "column", "margin": "column", "in a column": "column", "left column": "column",
+}
+
+// NormalizeSpeakerPosition returns above, beside or column.
+func NormalizeSpeakerPosition(v string) (string, error) {
+	if f, ok := positionAliases[normKey(v)]; ok {
+		return f, nil
+	}
+	return "", fmt.Errorf("%q is not a speaker-name position: use above (over the line), beside (on the same line) or column (in a column left of the text)", v)
+}
+
 // NormalizeTextSize accepts "120", "120%" and returns the percentage (50 to 300).
 func NormalizeTextSize(v string) (int, error) {
 	n, err := strconv.Atoi(strings.TrimSpace(strings.TrimSuffix(strings.TrimSpace(v), "%")))
@@ -237,6 +253,12 @@ func (s *Settings) set(name, value string) error {
 			return err
 		}
 		s.SpeakerNames = &f
+	case "speaker position":
+		f, err := NormalizeSpeakerPosition(value)
+		if err != nil {
+			return err
+		}
+		s.SpeakerPosition = &f
 	case "idle message":
 		if n := utf8.RuneCountInString(value); n > MaxIdleMessage {
 			return fmt.Errorf("the idle message is too long (%d characters; the limit is %d)", n, MaxIdleMessage)
@@ -469,6 +491,9 @@ func (s Settings) render() []string {
 	}
 	if s.SpeakerNames != nil {
 		add("speaker names", *s.SpeakerNames)
+	}
+	if s.SpeakerPosition != nil {
+		add("speaker position", *s.SpeakerPosition)
 	}
 	if s.IdleMessage != nil {
 		add("idle message", *s.IdleMessage)

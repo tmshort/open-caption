@@ -238,6 +238,7 @@ defaults:                          # used when a show file does not say otherwis
     font: system                   # system | serif | mono | dyslexic | hyperlegible
     text_size_percent: 100
     speaker_names: label           # label | color | hidden
+    speaker_position: above        # above | beside | column
 audience:
   max_clients: 500                 # per language
   scrollback_lines: 200

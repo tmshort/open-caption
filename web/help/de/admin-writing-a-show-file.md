@@ -61,6 +61,7 @@ scrollback lines: 200
 | `font` | `system`, `serif`, `mono`, `dyslexic` oder `hyperlegible` |
 | `text size` | Eine Prozentzahl von 50 bis 300; 100 ist normal |
 | `speaker names` | `label` (eine Farbe), `color` (eine andere Farbe für jede Figur) oder `hidden` |
+| `speaker position` | `above` (der Name über der Zeile), `beside` (in derselben Zeile, vor dem Text) oder `column` (in einer Spalte links vom Text) |
 | `idle message` | Die Worte, die vor dem Senden der ersten Zeile gezeigt werden |
 | `loop seconds` | Wie lange jedes Element einer `[loop]` stehen bleibt, wenn es nichts angibt |
 | `scrollback lines` | Wie viele Untertitel ein Zuschauer zurückblättern kann (20 bis 2000) |

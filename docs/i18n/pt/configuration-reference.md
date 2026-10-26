@@ -122,6 +122,7 @@ O que um espetáculo usa quando o seu próprio arquivo não diz. O bloco `[setti
 | `defaults.look.font` | `system` | `system`, `serif`, `mono`, `dyslexic` ou `hyperlegible` |
 | `defaults.look.text_size_percent` | `100` | Tamanho do texto das legendas, de 50 a 300 |
 | `defaults.look.speaker_names` | `label` | `label` (nomes em uma só cor), `color` (uma cor diferente para cada personagem) ou `hidden` |
+| `defaults.look.speaker_position` | `above` | `above` (o nome acima da linha), `beside` (na mesma linha, antes do texto) ou `column` (em uma coluna à esquerda do texto) |
 
 ### `audience`
 

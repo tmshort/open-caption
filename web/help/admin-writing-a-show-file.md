@@ -61,6 +61,7 @@ scrollback lines: 200
 | `font` | `system`, `serif`, `mono`, `dyslexic` or `hyperlegible` |
 | `text size` | A percentage from 50 to 300; 100 is normal |
 | `speaker names` | `label` (one color), `color` (a different color for each character) or `hidden` |
+| `speaker position` | `above` (the name over the line), `beside` (on the same line, before the text) or `column` (in a column to the left of the text) |
 | `idle message` | The words shown before the first line is sent |
 | `loop seconds` | How long each item of a `[loop]` stays when it does not say |
 | `scrollback lines` | How many captions a viewer can scroll back through (20 to 2000) |

@@ -988,7 +988,8 @@
     mk('bg', 'Background', h('input', { type: 'color' })); mk('fg', 'Text', h('input', { type: 'color' })); mk('accent', 'Speaker name color', h('input', { type: 'color' }));
     mk('font', 'Font', h('select', {}, h('option', { value: 'system' }, __('Clean (system)')), h('option', { value: 'serif' }, __('Serif')), h('option', { value: 'mono' }, __('Monospace')), h('option', { value: 'dyslexic' }, __('Dyslexia-friendly (OpenDyslexic)')), h('option', { value: 'hyperlegible' }, __('High legibility (Atkinson Hyperlegible)'))));
     mk('scalePct', 'Text size', h('input', { type: 'range', min: '60', max: '200', step: '10' }));
-    mk('speakers', 'Speaker names', h('select', {}, h('option', { value: 'label' }, __('Show above the line (in the speaker name color)')), h('option', { value: 'color' }, __('Show above the line, a different color for each character')), h('option', { value: 'hidden' }, __('Hide'))));
+    mk('speakers', 'Speaker names', h('select', {}, h('option', { value: 'label' }, __('Show (in the speaker name color)')), h('option', { value: 'color' }, __('Show, a different color for each character')), h('option', { value: 'hidden' }, __('Hide'))));
+    mk('speakerPosition', 'Speaker name position', h('select', {}, h('option', { value: 'above' }, __('Above the line')), h('option', { value: 'beside' }, __('Beside the text, on the same line')), h('option', { value: 'column' }, __('In a column to the left of the text'))));
     mk('idleMessage', 'Pre-show message', h('input', { type: 'text', maxlength: '200' }));
     mk('loopSeconds', 'Default time for each item in a loop (seconds)', h('input', { type: 'number', min: '1', max: '3600', step: 'any' }));
     mk('scrollbackLines', 'Captions a viewer can scroll back through', h('input', { type: 'number', min: '20', max: '2000', step: '10' }));
@@ -1004,26 +1005,28 @@
     const ratio = h('div', { class: 'hint' });
     const sizeLabel = h('span', { class: 'hint' });
     const phone = h('div', { class: 'preview phone', role: 'img', 'aria-label': __('Phone preview') }), proj = h('div', { class: 'preview proj', role: 'img', 'aria-label': __('Projector preview') });
-    const sample = () => [h('p', { class: 'dim2' }, __('The train was late, Margaret.')), h('p', { class: 'dim1' }, h('span', { class: 'spk' }, __('Margaret')), __('The train is never late.')), h('p', {}, h('span', { class: 'spk' }, __('Edwin')), __('Is that tea for '), h('b', {}, __('me?')))];
+    const sample = () => [h('p', { class: 'dim2' }, h('span', {}, __('The train was late, Margaret.'))), h('p', { class: 'dim1' }, h('span', { class: 'spk' }, __('Margaret')), h('span', {}, __('The train is never late.'))), h('p', {}, h('span', { class: 'spk' }, __('Edwin')), h('span', {}, __('Is that tea for '), h('b', {}, __('me?'))))];
 
     function read() {
-      for (const k of ['bg', 'fg', 'accent', 'font', 'speakers', 'idleMessage']) t[k] = ctl[k].value;
+      for (const k of ['bg', 'fg', 'accent', 'font', 'speakers', 'speakerPosition', 'idleMessage']) t[k] = ctl[k].value;
       t.scalePct = Number(ctl.scalePct.value);
       t.loopSeconds = Number(ctl.loopSeconds.value);
       t.scrollbackLines = Number(ctl.scrollbackLines.value);
       t.idleMessages = {};
       Object.keys(idleOthers).forEach((c) => { if (idleOthers[c].value.trim()) t.idleMessages[c] = idleOthers[c].value.trim(); });
     }
-    function write() { for (const k of ['bg', 'fg', 'accent', 'font', 'speakers', 'idleMessage', 'scalePct', 'loopSeconds', 'scrollbackLines']) ctl[k].value = t[k]; }
+    function write() { t.speakerPosition = t.speakerPosition || 'above'; for (const k of ['bg', 'fg', 'accent', 'font', 'speakers', 'speakerPosition', 'idleMessage', 'scalePct', 'loopSeconds', 'scrollbackLines']) ctl[k].value = t[k]; }
     function paint() {
       const c = contrast(t.bg, t.fg);
       ratio.textContent = __('Contrast {ratio} : 1', { ratio: c.toFixed(1) }) + ' — ' + __(c >= 7 ? 'excellent' : c >= 4.5 ? 'acceptable, but higher is easier to read in a dark room' : 'too low to read comfortably');
       ratio.className = c >= 7 ? 'status-ok' : c >= 4.5 ? 'status-warn' : 'status-bad';
       sizeLabel.textContent = t.scalePct + '%';
+      ctl.speakerPosition.disabled = t.speakers === 'hidden'; // there is no name to place
       for (const f of [phone, proj]) {
         f.style.setProperty('--pbg', t.bg); f.style.setProperty('--pfg', t.fg); f.style.setProperty('--paccent', t.accent);
         f.style.setProperty('--pfont', FONTS[t.font] || FONTS.system); f.style.setProperty('--pscale', String(t.scalePct / 100));
         f.replaceChildren(...sample());
+        f.classList.toggle('pos-beside', t.speakerPosition === 'beside'); f.classList.toggle('pos-column', t.speakerPosition === 'column');
         if (t.speakers === 'hidden') f.querySelectorAll('.spk').forEach((e) => e.remove());
         if (t.speakers === 'color' && window.OCSpeakers) f.querySelectorAll('.spk').forEach((e) => { e.style.color = OCSpeakers.forName(e.textContent, ['Margaret', 'Edwin'], t.bg); });
       }
@@ -1032,7 +1035,7 @@
     // pre-show message in every language together (full width), then the loop and scrollback numbers.
     const L = (k) => ctl[k].closest('label'), wide = (e) => { e.classList.add('wide'); return e; };
     L('scalePct').append(sizeLabel);
-    const fieldOrder = [L('bg'), L('fg'), wide(h('div', { class: 'contrastrow' }, ratio)), L('accent'), L('font'), wide(L('scalePct')), wide(L('speakers')), wide(L('idleMessage')), ...idleLabels.map(wide), L('loopSeconds'), L('scrollbackLines')];
+    const fieldOrder = [L('bg'), L('fg'), wide(h('div', { class: 'contrastrow' }, ratio)), L('accent'), L('font'), wide(L('scalePct')), wide(L('speakers')), wide(L('speakerPosition')), wide(L('idleMessage')), ...idleLabels.map(wide), L('loopSeconds'), L('scrollbackLines')];
     write(); paint();
     Object.values(ctl).forEach((i) => i.addEventListener('input', () => { read(); paint(); }));
     const presets = h('div', { class: 'presets' }, ...PRESETS.map(([n, bg, fg, ac]) => h('button', { class: 'swatch', ref: (b) => { b.style.background = bg; b.style.color = fg; b.style.borderColor = ac; }, title: __('Use these colors'), onclick: () => { Object.assign(t, { bg, fg, accent: ac }); write(); paint(); } }, __(n))));

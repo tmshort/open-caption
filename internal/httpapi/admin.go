@@ -65,7 +65,7 @@ func (s *Server) SetListeners(l Listeners) {
 }
 
 func themeToRuntime(t show.Theme) Theme {
-	return Theme{BG: t.BG, FG: t.FG, Accent: t.Accent, Font: t.Font, ScalePct: t.ScalePct, Speakers: t.Speakers, IdleMessage: t.IdleMessage,
+	return Theme{BG: t.BG, FG: t.FG, Accent: t.Accent, Font: t.Font, ScalePct: t.ScalePct, Speakers: t.Speakers, Position: t.SpeakerPosition, IdleMessage: t.IdleMessage,
 		IdleMessages: t.IdleMessages, LoopSeconds: t.LoopSeconds, ScrollbackLines: t.ScrollbackLines}
 }
 

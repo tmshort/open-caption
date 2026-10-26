@@ -258,8 +258,8 @@ OCI18n.add("de", {
  "Monospace": "Festbreitenschrift",
  "Dyslexia-friendly (OpenDyslexic)": "Legasthenie-freundlich (OpenDyslexic)",
  "High legibility (Atkinson Hyperlegible)": "Hohe Lesbarkeit (Atkinson Hyperlegible)",
- "Show above the line (in the speaker name color)": "Über der Zeile anzeigen (in der Farbe der Sprechernamen)",
- "Show above the line, a different color for each character": "Über der Zeile anzeigen, in einer anderen Farbe für jede Figur",
+ "Show (in the speaker name color)": "Anzeigen (in der Farbe der Sprechernamen)",
+ "Show, a different color for each character": "Anzeigen, in einer anderen Farbe für jede Figur",
  "Hide": "Ausblenden",
  "Phone preview": "Vorschau auf dem Telefon",
  "Projector preview": "Vorschau am Projektor",
@@ -758,5 +758,10 @@ OCI18n.add("de", {
   "No speaker names found. A speaker name is written in capitals before a colon, like ALICE: Hello.": "Keine Sprechernamen gefunden. Ein Sprechername steht in Großbuchstaben vor einem Doppelpunkt, etwa ALICE: Hallo.",
   "Go to its first line": "Zur ersten Zeile gehen",
   "{n} line(s)": "{n} Zeile(n)",
-  "Did you mean {name}?": "Meinten Sie {name}?"
+  "Did you mean {name}?": "Meinten Sie {name}?",
+  "Speaker name position": "Position des Sprechernamens",
+  "Above the line": "Über der Zeile",
+  "Beside the text, on the same line": "Neben dem Text, in derselben Zeile",
+  "In a column to the left of the text": "In einer Spalte links vom Text",
+  "{0} is not a speaker-name position: use above (over the line), beside (on the same line) or column (in a column left of the text)": "{0} ist keine Position für den Sprechernamen: Verwenden Sie above (über der Zeile), beside (in derselben Zeile) oder column (in einer Spalte links vom Text)"
 });

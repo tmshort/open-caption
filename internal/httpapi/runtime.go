@@ -29,7 +29,8 @@ type Theme struct {
 	Accent      string `json:"accent"`
 	Font        string `json:"font"`
 	ScalePct    int    `json:"scalePct"`
-	Speakers    string `json:"speakers"` // "label" | "color" | "hidden"
+	Speakers    string `json:"speakers"`        // "label" | "color" | "hidden"
+	Position    string `json:"speakerPosition"` // "above" | "beside" | "column"
 	IdleMessage string `json:"idleMessage"`
 	// IdleMessages are the pre-show messages in other languages (by code). Clients are sent only the
 	// one for their language, in IdleMessage.
@@ -42,7 +43,7 @@ type Theme struct {
 
 // DefaultTheme is pure black on white, high contrast (REQ-045).
 func DefaultTheme(idle string) Theme {
-	return Theme{BG: "#000000", FG: "#ffffff", Accent: "#ffffff", Font: "system", ScalePct: 100, Speakers: "label", IdleMessage: idle}
+	return Theme{BG: "#000000", FG: "#ffffff", Accent: "#ffffff", Font: "system", ScalePct: 100, Speakers: "label", Position: "above", IdleMessage: idle}
 }
 
 // AudItem is a fullscreen item as the audience sees it (image names become URLs).

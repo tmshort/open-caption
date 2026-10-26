@@ -81,6 +81,8 @@
     r.setProperty('--font', FONTS[fontKey] || FONTS.system);
     document.body.classList.toggle('dys', fontKey === 'dyslexic');
     $('fontsel').value = localFont;
+    document.body.classList.toggle('spk-beside', t.speakerPosition === 'beside');
+    document.body.classList.toggle('spk-column', t.speakerPosition === 'column');
     if (lightScheme) { r.setProperty('--bg', '#ffffff'); r.setProperty('--fg', '#000000'); r.setProperty('--accent', '#000000'); }
     else {
       r.setProperty('--bg', t.bg || '#000000'); r.setProperty('--fg', t.fg || '#ffffff');

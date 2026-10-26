@@ -211,7 +211,7 @@ func TestEveryGeneratedBlockRoundTrips(t *testing.T) {
 
 func TestSettingNamesAreStable(t *testing.T) {
 	names := strings.Join(SettingNames(), ",")
-	if names != "title,background,text color,speaker name color,font,text size,speaker names,idle message,loop seconds,scrollback lines,archived" {
+	if names != "title,background,text color,speaker name color,font,text size,speaker names,speaker position,idle message,loop seconds,scrollback lines,archived" {
 		t.Errorf("%s", names)
 	}
 	for _, n := range SettingNames() {
@@ -279,5 +279,24 @@ func TestSettingLimitsCountCharactersNotBytes(t *testing.T) {
 	}
 	if r.Settings.Title == nil || r.Settings.IdleMessage == nil {
 		t.Error("a title of 60 characters and an idle message at the limit must be accepted")
+	}
+}
+
+func TestSpeakerPositionSetting(t *testing.T) {
+	for in, want := range map[string]string{"above": "above", "Beside": "beside", "inline": "beside", "same line": "beside", "column": "column", "hanging": "column"} {
+		src := "[settings]\nspeaker position: " + in + "\n[/settings]\nHello\n"
+		r := Parse(src, Options{})
+		if r.Settings.SpeakerPosition == nil || *r.Settings.SpeakerPosition != want || len(r.Diagnostics) > 1 {
+			t.Errorf("%q: %+v %v", in, r.Settings.SpeakerPosition, r.Diagnostics)
+		}
+	}
+	bad := Parse("[settings]\nspeaker position: sideways\n[/settings]\nHello\n", Options{})
+	if bad.Settings.SpeakerPosition != nil || len(bad.Diagnostics) == 0 || !strings.Contains(bad.Diagnostics[0].Message, "speaker-name position") {
+		t.Errorf("a bad position was accepted: %+v %v", bad.Settings.SpeakerPosition, bad.Diagnostics)
+	}
+	pos := "column"
+	out := UpdateSettings("Hello\n", true, func(s *Settings) { s.SpeakerPosition = &pos })
+	if !strings.Contains(out, "speaker position: column") {
+		t.Errorf("not written: %q", out)
 	}
 }

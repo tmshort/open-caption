@@ -122,6 +122,7 @@ Lo que usa un espectáculo cuando su propio archivo no lo dice. El bloque `[sett
 | `defaults.look.font` | `system` | `system`, `serif`, `mono`, `dyslexic` o `hyperlegible` |
 | `defaults.look.text_size_percent` | `100` | Tamaño del texto de los subtítulos, de 50 a 300 |
 | `defaults.look.speaker_names` | `label` | `label` (nombres en un solo color), `color` (un color distinto para cada personaje) o `hidden` |
+| `defaults.look.speaker_position` | `above` | `above` (el nombre sobre la línea), `beside` (en la misma línea, antes del texto) o `column` (en una columna a la izquierda del texto) |
 
 ### `audience`
 

@@ -55,6 +55,13 @@ body.dys #fs { line-height: 1.35; }
 .cap.group .part { border-inline-start: .14em solid var(--accent); padding-inline-start: .55em; overflow-wrap: anywhere; }
 .cap.group .part.sung { font-style: italic; }
 .cap.group .spk { display: block; font-size: .55em; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); opacity: .9; }
+/* Speaker names beside the text (Look > Speaker name position): bold, on the same line, wrapping under the name when long. */
+body.spk-beside .cap .spk, body.spk-column .cap.group .spk { display: inline; font-size: .7em; font-weight: 800; margin-inline-end: .5em; opacity: 1; }
+body.spk-beside .cap .spk::after, body.spk-column .cap.group .spk::after { content: ':'; }
+/* ... or in a column of their own to the left of the text, like a script (voices shown together keep them beside the text). */
+body.spk-column .cap:not(.group) { display: grid; grid-template-columns: minmax(4em, 26%) 1fr; column-gap: .8em; align-items: baseline; }
+body.spk-column .cap:not(.group) .spk { grid-column: 1; grid-row: 1; font-size: .6em; overflow-wrap: anywhere; }
+body.spk-column .cap:not(.group) > span:not(.spk) { grid-column: 2; grid-row: 1; }
 /* Sung lyrics: between musical notes (added by the server), in italics and a little looser. */
 .cap.sung { font-style: italic; letter-spacing: .01em; }
 .cap strong { font-weight: 800; }

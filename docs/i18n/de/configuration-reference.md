@@ -122,6 +122,7 @@ Was eine Show verwendet, wenn ihre eigene Show-Datei es nicht sagt. Der `[settin
 | `defaults.look.font` | `system` | `system`, `serif`, `mono`, `dyslexic` oder `hyperlegible` |
 | `defaults.look.text_size_percent` | `100` | Textgröße der Untertitel, 50 bis 300 |
 | `defaults.look.speaker_names` | `label` | `label` (Namen in einer Farbe), `color` (eine andere Farbe für jede Figur) oder `hidden` |
+| `defaults.look.speaker_position` | `above` | `above` (der Name über der Zeile), `beside` (in derselben Zeile, vor dem Text) oder `column` (in einer Spalte links vom Text) |
 
 ### `audience`
 

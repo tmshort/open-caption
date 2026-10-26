@@ -122,6 +122,7 @@ Ciò che uno spettacolo usa quando il suo file non lo dice. Il blocco `[settings
 | `defaults.look.font` | `system` | `system`, `serif`, `mono`, `dyslexic` o `hyperlegible` |
 | `defaults.look.text_size_percent` | `100` | Dimensione del testo dei sottotitoli, da 50 a 300 |
 | `defaults.look.speaker_names` | `label` | `label` (nomi di un solo colore), `color` (un colore diverso per ogni personaggio) o `hidden` |
+| `defaults.look.speaker_position` | `above` | `above` (il nome sopra la riga), `beside` (sulla stessa riga, prima del testo) o `column` (in una colonna a sinistra del testo) |
 
 ### `audience`
 

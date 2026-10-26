@@ -87,6 +87,7 @@ type Look struct {
 	Font             string `yaml:"font"`
 	TextSizePercent  int    `yaml:"text_size_percent"`
 	SpeakerNames     string `yaml:"speaker_names"`
+	SpeakerPosition  string `yaml:"speaker_position"`
 }
 
 // Defaults are the values a show uses when its show file does not say otherwise. The layers are the
@@ -176,7 +177,7 @@ func Default() Config {
 		HTTPS:         HTTPS{Addr: ":443", FallbackAddr: ":8443", SelfSigned: true},
 		Defaults: Defaults{Language: "en", LoopItemSeconds: 10,
 			IdleMessage: "Captions will begin shortly", OpenBrowser: true,
-			Look: Look{Background: "#000000", TextColor: "#ffffff", SpeakerNameColor: "#ffffff", Font: "system", TextSizePercent: 100, SpeakerNames: "label"}},
+			Look: Look{Background: "#000000", TextColor: "#ffffff", SpeakerNameColor: "#ffffff", Font: "system", TextSizePercent: 100, SpeakerNames: "label", SpeakerPosition: "above"}},
 		Audience: Audience{MaxClients: 500, ScrollbackLines: 200},
 		Access:   Access{LocalAutoLogin: true},
 		Log:      Log{Level: "info"},
@@ -562,6 +563,9 @@ func (c *Config) normalize() []string {
 	}
 	if l.SpeakerNames, err = showfile.NormalizeSpeakerNames(l.SpeakerNames); err != nil {
 		add("defaults.look.speaker_names", "%v", err)
+	}
+	if l.SpeakerPosition, err = showfile.NormalizeSpeakerPosition(l.SpeakerPosition); err != nil {
+		add("defaults.look.speaker_position", "%v", err)
 	}
 	if l.TextSizePercent < 50 || l.TextSizePercent > 300 {
 		add("defaults.look.text_size_percent", "%d is not a text size: use 50 to 300", l.TextSizePercent)

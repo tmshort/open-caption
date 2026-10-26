@@ -130,7 +130,7 @@ func showDefaults(cfg config.Config) show.Defaults {
 	l := cfg.Defaults.Look
 	return show.Defaults{Language: cfg.Defaults.Language, IdleMessage: cfg.Defaults.IdleMessage, LoopSeconds: cfg.Defaults.LoopItemSeconds,
 		ScrollbackLines: cfg.Audience.ScrollbackLines,
-		Look:            show.Theme{BG: l.Background, FG: l.TextColor, Accent: l.SpeakerNameColor, Font: l.Font, ScalePct: l.TextSizePercent, Speakers: l.SpeakerNames}}
+		Look:            show.Theme{BG: l.Background, FG: l.TextColor, Accent: l.SpeakerNameColor, Font: l.Font, ScalePct: l.TextSizePercent, Speakers: l.SpeakerNames, SpeakerPosition: l.SpeakerPosition}}
 }
 
 func sessionsPath(cfg config.Config) string {

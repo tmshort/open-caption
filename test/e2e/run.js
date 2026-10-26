@@ -145,9 +145,14 @@ async function main() {
     await step(admin, 'Look'); await sleep(900);
     await admin.evaluate(() => { const f = [...document.querySelectorAll('select')].find((s) => [...s.options].some((o) => o.value === 'dyslexic')); f.value = 'dyslexic'; f.dispatchEvent(new Event('input', { bubbles: true })); });
     await admin.evaluate(() => { const sp = [...document.querySelectorAll('select')].find((s) => [...s.options].some((o) => o.value === 'color')); sp.value = 'color'; sp.dispatchEvent(new Event('input', { bubbles: true })); });
+    await admin.evaluate(() => { const sp = [...document.querySelectorAll('select')].find((s) => [...s.options].some((o) => o.value === 'beside')); sp.value = 'beside'; sp.dispatchEvent(new Event('input', { bubbles: true })); });
+    check('the Look preview puts the names beside the text when asked', await admin.evaluate(() => { const e = document.querySelector('.preview.proj .spk'); return document.querySelector('.preview.proj').classList.contains('pos-beside') && !!e && getComputedStyle(e).display === 'inline'; }));
+    await admin.evaluate(() => { const sp = [...document.querySelectorAll('select')].find((s) => [...s.options].some((o) => o.value === 'column')); sp.value = 'column'; sp.dispatchEvent(new Event('input', { bubbles: true })); });
+    check('the Look preview can put the names in a column left of the text', await admin.evaluate(() => { const p = document.querySelector('.preview.proj p'); return getComputedStyle(p).display === 'grid'; }));
+    await admin.evaluate(() => { const sp = [...document.querySelectorAll('select')].find((s) => [...s.options].some((o) => o.value === 'beside')); sp.value = 'beside'; sp.dispatchEvent(new Event('input', { bubbles: true })); });
     await click(admin, 'Save look'); await sleep(700);
     const look = (await api(admin, 'GET', '/api/admin/shows/' + showId2)).body;
-    check('the look is saved with the show', look.lookSaved === true && look.theme.font === 'dyslexic' && look.theme.speakers === 'color', look.theme);
+    check('the look is saved with the show', look.lookSaved === true && look.theme.font === 'dyslexic' && look.theme.speakers === 'color' && look.theme.speakerPosition === 'beside', look.theme);
     check('the Look step is ticked', await admin.evaluate(() => [...document.querySelectorAll('#steps button')].find((x) => x.textContent.includes('Look')).classList.contains('done')));
 
     // ------------------------------------------------------------------ rehearsal
@@ -273,6 +278,15 @@ async function main() {
     await sleep(500); await op.keyboard.press('Space'); await sleep(500);
     check('two voices appear together from one press', (await en.evaluate(() => document.querySelectorAll('.cap.group .part').length)) === 2);
     check('sung lines have notes and italics', (await en.evaluate(() => [...document.querySelectorAll('.cap.sung, .cap.group .part.sung')].some((e) => e.textContent.includes('♪')))));
+    const posRes = await en.evaluate(() => {
+      const one = document.querySelector('.cap:not(.group) .spk'); if (!one) return 'no single-voice caption with a name';
+      const out = [];
+      document.body.classList.add('spk-beside'); out.push(getComputedStyle(one).display === 'inline');
+      document.body.classList.remove('spk-beside'); document.body.classList.add('spk-column'); out.push(getComputedStyle(one.parentNode).display === 'grid' && getComputedStyle(document.querySelector('.cap.group .spk')).display === 'inline');
+      document.body.classList.remove('spk-column'); out.push(getComputedStyle(one).display === 'block');
+      return out.every(Boolean) || out;
+    });
+    check('the audience page places names beside the text, or in a column, by the look', posRes === true, posRes);
     {
       // a shared screen never scrolls: a caption taller than the screen is shrunk until it fits (here a small window)
       const proj = await open({ viewport: { width: 420, height: 260 } }); await proj.goto(B + '/?display=projector'); await sleep(1200);

@@ -61,6 +61,7 @@ scrollback lines: 200
 | `font` | `system`, `serif`, `mono`, `dyslexic` ou `hyperlegible` |
 | `text size` | Uma porcentagem de 50 a 300; 100 é o normal |
 | `speaker names` | `label` (uma cor), `color` (uma cor diferente para cada personagem) ou `hidden` |
+| `speaker position` | `above` (o nome acima da linha), `beside` (na mesma linha, antes do texto) ou `column` (em uma coluna à esquerda do texto) |
 | `idle message` | As palavras mostradas antes de a primeira linha ser enviada |
 | `loop seconds` | Quanto tempo cada item de um `[loop]` fica quando não diz nada |
 | `scrollback lines` | Quantas legendas um espectador pode rolar para trás (de 20 a 2000) |

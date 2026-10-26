@@ -76,6 +76,11 @@ table.cheat { border-collapse: collapse; width: 100%; font-size: .9rem; } table.
 .preview.phone { width: 15rem; height: 26rem; font-size: calc(var(--pscale, 1) * .95rem); }
 .preview.proj { width: 28rem; max-width: 100%; height: 15.75rem; aspect-ratio: 16/9; font-size: calc(var(--pscale, 1) * 1.2rem); }
 .preview p { margin: 0 0 .5em; } .preview .spk { display: block; font-size: .55em; text-transform: uppercase; letter-spacing: .08em; color: var(--paccent, #fff); }
+.preview.pos-beside .spk { display: inline; font-size: .7em; font-weight: 800; margin-inline-end: .5em; }
+.preview.pos-beside .spk::after { content: ':'; }
+.preview.pos-column p { display: grid; grid-template-columns: minmax(3em, 30%) 1fr; column-gap: .6em; align-items: baseline; }
+.preview.pos-column .spk { grid-column: 1; grid-row: 1; font-size: .6em; }
+.preview.pos-column p > :not(.spk) { grid-column: 2; grid-row: 1; }
 .preview .dim1 { opacity: .8; } .preview .dim2 { opacity: .55; }
 
 /* rehearsal */
