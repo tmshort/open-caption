@@ -61,8 +61,20 @@ async function audit(page, label) {
           const name = await p.evaluate((k) => document.querySelectorAll('#steps button')[k].innerText.replace(/\s+/g, ' ').trim(), i);
           await audit(p, `${t} setup: ${name}`);
         }
+        if (scheme === 'dark' && tag === 'desktop') { // the dialogs and options that only show on request
+          const stepBtn = (label) => p.evaluate((l) => { const b = [...document.querySelectorAll('#steps button')].find((x) => x.innerText.includes(l)); b.click(); }, label);
+          await stepBtn('Show file'); await sleep(900);
+          await p.evaluate(() => [...document.querySelectorAll('button')].find((x) => x.textContent === 'Characters…').click()); await p.waitForSelector('dialog[open] ul.chars li', { timeout: 8000 }).catch(() => {}); await sleep(300);
+          await audit(p, t + ' setup: Show file, Characters dialog');
+          await p.evaluate(() => document.getElementById('dlgok').click()); await sleep(300);
+          await stepBtn('Look'); await sleep(900);
+          for (const pos of ['beside', 'column']) {
+            await p.evaluate((v) => { const sel = [...document.querySelectorAll('select')].find((x) => [...x.options].some((o) => o.value === v)); sel.value = v; sel.dispatchEvent(new Event('input', { bubbles: true })); }, pos);
+            await sleep(300); await audit(p, `${t} setup: Look, names ${pos === 'beside' ? 'beside the text' : 'in a column'}`);
+          }
+        }
         await p.evaluate(() => document.getElementById('settingsbtn').click()); await sleep(800);
-        for (const tab of ['aud', 'net', 'sec', 'abt']) { await p.evaluate((i) => document.getElementById('settab-' + i).click(), tab); await sleep(300); await audit(p, t + ' setup: settings dialog, ' + tab + ' tab'); }
+        for (const tab of ['aud', 'net', 'sec', 'cert', 'abt']) { await p.evaluate((i) => document.getElementById('settab-' + i).click(), tab); await sleep(300); await audit(p, t + ' setup: settings dialog, ' + tab + ' tab'); }
         await p.evaluate(() => document.getElementById('dlgok').click()); await sleep(300);
         await p.goto(B + '/operator'); await p.waitForSelector('#message', { visible: true }).catch(() => {});
         await sleep(800); await audit(p, t + ' operator');
