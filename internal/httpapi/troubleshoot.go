@@ -55,7 +55,7 @@ func (s *Server) troubleshoot(w http.ResponseWriter, r *http.Request) {
 	l := s.listeners
 	s.lmu.Unlock()
 	if l.HTTPAddr != "" {
-		if l.HTTPConfigured != "" && l.HTTPAddr != l.HTTPConfigured {
+		if l.HTTPConfigured != "" && !samePort(l.HTTPConfigured, l.HTTPAddr) {
 			add("port", "warn", "wanted", l.HTTPConfigured, "actual", l.HTTPAddr)
 		} else {
 			add("port", "ok", "addr", l.HTTPAddr)
@@ -142,4 +142,11 @@ func (s *Server) troubleshoot(w http.ResponseWriter, r *http.Request) {
 		add("debug", "info")
 	}
 	writeJSON(w, http.StatusOK, map[string]any{"checks": cs, "problems": problems, "level": logx.Current().String()})
+}
+
+// samePort reports whether two listen addresses have the same port. The address asked for (":80") and the one the
+// system reports ("[::]:80") are written differently when the program got what it asked for; only a different port
+// means it fell back. A port of 0 asked for any free one.
+func samePort(wanted, actual string) bool {
+	return portOf(wanted) == "0" || portOf(wanted) == portOf(actual)
 }

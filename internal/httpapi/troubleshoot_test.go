@@ -63,3 +63,33 @@ func TestTroubleshootReportsWhatTheProgramKnows(t *testing.T) {
 		t.Errorf("problems check: %v", f["problems"])
 	}
 }
+
+func TestPortCheckComparesPortsNotAddressSpelling(t *testing.T) {
+	for _, c := range []struct {
+		wanted, actual string
+		same           bool
+	}{
+		{":80", "[::]:80", true},
+		{":80", "0.0.0.0:80", true},
+		{"127.0.0.1:8080", "127.0.0.1:8080", true},
+		{"127.0.0.1:0", "127.0.0.1:51234", true},
+		{":80", "[::]:8080", false},
+		{":443", "[::]:8443", false},
+	} {
+		if got := samePort(c.wanted, c.actual); got != c.same {
+			t.Errorf("samePort(%q, %q) = %v, want %v", c.wanted, c.actual, got, c.same)
+		}
+	}
+	s, _, c := standbyServer(t)
+	check := func(wanted, actual string) string {
+		s.SetListeners(Listeners{HTTPConfigured: wanted, HTTPAddr: actual})
+		_, m := c.do("GET", "/api/admin/troubleshoot", nil)
+		return findings(m)["port"]["status"].(string)
+	}
+	if got := check(":80", "[::]:80"); got != "ok" {
+		t.Errorf("getting the port asked for was reported as %q", got)
+	}
+	if got := check(":80", "[::]:8080"); got != "warn" {
+		t.Errorf("falling back to another port was reported as %q", got)
+	}
+}
