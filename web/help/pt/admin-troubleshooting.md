@@ -1,5 +1,11 @@
 # Solução de problemas
 
+## O botão Solução de problemas
+
+O botão **Solução de problemas**, no alto do Setup, ao lado de Configurações, é o lugar para começar quando as pessoas não conseguem se conectar ou algo parece errado. Ele lista o que o programa sabe: se este computador tem um endereço de rede para dar, qual porta o servidor web realmente obteve, se o HTTPS e o certificado estão em ordem, se o nome `.local` é anunciado, se o arquivo de configurações pode ser salvo, se cada idioma corresponde ao arquivo principal do espetáculo e quantos dispositivos estão conectados. Cada verificação é marcada **OK**, **Nota**, **Verificar** ou **Problema**, e as que podem ser corrigidas têm um botão que leva à configuração certa. Abaixo ficam os avisos e erros mais recentes do registro, um link para o registro completo e o pacote de suporte.
+
+Quando o programa registra novos avisos ou erros, aparece um número no botão até você abri-lo.
+
 ## Ninguém consegue abrir o endereço
 
 - Confira se o telefone está no WiFi de visitantes do local, e não nos dados móveis.

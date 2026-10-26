@@ -6,7 +6,7 @@ The full list. The [README](../README.md) has the short version; how to use each
 - Nothing to install: open one address (or scan a QR code) on any phone, tablet or computer on the venue's WiFi. `http://open-caption.local/` works too where the network allows it.
 - Large, high-contrast captions by default; per-device text size, dark-on-light, and dyslexia-friendly (OpenDyslexic) and high-legibility (Atkinson Hyperlegible) fonts.
 - Scroll back to re-read a line without losing the live captions; the screen stays awake during the show; reconnects by itself after WiFi drops or sleep.
-- Several languages in one show, chosen from the device's own language; works on a projector or shared screen too (`?display=projector`).
+- Several languages in one show, chosen from the device's own language; works on a projector or shared screen too (`?display=projector`). A Troubleshoot button in Setup checks the network address, port, HTTPS certificate, `.local` name and settings file, lists recent warnings and errors (with a count on the button), and offers the full log and a support bundle.
 - Runs on older phones (about iOS 12 and up) and tells people clearly when a browser is too old.
 
 ## For the operator

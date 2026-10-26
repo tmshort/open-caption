@@ -304,6 +304,7 @@ func (s *Server) adminRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/admin/settings/standby-logo", adm(s.setStandbyLogo))
 	mux.HandleFunc("DELETE /api/admin/settings/standby-logo", adm(s.deleteStandbyLogo))
 	mux.HandleFunc("GET /api/admin/log", adm(s.recentLog))
+	mux.HandleFunc("GET /api/admin/troubleshoot", adm(s.troubleshoot))
 	mux.HandleFunc("GET /api/admin/settings/operator-password", adm(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-store")
 		s.pwMu.Lock()

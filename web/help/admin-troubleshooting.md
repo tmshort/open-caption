@@ -1,5 +1,11 @@
 # Troubleshooting
 
+## The Troubleshoot button
+
+The **Troubleshoot** button at the top of Setup, next to Settings, is the place to start when people cannot connect or something looks wrong. It lists what the program knows: whether this computer has a network address to give out, which port the web server really got, whether HTTPS and its certificate are in order, whether the `.local` name is announced, whether the settings file can be saved, whether every language matches the main show file, and how many devices are connected. Each check is marked **OK**, **Note**, **Check** or **Problem**, and the ones that can be put right have a button that goes to the right setting. Below the checks are the latest warnings and errors from the log, a link to the full log, and the support bundle.
+
+When the program logs new warnings or errors, a number appears on the button until you open it.
+
 ## Nobody can open the address
 
 - Check that the phone is on the venue's guest WiFi, not mobile data.

@@ -12,5 +12,7 @@
  "Image {0} not found in {1}.",
  "export of show {0}: could not read {1}: {2}",
  "export of show {0}: could not read image {1}: {2}",
- "export of show {0}: {1}"
+ "export of show {0}: {1}",
+ "answered {0}: {1}",
+ "operator command {0} failed: {1}"
 ]

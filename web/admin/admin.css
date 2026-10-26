@@ -224,3 +224,14 @@ a.quiet { background: none; border: none; color: var(--dim); text-decoration: no
 .chars .swatch { width: .9rem; height: .9rem; border-radius: 50%; border: 1px solid var(--line); flex: none; }
 .chars .swatch.none { background: transparent; border-style: dashed; }
 .chars .charname { font-weight: 700; }
+
+/* Troubleshoot panel */
+.trouble h3 { margin: .8rem 0 .3rem; }
+.trouble .checks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .25rem; }
+.trouble .checks li { display: flex; flex-wrap: wrap; align-items: baseline; gap: .2rem .6rem; padding: .3rem .5rem; border-left: 4px solid var(--line); border-radius: 4px; }
+.trouble .checks li.check-ok { border-left-color: var(--ok); }
+.trouble .checks li.check-warn { border-left-color: var(--warn); }
+.trouble .checks li.check-bad { border-left-color: var(--bad); }
+.trouble .cstatus { font-weight: 700; min-width: 4.5rem; font-size: .85em; text-transform: uppercase; letter-spacing: .04em; }
+.trouble .ctext { flex: 1 1 18rem; }
+.trouble pre.logview { max-height: 10rem; }

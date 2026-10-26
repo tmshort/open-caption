@@ -342,6 +342,84 @@
   }
   $('settingsbtn').addEventListener('click', () => openSettings());
 
+  // ---- troubleshooting: what the program knows about why people might not connect, the recent problems, the support bundle ----
+  // The button in the header shows how many warnings and errors were logged since the panel was last opened.
+  const seenProblems = () => { try { return parseInt(localStorage.getItem('oc.problemsSeen'), 10) || 0; } catch (e) { return 0; } };
+  const setSeenProblems = (n) => { try { localStorage.setItem('oc.problemsSeen', String(n)); } catch (e) { /* storage unavailable */ } };
+  function paintTroubleBadge(total) {
+    let seen = seenProblems();
+    if (total < seen) { seen = 0; setSeenProblems(0); } // the program was restarted: its count began again
+    const n = total - seen, b = $('troublebadge');
+    b.hidden = n < 1; b.textContent = String(n);
+    $('troublebtn').setAttribute('aria-label', n > 0 ? __('Troubleshoot: {n} new warning(s) or error(s)', { n }) : __('Troubleshoot'));
+    return total;
+  }
+  async function pollTroubleBadge() {
+    try { const r = await fetch('/api/admin/troubleshoot?brief=1'); if (r.ok) A.problemsTotal = paintTroubleBadge((await r.json()).problems || 0); } catch (e) { /* offline: the connection bar says so */ }
+  }
+  // What each check says, and where it is put right. Setup holds the words so they are translated; the program sends the facts.
+  function describeCheck(c) {
+    const p = c.params || {};
+    const settings = (tab) => ({ label: __('Open Settings'), run: () => { $('dlg').close('cancel'); openSettings(tab); } });
+    switch (c.id) {
+      case 'address': return c.status === 'ok' ? { text: __('This computer has a network address that devices can use: {ip}.', { ip: p.ip }) }
+        : { text: __('This computer has no network address. Check that it is connected to the venue’s network, by cable or WiFi.'), fix: settings('net') };
+      case 'port': return c.status === 'ok' ? { text: __('The web server is listening on {addr}.', { addr: p.addr }) }
+        : { text: __('The program wanted {wanted} but it was in use by another program, so it is using {actual}. Every address must include that port number (the Share step shows them). To use the usual port, close the other program and restart this one.', { wanted: p.wanted, actual: p.actual }) };
+      case 'https': switch (p.state) {
+        case 'off': return { text: __('HTTPS is off, so devices use plain http. That is fine on a venue network.') };
+        case 'self-signed': return { text: __('HTTPS uses a certificate the program made itself, so browsers warn the first time. Devices can use the plain http address instead, or you can set up a trusted certificate.'), fix: settings('cert') };
+        case 'file': return { text: __('HTTPS uses the certificate files named in the settings file.') };
+        case 'acme': return { text: __('HTTPS has an automatic certificate for {domain} ({days} days left).', { domain: p.domain, days: p.days }) };
+        case 'acme-expiring': return { text: __('The automatic certificate for {domain} runs out in {days} days and has not been renewed. Look at the log below.', { domain: p.domain, days: p.days }), fix: settings('cert') };
+        case 'acme-failed': return { text: __('The automatic certificate for {domain} could not be obtained: {error}', { domain: p.domain, error: p.error }), fix: settings('cert') };
+        default: return { text: __('The program is getting the automatic certificate for {domain}. This can take a few minutes.', { domain: p.domain || '' }), fix: settings('cert') };
+      }
+      case 'name': switch (p.state) {
+        case 'active': return { text: __('Devices that can find computers by name can use {host}.', { host: p.host }) };
+        case 'off': return { text: __('The .local name is turned off. Devices use the numeric address.'), fix: settings('net') };
+        case 'error': return { text: __('The .local name could not be announced: {error}. Devices can use the numeric address instead.', { error: p.error }), fix: settings('net') };
+        case 'renamed': return { text: __('Another computer on this network already uses {requested}, so this one is {host}.', { requested: p.requested, host: p.host }), fix: settings('net') };
+        default: return { text: __('The .local name is being announced.') };
+      }
+      case 'settings': return c.status === 'ok' ? { text: __('Setup can save its settings.') }
+        : { text: __('The settings file cannot be saved ({error}). Changes made in Setup will be lost when the program restarts.', { error: p.error }) };
+      case 'show': switch (p.state) {
+        case 'none': return { text: __('No show is loaded. Open one with Work on this show, then Open the Run page.') };
+        case 'languages': return { text: __('These languages will not be shown to the audience until their show file matches the main one: {list}.', { list: p.list }), fix: { label: __('Open the Show file step'), run: () => { $('dlg').close('cancel'); go('showfile'); } } };
+        default: return { text: __('The show “{name}” is loaded.', { name: p.name }) };
+      }
+      case 'devices': return { text: __('{n} device(s) are connected right now.', { n: p.n }) };
+      case 'problems': return c.status === 'ok' ? { text: __('No warnings or errors in the recent log.') } : { text: __('{n} warning(s) or error(s) in the recent log, listed below.', { n: p.n }) };
+      case 'debug': return { text: __('Debug logging is on: the log is bigger and includes every request. Turn it back to normal in Settings → About when you are done.'), fix: settings('abt') };
+      default: return { text: c.id };
+    }
+  }
+  const STATUS_WORD = { ok: 'OK', info: 'Note', warn: 'Check', bad: 'Problem' };
+  async function showTroubleshoot() {
+    const r = await api('GET', '/api/admin/troubleshoot');
+    if (!r.ok) return fail(r);
+    A.problemsTotal = r.data.problems || 0;
+    setSeenProblems(A.problemsTotal); paintTroubleBadge(A.problemsTotal);
+    const list = h('ul', { class: 'checks' }, ...r.data.checks.map((c) => {
+      const d = describeCheck(c);
+      return h('li', { class: 'check-' + c.status }, h('span', { class: 'cstatus' }, __(STATUS_WORD[c.status] || 'Note')), h('span', { class: 'ctext' }, d.text), d.fix ? h('button', { onclick: d.fix.run }, d.fix.label) : null);
+    }));
+    const pre = h('pre', { class: 'logview', tabindex: '0', 'aria-label': __('Recent warnings and errors') });
+    const lr = await api('GET', '/api/admin/log?lines=40&level=warn');
+    pre.textContent = lr.ok && lr.data.lines.length ? lr.data.lines.join('\n') : __('Nothing at this level yet.');
+    pre.scrollTop = pre.scrollHeight;
+    const body = h('div', { class: 'trouble' },
+      h('h3', {}, __('Checks')), list,
+      h('h3', {}, __('Recent warnings and errors')), pre,
+      h('div', { class: 'row' }, h('button', { onclick: () => { $('dlg').close('cancel'); showLog(); } }, __('Open the full log…')),
+        h('a', { class: 'btn', href: '/api/admin/support-bundle', download: 'support-bundle.zip' }, __('Download a support bundle')),
+        h('button', { onclick: () => { $('dlg').close('cancel'); openHelp('admin-troubleshooting'); } }, __('Troubleshooting help'))),
+      h('p', { class: 'hint' }, __('The support bundle holds the settings (without passwords), the recent log and basic facts about this computer, for sending to someone who is helping.')));
+    await ask(__('Troubleshoot'), body, __('Close'), { noCancel: true, wide: true });
+  }
+  $('troublebtn').addEventListener('click', showTroubleshoot);
+
   // ---- login ----
   function showLogin() { $('app').hidden = true; $('login').hidden = false; $('pw').focus(); }
   $('login').addEventListener('submit', async (e) => {
@@ -365,6 +443,8 @@
     if (!STEPS.some((s) => s[0] === A.step)) A.step = 'show';
     openOpStream();
     render();
+    pollTroubleBadge();
+    if (!A.troubleTimer) A.troubleTimer = setInterval(() => { if (!$('app').hidden) pollTroubleBadge(); }, 20000);
   }
   const curShowById = (id) => A.shows.find((s) => s.id === id);
   async function loadShows() {
@@ -1147,7 +1227,7 @@
         h('p', { class: 'hint' }, __('Audience devices must be on the same WiFi as this computer. Devices connected right now: '), h('b', { id: 'audcount' }, String(A.audience))),
         reportLink,
         h('p', { class: 'hint' }, __('Two networks, or the wrong address? '), h('a', { href: '#', onclick: (e) => { e.preventDefault(); openSettings('net'); } }, __('Choose which network interfaces are used')))),
-      h('p', { class: 'hint' }, __('Something not working? '), h('a', { href: '#', onclick: (e) => { e.preventDefault(); openHelp('admin-troubleshooting'); } }, __('Troubleshooting help')), ' · ', h('a', { href: '/api/admin/support-bundle', download: 'support-bundle.zip' }, __('Download a support bundle')), ' · ', h('a', { href: '#', onclick: (e) => { e.preventDefault(); showLog(); } }, __('Recent log…'))));
+      h('p', { class: 'hint' }, __('Something not working? '), h('a', { href: '#', onclick: (e) => { e.preventDefault(); showTroubleshoot(); } }, __('Troubleshoot')), ' · ', h('a', { href: '#', onclick: (e) => { e.preventDefault(); openHelp('admin-troubleshooting'); } }, __('Troubleshooting help')), ' · ', h('a', { href: '/api/admin/support-bundle', download: 'support-bundle.zip' }, __('Download a support bundle')), ' · ', h('a', { href: '#', onclick: (e) => { e.preventDefault(); showLog(); } }, __('Recent log…'))));
   }
   // ---- step 7: report (REQ-070) ----
   // How many devices used the audience page while the show was on the air: the same report as the stand-alone page, drawn by

@@ -67,6 +67,9 @@ async function audit(page, label) {
           await p.evaluate(() => [...document.querySelectorAll('button')].find((x) => x.textContent === 'Characters…').click()); await p.waitForSelector('dialog[open] ul.chars li', { timeout: 8000 }).catch(() => {}); await sleep(300);
           await audit(p, t + ' setup: Show file, Characters dialog');
           await p.evaluate(() => document.getElementById('dlgok').click()); await sleep(300);
+          await p.evaluate(() => document.getElementById('troublebtn').click()); await p.waitForSelector('dialog[open] ul.checks li', { timeout: 8000 }).catch(() => {}); await sleep(300);
+          await audit(p, t + ' setup: Troubleshoot panel');
+          await p.evaluate(() => document.getElementById('dlgok').click()); await sleep(300);
           await stepBtn('Look'); await sleep(900);
           for (const pos of ['beside', 'column']) {
             await p.evaluate((v) => { const sel = [...document.querySelectorAll('select')].find((x) => [...x.options].some((o) => o.value === v)); sel.value = v; sel.dispatchEvent(new Event('input', { bubbles: true })); }, pos);

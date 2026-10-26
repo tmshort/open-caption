@@ -29,3 +29,15 @@ func TestLinesReturnsWholeLinesOldestFirst(t *testing.T) {
 		t.Errorf("%q", got)
 	}
 }
+
+func TestProblemsCountsWarningsAndErrorsEvenAfterTheyScrollOut(t *testing.T) {
+	b := New(2)
+	b.Write([]byte("2026/10/26 10:19:19 INFO fine\n2026/10/26 10:19:20 WARN odd\n2026/10/26 10:19:21 ERROR bad\n"))
+	b.Write([]byte("2026/10/26 10:19:22 DEBUG detail\n2026/10/26 10:19:23 INFO fine again\nWARN"))
+	if got := b.Problems(); got != 2 {
+		t.Errorf("problems = %d, want 2 (the unfinished last line is not counted yet)", got)
+	}
+	if len(b.Lines()) > 3 {
+		t.Errorf("%v", b.Lines())
+	}
+}

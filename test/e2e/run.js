@@ -535,6 +535,19 @@ async function main() {
     check('and narrowed to problems', await guard.evaluate(() => { const t = document.querySelector('pre.logview').textContent; return /WARN/.test(t) && !/INFO/.test(t); }));
     check('it never contains a password', !(await guard.evaluate(() => document.querySelector('pre.logview').textContent)).includes(ADMIN));
     await guard.evaluate(() => document.getElementById('dlgok').click()); await sleep(300);
+    // Troubleshoot: a header button with the checks, the recent problems, and a count of the new ones
+    await click(guard, 'Troubleshoot'); await guard.waitForSelector('dialog[open] ul.checks li'); await sleep(300);
+    const trouble = await guard.evaluate(() => ({ n: document.querySelectorAll('dialog[open] ul.checks li').length, text: document.querySelector('dialog[open] .trouble').innerText, log: document.querySelector('dialog[open] pre.logview').textContent, badge: document.getElementById('troublebadge').hidden }));
+    check('the Troubleshoot button opens a list of checks with the facts the program knows', trouble.n >= 6 && /Setup can save its settings/.test(trouble.text) && /connected right now/.test(trouble.text) && /network address/.test(trouble.text), trouble);
+    check('it lists the recent warnings and errors, and has the log and the support bundle one click away', /WARN/.test(trouble.log) && /Open the full log/.test(trouble.text) && /Download a support bundle/.test(trouble.text), trouble.log.slice(0, 200));
+    check('opening it clears the count on the button', trouble.badge === true);
+    await guard.evaluate(() => document.getElementById('dlgok').click()); await sleep(300);
+    // (the program's own count is checked in the Go tests; here the page is told that more problems were logged)
+    await guard.evaluateOnNewDocument(() => { const real = window.fetch; window.fetch = (u, o) => (/troubleshoot\?brief=1/.test(String(u)) ? Promise.resolve(new Response(JSON.stringify({ problems: 4000 }), { status: 200 })) : real(u, o)); });
+    await guard.reload(); await guard.waitForSelector('#steps button');
+    await guard.waitForFunction(() => !document.getElementById('troublebadge').hidden, { timeout: T(8000) }).catch(() => {});
+    check('a new warning puts a count on the Troubleshoot button', await guard.evaluate(() => { const b = document.getElementById('troublebadge'); return !b.hidden && /^\d+$/.test(b.textContent) && /new warning/.test(document.getElementById('troublebtn').getAttribute('aria-label')); }));
+    await step(guard, 'Share'); await sleep(700);
     await click(guard, 'Settings'); await sleep(600);
     await guard.evaluate(() => document.getElementById('settab-sec').click()); await sleep(150);
     check('Settings → Security has a Certificate section that says where HTTPS gets its certificate', await guard.evaluate(() => { const b = document.querySelector('.certbox'); return !!b && /HTTPS/.test(b.textContent) && b.closest('section').querySelector('h3').textContent === 'Certificate'; }));
