@@ -754,8 +754,8 @@ OCI18n.add("de", {
   "Every speaker name used, to check for misspellings": "Alle verwendeten Sprechernamen, um Tippfehler zu finden",
   "Characters": "Figuren",
   "Characters ({name})": "Figuren ({name})",
-  "Every name used as a speaker in this show file, the most used first. A name that is one letter off from a name used more is probably a misspelling. A group such as DEE DEE & BARRY counts for each of its names. Click a name to go to its first line.": "Alle Namen, die in dieser Showdatei als Sprecher verwendet werden, die am häufigsten verwendeten zuerst. Ein Name, der sich in einem Buchstaben von einem häufiger verwendeten unterscheidet, ist wahrscheinlich falsch geschrieben. Eine Gruppe wie DEE DEE & BARRY zählt für jeden ihrer Namen. Klicken Sie auf einen Namen, um zu seiner ersten Zeile zu gehen.",
-  "No speaker names found. A speaker name is written in capitals before a colon, like BARRY: Hello.": "Keine Sprechernamen gefunden. Ein Sprechername steht in Großbuchstaben vor einem Doppelpunkt, etwa BARRY: Hallo.",
+  "Every name used as a speaker in this show file, the most used first. A name that is one letter off from a name used more is probably a misspelling. A group such as ALICE & BOB counts for each of its names. Click a name to go to its first line.": "Alle Namen, die in dieser Showdatei als Sprecher verwendet werden, die am häufigsten verwendeten zuerst. Ein Name, der sich in einem Buchstaben von einem häufiger verwendeten unterscheidet, ist wahrscheinlich falsch geschrieben. Eine Gruppe wie ALICE & BOB zählt für jeden ihrer Namen. Klicken Sie auf einen Namen, um zu seiner ersten Zeile zu gehen.",
+  "No speaker names found. A speaker name is written in capitals before a colon, like ALICE: Hello.": "Keine Sprechernamen gefunden. Ein Sprechername steht in Großbuchstaben vor einem Doppelpunkt, etwa ALICE: Hallo.",
   "Go to its first line": "Zur ersten Zeile gehen",
   "{n} line(s)": "{n} Zeile(n)",
   "Did you mean {name}?": "Meinten Sie {name}?"

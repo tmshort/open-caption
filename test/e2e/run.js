@@ -621,14 +621,14 @@ async function main() {
     const hist = JSON.stringify((await api(arch, 'GET', '/api/admin/shows/' + lastId + '/showfile/history')).body); check('a version can be given a name', hist.includes('Dress rehearsal'), hist);
     await arch.evaluate(() => document.getElementById('dlgok').click()); await sleep(300);
     // Characters: every speaker name, most used first, with a misspelling marked.
-    await arch.evaluate(() => { const t = document.querySelector('.editor textarea'); t.value = 'BARRY: One\nDEE DEE & BARRY: Two\nBARRY: Three\nBARY: Four\nDEE DEE: Five'; t.dispatchEvent(new Event('input')); });
+    await arch.evaluate(() => { const t = document.querySelector('.editor textarea'); t.value = 'ALICE: One\nALICE & BOB: Two\nALICE: Three\nALCE: Four\nBOB: Five'; t.dispatchEvent(new Event('input')); });
     await sleep(900);
     await click(arch, 'Characters'); await arch.waitForSelector('dialog[open] ul.chars li');
     const chars = await arch.evaluate(() => [...document.querySelectorAll('dialog[open] ul.chars li')].map((li) => li.querySelector('.charname').textContent + '|' + li.textContent));
-    check('Characters lists each name once, the most used first, splitting a group', chars.length === 3 && chars[0].startsWith('BARRY|') && chars[1].startsWith('DEE DEE|') && chars[2].startsWith('BARY|'), chars);
-    check('Characters marks a name one letter off from a more used name', /Did you mean BARRY/.test(chars[2]) && !/Did you mean/.test(chars[0]), chars);
+    check('Characters lists each name once, the most used first, splitting a group', chars.length === 3 && chars[0].startsWith('ALICE|') && chars[1].startsWith('BOB|') && chars[2].startsWith('ALCE|'), chars);
+    check('Characters marks a name one letter off from a more used name', /Did you mean ALICE/.test(chars[2]) && !/Did you mean/.test(chars[0]), chars);
     await arch.evaluate(() => [...document.querySelectorAll('dialog[open] ul.chars .charname')].pop().click()); await sleep(300);
-    check('clicking a character goes to its first line in the editor', await arch.evaluate(() => { const t = document.querySelector('.editor textarea'); return !document.getElementById('dlg').open && t.value.slice(t.selectionStart, t.selectionEnd) === 'BARY: Four'; }));
+    check('clicking a character goes to its first line in the editor', await arch.evaluate(() => { const t = document.querySelector('.editor textarea'); return !document.getElementById('dlg').open && t.value.slice(t.selectionStart, t.selectionEnd) === 'ALCE: Four'; }));
     check('loading it changes nothing until Save', (await arch.evaluate(() => document.querySelector('.editor textarea').value)) !== (await api(arch, 'GET', '/api/admin/shows/' + lastId + '/showfile')).body.text);
     // The Share step no longer puts a show in front of the audience: it opens the operator page, with the show in standby.
     await step(arch, 'Share'); await sleep(T(900));

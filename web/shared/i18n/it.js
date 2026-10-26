@@ -754,8 +754,8 @@ OCI18n.add("it", {
   "Every speaker name used, to check for misspellings": "Tutti i nomi di personaggio usati, per controllare gli errori di battitura",
   "Characters": "Personaggi",
   "Characters ({name})": "Personaggi ({name})",
-  "Every name used as a speaker in this show file, the most used first. A name that is one letter off from a name used more is probably a misspelling. A group such as DEE DEE & BARRY counts for each of its names. Click a name to go to its first line.": "Tutti i nomi usati come personaggio in questo file dello spettacolo, i più usati per primi. Un nome che differisce di una lettera da uno più usato è probabilmente scritto male. Un gruppo come DEE DEE & BARRY conta per ciascuno dei suoi nomi. Fai clic su un nome per andare alla sua prima riga.",
-  "No speaker names found. A speaker name is written in capitals before a colon, like BARRY: Hello.": "Nessun nome di personaggio trovato. Un nome si scrive in maiuscolo prima dei due punti, come BARRY: Ciao.",
+  "Every name used as a speaker in this show file, the most used first. A name that is one letter off from a name used more is probably a misspelling. A group such as ALICE & BOB counts for each of its names. Click a name to go to its first line.": "Tutti i nomi usati come personaggio in questo file dello spettacolo, i più usati per primi. Un nome che differisce di una lettera da uno più usato è probabilmente scritto male. Un gruppo come ALICE & BOB conta per ciascuno dei suoi nomi. Fai clic su un nome per andare alla sua prima riga.",
+  "No speaker names found. A speaker name is written in capitals before a colon, like ALICE: Hello.": "Nessun nome di personaggio trovato. Un nome si scrive in maiuscolo prima dei due punti, come ALICE: Ciao.",
   "Go to its first line": "Vai alla sua prima riga",
   "{n} line(s)": "{n} riga/righe",
   "Did you mean {name}?": "Intendevi {name}?"

@@ -27,7 +27,7 @@ OPHELIA: My *lord*?
 
 ## Controllare i nomi dei personaggi
 
-Fai clic su **Personaggi…** sopra l'editor per vedere tutti i nomi usati come personaggio, i più usati per primi, con il numero di righe di ciascuno. È il modo rapido per trovare un nome scritto male: **BARY** con una riga accanto a **BARRY** con quaranta è segnalato con *Intendevi BARRY?*. Fai clic su un nome per andare alla sua prima riga. Un gruppo come `DEE DEE & BARRY:` conta per ciascuno dei suoi nomi.
+Fai clic su **Personaggi…** sopra l'editor per vedere tutti i nomi usati come personaggio, i più usati per primi, con il numero di righe di ciascuno. È il modo rapido per trovare un nome scritto male: **ALCE** con una riga accanto a **ALICE** con quaranta è segnalato con *Intendevi ALICE?*. Fai clic su un nome per andare alla sua prima riga. Un gruppo come `ALICE & BOB:` conta per ciascuno dei suoi nomi.
 
 ## Tornare a una versione precedente
 

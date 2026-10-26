@@ -206,7 +206,7 @@ Der Schritt **Erscheinungsbild** der Einrichtung schreibt diesen Block für Sie,
 
 ### Die Namen der Figuren prüfen
 
-Klicken Sie über dem Editor auf **Figuren…**, um alle als Sprecher verwendeten Namen zu sehen, die am häufigsten verwendeten zuerst, mit der Zahl ihrer Zeilen. So finden Sie schnell einen falsch geschriebenen Namen: **BARY** mit einer Zeile neben **BARRY** mit vierzig wird mit *Meinten Sie BARRY?* markiert. Klicken Sie auf einen Namen, um zu seiner ersten Zeile zu gehen. Eine Gruppe wie `DEE DEE & BARRY:` zählt für jeden ihrer Namen.
+Klicken Sie über dem Editor auf **Figuren…**, um alle als Sprecher verwendeten Namen zu sehen, die am häufigsten verwendeten zuerst, mit der Zahl ihrer Zeilen. So finden Sie schnell einen falsch geschriebenen Namen: **ALCE** mit einer Zeile neben **ALICE** mit vierzig wird mit *Meinten Sie ALICE?* markiert. Klicken Sie auf einen Namen, um zu seiner ersten Zeile zu gehen. Eine Gruppe wie `ALICE & BOB:` zählt für jeden ihrer Namen.
 
 ### Zurückgehen
 

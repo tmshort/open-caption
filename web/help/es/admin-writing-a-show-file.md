@@ -27,7 +27,7 @@ OPHELIA: My *lord*?
 
 ## Revisar los nombres de los personajes
 
-Haga clic en **Caracteres…** sobre el editor para ver todos los nombres usados como personaje, los más usados primero, con el número de líneas de cada uno. Es la forma rápida de encontrar un nombre mal escrito: **BARY** con una línea junto a **BARRY** con cuarenta se marca con *¿Quiso decir BARRY?*. Haga clic en un nombre para ir a su primera línea. Un grupo como `DEE DEE & BARRY:` cuenta para cada uno de sus nombres.
+Haga clic en **Caracteres…** sobre el editor para ver todos los nombres usados como personaje, los más usados primero, con el número de líneas de cada uno. Es la forma rápida de encontrar un nombre mal escrito: **ALCE** con una línea junto a **ALICE** con cuarenta se marca con *¿Quiso decir ALICE?*. Haga clic en un nombre para ir a su primera línea. Un grupo como `ALICE & BOB:` cuenta para cada uno de sus nombres.
 
 ## Volver a una versión anterior
 

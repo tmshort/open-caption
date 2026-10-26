@@ -206,7 +206,7 @@ A etapa **Aparência** da Configuração escreve esse bloco para você, e você 
 
 ### Conferir os nomes dos personagens
 
-Clique em **Personagens…** acima do editor para ver todos os nomes usados como personagem, os mais usados primeiro, com o número de linhas de cada um. É a forma rápida de achar um nome escrito errado: **BARY** com uma linha ao lado de **BARRY** com quarenta é marcado com *Você quis dizer BARRY?*. Clique em um nome para ir à primeira linha dele. Um grupo como `DEE DEE & BARRY:` conta para cada um de seus nomes.
+Clique em **Personagens…** acima do editor para ver todos os nomes usados como personagem, os mais usados primeiro, com o número de linhas de cada um. É a forma rápida de achar um nome escrito errado: **ALCE** com uma linha ao lado de **ALICE** com quarenta é marcado com *Você quis dizer ALICE?*. Clique em um nome para ir à primeira linha dele. Um grupo como `ALICE & BOB:` conta para cada um de seus nomes.
 
 ### Voltar atrás
 

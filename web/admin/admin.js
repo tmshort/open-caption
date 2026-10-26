@@ -794,8 +794,8 @@
         return h('li', { class: c.similar ? 'maybe' : '' }, swatch, h('button', { class: 'charname', title: __('Go to its first line'), onclick: () => go(c.lines[0]) }, c.name),
           h('span', { class: 'hint' }, __('{n} line(s)', { n: c.lines.length })), c.similar ? h('span', { class: 'check warn' }, __('Did you mean {name}?', { name: c.similar })) : null);
       }));
-      const body = h('div', {}, h('p', { class: 'hint' }, __('Every name used as a speaker in this show file, the most used first. A name that is one letter off from a name used more is probably a misspelling. A group such as DEE DEE & BARRY counts for each of its names. Click a name to go to its first line.')),
-        chars.length ? list : h('p', {}, __('No speaker names found. A speaker name is written in capitals before a colon, like BARRY: Hello.')));
+      const body = h('div', {}, h('p', { class: 'hint' }, __('Every name used as a speaker in this show file, the most used first. A name that is one letter off from a name used more is probably a misspelling. A group such as ALICE & BOB counts for each of its names. Click a name to go to its first line.')),
+        chars.length ? list : h('p', {}, __('No speaker names found. A speaker name is written in capitals before a colon, like ALICE: Hello.')));
       await ask(A.lang ? __('Characters ({name})', { name: cur.name }) : __('Characters'), body, __('Close'), { noCancel: true, wide: true });
     }
     async function refreshLangs() {

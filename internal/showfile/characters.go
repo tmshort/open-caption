@@ -9,7 +9,7 @@ import (
 )
 
 // Character is one name that speaks or sings in a show file, for Setup's list of characters (the editor's way to
-// spot a misspelled name). A group label such as "DEE DEE & BARRY" counts for each of its names.
+// spot a misspelled name). A group label such as "ALICE & BOB" counts for each of its names.
 type Character struct {
 	Name string `json:"name"`
 	// Lines are the line numbers (ascending, once each) of the lines this name speaks on.
@@ -21,7 +21,7 @@ type Character struct {
 	Similar string `json:"similar,omitempty"`
 }
 
-// namesOf splits a speaker label into the names of a group ("BARRY, DEE DEE & TRENT" is three).
+// namesOf splits a speaker label into the names of a group ("ALICE, BOB & CAROL" is three).
 func namesOf(label string) []string {
 	var out []string
 	for _, n := range strings.FieldsFunc(label, func(r rune) bool { return r == ',' || r == '&' || r == '/' }) {
