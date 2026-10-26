@@ -556,13 +556,15 @@ async function main() {
       if (act && other) {
         const work = async (name) => { await step(guard, 'Shows'); await sleep(500); await guard.evaluate((n) => { const c = [...document.querySelectorAll('.card.show')].find((x) => x.querySelector('.name').firstChild.textContent.trim() === n); [...c.querySelectorAll('button')].find((b) => /Work on this show|Continue with this show/.test(b.textContent)).click(); }, name); await sleep(600); await step(guard, 'Share'); await sleep(900); };
         await work(other.name);
-        const pill = await guard.evaluate(() => document.getElementById('working').textContent);
-        check('the header names the show being worked on and the active one when they differ', pill.includes('Working on: ' + other.name) && pill.includes('Active: ' + act.name), pill);
+        const pills = () => guard.evaluate(() => { const w = document.getElementById('working'), a = document.getElementById('active'); return { w: w.hidden ? null : w.textContent, a: a.hidden ? null : a.textContent, ac: a.className }; });
+        const p1 = await pills();
+        check('the header has a Working on pill and an Active pill, with the active show\'s state, when they differ', p1.w === 'Working on: ' + other.name && p1.a && p1.a.startsWith('Active: ' + act.name + ' · ') && /(STANDBY|ON AIR)$/.test(p1.a), p1);
+        check('the Active pill is green in standby and red on air', /\b(standby|live)\b/.test(p1.ac) && (/STANDBY$/.test(p1.a) === /standby/.test(p1.ac)), p1);
         const box = await guard.evaluate(() => ({ btn: document.querySelector('.startbox .primary').textContent, hint: document.querySelector('.startbox .hint').textContent }));
         check('the Share step says the button makes this show the active one, and what the audience gets until then', /^Open the Run page and make .+ the active show$/.test(box.btn) && box.hint.includes(act.name) && /active show|on air now/.test(box.hint), box);
         await work(act.name);
-        const pill2 = await guard.evaluate(() => document.getElementById('working').textContent);
-        check('and it says so when the show being worked on is the active one', pill2.includes('Working on: ' + act.name) && pill2.includes('(the active show)') && !pill2.includes('Active:'), pill2);
+        const p2 = await pills();
+        check('and there is only the Active pill when the show being worked on is the active one', p2.w === null && p2.a && p2.a.startsWith('Active: ' + act.name), p2);
       }
     }
     await click(guard, 'Settings'); await sleep(600);

@@ -801,11 +801,12 @@ OCI18n.add("pt", {
   "Note": "Nota",
   "Check": "Verificar",
   "Problem": "Problema",
-  "Working on: {work} · Active: {active}": "Trabalhando em: {work} · Ativo: {active}",
-  "Working on: {work} (the active show)": "Trabalhando em: {work} (o espetáculo ativo)",
-  "Working on: {work}": "Trabalhando em: {work}",
-  "The audience gets the active show. This one becomes the active show when you open the Run page for it.": "O público recebe o espetáculo ativo. Este passa a ser o espetáculo ativo quando você abrir a página Conduzir para ele.",
   "Open the Run page and make “{name}” the active show": "Abrir a página Conduzir e tornar «{name}» o espetáculo ativo",
   "“{name}” is on air now, so the audience is seeing it. Opening the Run page takes it off the air and makes this show the active one (you will be asked first).": "«{name}» está no ar agora, então o público está vendo. Abrir a página Conduzir o tira do ar e torna este espetáculo o ativo (você será perguntado antes).",
-  "“{name}” is the active show, waiting in standby. Opening the Run page makes this show the active one instead.": "«{name}» é o espetáculo ativo, em espera. Abrir a página Conduzir torna este espetáculo o ativo no lugar dele."
+  "“{name}” is the active show, waiting in standby. Opening the Run page makes this show the active one instead.": "«{name}» é o espetáculo ativo, em espera. Abrir a página Conduzir torna este espetáculo o ativo no lugar dele.",
+  "Working on: {name}": "Trabalhando em: {name}",
+  "Active: {name}": "Ativo: {name}",
+  "The show you are working on. The audience gets the active show; this one becomes the active show when you open the Run page for it.": "O espetáculo em que você está trabalhando. O público recebe o espetáculo ativo; este passa a ser o ativo quando você abrir a página Conduzir para ele.",
+  "The audience is seeing this show now": "O público está vendo este espetáculo agora",
+  "Loaded and waiting in standby: the audience sees the standby screen until the operator presses START": "Carregado e em espera: o público vê a tela de espera até o operador pressionar INICIAR"
 });

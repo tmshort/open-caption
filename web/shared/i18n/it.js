@@ -801,11 +801,12 @@ OCI18n.add("it", {
   "Note": "Nota",
   "Check": "Da controllare",
   "Problem": "Problema",
-  "Working on: {work} · Active: {active}": "In modifica: {work} · Attivo: {active}",
-  "Working on: {work} (the active show)": "In modifica: {work} (lo spettacolo attivo)",
-  "Working on: {work}": "In modifica: {work}",
-  "The audience gets the active show. This one becomes the active show when you open the Run page for it.": "Il pubblico riceve lo spettacolo attivo. Questo diventa lo spettacolo attivo quando apri la pagina Conduci per esso.",
   "Open the Run page and make “{name}” the active show": "Apri la pagina Conduci e rendi «{name}» lo spettacolo attivo",
   "“{name}” is on air now, so the audience is seeing it. Opening the Run page takes it off the air and makes this show the active one (you will be asked first).": "«{name}» è in onda adesso, quindi il pubblico lo sta vedendo. Aprire la pagina Conduci lo toglie dall'onda e rende questo spettacolo quello attivo (ti verrà chiesto prima).",
-  "“{name}” is the active show, waiting in standby. Opening the Run page makes this show the active one instead.": "«{name}» è lo spettacolo attivo, in attesa. Aprire la pagina Conduci rende invece attivo questo spettacolo."
+  "“{name}” is the active show, waiting in standby. Opening the Run page makes this show the active one instead.": "«{name}» è lo spettacolo attivo, in attesa. Aprire la pagina Conduci rende invece attivo questo spettacolo.",
+  "Working on: {name}": "In modifica: {name}",
+  "Active: {name}": "Attivo: {name}",
+  "The show you are working on. The audience gets the active show; this one becomes the active show when you open the Run page for it.": "Lo spettacolo su cui lavori. Il pubblico riceve lo spettacolo attivo; questo diventa quello attivo quando apri la pagina Conduci per esso.",
+  "The audience is seeing this show now": "Il pubblico sta vedendo questo spettacolo adesso",
+  "Loaded and waiting in standby: the audience sees the standby screen until the operator presses START": "Caricato e in attesa: il pubblico vede la schermata di attesa finché l'operatore non preme AVVIA"
 });

@@ -465,7 +465,6 @@
       const wasLive = A.live, wasStart = A.atStart;
       A.atStart = p.op.atStart; A.live = p.op.live; A.audience = p.audience; A.activeId = p.show.id; paintWorking();
       $('viewers').textContent = OCClients.label(p); $('viewers').title = OCClients.title(p.audience);
-      $('live').hidden = !p.op.live; $('live').textContent = '● ' + __('ON AIR');
       if (A.step === 'golive') { const v = document.getElementById('audcount'); if (v) v.textContent = String(p.audience); }
       if ((wasLive !== A.live || wasStart !== A.atStart) && (A.step === 'show' || A.step === 'golive')) loadShows().then(() => (A.step === 'show' || A.step === 'golive') && render());
     });
@@ -526,14 +525,21 @@
     if (r.ok && A.cur === id && !A.mainAnalysis) { A.mainAnalysis = r.data.analysis; refreshNav(); }
   }
 
-  // The header says which show Setup is editing and, when it is another one, which show is active (what the audience gets).
+  // The header says which show Setup is editing and which one is active (what the audience gets, in standby or on air). When
+  // they are the same show there is one pill, the active one.
   function paintWorking() {
-    const s = curShow(), w = $('working');
-    const act = s && A.activeId && A.activeId !== s.id ? A.shows.find((x) => x.id === A.activeId) : null;
-    w.textContent = !s ? __('No show selected') : act ? __('Working on: {work} · Active: {active}', { work: s.name, active: act.name })
-      : A.activeId === s.id ? __('Working on: {work} (the active show)', { work: s.name }) : __('Working on: {work}', { work: s.name });
-    w.title = act ? __('The audience gets the active show. This one becomes the active show when you open the Run page for it.') : __('The show you are working on');
-    w.hidden = false;
+    const s = curShow(), w = $('working'), a = $('active');
+    const act = A.activeId ? A.shows.find((x) => x.id === A.activeId) : null;
+    const same = !!(s && act && s.id === act.id);
+    w.hidden = same;
+    w.textContent = s ? __('Working on: {name}', { name: s.name }) : __('No show selected');
+    w.title = act && !same ? __('The show you are working on. The audience gets the active show; this one becomes the active show when you open the Run page for it.') : __('The show you are working on');
+    a.hidden = !act;
+    if (act) {
+      a.className = 'pill ' + (A.live ? 'live' : 'standby');
+      a.textContent = __('Active: {name}', { name: act.name }) + ' · ' + (A.live ? __('ON AIR') : __('STANDBY'));
+      a.title = A.live ? __('The audience is seeing this show now') : __('Loaded and waiting in standby: the audience sees the standby screen until the operator presses START');
+    }
   }
 
   async function render() {

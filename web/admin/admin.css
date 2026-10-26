@@ -237,4 +237,8 @@ a.quiet { background: none; border: none; color: var(--dim); text-decoration: no
 .trouble pre.logview { max-height: 10rem; }
 
 /* the header's "Working on: … · Active: …" pill can hold two show names */
-#working { max-width: min(36rem, 45vw); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#working { max-width: min(30rem, 40vw); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* the header's two show pills: standby is green, on air is the red of .pill.live (header.css); the text says the state too */
+.pill.standby { background: #1b6b43; border-color: #1b6b43; color: #fff; font-weight: 700; }
+#active { max-width: min(30rem, 40vw); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
