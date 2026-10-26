@@ -71,6 +71,9 @@ func TestRealSocketsAnswerAQuestionFromThisComputer(t *testing.T) {
 			continue
 		}
 		got := parseAny(buf[:n])
+		if len(got) == 0 {
+			continue // not an answer: the responder's own probe or announcement, which Windows also delivers here
+		}
 		for _, g := range got {
 			if g.Equal(ip) {
 				return
