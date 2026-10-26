@@ -4,6 +4,8 @@ Un file dello spettacolo è un semplice file di testo (`.txt` o `.md`) scritto i
 
 Le righe lunghe vanno a capo da sole sullo schermo. Decidi tu dove spezzare una battuta lunga in righe, secondo lo stile della rappresentazione. Il programma non divide né unisce mai le righe al posto tuo.
 
+Per controllare un file dello spettacolo, o prepararlo nel tuo editor di testo, vedi [Preparare un file dello spettacolo](topic:admin-preparing-a-show-file).
+
 ## Formattazione
 
 | Scrivi | Ottieni |

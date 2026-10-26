@@ -4,6 +4,8 @@ Un fichier du spectacle est un fichier texte simple (`.txt` ou `.md`) écrit dan
 
 Les longues lignes passent automatiquement à la ligne à l'écran. C'est vous qui décidez où couper une longue réplique en lignes, selon le style de la représentation. Le programme ne coupe ni ne joint jamais de lignes à votre place.
 
+Pour vérifier un fichier du spectacle, ou le préparer dans votre propre éditeur de texte, voir [Préparer un fichier de spectacle](topic:admin-preparing-a-show-file).
+
 ## Mise en forme
 
 | Écrivez | Vous obtenez |

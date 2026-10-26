@@ -4,6 +4,8 @@ Un archivo del espectáculo es un archivo de texto sencillo (`.txt` o `.md`) esc
 
 Las líneas largas se ajustan solas en la pantalla. Usted decide dónde dividir un parlamento largo en líneas, según el estilo de la representación. El programa nunca divide ni une líneas por usted.
 
+Para comprobar un archivo del espectáculo, o para prepararlo en su propio editor de texto, consulte [Preparar un archivo del espectáculo](topic:admin-preparing-a-show-file).
+
 ## Formato
 
 | Escriba | Obtiene |

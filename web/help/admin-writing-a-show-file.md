@@ -4,6 +4,8 @@ A show file is a plain text file (`.txt` or `.md`) written in a simple form of M
 
 Long lines wrap on the screen automatically. You decide where to split a long speech into lines, to match the style of the performance. The program never splits or joins lines for you.
 
+To check a show file, or to prepare one in your own text editor, see [Preparing a show file](topic:admin-preparing-a-show-file).
+
 ## Formatting
 
 | Write | You get |

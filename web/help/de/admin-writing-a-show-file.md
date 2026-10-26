@@ -4,6 +4,8 @@ Eine Show-Datei ist eine einfache Textdatei (`.txt` oder `.md`), geschrieben in 
 
 Lange Zeilen werden auf dem Bildschirm automatisch umgebrochen. Sie entscheiden, wo Sie eine lange Rede in Zeilen teilen, passend zum Stil der Aufführung. Das Programm teilt oder verbindet nie von sich aus Zeilen.
 
+Um eine Show-Datei zu prüfen oder in einem eigenen Texteditor vorzubereiten, siehe [Eine Show-Datei vorbereiten](topic:admin-preparing-a-show-file).
+
 ## Formatierung
 
 | Schreiben Sie | Sie erhalten |

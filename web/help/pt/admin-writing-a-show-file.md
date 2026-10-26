@@ -4,6 +4,8 @@ Um arquivo do espetáculo é um arquivo de texto simples (`.txt` ou `.md`) escri
 
 As linhas longas quebram sozinhas na tela. Você decide onde dividir uma fala longa em linhas, de acordo com o estilo da apresentação. O programa nunca divide nem junta linhas por você.
 
+Para verificar um arquivo do espetáculo, ou prepará-lo no seu próprio editor de texto, veja [Preparar um arquivo do espetáculo](topic:admin-preparing-a-show-file).
+
 ## Formatação
 
 | Escreva | Você obtém |
