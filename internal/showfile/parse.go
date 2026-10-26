@@ -53,8 +53,10 @@ type parser struct {
 
 	together *togetherBlock // inside [together] ... [/together]: lines are voices shown at once
 
-	speakers map[string]bool // the speaker labels found
-	notCaps  []labelAt       // lines that start like "Barry: text", checked against speakers when the file has been read
+	speakers   map[string]bool  // the speaker labels found
+	labels     []string         // the speaker labels in order of first appearance
+	labelLines map[string][]int // the lines each label was used on
+	notCaps    []labelAt        // lines that start like "Barry: text", checked against speakers when the file has been read
 }
 
 type labelAt struct {
@@ -96,6 +98,7 @@ func Parse(src string, opts Options) Result {
 	}
 	p.summary()
 	res.Speakers = SpeakersOf(res.Cues)
+	res.Characters = charactersOf(p.labels, p.labelLines)
 	return res
 }
 
@@ -255,6 +258,13 @@ func (p *parser) part(lines []string, lineNo int) Part {
 			p.speakers = map[string]bool{}
 		}
 		p.speakers[m[1]] = true
+		if p.labelLines == nil {
+			p.labelLines = map[string][]int{}
+		}
+		if _, seen := p.labelLines[m[1]]; !seen {
+			p.labels = append(p.labels, m[1])
+		}
+		p.labelLines[m[1]] = append(p.labelLines[m[1]], lineNo)
 		if dup := repeatedName(m[1]); dup != "" {
 			p.diag(lineNo, SevWarning, "The speaker label %q names %s twice. Is one of them a different character?", m[1]+":", dup)
 		}

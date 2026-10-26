@@ -25,6 +25,10 @@ HAMLET: To be, or not to be, **that** is the question.
 OPHELIA: My *lord*?
 ```
 
+## Die Namen der Figuren prüfen
+
+Klicken Sie über dem Editor auf **Figuren…**, um alle als Sprecher verwendeten Namen zu sehen, die am häufigsten verwendeten zuerst, mit der Zahl ihrer Zeilen. So finden Sie schnell einen falsch geschriebenen Namen: **BARY** mit einer Zeile neben **BARRY** mit vierzig wird mit *Meinten Sie BARRY?* markiert. Klicken Sie auf einen Namen, um zu seiner ersten Zeile zu gehen, oder auf **Zeilen anzeigen**, um zu einer beliebigen zu springen. Eine Gruppe wie `DEE DEE & BARRY:` zählt für jeden ihrer Namen.
+
 ## Zu einer früheren Version zurückgehen
 
 Bei jedem Speichern wird die ersetzte Version aufbewahrt (die letzten 50 je Sprache). Klicken Sie über dem Editor auf **Frühere Versionen …**, wählen Sie eine Zeit und klicken Sie auf **Laden**. Das legt nur den alten Text in den Editor; erst mit **Speichern** ändert sich etwas, Sie können also erst einmal nachsehen. **Vergleichen** zeigt Zeile für Zeile, was das Laden einer Version ändern würde. Eine Version, der Sie einen Namen geben (im Feld daneben, oder mit **Behalten**, um zu benennen, was jetzt gespeichert ist), wird nie vergessen, egal wie viele Speicherungen folgen. Der Export enthält die früheren Versionen nicht.

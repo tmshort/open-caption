@@ -87,7 +87,9 @@ const (
 type Result struct {
 	// Speakers lists every speaker name in order of first appearance. Devices use the
 	// position in this list to give each character a stable color.
-	Speakers     []string     `json:"speakers"`
+	Speakers []string `json:"speakers"`
+	// Characters are the individual names behind the speaker labels, with the lines they speak on (most used first).
+	Characters   []Character  `json:"characters"`
 	Language     string       `json:"language"`
 	LanguageName string       `json:"languageName,omitempty"`
 	Cues         []Cue        `json:"cues"`

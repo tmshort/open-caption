@@ -204,6 +204,10 @@ idle message: Captions will begin shortly
 
 The **Look** step in Setup writes this block for you, and you can edit it by hand. Anything a show file leaves out uses a default: the program has built-in values, `config.yaml` (its `defaults` section) can change them for every show on this computer, and each show file overrides both. Ports, passwords, HTTPS and the access lists are not show settings and stay in `config.yaml`. Because the show file carries its look, copying or exporting the show carries the look too. See the *Writing a show file* help topic for every setting.
 
+### Checking the character names
+
+Click **Characters…** above the editor to see every name used as a speaker, the most used first, with how many lines each speaks on. It is the quick way to find a misspelled name: **BARY** with one line beside **BARRY** with forty is marked *Did you mean BARRY?*. Click a name to go to its first line, or **Show the lines** to go to any of them. A group such as `DEE DEE & BARRY:` counts for each of its names.
+
 ### Going back
 
 Each save keeps the version it replaced (the last 50). **Earlier versions…** above the editor lists them; **Load** puts one in the editor, and **Save** makes it current. **Compare** shows line by line what loading one would change, and a version you give a name to (or **Keep** for what is saved now) is never forgotten. Export before the show anyway: the earlier versions live in the data folder, not in the export.

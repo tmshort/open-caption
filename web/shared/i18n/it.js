@@ -749,5 +749,16 @@ OCI18n.add("it", {
   "Plain (http)": "Non cifrato (http)",
   "This computer only:": "Solo questo computer:",
   "The name in the HTTPS certificate. It works on devices that can find this computer by that name.": "Il nome nel certificato HTTPS. Funziona sui dispositivi che riescono a trovare questo computer con quel nome.",
-  "This caption shows {0} voices at once. A phone stacks them and a shared screen may not have room for them all; consider splitting it into two captions.": "Questo sottotitolo mostra {0} voci contemporaneamente. Un telefono le impila e uno schermo condiviso potrebbe non avere spazio per tutte; valuta di dividerlo in due sottotitoli."
+  "This caption shows {0} voices at once. A phone stacks them and a shared screen may not have room for them all; consider splitting it into two captions.": "Questo sottotitolo mostra {0} voci contemporaneamente. Un telefono le impila e uno schermo condiviso potrebbe non avere spazio per tutte; valuta di dividerlo in due sottotitoli.",
+  "Characters…": "Personaggi…",
+  "Every speaker name used, to check for misspellings": "Tutti i nomi di personaggio usati, per controllare gli errori di battitura",
+  "Characters": "Personaggi",
+  "Characters ({name})": "Personaggi ({name})",
+  "Every name used as a speaker in this show file, the most used first. A name that is one letter off from a name used more is probably a misspelling. A group such as DEE DEE & BARRY counts for each of its names. Click a name to go to its first line.": "Tutti i nomi usati come personaggio in questo file dello spettacolo, i più usati per primi. Un nome che differisce di una lettera da uno più usato è probabilmente scritto male. Un gruppo come DEE DEE & BARRY conta per ciascuno dei suoi nomi. Fai clic su un nome per andare alla sua prima riga.",
+  "No speaker names found. A speaker name is written in capitals before a colon, like BARRY: Hello.": "Nessun nome di personaggio trovato. Un nome si scrive in maiuscolo prima dei due punti, come BARRY: Ciao.",
+  "Go to its first line": "Vai alla sua prima riga",
+  "{n} line(s)": "{n} riga/righe",
+  "Did you mean {name}?": "Intendevi {name}?",
+  "Show the lines": "Mostra le righe",
+  "Hide the lines": "Nascondi le righe"
 });

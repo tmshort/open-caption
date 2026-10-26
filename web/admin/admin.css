@@ -211,3 +211,13 @@ a.quiet { background: none; border: none; color: var(--dim); text-decoration: no
 
 /* Printing the Report step prints the report alone (the Print button adds the class for the moment of printing). */
 @media print { body.printreport header, body.printreport nav#steps, body.printreport #nextstep, body.printreport #connbar, body.printreport #help { display: none !important; } }
+
+/* Characters (the editor's list of speaker names) */
+.chars { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .15rem; }
+.chars li { display: flex; flex-wrap: wrap; align-items: center; gap: .15rem .6rem; padding: .25rem .4rem; border-radius: 6px; }
+.chars li.maybe { background: rgba(128, 128, 128, .12); border-left: 3px solid var(--warn); }
+.chars .swatch { width: .9rem; height: .9rem; border-radius: 50%; border: 1px solid var(--line); flex: none; }
+.chars .swatch.none { background: transparent; border-style: dashed; }
+.chars .charname { font-weight: 700; }
+.chars .charlines { flex-basis: 100%; display: flex; flex-wrap: wrap; gap: .2rem .4rem; }
+.chars .charlines[hidden] { display: none; }

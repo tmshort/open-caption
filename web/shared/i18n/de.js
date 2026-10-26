@@ -749,5 +749,16 @@ OCI18n.add("de", {
   "Plain (http)": "Unverschlüsselt (http)",
   "This computer only:": "Nur dieser Computer:",
   "The name in the HTTPS certificate. It works on devices that can find this computer by that name.": "Der Name im HTTPS-Zertifikat. Er funktioniert auf Geräten, die diesen Computer unter diesem Namen finden.",
-  "This caption shows {0} voices at once. A phone stacks them and a shared screen may not have room for them all; consider splitting it into two captions.": "Dieser Untertitel zeigt {0} Stimmen gleichzeitig. Ein Telefon stapelt sie, und auf einem gemeinsamen Bildschirm ist vielleicht nicht für alle Platz; erwägen Sie, ihn in zwei Untertitel zu teilen."
+  "This caption shows {0} voices at once. A phone stacks them and a shared screen may not have room for them all; consider splitting it into two captions.": "Dieser Untertitel zeigt {0} Stimmen gleichzeitig. Ein Telefon stapelt sie, und auf einem gemeinsamen Bildschirm ist vielleicht nicht für alle Platz; erwägen Sie, ihn in zwei Untertitel zu teilen.",
+  "Characters…": "Figuren…",
+  "Every speaker name used, to check for misspellings": "Alle verwendeten Sprechernamen, um Tippfehler zu finden",
+  "Characters": "Figuren",
+  "Characters ({name})": "Figuren ({name})",
+  "Every name used as a speaker in this show file, the most used first. A name that is one letter off from a name used more is probably a misspelling. A group such as DEE DEE & BARRY counts for each of its names. Click a name to go to its first line.": "Alle Namen, die in dieser Showdatei als Sprecher verwendet werden, die am häufigsten verwendeten zuerst. Ein Name, der sich in einem Buchstaben von einem häufiger verwendeten unterscheidet, ist wahrscheinlich falsch geschrieben. Eine Gruppe wie DEE DEE & BARRY zählt für jeden ihrer Namen. Klicken Sie auf einen Namen, um zu seiner ersten Zeile zu gehen.",
+  "No speaker names found. A speaker name is written in capitals before a colon, like BARRY: Hello.": "Keine Sprechernamen gefunden. Ein Sprechername steht in Großbuchstaben vor einem Doppelpunkt, etwa BARRY: Hallo.",
+  "Go to its first line": "Zur ersten Zeile gehen",
+  "{n} line(s)": "{n} Zeile(n)",
+  "Did you mean {name}?": "Meinten Sie {name}?",
+  "Show the lines": "Zeilen anzeigen",
+  "Hide the lines": "Zeilen ausblenden"
 });

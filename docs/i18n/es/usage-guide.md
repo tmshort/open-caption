@@ -204,6 +204,10 @@ idle message: Captions will begin shortly
 
 El paso **Aspecto** de Configuración escribe este bloque por usted, y también puede editarlo a mano. Todo lo que un archivo del espectáculo omite usa un valor por defecto: el programa tiene valores integrados, `config.yaml` (su sección `defaults`) puede cambiarlos para todos los espectáculos de este equipo, y cada archivo del espectáculo anula ambos. Los puertos, las contraseñas, HTTPS y las listas de acceso no son ajustes del espectáculo y se quedan en `config.yaml`. Como el archivo del espectáculo lleva su aspecto, copiar o exportar el espectáculo también lleva el aspecto. Consulte el tema de ayuda *Escribir un archivo del espectáculo* para ver todos los ajustes.
 
+### Revisar los nombres de los personajes
+
+Haga clic en **Caracteres…** sobre el editor para ver todos los nombres usados como personaje, los más usados primero, con el número de líneas de cada uno. Es la forma rápida de encontrar un nombre mal escrito: **BARY** con una línea junto a **BARRY** con cuarenta se marca con *¿Quiso decir BARRY?*. Haga clic en un nombre para ir a su primera línea, o en **Mostrar las líneas** para ir a cualquiera de ellas. Un grupo como `DEE DEE & BARRY:` cuenta para cada uno de sus nombres.
+
 ### Volver atrás
 
 Cada guardado conserva la versión que reemplazó (las últimas 50). **Versiones anteriores…** sobre el editor las enumera; **Cargar** pone una en el editor, y **Guardar** la hace actual. **Comparar** muestra línea a línea qué cambiaría al cargar una, y una versión a la que ponga nombre (o **Conservar** para lo que está guardado ahora) nunca se olvida. Exporte antes del espectáculo de todos modos: las versiones anteriores viven en la carpeta de datos, no en la exportación.

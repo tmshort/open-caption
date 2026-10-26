@@ -204,6 +204,10 @@ idle message: Captions will begin shortly
 
 L'étape **Apparence** de la configuration écrit ce bloc pour vous, et vous pouvez le modifier à la main. Tout ce qu'un fichier de spectacle omet utilise une valeur par défaut : le programme a des valeurs intégrées, `config.yaml` (sa section `defaults`) peut les changer pour tous les spectacles de cet ordinateur, et chaque fichier de spectacle remplace les deux. Les ports, mots de passe, HTTPS et listes d'accès ne sont pas des réglages de spectacle et restent dans `config.yaml`. Comme le fichier du spectacle emporte son apparence, copier ou exporter le spectacle emporte aussi l'apparence. Voir la rubrique d'aide *Écrire un fichier du spectacle* pour tous les réglages.
 
+### Vérifier les noms des personnages
+
+Cliquez sur **Personnages…** au-dessus de l'éditeur pour voir tous les noms utilisés comme personnage, les plus utilisés d'abord, avec le nombre de lignes de chacun. C'est le moyen rapide de repérer un nom mal orthographié : **BARY** avec une ligne à côté de **BARRY** avec quarante est signalé par *Vouliez-vous dire BARRY ?*. Cliquez sur un nom pour aller à sa première ligne, ou sur **Afficher les lignes** pour aller à n'importe laquelle. Un groupe comme `DEE DEE & BARRY:` compte pour chacun de ses noms.
+
 ### Revenir en arrière
 
 Chaque enregistrement conserve la version qu'il a remplacée (les 50 dernières). **Versions antérieures…** au-dessus de l'éditeur les liste ; **Charger** en place une dans l'éditeur, et **Enregistrer** la rend courante. **Comparer** montre ligne à ligne ce que changerait le chargement de l'une d'elles, et une version à laquelle vous donnez un nom (ou **Conserver** pour ce qui est enregistré maintenant) n'est jamais oubliée. Exportez quand même avant le spectacle : les versions antérieures vivent dans le dossier de données, pas dans l'exportation.

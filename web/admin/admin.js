@@ -784,6 +784,22 @@
       list.hidden = false;
       await ask(A.lang ? __('Earlier versions ({name})', { name: cur.name }) : __('Earlier versions'), body, __('Close'), { noCancel: true, wide: true });
     }
+    // The names that speak in this show file, to spot a misspelled one: most lines first, a name one letter off from a more used
+    // name is marked, and each name goes to its first line (or any other) in the editor.
+    async function showCharacters() {
+      const a = A.analysis, chars = a.characters || [];
+      const go = (line) => { $('dlg').close('cancel'); jump(line); };
+      const list = h('ul', { class: 'chars' }, ...chars.map((c) => {
+        const lines = h('div', { class: 'charlines', hidden: '' }, ...c.lines.map((n) => h('button', { class: 'quiet', onclick: () => go(n) }, __('Line {n}', { n }))));
+        const more = h('button', { class: 'quiet', 'aria-expanded': 'false', onclick: () => { lines.hidden = !lines.hidden; more.setAttribute('aria-expanded', String(!lines.hidden)); more.textContent = lines.hidden ? __('Show the lines') : __('Hide the lines'); } }, __('Show the lines'));
+        const swatch = c.label && window.OCSpeakers ? h('span', { class: 'swatch', 'aria-hidden': 'true', style: 'background:' + OCSpeakers.forName(c.name, a.speakers, '#000000') }) : h('span', { class: 'swatch none', 'aria-hidden': 'true' });
+        return h('li', { class: c.similar ? 'maybe' : '' }, swatch, h('button', { class: 'charname', title: __('Go to its first line'), onclick: () => go(c.lines[0]) }, c.name),
+          h('span', { class: 'hint' }, __('{n} line(s)', { n: c.lines.length })), c.similar ? h('span', { class: 'check warn' }, __('Did you mean {name}?', { name: c.similar })) : null, more, lines);
+      }));
+      const body = h('div', {}, h('p', { class: 'hint' }, __('Every name used as a speaker in this show file, the most used first. A name that is one letter off from a name used more is probably a misspelling. A group such as DEE DEE & BARRY counts for each of its names. Click a name to go to its first line.')),
+        chars.length ? list : h('p', {}, __('No speaker names found. A speaker name is written in capitals before a colon, like BARRY: Hello.')));
+      await ask(A.lang ? __('Characters ({name})', { name: cur.name }) : __('Characters'), body, __('Close'), { noCancel: true, wide: true });
+    }
     async function refreshLangs() {
       const x = await api('GET', '/api/admin/shows/' + show.id + '/languages');
       if (x.ok) { A.langs = x.data.languages; renderTabs(); }
@@ -887,7 +903,7 @@
       h('h2', {}, A.lang ? __('Show file — {name}', { name: cur.name }) : __('Show file')),
       tabs, ...(translating ? [translating] : []), // (append() would print a null as the word "null")
       h('p', { class: 'hint' }, __('This file holds everything about the show except its images: its title and look in a [settings] block, and the lines themselves. Each line is one caption; one press of the spacebar sends one line. You can paste, type, or drop a .txt or .md file. Click a problem to jump to its line.')),
-      h('div', { class: 'row filebar' }, uploadBtn, fileInput, h('a', { class: 'btn', href: '/api/admin/shows/' + show.id + '/showfile/download' + q, download: show.id + (A.lang ? '.' + A.lang : '') + '.md', title: __('Edit it in any text editor, then bring it back with Upload a show file') }, __('Download the show file')), h('button', { onclick: showHistory, title: __('Each save keeps the version it replaced') }, __('Earlier versions…')), h('span', { class: 'grow' }), h('span', { class: 'savebar' }, status, saveBtn)),
+      h('div', { class: 'row filebar' }, uploadBtn, fileInput, h('a', { class: 'btn', href: '/api/admin/shows/' + show.id + '/showfile/download' + q, download: show.id + (A.lang ? '.' + A.lang : '') + '.md', title: __('Edit it in any text editor, then bring it back with Upload a show file') }, __('Download the show file')), h('button', { onclick: showHistory, title: __('Each save keeps the version it replaced') }, __('Earlier versions…')), h('button', { onclick: showCharacters, title: __('Every speaker name used, to check for misspellings') }, __('Characters…')), h('span', { class: 'grow' }), h('span', { class: 'savebar' }, status, saveBtn)),
       tools,
       h('div', { class: 'editor-grid' }, editor, h('div', {}, h('div', { class: 'card' }, diagTitle, diagList), h('div', { class: 'card' }, h('h3', {}, __('What the operator will step through')), cueList))),
       cheatSheet());

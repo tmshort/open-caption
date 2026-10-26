@@ -25,6 +25,10 @@ HAMLET: To be, or not to be, **that** is the question.
 OPHELIA: My *lord*?
 ```
 
+## Vérifier les noms des personnages
+
+Cliquez sur **Personnages…** au-dessus de l'éditeur pour voir tous les noms utilisés comme personnage, les plus utilisés d'abord, avec le nombre de lignes de chacun. C'est le moyen rapide de repérer un nom mal orthographié : **BARY** avec une ligne à côté de **BARRY** avec quarante est signalé par *Vouliez-vous dire BARRY ?*. Cliquez sur un nom pour aller à sa première ligne, ou sur **Afficher les lignes** pour aller à n'importe laquelle. Un groupe comme `DEE DEE & BARRY:` compte pour chacun de ses noms.
+
 ## Revenir à une version antérieure
 
 À chaque enregistrement, la version remplacée est conservée (les 50 dernières pour chaque langue). Cliquez sur **Versions antérieures…** au-dessus de l'éditeur, choisissez une heure et cliquez sur **Charger**. Cela ne fait que placer l'ancien texte dans l'éditeur ; rien ne change tant que vous ne cliquez pas sur **Enregistrer**, vous pouvez donc regarder d'abord. **Comparer** montre, ligne à ligne, ce que changerait le chargement d'une version. Une version à laquelle vous donnez un nom (dans la zone à côté, ou avec **Conserver** pour nommer ce qui est enregistré maintenant) n'est jamais oubliée, quel que soit le nombre d'enregistrements qui suivent. L'exportation n'inclut pas les versions antérieures.

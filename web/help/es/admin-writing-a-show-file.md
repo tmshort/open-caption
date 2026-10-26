@@ -25,6 +25,10 @@ HAMLET: To be, or not to be, **that** is the question.
 OPHELIA: My *lord*?
 ```
 
+## Revisar los nombres de los personajes
+
+Haga clic en **Caracteres…** sobre el editor para ver todos los nombres usados como personaje, los más usados primero, con el número de líneas de cada uno. Es la forma rápida de encontrar un nombre mal escrito: **BARY** con una línea junto a **BARRY** con cuarenta se marca con *¿Quiso decir BARRY?*. Haga clic en un nombre para ir a su primera línea, o en **Mostrar las líneas** para ir a cualquiera de ellas. Un grupo como `DEE DEE & BARRY:` cuenta para cada uno de sus nombres.
+
 ## Volver a una versión anterior
 
 Cada vez que guarda, se conserva la versión que reemplazó (las últimas 50 de cada idioma). Pulse **Versiones anteriores…** sobre el editor, elija una hora y pulse **Cargar**. Eso solo pone el texto antiguo en el editor; nada cambia hasta que pulse **Guardar**, así que puede mirar primero. **Comparar** muestra, línea a línea, qué cambiaría al cargar una versión. Una versión a la que ponga nombre (en el cuadro junto a ella, o con **Conservar** para dar nombre a lo que está guardado ahora) nunca se olvida, por muchos guardados que sigan. La exportación no incluye las versiones anteriores.

@@ -204,6 +204,10 @@ idle message: Captions will begin shortly
 
 Der Schritt **Erscheinungsbild** der Einrichtung schreibt diesen Block für Sie, und Sie können ihn von Hand bearbeiten. Alles, was eine Show-Datei auslässt, verwendet einen Standardwert: Das Programm hat eingebaute Werte, `config.yaml` (ihr Abschnitt `defaults`) kann sie für jede Show auf diesem Computer ändern, und jede Show-Datei überschreibt beides. Ports, Passwörter, HTTPS und die Zugriffslisten sind keine Show-Einstellungen und bleiben in `config.yaml`. Weil die Show-Datei ihr Erscheinungsbild trägt, nimmt Kopieren oder Exportieren der Show das Erscheinungsbild mit. Alle Einstellungen finden Sie im Hilfethema *Eine Show-Datei schreiben*.
 
+### Die Namen der Figuren prüfen
+
+Klicken Sie über dem Editor auf **Figuren…**, um alle als Sprecher verwendeten Namen zu sehen, die am häufigsten verwendeten zuerst, mit der Zahl ihrer Zeilen. So finden Sie schnell einen falsch geschriebenen Namen: **BARY** mit einer Zeile neben **BARRY** mit vierzig wird mit *Meinten Sie BARRY?* markiert. Klicken Sie auf einen Namen, um zu seiner ersten Zeile zu gehen, oder auf **Zeilen anzeigen**, um zu einer beliebigen zu springen. Eine Gruppe wie `DEE DEE & BARRY:` zählt für jeden ihrer Namen.
+
 ### Zurückgehen
 
 Jedes Speichern bewahrt die ersetzte Version auf (die letzten 50). **Frühere Versionen …** über dem Editor listet sie auf; **Laden** legt eine in den Editor, und **Speichern** macht sie aktuell. **Vergleichen** zeigt Zeile für Zeile, was das Laden einer Version ändern würde, und eine Version, der Sie einen Namen geben (oder **Behalten** für das, was jetzt gespeichert ist), wird nie vergessen. Exportieren Sie vor der Show trotzdem: Die früheren Versionen liegen im Datenordner, nicht im Export.

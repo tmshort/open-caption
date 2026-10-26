@@ -66,7 +66,7 @@ everywhere an operator session is; the reverse is not true.
 | POST | `/api/admin/shows` | Create `{name}` (the title is written into the new show file's `[settings]`) or `{sample: true}` |
 | GET/PUT/DELETE | `/api/admin/shows/{id}` | `GET`: `name` (the show file's title), `language`, `updated`, `lookSaved`, and `theme`, the **resolved** look (show file over config defaults; includes `loopSeconds`, `scrollbackLines` and per-language `idleMessages`). `PUT {name?, theme?}` rewrites the show file(s)' `[settings]` (a saved `theme` writes every look setting; each translation's `idle message` goes in its own file) and applies the change to the show on air. `DELETE` removes the show |
 | POST | `/api/admin/shows/{id}/duplicate` | `{name?}` copy show files (every language), images and look |
-| GET | `/api/admin/shows/{id}/showfile` | Raw text + parsed cues + diagnostics (`?lang=`) |
+| GET | `/api/admin/shows/{id}/showfile` | Raw text + parsed cues + diagnostics + `characters` (`?lang=`): every speaker name with the lines it speaks on, `[{name, lines, label?, similar?}]`, most lines first; a group label counts for each name, `similar` names a more used name one letter away (a likely misspelling) |
 | PUT | `/api/admin/shows/{id}/showfile` | Body: raw show file text (`?lang=`) → diagnostics |
 | GET | `/api/admin/shows/{id}/showfile/download` | The show file as a plain `<id>.md` (or `<id>.<lang>.md`) attachment, UTF-8 with a BOM and CRLF line ends so any Windows editor opens it correctly; for editing offline. It goes back through the editor's **Upload a show file** and the normal save |
 | POST | `/api/admin/shows/{id}/archive` | Archive the show (`archived: yes` in its show file); 409 if it is the show on air. Returns the show summary (`archived: true`) |

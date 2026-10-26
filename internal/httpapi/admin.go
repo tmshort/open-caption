@@ -77,6 +77,7 @@ type Missing = check.Missing
 // Analysis is the result of parsing a show file against a show's images.
 type Analysis struct {
 	Speakers    []string              `json:"speakers"`
+	Characters  []showfile.Character  `json:"characters"`
 	Language    string                `json:"language"`
 	Cues        []CueView             `json:"cues"`
 	Diagnostics []showfile.Diagnostic `json:"diagnostics"`
@@ -95,7 +96,7 @@ func analyze(text string, assets []show.Asset, translation bool) (Analysis, []sh
 	res := showfile.Parse(text, showfile.Options{Assets: names, Translation: translation})
 	used := check.ImageUse(res.Cues)
 	missing := check.MissingImages(used, have)
-	return Analysis{Speakers: res.Speakers, Language: res.Language, Cues: cueViews(res.Cues), Diagnostics: res.Diagnostics, Used: used,
+	return Analysis{Speakers: res.Speakers, Characters: res.Characters, Language: res.Language, Cues: cueViews(res.Cues), Diagnostics: res.Diagnostics, Used: used,
 		Missing: missing, Assets: assets}, res.Cues
 }
 

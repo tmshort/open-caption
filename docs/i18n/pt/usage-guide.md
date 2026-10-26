@@ -204,6 +204,10 @@ idle message: Captions will begin shortly
 
 A etapa **Aparência** da Configuração escreve esse bloco para você, e você pode editá-lo à mão. Tudo o que um arquivo do espetáculo deixa de fora usa um padrão: o programa tem valores embutidos, `config.yaml` (a seção `defaults`) pode mudá-los para todos os espetáculos deste computador, e cada arquivo do espetáculo substitui os dois. Portas, senhas, HTTPS e as listas de acesso não são configurações do espetáculo e ficam em `config.yaml`. Como o arquivo do espetáculo leva a própria aparência, copiar ou exportar o espetáculo leva a aparência também. Veja o tópico de ajuda *Escrever um arquivo do espetáculo* para todas as configurações.
 
+### Conferir os nomes dos personagens
+
+Clique em **Personagens…** acima do editor para ver todos os nomes usados como personagem, os mais usados primeiro, com o número de linhas de cada um. É a forma rápida de achar um nome escrito errado: **BARY** com uma linha ao lado de **BARRY** com quarenta é marcado com *Você quis dizer BARRY?*. Clique em um nome para ir à primeira linha dele, ou em **Mostrar as linhas** para ir a qualquer uma. Um grupo como `DEE DEE & BARRY:` conta para cada um de seus nomes.
+
 ### Voltar atrás
 
 Cada salvamento guarda a versão que substituiu (as últimas 50). **Versões anteriores…** acima do editor as lista; **Carregar** coloca uma no editor, e **Salvar** a torna atual. **Comparar** mostra linha a linha o que mudaria ao carregar uma, e uma versão a que você dá um nome (ou **Guardar** para o que está salvo agora) nunca é esquecida. Exporte antes do espetáculo de qualquer jeito: as versões anteriores ficam na pasta de dados, não na exportação.

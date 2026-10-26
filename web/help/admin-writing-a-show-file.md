@@ -25,6 +25,10 @@ HAMLET: To be, or not to be, **that** is the question.
 OPHELIA: My *lord*?
 ```
 
+## Checking the character names
+
+Click **Characters…** above the editor to see every name used as a speaker, the most used first, with how many lines each speaks on. It is the quick way to find a misspelled name: **BARY** with one line beside **BARRY** with forty is marked *Did you mean BARRY?*. Click a name to go to its first line, or **Show the lines** to go to any of them. A group such as `DEE DEE & BARRY:` counts for each of its names.
+
 ## Going back to an earlier version
 
 Every time you save, the version it replaced is kept (the last 50 for each language). Click **Earlier versions…** above the editor, choose a time and press **Load**. That only puts the old text in the editor; nothing changes until you press **Save**, so you can look first. **Compare** shows, line by line, what loading a version would change. A version you give a name to (in the box beside it, or with **Keep** to name what is saved now) is never forgotten, however many saves follow. Export does not include the earlier versions.

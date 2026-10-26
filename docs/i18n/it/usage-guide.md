@@ -204,6 +204,10 @@ idle message: Captions will begin shortly
 
 Il passo **Aspetto** della configurazione scrive questo blocco per te, e puoi modificarlo a mano. Tutto ciò che un file dello spettacolo omette usa un valore predefinito: il programma ha valori incorporati, `config.yaml` (la sua sezione `defaults`) può cambiarli per ogni spettacolo su questo computer, e ogni file dello spettacolo sostituisce entrambi. Porte, password, HTTPS e liste di accesso non sono impostazioni dello spettacolo e restano in `config.yaml`. Poiché il file dello spettacolo porta con sé il suo aspetto, copiare o esportare lo spettacolo porta con sé anche l'aspetto. Vedi l'argomento di aiuto *Scrivere un file dello spettacolo* per tutte le impostazioni.
 
+### Controllare i nomi dei personaggi
+
+Fai clic su **Personaggi…** sopra l'editor per vedere tutti i nomi usati come personaggio, i più usati per primi, con il numero di righe di ciascuno. È il modo rapido per trovare un nome scritto male: **BARY** con una riga accanto a **BARRY** con quaranta è segnalato con *Intendevi BARRY?*. Fai clic su un nome per andare alla sua prima riga, o su **Mostra le righe** per andare a una qualsiasi. Un gruppo come `DEE DEE & BARRY:` conta per ciascuno dei suoi nomi.
+
 ### Tornare indietro
 
 Ogni salvataggio conserva la versione sostituita (le ultime 50). **Versioni precedenti…** sopra l'editor le elenca; **Carica** ne mette una nell'editor, e **Salva** la rende attuale. **Confronta** mostra riga per riga cosa cambierebbe caricandone una, e una versione a cui dai un nome (o **Conserva** per ciò che è salvato adesso) non viene mai dimenticata. Esporta comunque prima dello spettacolo: le versioni precedenti vivono nella cartella dati, non nell'esportazione.
