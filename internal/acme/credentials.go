@@ -64,7 +64,7 @@ func ParseEnvFile(path string, warnf func(string, ...any)) (map[string]string, e
 	}
 	defer f.Close()
 	if st, err := f.Stat(); err == nil && runtime.GOOS != "windows" && st.Mode().Perm()&0o077 != 0 && warnf != nil {
-		warnf("the DNS credentials file %s can be read by other users; run: chmod 600 %s", path, path)
+		warnf("https.acme: the DNS credentials file %s can be read by other users; run: chmod 600 %s", path, path)
 	}
 	out := map[string]string{}
 	sc := bufio.NewScanner(f)
