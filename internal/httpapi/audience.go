@@ -25,6 +25,9 @@ const (
 	audienceCSP = "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; frame-ancestors 'self'"
 )
 
+// viewerLimitLog keeps a crowd past the limit, all asking again every 2 seconds, from filling the log.
+var viewerLimitLog logx.Throttle
+
 func init() {
 	// Not in Go's built-in table, and the system's table differs between computers (and Windows).
 	for ext, typ := range map[string]string{".mp4": "video/mp4", ".webm": "video/webm", ".ico": "image/x-icon", ".woff2": "font/woff2", ".otf": "font/otf"} {
@@ -86,7 +89,7 @@ func (s *Server) serveEvents(w http.ResponseWriter, r *http.Request, rt *Runtime
 	hb := rt.HubFor(lang)
 	cl := hb.SubscribeInfo(hub.ClientInfo{IP: clientIP(r), UserAgent: r.UserAgent(), Projector: r.URL.Query().Get("display") == "projector"})
 	if cl == nil {
-		logx.Warnf("refusing a viewer: the limit of %d connected devices is reached (audience.max_clients)", s.cfg.Audience.MaxClients)
+		viewerLimitLog.Warnf("refusing viewers: the limit of %d connected devices is reached (audience.max_clients); refused devices ask again every 2 seconds", s.cfg.Audience.MaxClients)
 		w.Header().Set("Retry-After", "2")
 		http.Error(w, "too many viewers", http.StatusServiceUnavailable)
 		return

@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 )
 
 func capture(t *testing.T) *bytes.Buffer {
@@ -96,5 +97,40 @@ func TestLogFileRotates(t *testing.T) {
 	l2.Close()
 	if b, _ := os.ReadFile(path); !strings.HasSuffix(string(b), "more\n") {
 		t.Error("appended")
+	}
+}
+
+func TestThrottleWritesOneLineAndCountsTheRest(t *testing.T) {
+	b := capture(t)
+	now := time.Unix(1000, 0)
+	th := &Throttle{Every: time.Minute, now: func() time.Time { return now }}
+	for i := 0; i < 5; i++ {
+		th.Warnf("too many viewers (%d)", i)
+	}
+	if got := b.String(); got != "WARN too many viewers (0)\n" {
+		t.Fatalf("only the first should be written: %q", got)
+	}
+	now = now.Add(30 * time.Second)
+	th.Warnf("still")
+	if strings.Count(b.String(), "\n") != 1 {
+		t.Errorf("written inside the interval: %q", b.String())
+	}
+	now = now.Add(31 * time.Second)
+	th.Warnf("too many viewers (%d)", 9)
+	want := "WARN too many viewers (9) (and 5 more like it since the last line about this)\n"
+	if !strings.HasSuffix(b.String(), want) {
+		t.Errorf("the count of skipped lines: %q", b.String())
+	}
+	now = now.Add(2 * time.Minute)
+	th.Warnf("quiet again")
+	if !strings.HasSuffix(b.String(), "WARN quiet again\n") {
+		t.Errorf("nothing was skipped, so no count: %q", b.String())
+	}
+	// below the chosen level nothing is written or counted
+	SetLevel(Error)
+	b.Reset()
+	th.Warnf("hidden")
+	if b.Len() != 0 {
+		t.Errorf("%q", b.String())
 	}
 }
