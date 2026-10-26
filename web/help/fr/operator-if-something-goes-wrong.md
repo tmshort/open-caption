@@ -14,7 +14,7 @@
 
 **« Un autre opérateur a la main. »** Quelqu'un d'autre, ou un autre onglet de cette page, pilote le spectacle. Si c'est vous, utilisez **Reprendre la main**.
 
-**La page dit qu'elle est déconnectée.** Le point devient rouge et la page se reconnecte toute seule. La position du spectacle est conservée sur le serveur, rien n'est perdu. Si elle ne revient pas en quelques secondes, rechargez la page ; vous retomberez là où vous étiez.
+**La page dit qu'elle est déconnectée.** Une barre rouge apparaît sous l'en-tête et la page se reconnecte toute seule. La position du spectacle est conservée sur le serveur, rien n'est perdu. Si elle ne revient pas en quelques secondes, rechargez la page ; vous retomberez là où vous étiez.
 
 **Le serveur a été redémarré.** Il se souvient d'où en était le spectacle et reprend à cet endroit, et vous restez connecté et aux commandes. Une boucle en cours repart de son premier élément. **Retour arrière** annule toujours les dernières choses envoyées avant le redémarrage.
 

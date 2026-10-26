@@ -14,7 +14,7 @@
 
 **«Otro operador tiene el control».** Otra persona, u otra pestaña de esta página, está controlando el espectáculo. Si es usted, use **Asumir el control**.
 
-**La página dice que está desconectada.** El punto se vuelve rojo y la página se reconecta sola. La posición del espectáculo se guarda en el servidor, así que no se pierde nada. Si no vuelve en unos segundos, recargue la página; volverá a donde estaba.
+**La página dice que está desconectada.** Aparece una barra roja bajo la cabecera y la página se reconecta sola. La posición del espectáculo se guarda en el servidor, así que no se pierde nada. Si no vuelve en unos segundos, recargue la página; volverá a donde estaba.
 
 **Se reinició el servidor.** Recuerda dónde estaba el espectáculo y continúa desde ahí, y usted sigue conectado y con el control. Un bucle en marcha empieza de nuevo desde su primer elemento. **Retroceso** sigue deshaciendo las últimas cosas que envió antes del reinicio.
 

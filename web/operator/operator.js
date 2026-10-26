@@ -89,16 +89,16 @@
     S.es = es;
     S.lastEvent = Date.now();
     const up = () => { S.lastEvent = Date.now(); clearTimeout(S.lostTimer); S.lostTimer = 0; $('connbar').hidden = true; };
-    es.addEventListener('opstate', (e) => { up(); $('dot').classList.add('on'); setPayload(JSON.parse(e.data)); });
+    es.addEventListener('opstate', (e) => { up(); setPayload(JSON.parse(e.data)); });
     es.addEventListener('ping', up);
     // (a failed retry must not push the notice back, so the timer is only started once)
-    es.onerror = () => { $('dot').classList.remove('on'); es.close(); if (!S.lostTimer) S.lostTimer = setTimeout(() => { if (!S.parked) $('connbar').hidden = false; }, 2000); setTimeout(openStream, 1000 + Math.random() * 500); };
+    es.onerror = () => { es.close(); if (!S.lostTimer) S.lostTimer = setTimeout(() => { if (!S.parked) $('connbar').hidden = false; }, 2000); setTimeout(openStream, 1000 + Math.random() * 500); };
   }
   setInterval(() => { if (S.es && Date.now() - S.lastEvent > 40000) openStream(); }, 5000);
   // A browser keeps only six connections to one address, and every open page holds a live stream. A page that has been
   // navigated away from can stay alive in the back/forward cache with its stream open, so moving back and forth between
   // Setup and this page used up all six and made the next page hang. Give the stream up as soon as the page is left.
-  window.addEventListener('pagehide', () => { S.parked = true; if (S.es) { S.es.close(); S.es = null; } $('dot').classList.remove('on'); });
+  window.addEventListener('pagehide', () => { S.parked = true; if (S.es) { S.es.close(); S.es = null; } });
   window.addEventListener('pageshow', (e) => { if (e.persisted) { S.parked = false; boot(); } }); // restored from the cache: start afresh
 
   async function setPayload(p) {

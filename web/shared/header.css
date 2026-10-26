@@ -2,7 +2,7 @@
    SPDX-License-Identifier: Apache-2.0 */
 
 /* The header that Setup and the operator page share, so the two look and size alike: the same type size, spacing,
-   status pills, links, language menu and connection dot. Each page sets the colours it uses (--panel, --bg, --dim,
+   status pills, links, language menu. Each page sets the colours it uses (--panel, --bg, --dim,
    --fg, --line, --bad, --ok); the fallbacks below are only for a page that sets none. */
 header {
   display: flex; align-items: center; flex-wrap: wrap; gap: .7rem; padding: .6rem 1rem;
@@ -36,8 +36,6 @@ header select.uilang {
 }
 /* the right-hand group moves to the next line as a whole when the header is too narrow, never one item at a time */
 .rhs { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: .7rem; margin-left: auto; }
-#dot { flex: none; width: 12px; height: 12px; border-radius: 50%; background: #e74c3c; }
-#dot.on { background: #2ecc71; }
 /* The list of connected devices, opened by the audience count on both pages: one dialog, the same size and type on each. */
 dialog[data-kind=clients] { box-sizing: border-box; width: 44rem; max-width: calc(100% - 2rem); padding: 1.2rem; font-size: 16px; line-height: 1.4; font-weight: 400; }
 dialog[data-kind=clients] h2 { margin: 0 0 .8rem; font-size: 1.25rem; line-height: 1.3; }

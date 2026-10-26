@@ -460,7 +460,7 @@
     const es = new EventSource('/api/operator/stream');
     A.es = es;
     es.addEventListener('opstate', (e) => {
-      $('dot').classList.add('on'); clearTimeout(A.lostTimer); A.lostTimer = 0; $('connbar').hidden = true; // the server is answering
+      clearTimeout(A.lostTimer); A.lostTimer = 0; $('connbar').hidden = true; // the server is answering
       const p = JSON.parse(e.data);
       const wasLive = A.live, wasStart = A.atStart;
       A.atStart = p.op.atStart; A.live = p.op.live; A.audience = p.audience; A.activeId = p.show.id;
@@ -469,13 +469,13 @@
       if (A.step === 'golive') { const v = document.getElementById('audcount'); if (v) v.textContent = String(p.audience); }
       if ((wasLive !== A.live || wasStart !== A.atStart) && (A.step === 'show' || A.step === 'golive')) loadShows().then(() => (A.step === 'show' || A.step === 'golive') && render());
     });
-    es.onerror = () => { $('dot').classList.remove('on'); es.close(); if (!A.lostTimer) A.lostTimer = setTimeout(() => { if (!A.parked) $('connbar').hidden = false; }, 2000); if (A.es === es) setTimeout(openOpStream, 2000); };
+    es.onerror = () => { es.close(); if (!A.lostTimer) A.lostTimer = setTimeout(() => { if (!A.parked) $('connbar').hidden = false; }, 2000); if (A.es === es) setTimeout(openOpStream, 2000); };
   }
 
   // A browser keeps only six connections to one address and every open page holds a stream; a page left through a link
   // can stay alive in the back/forward cache with its stream open, so going back and forth between Setup and the
   // operator page used up all six and the next page hung. Give the stream up as soon as the page is left.
-  window.addEventListener('pagehide', () => { A.parked = true; if (A.es) { A.es.close(); A.es = null; } $('dot').classList.remove('on'); });
+  window.addEventListener('pagehide', () => { A.parked = true; if (A.es) { A.es.close(); A.es = null; } });
   window.addEventListener('pageshow', (e) => { if (e.persisted) { A.parked = false; openOpStream(); loadShows().then(() => render()); } });
 
   // The audience count opens the list of connected devices (device, address, language), kept up to date while it is open.

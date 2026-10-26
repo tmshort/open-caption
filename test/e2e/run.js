@@ -443,7 +443,7 @@ async function main() {
     section('The operator page and Setup');
     // The right side of the header is in the same order on both pages (devices, language, the page's own actions, the other page, Help, Sign out, connection).
     const headerOrder = (pg, sels) => pg.evaluate((sels) => { const pts = sels.map((q) => { const e = document.querySelector(q); if (!e || e.hidden || !e.offsetWidth) return null; const r = e.getBoundingClientRect(); return [Math.round(r.top / 40), r.left]; }); const seen = pts.filter(Boolean); return { ok: seen.every((x, i) => i === 0 || x[0] > seen[i - 1][0] || (x[0] === seen[i - 1][0] && x[1] > seen[i - 1][1])), pts: pts.map((x, i) => (x ? sels[i] : '(' + sels[i] + ' hidden)')) }; }, sels);
-    const headerLook = (pg) => pg.evaluate(() => { const g = (q) => { const e = document.querySelector(q); if (!e || !e.offsetWidth) return null; const c = getComputedStyle(e); return [c.fontSize, c.fontFamily, c.fontWeight, Math.round(e.getBoundingClientRect().height)].join('|'); }; const h = document.querySelector('header'); return { header: getComputedStyle(h).fontSize + '|' + getComputedStyle(h).paddingTop + '|' + Math.round(h.getBoundingClientRect().height), title: g('header h1, header #show').split('|').slice(0, 3).join('|'), pill: g('#viewers'), help: g('#helpbtn'), lang: g('header select.uilang'), dot: g('#dot').split('|')[3] }; });
+    const headerLook = (pg) => pg.evaluate(() => { const g = (q) => { const e = document.querySelector(q); if (!e || !e.offsetWidth) return null; const c = getComputedStyle(e); return [c.fontSize, c.fontFamily, c.fontWeight, Math.round(e.getBoundingClientRect().height)].join('|'); }; const h = document.querySelector('header'); return { header: getComputedStyle(h).fontSize + '|' + getComputedStyle(h).paddingTop + '|' + Math.round(h.getBoundingClientRect().height), title: g('header h1, header #show').split('|').slice(0, 3).join('|'), pill: g('#viewers'), help: g('#helpbtn'), lang: g('header select.uilang') }; });
     const opLook = await headerLook(op);
     const liveRed = (pg) => pg.evaluate(() => { const e = document.createElement('span'); e.className = 'pill live'; document.querySelector('header').appendChild(e); const c = getComputedStyle(e).backgroundColor; e.remove(); return c; });
     const opRed = await liveRed(op);
@@ -457,7 +457,7 @@ async function main() {
     const opDlg = await dlgLook(op, '#clientsdlg');
     await op.evaluate(() => document.querySelector('#clientsdlg button').click()); await sleep(300);
     {
-      const oh = await headerOrder(op, ['#viewers', 'header select.uilang', '#offair', '#reset', '#setuplink', '#helpbtn', '#logout', '#dot']);
+      const oh = await headerOrder(op, ['#viewers', 'header select.uilang', '#offair', '#reset', '#setuplink', '#helpbtn', '#logout']);
       check('operator header, right side: devices, language, Go to standby, Restart, Setup, Help, Sign out, connection', oh.ok && oh.pts.filter((x) => x.includes('hidden')).length === 0, oh);
     }
     // (the sign-in rate limit is five a minute, so the role is faked in the page's own state request instead of logging in again)
@@ -589,7 +589,7 @@ async function main() {
     await arch.goto(B + '/admin#show'); await arch.waitForSelector('#steps button');
     const made = await api(arch, 'POST', '/api/admin/shows', { name: 'Last year' });
     {
-      const ah = await headerOrder(arch, ['#viewers', 'header select.uilang', '#settingsbtn', 'header a[href="/operator"]', '#helpbtn', '#logout', '#dot']);
+      const ah = await headerOrder(arch, ['#viewers', 'header select.uilang', '#settingsbtn', 'header a[href="/operator"]', '#helpbtn', '#logout']);
       check('Setup header, right side: devices, language, Settings, Run, Help, Sign out, connection', ah.ok && ah.pts.filter((x) => x.includes('hidden')).length === 0, ah);
       const adLook = await headerLook(arch);
       check('the ON AIR pill is the same red on Setup and the operator page', (await liveRed(arch)) === opRed && opRed === 'rgb(179, 38, 30)', { setup: await liveRed(arch), operator: opRed });
@@ -601,7 +601,7 @@ async function main() {
       check('the Connected devices window looks the same on both pages (size, type, spacing)', JSON.stringify({ ...adDlg, cols: '' }) === JSON.stringify({ ...opDlg, cols: '' }) && colsAlike, { operator: opDlg, setup: adDlg });
       await arch.evaluate(() => document.getElementById('dlgok').click()); await sleep(300);
       check('the two headers use the same type, spacing and control sizes', JSON.stringify(adLook) === JSON.stringify(opLook), { operator: opLook, setup: adLook });
-      check('and the Setup page shows the server is answering (green dot)', await arch.evaluate(() => document.getElementById('dot').classList.contains('on')));
+      check('neither header has a status light: the red bar is the only connection indicator', await arch.evaluate(() => !document.getElementById('dot')) && await op.evaluate(() => !document.getElementById('dot')));
     }
     check('the ON AIR badge in the show list is the same red as the ON AIR pills', await arch.evaluate(() => { const e = document.createElement('span'); e.className = 'badge live'; document.querySelector('.card.show .name').appendChild(e); const c = getComputedStyle(e).backgroundColor; e.remove(); return c === 'rgb(179, 38, 30)'; }));
     check('the name box under Add another show is a little larger than a normal box', await arch.evaluate(() => { const i = document.querySelector('input.newname'), r = i.getBoundingClientRect(); return parseFloat(getComputedStyle(i).fontSize) >= 17 && r.height >= 44 && r.width >= 300; }));
@@ -893,10 +893,10 @@ async function main() {
     check('Setup offers the next step under the current one', await guard.evaluate(() => { const b = document.querySelector('#nextstep button'); return !!b && b.offsetWidth > 0 && /^Next: /.test(b.textContent); }));
     check('the operator page has a title with the show and its state', /^Run — .+ \((ON AIR|STANDBY)\)$/.test(await op.title()), await op.title());
     await stopServer(); await sleep(T(3500));
-    const lost = (pg) => pg.evaluate(() => !document.getElementById('connbar').hidden && /lost/.test(document.getElementById('connbar').textContent) && !document.getElementById('dot').classList.contains('on'));
-    check('when the program cannot be reached, the operator page and Setup both say so (and the dot turns red)', (await lost(op)) && (await lost(guard)));
+    const lost = (pg) => pg.evaluate(() => !document.getElementById('connbar').hidden && /lost/.test(document.getElementById('connbar').textContent));
+    check('when the program cannot be reached, the operator page and Setup both say so', (await lost(op)) && (await lost(guard)));
     await startServer(); await sleep(T(5000));
-    const back = (pg) => pg.evaluate(() => document.getElementById('connbar').hidden && document.getElementById('dot').classList.contains('on'));
+    const back = (pg) => pg.evaluate(() => document.getElementById('connbar').hidden);
     check('and the notice goes away by itself once it is back', (await back(op)) && (await back(guard)));
     check('the operator page is still signed in and in control', (await op.evaluate(() => document.getElementById('ctrl').textContent)).includes('in control'), await op.evaluate(() => document.getElementById('ctrl').textContent));
     check('the position is kept', (await cursor()) === before2);

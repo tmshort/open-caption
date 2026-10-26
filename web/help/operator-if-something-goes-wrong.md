@@ -14,7 +14,7 @@
 
 **"Another operator is in control."** Someone else, or another tab of this page, is controlling the show. If that is you, use **Take over**.
 
-**The page says it is disconnected.** The dot turns red and the page reconnects by itself. The show position is kept on the server, so nothing is lost. If it does not return within a few seconds, reload the page; you will land where you were.
+**The page says it is disconnected.** A red bar appears under the header and the page reconnects by itself. The show position is kept on the server, so nothing is lost. If it does not return within a few seconds, reload the page; you will land where you were.
 
 **The server was restarted.** It remembers where the show was and carries on from there, and you stay signed in and in control. A running loop starts over from its first item. **Backspace** still undoes the last few things you sent before the restart.
 

@@ -2,7 +2,7 @@
 
 | Lo que ve | Qué significa |
 |-----------|---------------|
-| Punto verde arriba a la derecha | Conectado al servidor. Rojo significa que la conexión se cortó; la página se reconecta sola |
+| Barra roja bajo la cabecera, «Se perdió la conexión con el programa» | La página no puede comunicarse con el programa. Se reconecta sola y la barra desaparece; no se pierde nada |
 | **● EN VIVO** | El espectáculo está en el aire: el público lo ve |
 | **EN ESPERA** y un cartel azul | El público ve la pantalla de espera del local y nada del espectáculo. **Espacio** (**INICIAR**) lo pone en el aire |
 | Icono de personas y un número | Cuántos dispositivos del público están conectados. Con varios idiomas, el número va seguido de una cuenta por idioma, como `(en 60 · es 23)` |

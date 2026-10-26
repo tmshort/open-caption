@@ -2,7 +2,7 @@
 
 | What you see | What it means |
 |--------------|---------------|
-| Green dot at the top right | Connected to the server. Red means the connection dropped; the page reconnects by itself |
+| Red bar under the header, “Connection to the program lost” | The page cannot reach the program. It reconnects by itself and the bar goes away; nothing is lost |
 | **● ON AIR** | The show is on air: the audience can see it |
 | **STANDBY** and a blue banner | The audience sees the venue's standby screen and nothing of the show. **Space** (**START**) puts it on air |
 | People icon and a number | How many audience devices are connected. With several languages the number is followed by a count per language, such as `(en 60 · es 23)` |

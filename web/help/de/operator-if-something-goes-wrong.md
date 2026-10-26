@@ -14,7 +14,7 @@
 
 **„Ein anderer Operator hat die Steuerung.“** Jemand anderes oder ein anderer Tab dieser Seite steuert die Show. Wenn Sie das selbst sind, nutzen Sie **Übernehmen**.
 
-**Die Seite meldet, dass sie getrennt ist.** Der Punkt wird rot, und die Seite verbindet sich von selbst neu. Die Position der Show bleibt auf dem Server erhalten, es geht also nichts verloren. Wenn sie nicht innerhalb weniger Sekunden zurückkommt, laden Sie die Seite neu; Sie landen dort, wo Sie waren.
+**Die Seite meldet, dass sie getrennt ist.** Unter der Kopfzeile erscheint ein roter Balken, und die Seite verbindet sich von selbst neu. Die Position der Show bleibt auf dem Server erhalten, es geht also nichts verloren. Wenn sie nicht innerhalb weniger Sekunden zurückkommt, laden Sie die Seite neu; Sie landen dort, wo Sie waren.
 
 **Der Server wurde neu gestartet.** Er merkt sich, wo die Show war, und macht dort weiter; Sie bleiben angemeldet und haben weiter die Steuerung. Eine laufende Schleife beginnt wieder beim ersten Element. Die **Rücktaste** macht weiterhin die letzten Dinge rückgängig, die Sie vor dem Neustart gesendet haben.
 

@@ -14,7 +14,7 @@
 
 **«Un altro operatore ha il controllo.»** Qualcun altro, o un'altra scheda di questa pagina, sta controllando lo spettacolo. Se sei tu, usa **Subentra**.
 
-**La pagina dice di essere disconnessa.** Il punto diventa rosso e la pagina si ricollega da sola. La posizione dello spettacolo è conservata sul server, quindi non si perde nulla. Se non torna entro pochi secondi, ricarica la pagina; riprenderai da dove eri.
+**La pagina dice di essere disconnessa.** Sotto l'intestazione compare una barra rossa e la pagina si ricollega da sola. La posizione dello spettacolo è conservata sul server, quindi non si perde nulla. Se non torna entro pochi secondi, ricarica la pagina; riprenderai da dove eri.
 
 **Il server è stato riavviato.** Ricorda dov'era lo spettacolo e prosegue da lì, e tu resti connesso e con il controllo. Un ciclo in corso riparte dal primo elemento. **Backspace** annulla ancora le ultime cose inviate prima del riavvio.
 
