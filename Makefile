@@ -19,7 +19,7 @@ STATICCHECK_VERSION ?= v0.8.2
 TOOLS := $(CURDIR)/.tools
 
 .DEFAULT_GOAL := help
-.PHONY: help build test race cover fuzz vet lint lint-js vulncheck pebble pebble-test goreleaser release release-snapshot tidy e2e a11y i18n dist man acme-variants clean
+.PHONY: help build test race cover cover-js fuzz vet lint lint-js vulncheck pebble pebble-test goreleaser release release-snapshot tidy e2e a11y i18n dist man acme-variants clean
 
 help: ## Show this list of targets
 	@echo "open-caption: make <target>"; echo
@@ -68,6 +68,8 @@ lint-js: ## ESLint on the page scripts, the browser tests and tools (needs Node;
 	cd test/e2e && npm install --no-audit --no-fund && cd ../.. && test/e2e/node_modules/.bin/eslint .
 e2e: build ## Browser end-to-end tests, plain http and then HTTPS (needs Node and Chrome, and openssl for the HTTPS part; set CHROME if not in the default place)
 	cd test/e2e && npm install --no-audit --no-fund && node run.js && node https.js
+cover-js: build ## Page script and style coverage from the browser tests (needs Node and Chrome); coverage/js.html shows the lines no test ran
+	cd test/e2e && npm install --no-audit --no-fund && rm -f ../../coverage/js-raw-*.json && COVERAGE=1 node run.js && COVERAGE=1 node https.js && node coverage.js
 a11y: build ## Accessibility audit with axe-core in real Chrome (needs Node and Chrome)
 	cd test/e2e && npm install --no-audit --no-fund && node a11y.js
 i18n: ## Check every sentence is translated into all six languages (needs Node)

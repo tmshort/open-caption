@@ -23,7 +23,9 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms * SLOW));
 const T = (ms) => ms * SLOW;
 // Every browser started is remembered so that a stuck or failed run still closes them (no orphan Chrome or server left behind).
 const launched = [];
-const launch = async (opts) => { const b = await puppeteer.launch(opts); launched.push(b); return b; };
+// COVERAGE=1 (make cover-js) records which page scripts and styles ran; see coverage.js.
+const COVER = process.env.COVERAGE === '1', cover = COVER ? require('./coverage') : null;
+const launch = async (opts) => { const b = await puppeteer.launch(opts); if (cover) cover.instrument(b); launched.push(b); return b; };
 async function cleanup() {
   for (const b of launched.splice(0)) {
     const proc = b.process && b.process();
@@ -991,6 +993,7 @@ async function main() {
 
 main().catch((e) => { console.error('\nERROR (in the section "' + sectionName + '"):', e.stack || e.message); failures++; }).finally(async () => {
   await cleanup();
+  if (cover) cover.save('run');
   console.log(`\n${passes} passed, ${failures} failed`);
   process.exit(failures ? 1 : 0);
 });

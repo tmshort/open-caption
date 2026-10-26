@@ -19,6 +19,8 @@ const SLOW = Number(process.env.OC_E2E_SLOW) || (process.env.CI ? 2 : 1);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms * SLOW));
 const free = () => new Promise((res) => { const s = net.createServer(); s.listen(0, '127.0.0.1', () => { const p = s.address().port; s.close(() => res(p)); }); });
 const NAME = 'captions.example.test';
+// COVERAGE=1 (make cover-js) records which page scripts and styles ran; see coverage.js.
+const cover = process.env.COVERAGE === '1' ? require('./coverage') : null;
 
 let failures = 0, passes = 0;
 function check(name, ok, detail) {
@@ -64,6 +66,7 @@ async function main() {
   const cert = makeCert();
   if (!cert) { console.log('openssl is not available: the HTTPS browser test is skipped'); return 0; }
   const browser = await puppeteer.launch({ executablePath: CHROME, headless: 'new', args: ['--no-sandbox', '--ignore-certificate-errors'] });
+  if (cover) cover.instrument(browser);
   const errs = [];
   const open = async (width = 1300) => {
     const p = await browser.newPage(); p.setDefaultTimeout(8000 * SLOW);
@@ -149,6 +152,7 @@ async function main() {
   await p.close();
 
   await cleanup(browser);
+  if (cover) cover.save('https');
   try { fs.rmSync(cert[2], { recursive: true, force: true }); } catch (e) { /* ignore */ }
   console.log(`\n${passes} passed, ${failures} failed`);
   return failures ? 1 : 0;
