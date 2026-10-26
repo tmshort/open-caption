@@ -11,6 +11,7 @@ import (
 	"io"
 	"io/fs"
 	"net/http"
+	"path"
 	"time"
 
 	"github.com/tmshort/open-caption/internal/live"
@@ -220,6 +221,16 @@ func (s *Server) runCommand(w http.ResponseWriter, r *http.Request, rt *Runtime,
 		s.syncReport() // capture even a brief off-air/reset interval between timer ticks
 	}
 	logx.Debugf("operator command %s: %v", r.URL.Path, err)
+	if err == nil && rt == s.rt { // what happened to the show on air, for "when did we go on air?" (not a rehearsal)
+		switch path.Base(r.URL.Path) {
+		case "onair":
+			logx.Infof("show %q is on air", rt.ShowName())
+		case "offair":
+			logx.Infof("show %q is back in standby (the position is kept)", rt.ShowName())
+		case "reset":
+			logx.Infof("show %q was reset to the start, in standby", rt.ShowName())
+		}
+	}
 	resp := map[string]any{"payload": rt.OperatorPayload()}
 	code := http.StatusOK
 	switch {

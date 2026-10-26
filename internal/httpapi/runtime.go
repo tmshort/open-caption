@@ -405,6 +405,13 @@ func (rt *Runtime) PrimaryLang() string {
 	return rt.primary
 }
 
+// ShowName returns the active show's name.
+func (rt *Runtime) ShowName() string {
+	rt.mu.RLock()
+	defer rt.mu.RUnlock()
+	return rt.showName
+}
+
 // ShowID returns the active show id.
 func (rt *Runtime) ShowID() string {
 	rt.mu.RLock()

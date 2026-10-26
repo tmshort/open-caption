@@ -372,6 +372,7 @@ func (s *Server) createShow(w http.ResponseWriter, r *http.Request) {
 			storeErr(w, err)
 			return
 		}
+		logx.Infof("show %q created from the sample", m.Name)
 		writeJSON(w, http.StatusCreated, s.summary(m))
 		return
 	}
@@ -380,6 +381,7 @@ func (s *Server) createShow(w http.ResponseWriter, r *http.Request) {
 		storeErr(w, err)
 		return
 	}
+	logx.Infof("show %q created", m.Name)
 	writeJSON(w, http.StatusCreated, s.summary(m))
 }
 
@@ -437,6 +439,12 @@ func (s *Server) updateShow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.applyActive(id)
+	if req.Name != nil {
+		logx.Infof("show renamed to %q", m.Name)
+	}
+	if req.Theme != nil {
+		logx.Infof("the look of show %q was saved", m.Name)
+	}
 	writeJSON(w, http.StatusOK, s.summary(m))
 }
 
@@ -481,6 +489,7 @@ func (s *Server) duplicateShow(w http.ResponseWriter, r *http.Request) {
 		storeErr(w, err)
 		return
 	}
+	logx.Infof("show %q created as a copy of %s", m.Name, r.PathValue("id"))
 	writeJSON(w, http.StatusCreated, s.summary(m))
 }
 
@@ -621,6 +630,15 @@ func (s *Server) putShowFile(w http.ResponseWriter, r *http.Request) {
 	if err := s.store.WriteShowFile(id, r.URL.Query().Get("lang"), req.Text); err != nil {
 		storeErr(w, err)
 		return
+	}
+	what := "the show file of " + fmt.Sprintf("%q", m.Name)
+	if lang := r.URL.Query().Get("lang"); lang != "" {
+		what = "the " + lang + " translation of " + fmt.Sprintf("%q", m.Name)
+	}
+	if active && s.rt.Engine().Operator().Live {
+		logx.Infof("%s was saved while the show is on air", what)
+	} else {
+		logx.Infof("%s was saved", what)
 	}
 	a, _ := s.showFileResponse(id, r.URL.Query().Get("lang"), req.Text)
 	resp := map[string]any{"analysis": a, "saved": true, "version": fileVersion(req.Text)}
@@ -1086,6 +1104,7 @@ func (s *Server) importShow(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	m, _ = s.store.Get(m.ID)
+	logx.Infof("show %q imported from an export (%d file(s) skipped)", m.Name, skipped)
 	writeJSON(w, http.StatusCreated, map[string]any{"show": s.summary(m), "skippedFiles": skipped})
 }
 
@@ -1123,6 +1142,7 @@ func (s *Server) importPlainFile(w http.ResponseWriter, filename string, data []
 		storeErr(w, err)
 		return
 	}
+	logx.Infof("show %q imported from a text file", m.Name)
 	writeJSON(w, http.StatusCreated, map[string]any{"show": s.summary(m), "skippedFiles": 0})
 }
 
