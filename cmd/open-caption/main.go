@@ -204,7 +204,7 @@ func main() {
 		ln = netinfo.LimitListener(ln, func(local net.Addr) { // while network.restrict_listening is on
 			logx.Debugf("refused a %s connection to %s: that address is not offered (network.restrict_listening)", scheme, local)
 		})
-		srv := &http.Server{Handler: handler, ReadHeaderTimeout: 10 * time.Second, TLSConfig: srvTLS}
+		srv := &http.Server{Handler: handler, ReadHeaderTimeout: 10 * time.Second, TLSConfig: srvTLS, ErrorLog: httpErrorLog()}
 		for _, u := range urls(scheme, ln.Addr()) {
 			logx.Infof("audience/operator URL: %s", u)
 		}
