@@ -90,6 +90,7 @@
     $('scheme').textContent = lightScheme ? tr('lightOnDark') : tr('darkOnLight');
     $('awake').setAttribute('aria-pressed', String(keepOn));
     $('awake').textContent = (keepOn ? '☀ ' : '☾ ') + tr(keepOn ? 'keepOn' : 'keepOff');
+    if (projector) { fitProjector(); toBottom(); } // the size (or font) changed: refit and keep the newest line in view
   }
   $('gear').addEventListener('click', () => { const open = $('ctl').hidden; $('ctl').hidden = !open; $('gear').setAttribute('aria-expanded', String(open)); });
   $('bigger').addEventListener('click', () => { localStep = Math.min(6, localStep + 1); store.set('oc.step', String(localStep)); paintLocal(); });
@@ -210,6 +211,25 @@
     kids.forEach((k) => { k.style.transition = 'transform .32s cubic-bezier(.215,.61,.355,1)'; k.style.transform = ''; });
     setTimeout(() => { kids.forEach((k) => { k.style.transition = ''; }); box.classList.remove('sliding'); }, 400);
   }
+  // A shared screen is never scrolled, so a caption taller than the screen (many voices at once, a long line) would lose its
+  // top. Shrink the text (down to 40%) until the newest caption fits; any other caption puts the size back.
+  function fitProjector() {
+    if (!projector) return;
+    const box = $('captions'), root = document.documentElement.style, last = box.lastElementChild;
+    root.setProperty('--fit', '1');
+    if (!last) return;
+    const cs = window.getComputedStyle(box);
+    const room = box.clientHeight - (parseFloat(cs.paddingTop) || 0) - (parseFloat(cs.paddingBottom) || 0);
+    let fit = 1;
+    for (let i = 0; i < 4 && room > 0 && last.offsetHeight > room && fit > 0.4; i++) {
+      fit = Math.max(0.4, fit * room / last.offsetHeight * 0.97);
+      root.setProperty('--fit', String(fit));
+    }
+  }
+  const refit = () => { fitProjector(); toBottom(); };
+  window.addEventListener('resize', () => { if (projector) refit(); });
+  // a font is fetched when first used, so its (different) letter widths arrive after the first lines were laid out
+  if (projector && document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', refit);
   function goLive() { pinned = true; unread = 0; toBottom(true); paintLive(); }
   $('live').addEventListener('click', goLive);
   $('captions').addEventListener('scroll', () => {
@@ -303,6 +323,7 @@
     renderStandby();
     const top = box.scrollTop;
     box.replaceChildren(...state.scrollback.map(captionEl));
+    fitProjector();
     fade();
     renderFullscreen();
     if (pinned) toBottom(); else box.scrollTop = top; // a snapshot must not move a reader who is re-reading
@@ -340,6 +361,7 @@
       const box = $('captions');
       const prev = box.lastElementChild, wasAt = prev ? prev.getBoundingClientRect().top : 0;
       box.appendChild(captionEl(d.item));
+      fitProjector();
       while (box.children.length > state.scrollbackMax) {
         const before = box.scrollHeight;
         box.removeChild(box.firstChild);

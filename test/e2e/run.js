@@ -273,6 +273,13 @@ async function main() {
     await sleep(500); await op.keyboard.press('Space'); await sleep(500);
     check('two voices appear together from one press', (await en.evaluate(() => document.querySelectorAll('.cap.group .part').length)) === 2);
     check('sung lines have notes and italics', (await en.evaluate(() => [...document.querySelectorAll('.cap.sung, .cap.group .part.sung')].some((e) => e.textContent.includes('♪')))));
+    {
+      // a shared screen never scrolls: a caption taller than the screen is shrunk until it fits (here a small window)
+      const proj = await open({ viewport: { width: 420, height: 260 } }); await proj.goto(B + '/?display=projector'); await sleep(1200);
+      const r = await proj.evaluate(() => { const c = document.getElementById('captions'), l = c.lastElementChild, cr = c.getBoundingClientRect(), lr = l.getBoundingClientRect(); return { fit: parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--fit')), top: lr.top >= cr.top - 1, bottom: lr.bottom <= cr.bottom + 1 }; });
+      check('on a shared screen a caption taller than the screen is shrunk to fit', r.fit < 1 && r.top && r.bottom, r);
+      await proj.close();
+    }
 
     // help pauses keys
     await op.keyboard.press('?'); await sleep(1200);

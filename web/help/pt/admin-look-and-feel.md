@@ -12,7 +12,7 @@ As mudanças são salvas com **Salvar aparência** e chegam logo aos dispositivo
 
 ## Uma tela para a sala toda
 
-Se um navegador estiver mostrando as legendas num projetor ou monitor grande, abra o endereço do público com `?display=projector` no final. O texto fica maior, o ponteiro do mouse some e nada mais é mostrado.
+Se um navegador estiver mostrando as legendas num projetor ou monitor grande, abra o endereço do público com `?display=projector` no final. O texto fica maior, o ponteiro do mouse some e nada mais é mostrado. Uma tela compartilhada nunca rola; se a legenda mais recente for mais alta que a tela (muitas vozes ao mesmo tempo, por exemplo), o texto é reduzido até caber.
 
 ## Reler linhas anteriores
 

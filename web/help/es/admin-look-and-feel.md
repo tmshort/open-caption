@@ -12,7 +12,7 @@ Los cambios se guardan con **Guardar aspecto** y llegan enseguida a los disposit
 
 ## Una pantalla para toda la sala
 
-Si un navegador muestra los subtítulos en un proyector o un monitor grande, abra la dirección del público con `?display=projector` al final. El texto es más grande, el puntero del ratón se oculta y no se muestra nada más.
+Si un navegador muestra los subtítulos en un proyector o un monitor grande, abra la dirección del público con `?display=projector` al final. El texto es más grande, el puntero del ratón se oculta y no se muestra nada más. Una pantalla compartida nunca se desplaza, así que si el subtítulo más reciente es más alto que la pantalla (por ejemplo, muchas voces a la vez), el texto se reduce hasta que cabe.
 
 ## Releer líneas anteriores
 

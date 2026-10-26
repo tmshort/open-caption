@@ -12,7 +12,7 @@ Changes are saved with **Save look** and reach connected devices straight away. 
 
 ## A screen for the whole room
 
-If a browser is showing captions on a projector or large monitor, open the audience address with `?display=projector` on the end. The text is larger, the mouse pointer is hidden and nothing else is shown.
+If a browser is showing captions on a projector or large monitor, open the audience address with `?display=projector` on the end. The text is larger, the mouse pointer is hidden and nothing else is shown. A shared screen never scrolls, so if the newest caption is taller than the screen (many voices at once, say) the text is shrunk until it fits.
 
 ## Re-reading earlier lines
 

@@ -12,7 +12,7 @@ Der Schritt **Erscheinungsbild** legt fest, wie Untertitel auf jedem Publikumsge
 
 ## Ein Bildschirm für den ganzen Saal
 
-Wenn ein Browser Untertitel auf einem Projektor oder großen Monitor zeigt, öffnen Sie die Publikumsadresse mit `?display=projector` am Ende. Der Text ist größer, der Mauszeiger ist verborgen, und sonst wird nichts angezeigt.
+Wenn ein Browser Untertitel auf einem Projektor oder großen Monitor zeigt, öffnen Sie die Publikumsadresse mit `?display=projector` am Ende. Der Text ist größer, der Mauszeiger ist verborgen, und sonst wird nichts angezeigt. Ein gemeinsamer Bildschirm scrollt nie. Ist der neueste Untertitel höher als der Bildschirm (etwa bei vielen Stimmen gleichzeitig), wird der Text verkleinert, bis er passt.
 
 ## Frühere Zeilen noch einmal lesen
 

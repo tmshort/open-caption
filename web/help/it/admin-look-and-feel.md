@@ -12,7 +12,7 @@ Le modifiche si salvano con **Salva l'aspetto** e raggiungono subito i dispositi
 
 ## Uno schermo per tutta la sala
 
-Se un browser mostra i sottotitoli su un proiettore o un grande monitor, apri l'indirizzo del pubblico con `?display=projector` in fondo. Il testo è più grande, il puntatore del mouse è nascosto e non viene mostrato altro.
+Se un browser mostra i sottotitoli su un proiettore o un grande monitor, apri l'indirizzo del pubblico con `?display=projector` in fondo. Il testo è più grande, il puntatore del mouse è nascosto e non viene mostrato altro. Uno schermo condiviso non scorre mai: se l'ultimo sottotitolo è più alto dello schermo (ad esempio con molte voci insieme), il testo viene rimpicciolito finché non ci sta.
 
 ## Rileggere righe precedenti
 

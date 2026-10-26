@@ -154,7 +154,7 @@ Principle: **no interaction needed.** Controls, if any, are hidden/minimal.
 - **Language** (when the show has more than one language): the page starts in the language matched from the browser's `Accept-Language` header, or the default (`en`). A small picker in a corner lists the available languages; choosing one navigates to `/?lang=xx`, so the URL form (e.g. on a lobby QR code) works identically. With a single language there is no picker. The page never blocks on a choice.
 - **Language menu** (🌐, top left, only when the show has several languages): lists the languages by their own names and navigates to `/?lang=xx`. The page's own labels are translated for es, fr, de, it and pt; other languages use English labels.
 - **Optional local controls** (collapsed, appear on tap/click in a corner): text size − / +, light/dark toggle. Stored in `localStorage`; never required.
-- **Projector mode** (`?display=projector`): font scale ×1.5 by default, hidden cursor, no controls, no connection dot unless offline.
+- **Projector mode** (`?display=projector`): font scale ×1.5 by default, hidden cursor, no controls, no connection dot unless offline. It is never scrolled (no pointer), so when the newest caption is taller than the screen `audience.js` (`fitProjector`) shrinks the text (`--fit`, down to 40%) until it fits, and refits when the window or a font changes.
 - **Responsive**: font size uses `clamp()` with `vw`/`vh` units relative to the theme `scalePct`; works portrait and landscape; safe-area insets for iPhone.
 - **Accessibility**: captions container `role="log" aria-live="polite"`; contrast ≥ 7:1 by default; no flashing.
 - **Size budget**: audience page + JS + CSS ≤ 50 KB gzipped, no external requests.

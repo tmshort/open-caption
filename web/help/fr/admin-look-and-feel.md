@@ -12,7 +12,7 @@ Les changements s'enregistrent avec **Enregistrer l'apparence** et parviennent t
 
 ## Un écran pour toute la salle
 
-Si un navigateur affiche les sous-titres sur un projecteur ou un grand moniteur, ouvrez l'adresse du public en ajoutant `?display=projector` à la fin. Le texte est plus grand, le pointeur de la souris est masqué et rien d'autre n'est affiché.
+Si un navigateur affiche les sous-titres sur un projecteur ou un grand moniteur, ouvrez l'adresse du public en ajoutant `?display=projector` à la fin. Le texte est plus grand, le pointeur de la souris est masqué et rien d'autre n'est affiché. Un écran partagé ne défile jamais : si le dernier sous-titre est plus haut que l'écran (beaucoup de voix à la fois, par exemple), le texte est réduit jusqu'à ce qu'il tienne.
 
 ## Relire des lignes précédentes
 
