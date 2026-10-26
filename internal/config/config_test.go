@@ -228,8 +228,16 @@ func TestValidFilesAndWarnings(t *testing.T) {
 	if err != nil || c.Log.Level != "DEBUG" {
 		t.Fatalf("%v %+v", err, c.Log)
 	}
-	if w := strings.Join(c.Warnings(), "|"); !strings.Contains(w, "access.admin_allow is empty") || strings.Contains(w, "same") {
+	if w := strings.Join(c.Warnings(), "|"); strings.Contains(w, "admin_allow") || strings.Contains(w, "same") {
 		t.Errorf("%s", w)
+	}
+	// The default is [localhost], which does not warn; an explicit empty list does.
+	if c, _ := load(t, ""); len(c.Access.AdminAllow) != 1 || c.Access.AdminAllow[0] != "localhost" {
+		t.Errorf("default admin_allow: %v", c.Access.AdminAllow)
+	}
+	c, _ = load(t, "access:\n  admin_allow: []\n")
+	if w := strings.Join(c.Warnings(), "|"); !strings.Contains(w, "access.admin_allow is empty") {
+		t.Errorf("an empty admin_allow should warn: %s", w)
 	}
 	c, _ = load(t, "access:\n  admin_allow: [localhost]\n")
 	c.OperatorPassword, c.AdminPassword = "abc", "abc"
@@ -337,7 +345,7 @@ func TestFileFromANewerVersionStartsWithWarnings(t *testing.T) {
 	if _, err := load(t, "sparkles: 1\n"); err == nil || !strings.Contains(err.Error(), "unknown setting sparkles") {
 		t.Errorf("%v", err)
 	}
-	if c, err := load(t, "config_version: 1\n"); err != nil || len(c.Warnings()) == 0 {
+	if c, err := load(t, "config_version: 1\naccess:\n  admin_allow: []\n"); err != nil || len(c.Warnings()) == 0 {
 		t.Errorf("%v %v", err, c.Warnings())
 	}
 }

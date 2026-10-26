@@ -179,7 +179,7 @@ func Default() Config {
 			IdleMessage: "Captions will begin shortly", OpenBrowser: true,
 			Look: Look{Background: "#000000", TextColor: "#ffffff", SpeakerNameColor: "#ffffff", Font: "system", TextSizePercent: 100, SpeakerNames: "label", SpeakerPosition: "above"}},
 		Audience: Audience{MaxClients: 500, ScrollbackLines: 200},
-		Access:   Access{LocalAutoLogin: true},
+		Access:   Access{LocalAutoLogin: true, AdminAllow: []string{"localhost"}},
 		Log:      Log{Level: "info"},
 		MDNS:     MDNS{Enabled: true, Name: "open-caption"},
 	}
@@ -303,8 +303,9 @@ func (c Config) Save() error {
 	}
 	header := "# open-caption configuration. Passwords are stored in plain text; keep this file private.\n" +
 		"# access: limits which computers may open the Setup (admin_allow) and operator (operator_allow) pages.\n" +
-		"# An empty list lets anyone on the network try the password. Entries: localhost, private,\n" +
-		"# an address (192.168.1.50) or a network (192.168.1.0/24). Example: admin_allow: [localhost]\n"
+		"# The default admin_allow is [localhost]: Setup opens only on this computer. An empty list lets anyone on the\n" +
+		"# network try the password. Entries: localhost, private, an address (192.168.1.50) or a network\n" +
+		"# (192.168.1.0/24). Example: admin_allow: [localhost, 192.168.1.50]\n"
 	tmp := c.Path + ".tmp"
 	if err := os.WriteFile(tmp, append([]byte(header), b...), 0o600); err != nil {
 		return err

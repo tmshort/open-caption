@@ -946,7 +946,7 @@ async function main() {
     // ------------------------------------------------------------------ this computer
     section('This computer: no password for Setup and the operator page');
     await stopServer(); await sleep(400);
-    fs.writeFileSync(path.join(dataDir, 'config.yaml'), `admin_password: ${ADMIN}\noperator_password: ${OPERATOR}\nmdns:\n  enabled: false\naccess:\n  local_auto_login: true\n`);
+    fs.writeFileSync(path.join(dataDir, 'config.yaml'), `admin_password: ${ADMIN}\noperator_password: ${OPERATOR}\nmdns:\n  enabled: false\naccess:\n  admin_allow: []\n  local_auto_login: true\n`);
     await startServer(); await sleep(T(1500));
     const ctx = await b.createBrowserContext();
     const lp = await ctx.newPage(); lp.setDefaultTimeout(T(8000)); lp.on('dialog', (d) => d.accept());
@@ -969,7 +969,7 @@ async function main() {
       check('at the end of the show the banner says so and links to the audience report', await lp.evaluate(() => { const b = document.getElementById('banner'); const a = b.querySelector('a.reportlink'); return !b.hidden && /End of the show/.test(b.textContent) && !!a && a.getAttribute('href') === '/operator/report' && a.target === '_blank'; }));
     }
     await lp.close(); await ctx.close();
-    // the address of this computer on the network is not localhost, so a password is asked for there
+    // the address of this computer on the network is not localhost, so a password is asked for there (admin_allow is left open above, since the default [localhost] would refuse it outright)
     const lan = require('os').networkInterfaces();
     const ip = Object.values(lan).flat().find((i) => i && i.family === 'IPv4' && !i.internal);
     if (ip) {

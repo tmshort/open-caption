@@ -121,3 +121,17 @@ func TestCookielessLocalCallsAlwaysWorkAndDoNotPileUpSessions(t *testing.T) {
 		t.Errorf("%d sessions kept, want at most %d", n, maxAutoSessions)
 	}
 }
+
+// With the built-in defaults, Setup opens only on the computer that runs the program (access.admin_allow: [localhost]).
+func TestSetupIsLocalOnlyByDefault(t *testing.T) {
+	cfg := config.Default()
+	cfg.AdminPassword, cfg.OperatorPassword = "adminpw", "operatorpw"
+	s := New(cfg, "test")
+	t.Cleanup(s.Close)
+	if w := probe(s, "/api/admin/ping", "192.168.1.20:5000", "192.168.1.5", nil); w.Code != 403 {
+		t.Errorf("another computer: %d", w.Code)
+	}
+	if w := probe(s, "/api/admin/ping", "127.0.0.1:5000", "localhost", nil); w.Code != 200 {
+		t.Errorf("this computer: %d", w.Code)
+	}
+}

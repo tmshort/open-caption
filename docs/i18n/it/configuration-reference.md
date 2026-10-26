@@ -137,7 +137,7 @@ Chi può aprire la configurazione e la pagina dell'operatore. La pagina del pubb
 
 | Chiave | Predefinito | Significato |
 |---|---|---|
-| `access.admin_allow` | `[]` | Computer autorizzati ad aprire la configurazione. Vuoto significa che **qualsiasi computer della rete può provare la password**. Voci: `localhost`, `private` (le usuali reti domestiche e d'ufficio), un indirizzo (`192.168.1.50`) o una rete (`192.168.1.0/24`). Esempio: `[localhost]` |
+| `access.admin_allow` | `[localhost]` | Computer autorizzati ad aprire la configurazione; per impostazione predefinita solo il computer che esegue il programma. Un elenco vuoto (`[]`) significa che **qualsiasi computer della rete può provare la password**; il programma lo segnala con un avviso. Voci: `localhost`, `private` (le usuali reti domestiche e d'ufficio), un indirizzo (`192.168.1.50`) o una rete (`192.168.1.0/24`). Esempio: `[localhost]` |
 | `access.operator_allow` | `[]` | Lo stesso, per la pagina dell'operatore |
 | `access.local_auto_login` | `yes` | Un browser sul computer che esegue il programma (aperto a `localhost`, `127.0.0.1` o `[::1]`) entra come amministratore senza password. Gli altri computer usano sempre una password. Disattivalo su un computer in cui possono accedere altre persone |
 

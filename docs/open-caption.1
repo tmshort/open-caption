@@ -356,6 +356,9 @@ and
 .B access.operator_allow
 in the settings file, for example
 .BR "admin_allow: [localhost]" .
+Setup is already limited to the computer that runs the program by default
+.RB ( "admin_allow: [localhost]" );
+add the address of another computer to use Setup from it.
 A browser on the computer that runs the program is signed in as admin without a password unless
 .B access.local_auto_login
 is turned off.

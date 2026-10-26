@@ -137,7 +137,7 @@ Wer die Einrichtung und die Bedienerseite öffnen darf. Die Publikumsseite ist i
 
 | Schlüssel | Standard | Bedeutung |
 |---|---|---|
-| `access.admin_allow` | `[]` | Computer, die die Einrichtung öffnen dürfen. Leer bedeutet: **Jeder Computer im Netz darf das Passwort versuchen**. Einträge: `localhost`, `private` (die üblichen Heim- und Büronetze), eine Adresse (`192.168.1.50`) oder ein Netz (`192.168.1.0/24`). Beispiel: `[localhost]` |
+| `access.admin_allow` | `[localhost]` | Computer, die die Einrichtung öffnen dürfen; standardmäßig nur der Computer, auf dem das Programm läuft. Eine leere Liste (`[]`) bedeutet: **Jeder Computer im Netz darf das Passwort versuchen**; das Programm warnt davor. Einträge: `localhost`, `private` (die üblichen Heim- und Büronetze), eine Adresse (`192.168.1.50`) oder ein Netz (`192.168.1.0/24`). Beispiel: `[localhost]` |
 | `access.operator_allow` | `[]` | Dasselbe für die Bedienerseite |
 | `access.local_auto_login` | `yes` | Ein Browser auf dem Computer, auf dem das Programm läuft (geöffnet unter `localhost`, `127.0.0.1` oder `[::1]`), wird ohne Passwort als Administrator angemeldet. Andere Computer verwenden immer ein Passwort. Schalten Sie es auf einem Computer aus, an dem sich andere Personen anmelden können |
 

@@ -137,7 +137,7 @@ Quién puede abrir la configuración y la página del operador. La página del p
 
 | Clave | Por defecto | Significado |
 |---|---|---|
-| `access.admin_allow` | `[]` | Equipos que pueden abrir la configuración. Vacío significa que **cualquier equipo de la red puede probar la contraseña**. Entradas: `localhost`, `private` (las redes domésticas y de oficina habituales), una dirección (`192.168.1.50`) o una red (`192.168.1.0/24`). Ejemplo: `[localhost]` |
+| `access.admin_allow` | `[localhost]` | Equipos que pueden abrir la configuración; por defecto, solo el equipo que ejecuta el programa. Una lista vacía (`[]`) significa que **cualquier equipo de la red puede probar la contraseña**; el programa lo advierte. Entradas: `localhost`, `private` (las redes domésticas y de oficina habituales), una dirección (`192.168.1.50`) o una red (`192.168.1.0/24`). Ejemplo: `[localhost]` |
 | `access.operator_allow` | `[]` | Lo mismo, para la página del operador |
 | `access.local_auto_login` | `yes` | Un navegador en el equipo que ejecuta el programa (abierto en `localhost`, `127.0.0.1` o `[::1]`) entra como administrador sin contraseña. Los demás equipos usan siempre contraseña. Desactívelo en un equipo en el que puedan iniciar sesión otras personas |
 

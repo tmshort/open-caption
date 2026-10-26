@@ -137,7 +137,7 @@ Qui peut ouvrir la configuration et la page de l'opérateur. La page du public e
 
 | Clé | Par défaut | Signification |
 |---|---|---|
-| `access.admin_allow` | `[]` | Ordinateurs autorisés à ouvrir la configuration. Vide signifie que **n'importe quel ordinateur du réseau peut essayer le mot de passe**. Entrées : `localhost`, `private` (les réseaux domestiques et de bureau usuels), une adresse (`192.168.1.50`) ou un réseau (`192.168.1.0/24`). Exemple : `[localhost]` |
+| `access.admin_allow` | `[localhost]` | Ordinateurs autorisés à ouvrir la configuration ; par défaut, seulement l'ordinateur qui exécute le programme. Une liste vide (`[]`) signifie que **n'importe quel ordinateur du réseau peut essayer le mot de passe** ; le programme le signale par un avertissement. Entrées : `localhost`, `private` (les réseaux domestiques et de bureau usuels), une adresse (`192.168.1.50`) ou un réseau (`192.168.1.0/24`). Exemple : `[localhost]` |
 | `access.operator_allow` | `[]` | Pareil, pour la page de l'opérateur |
 | `access.local_auto_login` | `yes` | Un navigateur sur l'ordinateur qui exécute le programme (ouvert à `localhost`, `127.0.0.1` ou `[::1]`) est connecté comme administrateur sans mot de passe. Les autres ordinateurs utilisent toujours un mot de passe. Désactivez-le sur un ordinateur où d'autres personnes peuvent ouvrir une session |
 
