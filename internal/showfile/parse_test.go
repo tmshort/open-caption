@@ -638,3 +638,27 @@ func TestVeryLongCaptionLinesGetAHint(t *testing.T) {
 		t.Errorf("hints on lines %v, want [3 4 8] (the exact limit is fine)", lines)
 	}
 }
+
+func TestManyVoicesShownTogetherGetAWarning(t *testing.T) {
+	many := func(n int) []Diagnostic {
+		src := "[together]\n" + strings.Repeat("a voice\n", n) + "[/together]\n"
+		return Parse(src, Options{}).Diagnostics
+	}
+	has := func(ds []Diagnostic) bool {
+		for _, d := range ds {
+			if strings.Contains(d.Message, "voices at once") && d.Severity == SevWarning {
+				return true
+			}
+		}
+		return false
+	}
+	if has(many(ManyVoices - 1)) {
+		t.Errorf("%d voices should not be warned about", ManyVoices-1)
+	}
+	if !has(many(ManyVoices)) {
+		t.Errorf("%d voices should be warned about", ManyVoices)
+	}
+	if !has(Parse("a || b || c || d || e\n", Options{}).Diagnostics) {
+		t.Error("five voices on one line (||) should be warned about")
+	}
+}

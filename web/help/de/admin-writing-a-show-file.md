@@ -183,6 +183,7 @@ Der Schritt Show-Datei listet Probleme mit Zeilennummern auf. Klicken Sie eines 
 - **„HTML wird nicht unterstützt“** — verwenden Sie `**fett**` und `*kursiv*` statt Tags.
 - **„darf nicht in einer Schleife stehen“** — Schleifen enthalten nur Bilder und Text.
 - **„[together] braucht mindestens zwei Zeilen“** — ein `[together]`-Block mit einer Zeile wird als gewöhnlicher Untertitel gezeigt. **„[together] wurde geöffnet, aber nie geschlossen“** — fügen Sie `[/together]` hinzu; die geschriebenen Zeilen bleiben erhalten.
+- **„Dieser Untertitel zeigt 5 Stimmen gleichzeitig“** — fünf oder mehr Stimmen in einem `[together]`-Block (oder einer Zeile mit ` || `) sind viel für ein Telefon, das sie stapelt, und für einen gemeinsamen Bildschirm, der für etwa vier Platz hat und nie scrollt. Teilen Sie ihn in zwei Untertitel.
 - **„Unbekannte Einstellung“ / „ist keine Schrift“ / „ist keine Farbe“** — eine Zeile im `[settings]`-Block, die die Einrichtung nicht verwenden kann; sie wird ignoriert und der Standardwert gilt. Die Meldung sagt, was stattdessen zu schreiben ist.
 - **„[settings] wurde geöffnet, aber nie geschlossen“** — fügen Sie `[/settings]` hinzu; alles nach einem nicht geschlossenen Block wird als Einstellungen gelesen.
 - **„[song] wurde geöffnet, aber nie geschlossen“** — fügen Sie nach dem letzten Liedtext `[/song]` hinzu. Die geschriebenen Texte bleiben trotzdem erhalten.

@@ -313,6 +313,7 @@ Each is reported with a line number and a plain-English message:
 - warning: `Line 12: The speaker label "BARRY, DEE DEE, TRENT & BARRY:" names BARRY twice. Is one of them a different character?` (a group label that gives the same name twice is probably a typo)
 - warning: `Line 40: "Barry:" is not in capitals, so it is shown as text, not as the speaker BARRY:. Write the name in capitals.` (only when the file also uses that name as a speaker, so ordinary words such as `Note:` are left alone)
 - info: `Line 52: This caption line is 132 characters long. On a phone it wraps over several lines; consider splitting it into shorter lines.` (a caption line over `LongCaption`, 100 characters; for a `[[ ]]` block or voices shown together, the longest line)
+- warning: `Line 60: This caption shows 5 voices at once. A phone stacks them and a shared screen may not have room for them all; consider splitting it into two captions.` (voices shown together, `[together]` or ` || `, from `ManyVoices`, 5)
 - error: `Line 88: [loop] was opened but never closed.`
 - error: `Line 12: comment <!-- was opened but never closed.`
 - info: `Line 30: lines starting with # are reserved for headings and were ignored. Use <!-- comment --> for comments or [note: …] for operator notes.`

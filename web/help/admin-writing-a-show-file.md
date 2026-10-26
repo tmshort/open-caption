@@ -183,6 +183,7 @@ The Show file step lists problems with line numbers. Click one to jump to the li
 - **"HTML is not supported"** — use `**bold**` and `*italic*` instead of tags.
 - **"can't go inside a loop"** — loops hold only pictures and text.
 - **"[together] needs at least two lines"** — a `[together]` block with one line is shown as an ordinary caption. **"[together] was opened but never closed"** — add `[/together]`; the lines you wrote are kept.
+- **"This caption shows 5 voices at once"** — five or more voices in one `[together]` block (or ` || ` line) are a lot for a phone, which stacks them, and for a shared screen, which has room for about four and never scrolls. Split it into two captions.
 - **"Unknown setting" / "is not a font" / "is not a color"** — a line in the `[settings]` block that Setup cannot use; it is ignored and the default applies. The message says what to write instead.
 - **"[settings] was opened but never closed"** — add `[/settings]`; everything after an unclosed block is read as settings.
 - **"[song] was opened but never closed"** — add `[/song]` after the last lyric. The lyrics you wrote are still kept.

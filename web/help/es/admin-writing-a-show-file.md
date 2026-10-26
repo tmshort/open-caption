@@ -183,6 +183,7 @@ El paso Archivo del espectáculo enumera los problemas con números de línea. P
 - **«No se admite HTML»** — use `**negrita**` y `*cursiva*` en lugar de etiquetas.
 - **«no puede ir dentro de un bucle»** — los bucles contienen solo imágenes y texto.
 - **«[together] necesita al menos dos líneas»** — un bloque `[together]` con una línea se muestra como un subtítulo normal. **«[together] se abrió pero nunca se cerró»** — añada `[/together]`; las líneas que escribió se conservan.
+- **«Este subtítulo muestra 5 voces a la vez»** — cinco o más voces en un bloque `[together]` (o una línea con ` || `) son muchas para un teléfono, que las apila, y para una pantalla compartida, que tiene espacio para unas cuatro y nunca se desplaza. Divídalo en dos subtítulos.
 - **«Ajuste desconocido» / «no es una fuente» / «no es un color»** — una línea del bloque `[settings]` que Configuración no puede usar; se ignora y se aplica el valor por defecto. El mensaje dice qué escribir en su lugar.
 - **«[settings] se abrió pero nunca se cerró»** — añada `[/settings]`; todo lo que sigue a un bloque sin cerrar se lee como ajustes.
 - **«[song] se abrió pero nunca se cerró»** — añada `[/song]` tras la última letra. Las letras que escribió se conservan igualmente.

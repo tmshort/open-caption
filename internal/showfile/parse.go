@@ -329,6 +329,10 @@ func (p *parser) checkLength(lineNo int, text string) {
 	}
 }
 
+// ManyVoices is the number of voices shown together from which a caption is reported: a phone stacks them all, and a
+// shared screen has room for about four.
+const ManyVoices = 5
+
 // addVoices appends a caption made of one voice, or of several shown together.
 func (p *parser) addVoices(parts []Part, lineNo int) {
 	switch len(parts) {
@@ -339,6 +343,9 @@ func (p *parser) addVoices(parts []Part, lineNo int) {
 		p.checkLength(lineNo, pt.Text)
 		p.res.Cues = append(p.res.Cues, Cue{Kind: KindCaption, Line: lineNo, Speaker: pt.Speaker, HTML: pt.HTML, Text: pt.Text, Stage: pt.Stage, Sung: pt.Sung})
 		return
+	}
+	if len(parts) >= ManyVoices {
+		p.diag(lineNo, SevWarning, "This caption shows %d voices at once. A phone stacks them and a shared screen may not have room for them all; consider splitting it into two captions.", len(parts))
 	}
 	c := Cue{Kind: KindCaption, Line: lineNo, Parts: parts, Sung: true}
 	for _, pt := range parts {

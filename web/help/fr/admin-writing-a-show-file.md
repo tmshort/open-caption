@@ -183,6 +183,7 @@ L'étape Fichier du spectacle liste les problèmes avec leurs numéros de ligne.
 - **« Le HTML n'est pas pris en charge »** — utilisez `**gras**` et `*italique*` à la place des balises.
 - **« ne peut pas aller dans une boucle »** — les boucles ne contiennent que des images et du texte.
 - **« [together] a besoin d'au moins deux lignes »** — un bloc `[together]` d'une seule ligne est montré comme un sous-titre ordinaire. **« [together] a été ouvert mais jamais fermé »** — ajoutez `[/together]` ; les lignes que vous avez écrites sont conservées.
+- **« Ce sous-titre affiche 5 voix à la fois »** — cinq voix ou plus dans un bloc `[together]` (ou une ligne avec ` || `) font beaucoup pour un téléphone, qui les empile, et pour un écran partagé, qui a de la place pour quatre environ et ne défile jamais. Divisez-le en deux sous-titres.
 - **« Réglage inconnu » / « n'est pas une police » / « n'est pas une couleur »** — une ligne du bloc `[settings]` que la configuration ne peut pas utiliser ; elle est ignorée et la valeur par défaut s'applique. Le message dit quoi écrire à la place.
 - **« [settings] a été ouvert mais jamais fermé »** — ajoutez `[/settings]` ; tout ce qui suit un bloc non fermé est lu comme des réglages.
 - **« [song] a été ouvert mais jamais fermé »** — ajoutez `[/song]` après la dernière parole. Les paroles que vous avez écrites sont tout de même conservées.

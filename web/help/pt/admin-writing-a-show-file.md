@@ -183,6 +183,7 @@ A etapa Arquivo do espetáculo lista os problemas com números de linha. Clique 
 - **«HTML não é suportado»** — use `**negrito**` e `*itálico*` em vez de tags.
 - **«não pode ficar dentro de um laço»** — os laços contêm só imagens e texto.
 - **«[together] precisa de pelo menos duas linhas»** — um bloco `[together]` com uma linha é mostrado como uma legenda comum. **«[together] foi aberto mas nunca fechado»** — acrescente `[/together]`; as linhas que você escreveu são mantidas.
+- **«Esta legenda mostra 5 vozes ao mesmo tempo»** — cinco ou mais vozes em um bloco `[together]` (ou numa linha com ` || `) são muitas para um telefone, que as empilha, e para uma tela compartilhada, que tem espaço para cerca de quatro e nunca rola. Divida-a em duas legendas.
 - **«Configuração desconhecida» / «não é uma fonte» / «não é uma cor»** — uma linha do bloco `[settings]` que a Configuração não consegue usar; ela é ignorada e vale o padrão. A mensagem diz o que escrever no lugar.
 - **«[settings] foi aberto mas nunca fechado»** — acrescente `[/settings]`; tudo o que vem depois de um bloco não fechado é lido como configurações.
 - **«[song] foi aberto mas nunca fechado»** — acrescente `[/song]` depois da última letra. As letras que você escreveu continuam sendo mantidas.

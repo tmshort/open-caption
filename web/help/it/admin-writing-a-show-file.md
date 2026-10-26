@@ -183,6 +183,7 @@ Il passo File dello spettacolo elenca i problemi con i numeri di riga. Fai clic 
 - **«L'HTML non è supportato»** — usa `**grassetto**` e `*corsivo*` invece dei tag.
 - **«non può stare dentro un ciclo»** — i cicli contengono solo immagini e testo.
 - **«[together] richiede almeno due righe»** — un blocco `[together]` con una riga viene mostrato come un normale sottotitolo. **«[together] è stato aperto ma mai chiuso»** — aggiungi `[/together]`; le righe che hai scritto vengono conservate.
+- **«Questo sottotitolo mostra 5 voci contemporaneamente»** — cinque o più voci in un blocco `[together]` (o in una riga con ` || `) sono molte per un telefono, che le impila, e per uno schermo condiviso, che ha spazio per circa quattro e non scorre mai. Dividilo in due sottotitoli.
 - **«Impostazione sconosciuta» / «non è un carattere» / «non è un colore»** — una riga del blocco `[settings]` che la configurazione non può usare; viene ignorata e si applica il valore predefinito. Il messaggio dice cosa scrivere invece.
 - **«[settings] è stato aperto ma mai chiuso»** — aggiungi `[/settings]`; tutto ciò che segue un blocco non chiuso viene letto come impostazioni.
 - **«[song] è stato aperto ma mai chiuso»** — aggiungi `[/song]` dopo l'ultimo testo. I testi che hai scritto vengono comunque conservati.

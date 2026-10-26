@@ -748,5 +748,6 @@ OCI18n.add("de", {
   "Secure (https)": "Gesichert (https)",
   "Plain (http)": "Unverschlüsselt (http)",
   "This computer only:": "Nur dieser Computer:",
-  "The name in the HTTPS certificate. It works on devices that can find this computer by that name.": "Der Name im HTTPS-Zertifikat. Er funktioniert auf Geräten, die diesen Computer unter diesem Namen finden."
+  "The name in the HTTPS certificate. It works on devices that can find this computer by that name.": "Der Name im HTTPS-Zertifikat. Er funktioniert auf Geräten, die diesen Computer unter diesem Namen finden.",
+  "This caption shows {0} voices at once. A phone stacks them and a shared screen may not have room for them all; consider splitting it into two captions.": "Dieser Untertitel zeigt {0} Stimmen gleichzeitig. Ein Telefon stapelt sie, und auf einem gemeinsamen Bildschirm ist vielleicht nicht für alle Platz; erwägen Sie, ihn in zwei Untertitel zu teilen."
 });
