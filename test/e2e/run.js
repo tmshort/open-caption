@@ -150,6 +150,11 @@ async function main() {
     await admin.evaluate(() => { const sp = [...document.querySelectorAll('select')].find((s) => [...s.options].some((o) => o.value === 'column')); sp.value = 'column'; sp.dispatchEvent(new Event('input', { bubbles: true })); });
     check('the Look preview can put the names in a column left of the text', await admin.evaluate(() => { const p = document.querySelector('.preview.proj p'); return getComputedStyle(p).display === 'grid'; }));
     await admin.evaluate(() => { const sp = [...document.querySelectorAll('select')].find((s) => [...s.options].some((o) => o.value === 'beside')); sp.value = 'beside'; sp.dispatchEvent(new Event('input', { bubbles: true })); });
+    // the slider covers the documented range, 50 to 300 percent, and the extremes can be saved and read back
+    check('the Look text size slider covers 50 to 300 percent', await admin.evaluate(() => { const r = document.querySelector('input[type=range]'); return r.min === '50' && r.max === '300'; }));
+    await admin.evaluate(() => { const r = document.querySelector('input[type=range]'); r.value = '300'; r.dispatchEvent(new Event('input', { bubbles: true })); });
+    check('and 300 is what the slider holds at its far end', await admin.evaluate(() => document.querySelector('input[type=range]').value === '300'));
+    await admin.evaluate(() => { const r = document.querySelector('input[type=range]'); r.value = '100'; r.dispatchEvent(new Event('input', { bubbles: true })); });
     await click(admin, 'Save look'); await sleep(700);
     const look = (await api(admin, 'GET', '/api/admin/shows/' + showId2)).body;
     check('the look is saved with the show', look.lookSaved === true && look.theme.font === 'dyslexic' && look.theme.speakers === 'color' && look.theme.speakerPosition === 'beside', look.theme);

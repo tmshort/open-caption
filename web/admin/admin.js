@@ -1083,7 +1083,7 @@
     const mk = (name, label, input) => { ctl[name] = input; return h('label', { class: 'field' }, h('span', {}, __(label)), input); };
     mk('bg', 'Background', h('input', { type: 'color' })); mk('fg', 'Text', h('input', { type: 'color' })); mk('accent', 'Speaker name color', h('input', { type: 'color' }));
     mk('font', 'Font', h('select', {}, h('option', { value: 'system' }, __('Clean (system)')), h('option', { value: 'serif' }, __('Serif')), h('option', { value: 'mono' }, __('Monospace')), h('option', { value: 'dyslexic' }, __('Dyslexia-friendly (OpenDyslexic)')), h('option', { value: 'hyperlegible' }, __('High legibility (Atkinson Hyperlegible)'))));
-    mk('scalePct', 'Text size', h('input', { type: 'range', min: '60', max: '200', step: '10' }));
+    mk('scalePct', 'Text size', h('input', { type: 'range', min: '50', max: '300', step: '10' }));
     mk('speakers', 'Speaker names', h('select', {}, h('option', { value: 'label' }, __('Show (in the speaker name color)')), h('option', { value: 'color' }, __('Show, a different color for each character')), h('option', { value: 'hidden' }, __('Hide'))));
     mk('speakerPosition', 'Speaker name position', h('select', {}, h('option', { value: 'above' }, __('Above the line')), h('option', { value: 'beside' }, __('Beside the text, on the same line')), h('option', { value: 'column' }, __('In a column to the left of the text'))));
     mk('idleMessage', 'Pre-show message', h('input', { type: 'text', maxlength: '200' }));
