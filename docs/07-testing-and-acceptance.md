@@ -4,7 +4,7 @@
 
 | Layer | What | How |
 |-------|------|-----|
-| Unit | `show file` parser and validator (table-driven; the shipped sample must parse clean and its Spanish translation must match its structure), Markdown renderer/escaping, language structure check, config load/generate and access lists, `live` engine (apply/undo/jump determinism, persistence), show store, help renderer | `go test ./...` |
+| Unit | `show file` parser and validator (table-driven; the shipped sample must parse clean and its Spanish translation must match its structure), Markdown renderer/escaping, language structure check, config load/generate and access lists, `live` engine (apply/undo/jump determinism, persistence), show store, help renderer, the program's start-up helpers (port fallback, the URLs it prints) | `go test ./...` |
 | Property/fuzz | `showfile.Parse` never panics and never emits unescaped HTML (`FuzzParse`); engine: `jump(n)` state equals sequential apply state, for random show files | `go test`, `make fuzz` |
 | Consistency | Help covers every show file directive, escape and warning; every example in help parses clean; every operator key documented exists in `operator.js`; the guides in `docs/` render with working links and anchors; every bundled font is served | part of `go test ./...` |
 | Automatic certificates | The manager (issue, renew window, failed renewal keeps the old certificate, wrong-name refusal), credentials precedence and file parsing, configuration rules, Setup endpoints, redaction of credentials in the support bundle; the real ACME path (lego, DNS-01) against Pebble | `go test` (fake issuer); `make pebble-test` (a pinned Pebble, doc 10); `make acme-variants` builds every provider choice |
