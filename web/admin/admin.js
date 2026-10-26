@@ -463,7 +463,7 @@
       clearTimeout(A.lostTimer); A.lostTimer = 0; $('connbar').hidden = true; // the server is answering
       const p = JSON.parse(e.data);
       const wasLive = A.live, wasStart = A.atStart;
-      A.atStart = p.op.atStart; A.live = p.op.live; A.audience = p.audience; A.activeId = p.show.id;
+      A.atStart = p.op.atStart; A.live = p.op.live; A.audience = p.audience; A.activeId = p.show.id; paintWorking();
       $('viewers').textContent = OCClients.label(p); $('viewers').title = OCClients.title(p.audience);
       $('live').hidden = !p.op.live; $('live').textContent = '● ' + __('ON AIR');
       if (A.step === 'golive') { const v = document.getElementById('audcount'); if (v) v.textContent = String(p.audience); }
@@ -526,11 +526,19 @@
     if (r.ok && A.cur === id && !A.mainAnalysis) { A.mainAnalysis = r.data.analysis; refreshNav(); }
   }
 
+  // The header says which show Setup is editing and, when it is another one, which show is active (what the audience gets).
+  function paintWorking() {
+    const s = curShow(), w = $('working');
+    const act = s && A.activeId && A.activeId !== s.id ? A.shows.find((x) => x.id === A.activeId) : null;
+    w.textContent = !s ? __('No show selected') : act ? __('Working on: {work} · Active: {active}', { work: s.name, active: act.name })
+      : A.activeId === s.id ? __('Working on: {work} (the active show)', { work: s.name }) : __('Working on: {work}', { work: s.name });
+    w.title = act ? __('The audience gets the active show. This one becomes the active show when you open the Run page for it.') : __('The show you are working on');
+    w.hidden = false;
+  }
+
   async function render() {
     clearTimeout(A.reportTimer); // the Report step refreshes itself while the show is on the air; any other step does not
-    const s = curShow();
-    $('working').textContent = s ? s.name : __('No show selected');
-    $('working').hidden = false;
+    paintWorking();
     refreshNav();
     warmAnalysis();
     const panel = $('panel'); panel.replaceChildren();
@@ -1166,10 +1174,13 @@
     // Opening the operator page loads the show in standby: the audience keeps seeing the venue's standby screen until
     // the operator presses START there. So there is nothing here that puts a show in front of the audience.
     const onAir = !!((A.shows || []).find((x) => x.id === show.id) || {}).live;
+    const other = !isActive && A.activeId ? (A.shows || []).find((x) => x.id === A.activeId) : null; // another show is the one the audience gets
     const startBox = h('div', { class: 'startbox' },
       isActive ? h('a', { class: 'btn primary big', href: '/operator' }, __('Open the Run page'))
-        : h('button', { class: 'primary big', onclick: () => loadShow(show), disabled: !a.cues.length }, __('Open the Run page')),
+        : h('button', { class: 'primary big', onclick: () => loadShow(show), disabled: !a.cues.length }, other ? __('Open the Run page and make “{name}” the active show', { name: show.name }) : __('Open the Run page')),
       h('span', { class: 'hint' }, isActive ? (onAir ? __('This show is on air now.') : __('This show is loaded and waiting in standby.'))
+        : other ? (other.live ? __('“{name}” is on air now, so the audience is seeing it. Opening the Run page takes it off the air and makes this show the active one (you will be asked first).', { name: other.name })
+          : __('“{name}” is the active show, waiting in standby. Opening the Run page makes this show the active one instead.', { name: other.name }))
         : __('Opening it loads it in standby: the audience keeps seeing the standby screen until the operator presses START.')),
       isActive ? h('button', { class: 'quiet', disabled: !!((A.shows || []).find((x) => x.id === show.id) || {}).fresh, title: ((A.shows || []).find((x) => x.id === show.id) || {}).fresh ? __('The show is at the start and in standby, so there is nothing to restart') : null, onclick: () => restartShow(show) }, __('Restart show…')) : null);
     const checks = h('div', { class: 'card ready' }, checklist, startBox);

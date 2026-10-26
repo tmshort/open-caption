@@ -149,6 +149,8 @@ Open the setup page and follow the six steps along the top (a seventh, **Report*
 5. **Test.** Run a private rehearsal: you press Space as the operator would, and see the audience screen next to it. Nothing reaches the audience.
 6. **Share.** Check the readiness list, print the QR sign, and press **Open the Run page**.
 
+**Working on a show is not the same as making it the active show.** *Work on this show* only chooses which show Setup is editing (its name is in the header). The show the audience gets, the **active** one (marked ACTIVE on the Shows step, and named in the header when it is a different show), changes only when you press **Open the Run page** on that show's Share step. A show that is on air is replaced only after Setup asks.
+
 Opening the operator page loads the show in **standby**: the audience sees the venue's standby screen (a logo and a message, set once under **Settings → Audience screen**) and nothing of the show, so you can prepare, rehearse and check the operator page quietly. When you are ready, press **Space** (the button says **START**) on the operator page to put the show on air. **Go to standby…** takes it off again without losing its place.
 
 ### Writing the show file

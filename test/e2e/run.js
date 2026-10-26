@@ -550,6 +550,21 @@ async function main() {
     await guard.waitForFunction(() => !document.getElementById('troublebadge').hidden, { timeout: T(8000) }).catch(() => {});
     check('a new warning puts a count on the Troubleshoot button', await guard.evaluate(() => { const b = document.getElementById('troublebadge'); return !b.hidden && /^\d+$/.test(b.textContent) && /new warning/.test(document.getElementById('troublebtn').getAttribute('aria-label')); }));
     await step(guard, 'Share'); await sleep(700);
+    // Working on a show is not the same as it being the active show
+    {
+      const list = (await api(guard, 'GET', '/api/admin/shows')).body, act = list.shows.find((x) => x.id === list.activeId), other = list.shows.find((x) => x.id !== list.activeId && !x.archived);
+      if (act && other) {
+        const work = async (name) => { await step(guard, 'Shows'); await sleep(500); await guard.evaluate((n) => { const c = [...document.querySelectorAll('.card.show')].find((x) => x.querySelector('.name').firstChild.textContent.trim() === n); [...c.querySelectorAll('button')].find((b) => /Work on this show|Continue with this show/.test(b.textContent)).click(); }, name); await sleep(600); await step(guard, 'Share'); await sleep(900); };
+        await work(other.name);
+        const pill = await guard.evaluate(() => document.getElementById('working').textContent);
+        check('the header names the show being worked on and the active one when they differ', pill.includes('Working on: ' + other.name) && pill.includes('Active: ' + act.name), pill);
+        const box = await guard.evaluate(() => ({ btn: document.querySelector('.startbox .primary').textContent, hint: document.querySelector('.startbox .hint').textContent }));
+        check('the Share step says the button makes this show the active one, and what the audience gets until then', /^Open the Run page and make .+ the active show$/.test(box.btn) && box.hint.includes(act.name) && /active show|on air now/.test(box.hint), box);
+        await work(act.name);
+        const pill2 = await guard.evaluate(() => document.getElementById('working').textContent);
+        check('and it says so when the show being worked on is the active one', pill2.includes('Working on: ' + act.name) && pill2.includes('(the active show)') && !pill2.includes('Active:'), pill2);
+      }
+    }
     await click(guard, 'Settings'); await sleep(600);
     await guard.evaluate(() => document.getElementById('settab-sec').click()); await sleep(150);
     check('Settings → Security has a Certificate section that says where HTTPS gets its certificate', await guard.evaluate(() => { const b = document.querySelector('.certbox'); return !!b && /HTTPS/.test(b.textContent) && b.closest('section').querySelector('h3').textContent === 'Certificate'; }));
@@ -679,7 +694,7 @@ async function main() {
     // The Share step no longer puts a show in front of the audience: it opens the operator page, with the show in standby.
     await step(arch, 'Share'); await sleep(T(900));
     check('the Share step ends its list of addresses with a projector link, in a new window, by numeric address', await arch.evaluate(() => { const rows = [...document.querySelectorAll('.urls > .row')]; const p = document.querySelector('.urls a[href*="display=projector"]'); return rows.length >= 2 && !!p && p.target === '_blank' && /\/\?display=projector$/.test(p.getAttribute('href')) && rows[rows.length - 1].contains(p) && !/\.local/.test(p.getAttribute('href')); }));
-    check('the Share step offers Open the Run page (the show waits in standby), not Start show', await arch.evaluate(() => { const t = document.getElementById('panel').innerText; return /Open the Run page/.test(t) && !/Start show/.test(t) && /standby/.test(t); }));
+    check('the Share step offers Open the Run page (the show waits in standby), not Start show', await arch.evaluate(() => { const t = document.getElementById('panel').innerText; return /Open the Run page/.test(t) && !/Start show/.test(t) && /standby|on air now/.test(t); }));
     check('buttons that are links (Open the Run page, Print a QR sign) are not underlined', await arch.evaluate(() => [...document.querySelectorAll('#panel a.btn')].length >= 1 && [...document.querySelectorAll('#panel a.btn')].every((e) => getComputedStyle(e).textDecorationLine === 'none')));
     check('the Print QR sign button sits right beside Copy address', await arch.evaluate(() => { const c = [...document.querySelectorAll('#panel button')].find((b) => b.textContent === 'Copy address'), p = [...document.querySelectorAll('#panel a.btn')].find((b) => /QR sign/.test(b.textContent)); return !!c && !!p && p.getBoundingClientRect().left - c.getBoundingClientRect().right < 40; }));
     check('the Print QR sign link follows the address that is chosen', await arch.evaluate(() => { const r = [...document.querySelectorAll('.urls input[type=radio]')]; const last = r[r.length - 1]; last.click(); const a = document.getElementById('printsign'); const want = last.closest('.row').querySelector('a').href; return r.length >= 2 && new URL(a.href).searchParams.get('url') === want; }));

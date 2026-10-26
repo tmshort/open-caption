@@ -149,6 +149,8 @@ Abra la página de configuración y siga los seis pasos de la parte superior (un
 5. **Prueba.** Haga un ensayo privado: usted pulsa Espacio como lo haría el operador, y ve la pantalla del público al lado. Nada llega al público.
 6. **Compartir.** Revise la lista de preparación, imprima el cartel QR y pulse **Abrir la página Dirigir**.
 
+**Trabajar en un espectáculo no es lo mismo que hacerlo el espectáculo activo.** *Trabajar en este espectáculo* solo elige qué espectáculo edita Configuración (su nombre está en la cabecera). El espectáculo que recibe el público, el **activo** (marcado ACTIVO en el paso Espectáculos, y nombrado en la cabecera cuando es otro), cambia solo cuando pulsa **Abrir la página Dirigir** en el paso Compartir de ese espectáculo. Un espectáculo que está en el aire solo se reemplaza después de que Configuración se lo pregunte.
+
 Al abrir la página del operador, el espectáculo se carga **en espera**: el público ve la pantalla de espera del local (un logotipo y un mensaje, que se fijan una sola vez en **Ajustes → Pantalla del público**) y nada del espectáculo, así que puede preparar, ensayar y revisar la página del operador con tranquilidad. Cuando esté listo, pulse **Espacio** (el botón dice **INICIAR**) en la página del operador para poner el espectáculo en el aire. **Poner en espera…** lo retira de nuevo sin perder su lugar.
 
 ### Escribir el archivo del espectáculo

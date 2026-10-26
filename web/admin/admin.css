@@ -235,3 +235,6 @@ a.quiet { background: none; border: none; color: var(--dim); text-decoration: no
 .trouble .cstatus { font-weight: 700; min-width: 4.5rem; font-size: .85em; text-transform: uppercase; letter-spacing: .04em; }
 .trouble .ctext { flex: 1 1 18rem; }
 .trouble pre.logview { max-height: 10rem; }
+
+/* the header's "Working on: … · Active: …" pill can hold two show names */
+#working { max-width: min(36rem, 45vw); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

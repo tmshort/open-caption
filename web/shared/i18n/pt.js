@@ -800,5 +800,12 @@ OCI18n.add("pt", {
   "Check why people might not be able to connect, and see recent problems": "Verificar por que as pessoas podem não conseguir se conectar e ver os problemas recentes",
   "Note": "Nota",
   "Check": "Verificar",
-  "Problem": "Problema"
+  "Problem": "Problema",
+  "Working on: {work} · Active: {active}": "Trabalhando em: {work} · Ativo: {active}",
+  "Working on: {work} (the active show)": "Trabalhando em: {work} (o espetáculo ativo)",
+  "Working on: {work}": "Trabalhando em: {work}",
+  "The audience gets the active show. This one becomes the active show when you open the Run page for it.": "O público recebe o espetáculo ativo. Este passa a ser o espetáculo ativo quando você abrir a página Conduzir para ele.",
+  "Open the Run page and make “{name}” the active show": "Abrir a página Conduzir e tornar «{name}» o espetáculo ativo",
+  "“{name}” is on air now, so the audience is seeing it. Opening the Run page takes it off the air and makes this show the active one (you will be asked first).": "«{name}» está no ar agora, então o público está vendo. Abrir a página Conduzir o tira do ar e torna este espetáculo o ativo (você será perguntado antes).",
+  "“{name}” is the active show, waiting in standby. Opening the Run page makes this show the active one instead.": "«{name}» é o espetáculo ativo, em espera. Abrir a página Conduzir torna este espetáculo o ativo no lugar dele."
 });
