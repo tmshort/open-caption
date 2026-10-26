@@ -658,14 +658,27 @@ func (p *parser) imageItem(lineNo int, file, caption string, secs float64) (Item
 
 func (p *parser) summary() {
 	counts := map[CueKind]int{}
+	images := map[string]bool{} // the image files the show uses, in loops too, as the Images step counts them
+	fullscreen := 0
 	for _, c := range p.res.Cues {
 		counts[c.Kind]++
+		if c.Item != nil && c.Item.Kind == "image" {
+			images[c.Item.Image] = true
+		}
+		for _, it := range c.Items { // a loop's items: images and fullscreen messages (text)
+			switch it.Kind {
+			case "image":
+				images[it.Image] = true
+			case "text":
+				fullscreen++
+			}
+		}
 	}
 	if len(p.res.Cues) == 0 {
 		return
 	}
 	p.diag(0, SevInfo, "%d captions, %d images, %d fullscreen, %d loops, %d sections, %d notes.",
-		counts[KindCaption], counts[KindImage], counts[KindFullscreen], counts[KindLoop], counts[KindSection], counts[KindNote])
+		counts[KindCaption], len(images), counts[KindFullscreen]+fullscreen, counts[KindLoop], counts[KindSection], counts[KindNote])
 }
 
 func splitFields(args string) []string {

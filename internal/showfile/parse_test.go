@@ -662,3 +662,18 @@ func TestManyVoicesShownTogetherGetAWarning(t *testing.T) {
 		t.Error("five voices on one line (||) should be warned about")
 	}
 }
+
+// The summary line counts the images the show uses the way the Images step does: each file once, loops included.
+func TestSummaryCountsImagesAndFullscreenInsideLoops(t *testing.T) {
+	src := "[loop: name Pre-show]\n[image: a.png]\n[image: b.png]\n[fullscreen: Exits are at the back]\n[/loop]\n[image: c.png]\n[image: a.png]\nHello\n"
+	res := Parse(src, Options{})
+	var summary string
+	for _, d := range res.Diagnostics {
+		if d.Line == 0 {
+			summary = d.Message
+		}
+	}
+	if want := "1 captions, 3 images, 1 fullscreen, 1 loops, 0 sections, 0 notes."; summary != want {
+		t.Errorf("summary %q, want %q", summary, want)
+	}
+}

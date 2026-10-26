@@ -319,7 +319,7 @@ Each is reported with a line number and a plain-English message:
 - error: `Line 12: comment <!-- was opened but never closed.`
 - info: `Line 30: lines starting with # are reserved for headings and were ignored. Use <!-- comment --> for comments or [note: …] for operator notes.`
 - info: `Line 5: HTML is not supported; "<b>" will appear as plain text. Use **bold** instead.`
-- info: summary — `312 captions, 4 images, 2 loops, 3 sections`.
+- info: summary — `312 captions, 4 images, 2 loops, 3 sections`. The image count is the number of different image files the show file uses (those inside a loop too, a file used twice once), the same number the Images step shows as in use; fullscreen messages inside loops are counted as well.
 
 Errors don't prevent saving; the affected construct is skipped. The setup UI
 makes fixing easy (line list, click to jump to the line in the editor).
