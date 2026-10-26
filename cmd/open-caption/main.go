@@ -172,10 +172,10 @@ func main() {
 	if *dev {
 		loadDevShow(api, cfg, *devShow, *devAsset)
 	} else if api.BootActive() {
-		logx.Infof("loaded the active show")
+		logx.Infof("loaded the active show %q", rt.ShowName())
 	}
 	if rt.Restore() {
-		logx.Infof("resumed the previous show position")
+		logx.Infof("resumed the position of show %q from before the restart", rt.ShowName())
 	}
 	handler := api.Handler()
 
@@ -252,14 +252,14 @@ func tlsConfig(ctx context.Context, cfg config.Config, api *httpapi.Server) *tls
 		// the certificate files are watched: a renewed pair is picked up without a restart
 		rl, err := netinfo.NewReloader(cfg.HTTPS.CertFile, cfg.HTTPS.KeyFile, logx.Infof, logx.Warnf)
 		if err != nil {
-			logx.Fatalf("https: %v", err)
+			logx.Fatalf("HTTPS: %v", err)
 		}
 		return &tls.Config{GetCertificate: rl.GetCertificate, MinVersion: tls.VersionTLS12}
 	}
 	host, _ := os.Hostname()
 	cert, err := netinfo.EnsureSelfSigned(filepath.Join(cfg.DataDir, "tls"), host, netinfo.LocalIPs())
 	if err != nil {
-		logx.Fatalf("https: %v", err)
+		logx.Fatalf("HTTPS: %v", err)
 	}
 	if cfg.HTTPS.ACME.Enabled {
 		// A certificate from a public CA, kept current in the background (docs/10). Until the first one arrives

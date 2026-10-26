@@ -132,7 +132,11 @@ func (s *Server) operatorAPI(mux *http.ServeMux, prefix, role string, resolve re
 		json.NewDecoder(http.MaxBytesReader(w, r.Body, maxCmdBody)).Decode(&req)
 		ok := rt.Claim(principal(r).Token, req.Takeover)
 		if ok {
-			logx.Infof("operator control taken (takeover: %v) by session %s", req.Takeover, SID(principal(r).Token))
+			how := "claimed"
+			if req.Takeover {
+				how = "taken over"
+			}
+			logx.Infof("operator control %s by session %s", how, SID(principal(r).Token))
 		} else {
 			logx.Debugf("operator control refused: another operator is in control")
 		}

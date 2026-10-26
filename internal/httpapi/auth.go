@@ -424,7 +424,7 @@ func (s *Server) require(role string, h http.HandlerFunc) http.HandlerFunc {
 			if t, issued := s.auth.issue(RoleAdmin, true); issued {
 				http.SetCookie(w, &http.Cookie{Name: cookieName, Value: t, Path: "/", HttpOnly: true,
 					SameSite: http.SameSiteStrictMode, Secure: r.TLS != nil, MaxAge: int(sessionTTL.Seconds())})
-				logx.Infof("signed in as admin without a password: the browser is on this computer")
+				logx.Infof("signed in as admin without a password: the browser at %s is on this computer", clientIP(r))
 				token, sess, ok = t, session{role: RoleAdmin, auto: true}, true
 			}
 		}

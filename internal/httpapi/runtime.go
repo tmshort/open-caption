@@ -405,6 +405,9 @@ func (rt *Runtime) PrimaryLang() string {
 	return rt.primary
 }
 
+// saveFailLog stops a full disk from filling the log with one warning for every change made during a show.
+var saveFailLog logx.Throttle
+
 // ShowName returns the active show's name.
 func (rt *Runtime) ShowName() string {
 	rt.mu.RLock()
@@ -975,7 +978,7 @@ func (rt *Runtime) Flush() {
 		return
 	}
 	if err := saveFile(path, b, 0o600); err != nil {
-		logx.Warnf("could not save the show's position (%s): %v; it will not survive a restart until this is fixed", path, err)
+		saveFailLog.Warnf("could not save the show's position (%s): %v; it will not survive a restart until this is fixed", path, err)
 	}
 }
 
