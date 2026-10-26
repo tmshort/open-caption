@@ -440,7 +440,17 @@ func (s *Server) require(role string, h http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
+// writeErr answers with an error message. A 5xx is the program failing (a disk that cannot be written, say), not the
+// caller asking for something wrong, so it is also logged: otherwise the log has nothing about it.
 func writeErr(w http.ResponseWriter, code int, msg string) {
+	if code >= 500 {
+		logx.Errorf("answered %d: %s", code, msg)
+	}
+	answerErr(w, code, msg)
+}
+
+// answerErr is writeErr without the log line, for a failure that has already been logged with its details.
+func answerErr(w http.ResponseWriter, code int, msg string) {
 	writeJSON(w, code, map[string]any{"error": msg})
 }
 

@@ -991,7 +991,7 @@ func (s *Server) exportShow(w http.ResponseWriter, r *http.Request) {
 		text, err := s.store.ReadShowFile(id, code)
 		if err != nil {
 			logx.Errorf("export of show %s: could not read %s: %v", id, name, err)
-			writeErr(w, http.StatusInternalServerError, "The show could not be exported. Try again; if it keeps happening, look at the log.")
+			answerErr(w, http.StatusInternalServerError, "The show could not be exported. Try again; if it keeps happening, look at the log.")
 			return
 		}
 		put(name, []byte(text))
@@ -1000,7 +1000,7 @@ func (s *Server) exportShow(w http.ResponseWriter, r *http.Request) {
 		b, err := os.ReadFile(filepath.Join(s.store.AssetsDir(id), a.Name))
 		if err != nil {
 			logx.Errorf("export of show %s: could not read image %s: %v", id, a.Name, err)
-			writeErr(w, http.StatusInternalServerError, "The show could not be exported. Try again; if it keeps happening, look at the log.")
+			answerErr(w, http.StatusInternalServerError, "The show could not be exported. Try again; if it keeps happening, look at the log.")
 			return
 		}
 		put("assets/"+a.Name, b)
@@ -1010,7 +1010,7 @@ func (s *Server) exportShow(w http.ResponseWriter, r *http.Request) {
 	}
 	if werr != nil {
 		logx.Errorf("export of show %s: %v", id, werr)
-		writeErr(w, http.StatusInternalServerError, "The show could not be exported. Try again; if it keeps happening, look at the log.")
+		answerErr(w, http.StatusInternalServerError, "The show could not be exported. Try again; if it keeps happening, look at the log.")
 		return
 	}
 	w.Header().Set("Content-Type", "application/zip")

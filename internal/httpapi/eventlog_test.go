@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -48,5 +49,29 @@ func TestShowEventsAreLogged(t *testing.T) {
 		if !strings.Contains(out, want) {
 			t.Errorf("missing %q in the log:\n%s", want, out)
 		}
+	}
+}
+
+// A failure of the program itself (not of the request) is logged, so the log shows what the person was told.
+func TestServerFailuresAreLogged(t *testing.T) {
+	s, _, c := standbyServer(t)
+	var buf bytes.Buffer
+	log.SetOutput(&buf)
+	t.Cleanup(func() { log.SetOutput(os.Stderr) })
+	// a settings file that cannot be written
+	s.cfg.Path = filepath.Join(t.TempDir(), "gone", "config.yaml")
+	if code, _ := c.do("PUT", "/api/admin/settings/standby", map[string]any{"message": "Back soon"}); code != 500 {
+		t.Fatalf("code %d", code)
+	}
+	if out := buf.String(); !strings.Contains(out, "ERROR answered 500: Could not save the setting in config.yaml") {
+		t.Errorf("the failure was not logged:\n%s", out)
+	}
+	// a request that was simply wrong is not a failure of the program
+	buf.Reset()
+	if code, _ := c.do("PUT", "/api/admin/settings/standby", map[string]any{"message": strings.Repeat("x", 500)}); code != 400 {
+		t.Fatalf("code %d", code)
+	}
+	if buf.Len() != 0 {
+		t.Errorf("a bad request was logged as an error: %q", buf.String())
 	}
 }

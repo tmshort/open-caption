@@ -89,7 +89,9 @@ func New(o Options) *Manager {
 	m := &Manager{o: o, kick: make(chan struct{}, 1)}
 	if _, err := os.Stat(m.certPath() + ".new"); err == nil { // an interrupted install: the key was replaced, the certificate not yet
 		if _, _, err := loadPair(m.certPath()+".new", m.keyPath()); err == nil {
-			os.Rename(m.certPath()+".new", m.certPath())
+			if err := os.Rename(m.certPath()+".new", m.certPath()); err != nil {
+				m.warnf("HTTPS: could not finish installing the renewed certificate (%v); the previous one is used until the next renewal", err)
+			}
 		}
 	}
 	if cert, leaf, err := loadPair(m.certPath(), m.keyPath()); err == nil && leaf.VerifyHostname(o.Domain) == nil && o.Now().Before(leaf.NotAfter) {

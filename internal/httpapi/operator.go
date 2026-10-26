@@ -253,6 +253,7 @@ func (s *Server) runCommand(w http.ResponseWriter, r *http.Request, rt *Runtime,
 		code, resp["error"] = http.StatusBadRequest, err.Error()
 	default:
 		code, resp["error"] = http.StatusInternalServerError, err.Error()
+		logx.Errorf("operator command %s failed: %v", r.URL.Path, err)
 	}
 	writeJSON(w, code, resp)
 }
