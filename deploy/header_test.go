@@ -16,7 +16,7 @@ import (
 func TestSourceFilesHaveCopyrightHeader(t *testing.T) {
 	covered := map[string]bool{".go": true, ".js": true, ".mjs": true, ".css": true, ".html": true, ".sh": true, ".ps1": true,
 		".bat": true, ".yml": true, ".yaml": true}
-	skipDir := map[string]bool{".git": true, "node_modules": true, "bin": true, "dist": true, ".tools": true}
+	skipDir := map[string]bool{".git": true, "node_modules": true, "bin": true, "dist": true, ".tools": true, "coverage": true}
 	skipFile := map[string]bool{"zz_providers_gen.go": true, "dependabot.yml": true}
 	checked := 0
 	err := filepath.WalkDir("..", func(path string, d fs.DirEntry, err error) error {

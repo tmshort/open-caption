@@ -19,7 +19,7 @@ STATICCHECK_VERSION ?= v0.8.2
 TOOLS := $(CURDIR)/.tools
 
 .DEFAULT_GOAL := help
-.PHONY: help build test race fuzz vet lint lint-js vulncheck pebble pebble-test goreleaser release release-snapshot tidy e2e a11y i18n dist man acme-variants clean
+.PHONY: help build test race cover fuzz vet lint lint-js vulncheck pebble pebble-test goreleaser release release-snapshot tidy e2e a11y i18n dist man acme-variants clean
 
 help: ## Show this list of targets
 	@echo "open-caption: make <target>"; echo
@@ -31,6 +31,8 @@ test: ## Run the Go tests
 	go test ./...
 race: ## Run the Go tests with the race detector
 	go test -race ./...
+cover: ## Go test coverage per package and in total; coverage/go.html shows the lines no test ran
+	tools/cover.sh
 fuzz: ## Fuzz the show-file parser for 30 seconds
 	go test ./internal/showfile -run xxx -fuzz FuzzParse -fuzztime 30s
 vet: ## Run go vet
