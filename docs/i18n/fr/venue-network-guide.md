@@ -63,7 +63,7 @@ Un petit inconvénient du HTTP simple : les navigateurs n'autorisent « garder l
 5. Le pare-feu de l'ordinateur bloque-t-il le programme ?
 6. L'ordinateur est-il toujours éveillé, et toujours à la même adresse ? Cherchez un changement d'adresse dans Partager.
 
-Configuration → Partager → **Télécharger un paquet de support** rassemble les réglages (sans mots de passe), les dernières lignes du journal et des informations de base sur l'ordinateur.
+Configuration → Dépannage → **Télécharger un paquet de support** rassemble les réglages (sans mots de passe), les dernières lignes du journal et des informations de base sur l'ordinateur.
 
 ## Capacité
 

@@ -63,7 +63,7 @@ Um pequeno custo do HTTP simples: os navegadores só permitem «manter a tela ac
 5. O firewall do computador está bloqueando o programa?
 6. O computador continua ligado, e no mesmo endereço? Procure uma mudança de endereço em Compartilhar.
 
-Configuração → Compartilhar → **Baixar um pacote de suporte** reúne as configurações (sem senhas), linhas recentes do registro e dados básicos do computador.
+Configuração → Solução de problemas → **Baixar um pacote de suporte** reúne as configurações (sem senhas), linhas recentes do registro e dados básicos do computador.
 
 ## Capacidade
 

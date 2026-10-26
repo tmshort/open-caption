@@ -63,7 +63,7 @@ Un pequeño inconveniente del HTTP sencillo: los navegadores solo permiten «man
 5. ¿Está el cortafuegos del equipo bloqueando el programa?
 6. ¿Sigue el equipo despierto, y con la misma dirección? Busque un cambio de dirección en Compartir.
 
-Configuración → Compartir → **Descargar un paquete de soporte** recoge los ajustes (sin contraseñas), líneas recientes del registro y datos básicos del equipo.
+Configuración → Solucionar problemas → **Descargar un paquete de soporte** recoge los ajustes (sin contraseñas), líneas recientes del registro y datos básicos del equipo.
 
 ## Capacidad
 

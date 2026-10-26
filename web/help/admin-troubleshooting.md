@@ -40,8 +40,8 @@ If you cannot sign in at all, both passwords are in `config.yaml`, in the progra
 
 ## Looking at the log
 
-**Share → Recent log…** shows what the program has logged lately. Choose *Problems only* to see warnings and errors, such as refused sign-ins or a name already used on the network. The same window sets how much detail is logged (**Log detail**); *Debug* adds every request, which helps when something odd is happening. Passwords are never written to the log.
+**Troubleshoot → Open the full log…** shows what the program has logged lately. Choose *Problems only* to see warnings and errors, such as refused sign-ins or a name already used on the network. The same window sets how much detail is logged (**Log detail**); *Debug* adds every request, which helps when something odd is happening. Passwords are never written to the log.
 
 ## Asking for help
 
-Download the **support bundle** from the bottom of the Share step. It contains the settings (without passwords), recent log lines and basic information about this computer, and is easy to send to whoever maintains the program.
+Download the **support bundle** with the **Troubleshoot** button at the top of Setup. It contains the settings (without passwords), recent log lines and basic information about this computer, and is easy to send to whoever maintains the program.

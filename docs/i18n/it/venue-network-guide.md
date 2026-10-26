@@ -63,7 +63,7 @@ Un piccolo costo dell'HTTP semplice: i browser permettono «tieni lo schermo acc
 5. Il firewall del computer sta bloccando il programma?
 6. Il computer è ancora sveglio, e allo stesso indirizzo? Cerca un cambio di indirizzo in Condividi.
 
-Configurazione → Condividi → **Scarica un pacchetto di supporto** raccoglie le impostazioni (senza password), le righe recenti del registro e informazioni di base sul computer.
+Configurazione → Risoluzione problemi → **Scarica un pacchetto di supporto** raccoglie le impostazioni (senza password), le righe recenti del registro e informazioni di base sul computer.
 
 ## Capacità
 

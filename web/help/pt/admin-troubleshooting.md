@@ -40,8 +40,8 @@ Se você não consegue entrar de jeito nenhum, as duas senhas estão em `config.
 
 ## Olhar o registro
 
-**Compartilhar → Registro recente…** mostra o que o programa registrou há pouco. Escolha *Somente problemas* para ver avisos e erros, como entradas recusadas ou um nome já usado na rede. A mesma janela define quanto detalhe é registrado (**Nível de detalhe do registro**); *Depuração* acrescenta cada requisição, o que ajuda quando algo estranho acontece. As senhas nunca são escritas no registro.
+**Solução de problemas → Abrir o registro completo…** mostra o que o programa registrou há pouco. Escolha *Somente problemas* para ver avisos e erros, como entradas recusadas ou um nome já usado na rede. A mesma janela define quanto detalhe é registrado (**Nível de detalhe do registro**); *Depuração* acrescenta cada requisição, o que ajuda quando algo estranho acontece. As senhas nunca são escritas no registro.
 
 ## Pedir ajuda
 
-Baixe o **pacote de suporte** no fim da etapa Compartilhar. Ele contém as configurações (sem senhas), linhas recentes do registro e informações básicas sobre este computador, e é fácil de enviar a quem mantém o programa.
+Baixe o **pacote de suporte** com o botão **Solução de problemas** no alto da configuração. Ele contém as configurações (sem senhas), linhas recentes do registro e informações básicas sobre este computador, e é fácil de enviar a quem mantém o programa.

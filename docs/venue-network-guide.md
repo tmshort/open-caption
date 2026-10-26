@@ -63,7 +63,7 @@ One small cost of plain HTTP: browsers only allow "keep the screen awake" on sec
 5. Is the computer's firewall blocking the program?
 6. Is the computer still awake, and still on the same address? Check for a changed address in Share.
 
-Setup → Share → **Download a support bundle** collects the settings (without passwords), recent log lines and basic facts about the computer.
+Setup → Troubleshoot → **Download a support bundle** collects the settings (without passwords), recent log lines and basic facts about the computer.
 
 ## Capacity
 

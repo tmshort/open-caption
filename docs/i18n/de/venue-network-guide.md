@@ -63,7 +63,7 @@ Ein kleiner Nachteil von einfachem HTTP: Browser erlauben „Bildschirm anlassen
 5. Blockiert die Firewall des Computers das Programm?
 6. Ist der Computer noch wach und noch unter derselben Adresse? Achten Sie in Teilen auf eine geänderte Adresse.
 
-Einrichtung → Teilen → **Supportpaket herunterladen** sammelt die Einstellungen (ohne Passwörter), aktuelle Protokollzeilen und grundlegende Angaben zum Computer.
+Einrichtung → Fehlersuche → **Supportpaket herunterladen** sammelt die Einstellungen (ohne Passwörter), aktuelle Protokollzeilen und grundlegende Angaben zum Computer.
 
 ## Kapazität
 

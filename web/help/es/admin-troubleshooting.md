@@ -40,8 +40,8 @@ Si no puede iniciar sesión de ninguna manera, las dos contraseñas están en `c
 
 ## Mirar el registro
 
-**Compartir → Registro reciente…** muestra lo que el programa ha registrado últimamente. Elija *Solo problemas* para ver avisos y errores, como inicios de sesión rechazados o un nombre ya usado en la red. La misma ventana define cuánto detalle se registra (**Nivel de detalle del registro**); *Depuración* añade cada petición, lo que ayuda cuando ocurre algo raro. Las contraseñas nunca se escriben en el registro.
+**Solucionar problemas → Abrir el registro completo…** muestra lo que el programa ha registrado últimamente. Elija *Solo problemas* para ver avisos y errores, como inicios de sesión rechazados o un nombre ya usado en la red. La misma ventana define cuánto detalle se registra (**Nivel de detalle del registro**); *Depuración* añade cada petición, lo que ayuda cuando ocurre algo raro. Las contraseñas nunca se escriben en el registro.
 
 ## Pedir ayuda
 
-Descargue el **paquete de soporte** desde la parte inferior del paso Compartir. Contiene los ajustes (sin contraseñas), líneas recientes del registro e información básica sobre este equipo, y es fácil de enviar a quien mantenga el programa.
+Descargue el **paquete de soporte** con el botón **Solucionar problemas** de la parte superior de Configuración. Contiene los ajustes (sin contraseñas), líneas recientes del registro e información básica sobre este equipo, y es fácil de enviar a quien mantenga el programa.

@@ -513,7 +513,7 @@ async function main() {
     check('and the logo is public, for the audience page', await guard.evaluate(async (u) => { const r = await fetch(u, { credentials: 'omit' }); return r.ok && /image\/png/.test(r.headers.get('Content-Type')); }, sbs.logo));
     await tab('abt');
     check('Settings offers the log detail setting', await guard.evaluate(() => !!document.querySelector('#dlg select[aria-label="Log detail"]')));
-    check('the Settings window has no Recent log button (it is on the Share step)', await guard.evaluate(() => !document.getElementById('dlgextra') || document.getElementById('dlgextra').hidden));
+    check('the Settings window has no Recent log button (it is in the Troubleshoot panel)', await guard.evaluate(() => !document.getElementById('dlgextra') || document.getElementById('dlgextra').hidden));
     check('and its only footer button just closes it', await guard.evaluate(() => document.getElementById('dlgok').textContent.trim() === 'Close' && document.getElementById('dlgcancel').hidden));
     // the operator password can be shown and hidden again
     await tab('sec');
@@ -529,7 +529,9 @@ async function main() {
     await guard.evaluate(() => document.getElementById('dlgok').click()); await sleep(300);
     check('the addresses sit to the right of the QR code, and the projector link lines up with them', await guard.evaluate(() => { const q = document.querySelector('.qrrow .qr').getBoundingClientRect(), u = document.querySelector('.urls').getBoundingClientRect(); const links = [...document.querySelectorAll('.urls a')]; const lefts = links.map((a) => Math.round(a.getBoundingClientRect().left)); return u.left >= q.right - 1 && Math.abs(u.top - q.top) < 40 && links.length >= 2 && Math.max(...lefts) - Math.min(...lefts) <= 1; }));
     check('on the Share step each address is a link that opens a new window', await guard.evaluate(() => { const l = [...document.querySelectorAll('.urls label a')]; return l.length > 0 && l.every((x) => x.target === '_blank' && /noopener/.test(x.rel) && /^https?:\/\//.test(x.href)); }));
-    await guard.evaluate(() => [...document.querySelectorAll('a')].find((x) => x.textContent.includes('Recent log')).click()); await guard.waitForFunction(() => { const p = document.querySelector('pre.logview'); return p && p.textContent.includes('signed in'); }, { timeout: 8000 }).catch(() => {});
+    check('the Share step has only a Troubleshoot link, not the log, support bundle and help links (they are in the Troubleshoot panel)', await guard.evaluate(() => { const t = document.getElementById('panel').innerText; return /Something not working\? Troubleshoot/.test(t) && !/Recent log|Download a support bundle|Troubleshooting help/.test(t); }));
+    await click(guard, 'Troubleshoot'); await guard.waitForSelector('dialog[open] ul.checks li'); await sleep(300);
+    await guard.evaluate(() => [...document.querySelectorAll('dialog[open] button')].find((x) => x.textContent.includes('Open the full log')).click()); await guard.waitForFunction(() => { const p = document.querySelector('pre.logview'); return p && p.textContent.includes('signed in'); }, { timeout: 8000 }).catch(() => {});
     check('the recent log can be read in Setup', await guard.evaluate(() => /INFO .*signed in/.test(document.querySelector('pre.logview').textContent)));
     await guard.select('dialog select[aria-label="Show"]', 'warn'); await sleep(600);
     check('and narrowed to problems', await guard.evaluate(() => { const t = document.querySelector('pre.logview').textContent; return /WARN/.test(t) && !/INFO/.test(t); }));

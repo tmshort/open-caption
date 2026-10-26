@@ -40,8 +40,8 @@ Se non riesci proprio ad accedere, entrambe le password sono in `config.yaml`, n
 
 ## Guardare il registro
 
-**Condividi → Registro recente…** mostra cosa il programma ha registrato di recente. Scegli *Solo problemi* per vedere avvisi ed errori, come accessi rifiutati o un nome già usato sulla rete. La stessa finestra imposta quanto dettaglio viene registrato (**Livello di dettaglio del registro**); *Debug* aggiunge ogni richiesta, il che aiuta quando succede qualcosa di strano. Le password non vengono mai scritte nel registro.
+**Risoluzione problemi → Apri il registro completo…** mostra cosa il programma ha registrato di recente. Scegli *Solo problemi* per vedere avvisi ed errori, come accessi rifiutati o un nome già usato sulla rete. La stessa finestra imposta quanto dettaglio viene registrato (**Livello di dettaglio del registro**); *Debug* aggiunge ogni richiesta, il che aiuta quando succede qualcosa di strano. Le password non vengono mai scritte nel registro.
 
 ## Chiedere aiuto
 
-Scarica il **pacchetto di supporto** dal fondo del passo Condividi. Contiene le impostazioni (senza password), le righe recenti del registro e informazioni di base su questo computer, ed è facile da inviare a chi mantiene il programma.
+Scarica il **pacchetto di supporto** con il pulsante **Risoluzione problemi** in alto nella configurazione. Contiene le impostazioni (senza password), le righe recenti del registro e informazioni di base su questo computer, ed è facile da inviare a chi mantiene il programma.

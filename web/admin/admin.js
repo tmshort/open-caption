@@ -1227,7 +1227,7 @@
         h('p', { class: 'hint' }, __('Audience devices must be on the same WiFi as this computer. Devices connected right now: '), h('b', { id: 'audcount' }, String(A.audience))),
         reportLink,
         h('p', { class: 'hint' }, __('Two networks, or the wrong address? '), h('a', { href: '#', onclick: (e) => { e.preventDefault(); openSettings('net'); } }, __('Choose which network interfaces are used')))),
-      h('p', { class: 'hint' }, __('Something not working? '), h('a', { href: '#', onclick: (e) => { e.preventDefault(); showTroubleshoot(); } }, __('Troubleshoot')), ' · ', h('a', { href: '#', onclick: (e) => { e.preventDefault(); openHelp('admin-troubleshooting'); } }, __('Troubleshooting help')), ' · ', h('a', { href: '/api/admin/support-bundle', download: 'support-bundle.zip' }, __('Download a support bundle')), ' · ', h('a', { href: '#', onclick: (e) => { e.preventDefault(); showLog(); } }, __('Recent log…'))));
+      h('p', { class: 'hint' }, __('Something not working? '), h('a', { href: '#', onclick: (e) => { e.preventDefault(); showTroubleshoot(); } }, __('Troubleshoot'))));
   }
   // ---- step 7: report (REQ-070) ----
   // How many devices used the audience page while the show was on the air: the same report as the stand-alone page, drawn by
