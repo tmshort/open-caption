@@ -409,6 +409,21 @@ async function main() {
       }
       await en.bringToFront();
     }
+    // [pace: 2s]: the Run page shows the hint on the line and, once it is sent, counts down to when the next press is due
+    {
+      const pid2 = (await api(op, 'POST', '/api/admin/shows', { name: 'Pace test' })).body.id;
+      await api(op, 'PUT', `/api/admin/shows/${pid2}/showfile`, { text: '[pace: 2s]\nFirst\nSecond\n' });
+      await api(op, 'POST', `/api/admin/shows/${pid2}/activate`, { force: true, start: true }); await sleep(T(900));
+      await op.bringToFront(); // a background tab is throttled, and the countdown is a timer
+      check('the Run page shows the pace hint on its line', await op.evaluate(() => [...document.querySelectorAll('#list .cue .chip')].some((c) => /about 2 s/.test(c.textContent))));
+      await nextN(1);
+      const due = (re) => op.waitForFunction((s) => new RegExp(s).test(document.getElementById('lastsent').textContent), { timeout: T(6000) }, re).then(() => true, () => false);
+      check('once that line is sent the status strip counts down to when the next press is due', await due('Next is due in \\d'));
+      check('and says so, in yellow, when it is due', (await due('Next is due$')) && await op.evaluate(() => document.getElementById('lastsent').classList.contains('due')));
+      await nextN(1); await sleep(T(600));
+      check('a line without a hint shows no countdown', await op.evaluate(() => !/Next is due/.test(document.getElementById('lastsent').textContent)));
+      await en.bringToFront();
+    }
     const tid = (await api(op, 'POST', '/api/admin/shows', { name: 'Timer test' })).body.id;
     await api(op, 'PUT', `/api/admin/shows/${tid}/showfile`, { text: '[loop: timer 15 minutes]\n**INTERMISSION**\nBack in {timer}\n[/loop]\nWelcome back' });
     await api(op, 'POST', `/api/admin/shows/${tid}/activate`, { force: true, start: true });

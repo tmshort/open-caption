@@ -128,6 +128,7 @@ Gently down the stream
 - `<!-- così -->` è un **commento**. Nessuno lo vede, e può occupare più righe.
 - `[note: testo]` è un promemoria mostrato **solo all'operatore**, per esempio `[note: hold for applause]`.
 - `[section: Act 2, Scene 1]` aggiunge un segnalibro nell'elenco dell'operatore. Note e sezioni non consumano mai una pressione della barra spaziatrice.
+- `[pace: 8s]` dice quanto la riga successiva resta di solito sullo schermo, come promemoria **solo per l'operatore**. La pagina di conduzione lo mostra accanto a quella riga (`⏱ about 8 s`) e, una volta inviata la riga, fa il conto alla rovescia fino a quando è dovuta la pressione successiva, diventando gialla quando lo è. Non invia mai nulla da sola. Il tempo è superiore a 0 secondi. Appartiene alla prossima riga che l'operatore invia (sezioni e note vengono saltate) e non può stare dentro un ciclo né dentro un blocco `[together]`.
 - Una riga che inizia con `#` e uno spazio è un **titolo** e funziona come `[section: …]`: `# Act 2` (o `## Scene 1`, con fino a sei `#`) aggiunge un segnalibro nell'elenco dell'operatore e non viene mai mostrata al pubblico. Un `#` senza spazio dopo (un hashtag, per esempio) viene ignorato, con una nota; per iniziare un sottotitolo con `#`, scrivi `\#`. I titoli non possono stare dentro un ciclo.
 
 ```showfile
@@ -153,6 +154,7 @@ Una riga tra parentesi quadre è un comando. I nomi non distinguono maiuscole e 
 | `[song: title]` … `[/song]` | Una canzone: ogni riga all'interno è mostrata come testo cantato. Vedi [Canzoni e musica](admin-musicals.md) |
 | `[section: name]` | Un segnalibro per l'operatore |
 | `[note: text]` | Una nota per l'operatore |
+| `[pace: 8s]` | Un promemoria di ritmo per l'operatore (vedi sopra) |
 | `[language: es]` | Segna un file dello spettacolo tradotto. Vedi [Lingue](admin-languages.md) |
 | `[settings]` … `[/settings]` | Il titolo e l'aspetto dello spettacolo. Vedi *Impostazioni dello spettacolo* sopra |
 

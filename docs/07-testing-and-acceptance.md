@@ -32,6 +32,7 @@
 - Escaping: `<script>`, `onerror=`, `javascript:` links, `<img src=http…>` in show file text are rendered as literal text; Markdown links are not clickable; image refs only resolve to uploaded assets.
 - Engine: advance past end (no-op + signal "end of show file"); back at start; jump forward/backward equals sequential; `clear` mid-history then undo restores scrollback; fullscreen followed by caption dismisses fullscreen; restart restores cursor and scrollback.
 - Text size: Setup's Look slider covers 50–300 percent; at 300 percent the audience page on a 320×568 and a 568×320 screen wraps every line (a very long word, voices at once) and never scrolls sideways (browser checks).
+- Pace hints: `[pace: 8s]` goes to the next line the operator sends (sections and notes passed over), a later one replaces an earlier, one with no line after it or no usable time is a warning, none inside a loop or `[together]`, no change to the structure comparison (unit tests); a browser check shows the chip on the line and the "Next is due in … / Next is due" countdown after it is sent.
 - Concurrency: two operator sessions advancing with the same `rev` → exactly one NEXT applied, other gets 409; a NEXT sent while a loop ticks (seq changed, rev unchanged) succeeds.
 - Rehearsal: commands on `/api/admin/rehearsal/*` never reach audience clients or change `live.json`, even while a real show is live.
 - Security: first-run passwords never appear in any HTTP response; beyond `audience.max_clients`, `/events` returns 503.

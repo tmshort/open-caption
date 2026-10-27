@@ -12,7 +12,7 @@ The full list. The [README](../README.md) has the short version; how to use each
 ## For the operator
 - One key does it all: Space sends the next line, Backspace undoes it, S skips a line without sending it, B blanks, C clears; jump to any line or section, search, and send a one-off announcement.
 - A loaded show waits in **standby**: the audience sees your venue's own screen (a logo and a message you set once) until the operator presses START; **Go to standby** returns to it at any time without losing the place.
-- Operator notes and bookmarks the audience never sees; loops for pre-show and intermission; songs, lyrics and two voices shown at once for musicals.
+- Operator notes, bookmarks and pacing hints (how long a line usually stays up, with a countdown to the next press) the audience never sees; loops for pre-show and intermission; songs, lyrics and two voices shown at once for musicals.
 - Survives a restart: the position, sign-ins and last few undo steps are kept.
 - An **audience report** when the show ends: how many different devices used the audience page, however long each stayed, with the busiest moment, the languages and a row for each device; printable and downloadable as CSV.
 

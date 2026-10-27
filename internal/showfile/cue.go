@@ -64,6 +64,7 @@ type Cue struct {
 	Period  float64 `json:"period,omitempty"` // loop default seconds; 0 = config default
 	Timer   *Timer  `json:"timer,omitempty"`  // loop: a countdown for {timer} (see timer.go)
 	Name    string  `json:"name,omitempty"`   // loop: what the author calls it (name Intermission); used in the audience report
+	Hint    float64 `json:"hint,omitempty"`   // seconds the line usually stays up, from [pace: 8s] before it: a reminder for the operator only
 }
 
 // MaxLoopNameLength is the longest name a loop can have, in characters.

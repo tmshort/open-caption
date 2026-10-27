@@ -214,7 +214,7 @@ the server's retained buffer, the server sends a `snapshot`. Clients treat a
   "controller": "session-id|null",
   "audience": 83,
   "loop": { "running": true, "cue": 3, "item": 1, "deadline": 1760650800000 },   // or null; deadline only when the loop has a timer
-  "cues": [ /* cue window: kind, text, line, sent, image name only for image cues */ ]
+  "cues": [ /* cue window: kind, text, line, sent, hint (seconds, from [pace]), image name only for image cues */ ]
 }
 ```
 

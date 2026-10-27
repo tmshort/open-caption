@@ -39,6 +39,7 @@ button small { display: block; font-size: .65em; opacity: .9; font-weight: 400; 
 .cue.k-image, .cue.k-fullscreen, .cue.k-loop, .cue.k-clear, .cue.k-blank { color: #9ad; }
 .cue.sent.k-section, .cue.sent.k-note { opacity: .55; }
 .chip { display: inline-block; padding: .05rem .5rem; border-radius: 6px; background: #22303f; color: #a9d1ff; font-size: .85em; font-weight: 600; margin-right: .4rem; }
+.chip.pace { margin-left: .6rem; }
 .items { margin: .3rem 0 0 1rem; padding: 0; list-style: none; font-size: .8em; color: var(--dim); }
 
 #jumpbar { display: flex; gap: .7rem; align-items: center; padding: .6rem .9rem; background: #3a3000; flex-wrap: wrap; }
@@ -52,7 +53,8 @@ footer { display: flex; gap: .6rem; padding: .6rem .9rem calc(.6rem + env(safe-a
 #banner.announce { background: #1d3b6f; color: #fff; }
 #progress { color: var(--fg); font-variant-numeric: tabular-nums; }
 #lastsent { margin-left: auto; }
-#lastsent.stale { color: var(--mark); }
+#lastsent.stale, #lastsent.due { color: var(--mark); }
+#lastsent.due { font-weight: 600; }
 footer select { max-width: 12rem; }
 /* Fixed widths: the buttons in the footer stay where they are whatever their label says (Blank / Unblank) or whether a loop is playing */
 footer button { flex: none; }

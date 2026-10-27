@@ -151,11 +151,21 @@
   });
 
   // "Last sent 12 s ago": a quick check that the show and this page are still in step.
+  const span = (s) => (s < 60 ? s + ' s' : Math.floor(s / 60) + ' min ' + (s % 60) + ' s');
   function renderLastSent() {
-    const el = $('lastsent'), at = S.payload && S.payload.op && S.payload.op.lastAt;
-    if (!at) { el.textContent = ''; return; }
+    const el = $('lastsent'), o = S.payload && S.payload.op, at = o && o.lastAt;
+    if (!at) { el.textContent = ''; el.classList.remove('due'); return; }
     const s = Math.max(0, Math.round((Date.now() - at) / 1000));
-    el.textContent = __('Last sent {when} ago', { when: s < 60 ? s + ' s' : Math.floor(s / 60) + ' min ' + (s % 60) + ' s' });
+    let text = __('Last sent {when} ago', { when: span(s) }), due = false;
+    // A [pace] in the show file says how long the line on screen usually stays up: count down to when the next press is due.
+    const c = S.cues[currentIndex()];
+    if (c && c.hint && !o.standby) {
+      const left = Math.round(c.hint - (Date.now() - at) / 1000);
+      due = left <= 0;
+      text += ' · ' + (due ? __('Next is due') : __('Next is due in {when}', { when: span(left) }));
+    }
+    el.textContent = text;
+    el.classList.toggle('due', due);
     el.classList.toggle('stale', s >= 120);
   }
   setInterval(renderLastSent, 1000);
@@ -182,6 +192,7 @@
       const gut = document.createElement('span'); gut.className = 'gut';
       const body = document.createElement('div'); body.className = 'body';
       fillBody(body, c);
+      if (c.hint) body.append(chip('⏱ ' + __('about {when}', { when: span(Math.round(c.hint)) }))); // from [pace] in the show file
       const ln = document.createElement('span'); ln.className = 'ln'; ln.textContent = c.line ? String(c.line) : '';
       li.append(gut, body, ln);
       ol.appendChild(li);

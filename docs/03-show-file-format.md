@@ -109,6 +109,7 @@ and a warning says so).
 | `[settings]` … `[/settings]` | Show-wide settings (see *Settings*); never a cue |
 | `[section: name]` or `# name` | Operator-only marker/bookmark; no audience effect. A Markdown heading (`#` to `######` and a space) is the same cue; a closing run of `#` is dropped |
 | `[note: text]` | Operator-only note shown inline in the operator view (e.g. "wait for door slam") |
+| `[pace: 8s]` | A pacing hint for the operator: the next line usually stays up about this long (see *Pace hints*) |
 | `[language: es]` or `[language: es \| Español]` | First line of a translated show file, with an optional display name for the picker; see *Languages* |
 
 Names are forgiving: `[Clear]`, `[CLEAR SCREEN]`, `[clear screen]` all work.
@@ -183,6 +184,16 @@ Back in {timer}
 - `name <text>` (a colon after the word is allowed) is one of the loop's options, which share the brackets, separated by commas, in any order (`[loop: 10s, name Pre-show]`). The text is free, at most 40 characters (longer is cut, with a warning), and has no commas. The audience never sees it. An empty name (`[loop: name]`) is a warning and the loop has no name.
 - Only the name in the main language's show file is used. A translation may name its loops differently or not at all; `CompareStructure` ignores names.
 - Without a name the report guesses from the loop's place among the lines the audience sees (captions, images, fullscreen messages): before the first is the *pre-show*, after the last the *post-show*, between them an *intermission*.
+
+### Pace hints
+
+`[pace: 8s]` (a time of more than 0 and at most 3600 seconds, written like a loop's item time) tells the operator how long the next line usually stays on screen. It is a reminder and **never sends anything**; the audience cannot see it.
+
+- It belongs to the **next line the operator sends**: sections and notes between the two are passed over, and a second `[pace]` before the same line replaces the first (with a warning). A `[pace]` with no such line after it is ignored with a warning, as is one without a usable time.
+- It cannot go inside a loop (loops have their own item times) or a `[together]` block; it may precede a `[song]`, whose first lyric then carries it.
+- It adds no cue, so a translation does not need it: the structure comparison is unaffected, and only the main language's `[pace]` lines are used.
+- The cue list the operator page receives carries it as `hint` (seconds). The Run page shows `⏱ about 8 s` on that line and, while that line is the one on screen, adds `· Next is due in 6 s` to the status strip, counting from the operator's last action, then a yellow `· Next is due`. Nothing is shown while the show is in standby.
+- Diagnostics: warning `Line 9: [pace] needs a time of more than 0 seconds, e.g. [pace: 8s]. The line was skipped.`; warning `Line 9: [pace] has no line after it to apply to. It was ignored.`; warning `Line 9: Another [pace] already applies to this line; this one replaced it.`
 
 ### Loop timers (REQ-065)
 

@@ -52,6 +52,7 @@ type CueView struct {
 	Label   string     `json:"label,omitempty"`
 	Period  float64    `json:"period,omitempty"`
 	Items   []ItemView `json:"items,omitempty"`
+	Hint    float64    `json:"hint,omitempty"` // seconds the line usually stays up ([pace]); the Run page counts down to when the next press is due
 }
 
 func itemView(it showfile.Item) ItemView {
@@ -73,7 +74,7 @@ func itemView(it showfile.Item) ItemView {
 func cueViews(cues []showfile.Cue) []CueView {
 	out := make([]CueView, len(cues))
 	for i, c := range cues {
-		v := CueView{Index: i, Kind: string(c.Kind), Line: c.Line, Speaker: c.Speaker, Text: c.Text, Stage: c.Stage, Sung: c.Sung, Period: c.Period}
+		v := CueView{Index: i, Kind: string(c.Kind), Line: c.Line, Speaker: c.Speaker, Text: c.Text, Stage: c.Stage, Sung: c.Sung, Period: c.Period, Hint: c.Hint}
 		if c.Item != nil {
 			v.Label = itemView(*c.Item).Label
 		}

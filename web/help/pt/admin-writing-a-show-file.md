@@ -128,6 +128,7 @@ Gently down the stream
 - `<!-- assim -->` é um **comentário**. Ninguém o vê, e ele pode ocupar várias linhas.
 - `[note: texto]` é um lembrete mostrado **só ao operador**, por exemplo `[note: hold for applause]`.
 - `[section: Act 2, Scene 1]` acrescenta um marcador na lista do operador. Notas e seções nunca gastam um toque na barra de espaço.
+- `[pace: 8s]` diz quanto tempo a linha seguinte costuma ficar na tela, como lembrete **só para o operador**. A página de controle mostra isso ao lado dessa linha (`⏱ about 8 s`) e, depois que a linha é enviada, faz a contagem regressiva até o momento de o próximo toque ser devido, ficando amarela quando é. Nunca envia nada sozinha. O tempo é maior que 0 segundo. Pertence à próxima linha que o operador envia (seções e notas são puladas) e não pode ficar dentro de um laço nem de um bloco `[together]`.
 - Uma linha que começa com `#` e um espaço é um **título** e funciona como `[section: …]`: `# Act 2` (ou `## Scene 1`, com até seis `#`) acrescenta um marcador na lista do operador e nunca é mostrada ao público. Um `#` sem espaço depois (uma hashtag, por exemplo) é ignorado, com uma nota; para começar uma legenda com `#`, escreva `\#`. Os títulos não podem ficar dentro de um laço.
 
 ```showfile
@@ -153,6 +154,7 @@ Uma linha entre colchetes é um comando. Os nomes não diferenciam maiúsculas d
 | `[song: title]` … `[/song]` | Uma música: toda linha dentro é mostrada como letra cantada. Veja [Músicas e trilha](admin-musicals.md) |
 | `[section: name]` | Um marcador para o operador |
 | `[note: text]` | Uma nota para o operador |
+| `[pace: 8s]` | Um lembrete de ritmo para o operador (veja acima) |
 | `[language: es]` | Marca um arquivo do espetáculo traduzido. Veja [Idiomas](admin-languages.md) |
 | `[settings]` … `[/settings]` | O título e a aparência do espetáculo. Veja *Configurações do espetáculo* acima |
 

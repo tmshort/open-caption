@@ -57,6 +57,14 @@ type parser struct {
 	labels     []string         // the speaker labels in order of first appearance
 	labelLines map[string][]int // the lines each label was used on
 	notCaps    []labelAt        // lines that start like "Bob: text", checked against speakers when the file has been read
+
+	paces []pace // the [pace] lines, given to the line after each when the file has been read
+}
+
+// pace is a [pace: 8s] line: how long the next line usually stays up. at is how many cues came before it.
+type pace struct {
+	line, at int
+	secs     float64
 }
 
 type labelAt struct {
@@ -93,6 +101,7 @@ func Parse(src string, opts Options) Result {
 		p.closeTogether()
 	}
 
+	p.applyPaces()
 	for i := range res.Cues {
 		res.Cues[i].Index = i
 	}
@@ -100,6 +109,27 @@ func Parse(src string, opts Options) Result {
 	res.Speakers = SpeakersOf(res.Cues)
 	res.Characters = charactersOf(p.labels, p.labelLines)
 	return res
+}
+
+// applyPaces gives each [pace] time to the first line after it that the operator sends (sections and notes are passed
+// over), so the Run page can say when the next press is due.
+func (p *parser) applyPaces() {
+	cues := p.res.Cues
+	for _, pc := range p.paces {
+		i := pc.at
+		for i < len(cues) && (cues[i].Kind == KindSection || cues[i].Kind == KindNote) {
+			i++
+		}
+		switch {
+		case i >= len(cues):
+			p.diag(pc.line, SevWarning, "[pace] has no line after it to apply to. It was ignored.")
+		default:
+			if cues[i].Hint > 0 {
+				p.diag(pc.line, SevWarning, "Another [pace] already applies to this line; this one replaced it.")
+			}
+			cues[i].Hint = pc.secs
+		}
+	}
 }
 
 func (p *parser) diag(line int, sev, format string, a ...any) {
@@ -429,6 +459,16 @@ func (p *parser) directive(raw string, lineNo int) {
 			Item: &Item{Kind: "text", HTML: h, Text: t}})
 	case "loop":
 		p.loop(lineNo, args)
+	case "pace":
+		var secs float64
+		if m := durationRe.FindStringSubmatch(args); m != nil {
+			secs = p.seconds(lineNo, m[1])
+		}
+		if secs <= 0 {
+			p.diag(lineNo, SevWarning, "[pace] needs a time of more than 0 seconds, e.g. [pace: 8s]. The line was skipped.")
+			return
+		}
+		p.paces = append(p.paces, pace{line: lineNo, at: len(p.res.Cues), secs: secs})
 	case "song":
 		if p.song {
 			p.diag(lineNo, SevWarning, "[song] can't go inside another song. Close the first one with [/song].")

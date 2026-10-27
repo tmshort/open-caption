@@ -723,3 +723,52 @@ func TestTimeOutsideLoopIsWarnedAbout(t *testing.T) {
 		t.Errorf("warned on lines %v, want [1 2]", lines)
 	}
 }
+
+// [pace: 8s] says how long the next line usually stays up; sections and notes in between are passed over.
+func TestPaceGivesTheNextSendableLineItsTime(t *testing.T) {
+	src := "[pace: 8s]\nA\nB\n[pace: 2.5s]\n[section: Act 2]\n[note: hold]\n[image: x.png]\n[pace: 12s]\n[song: S]\nla\n[/song]\n[pace: 4s]\n[clear]\n"
+	r := Parse(src, Options{})
+	got := map[string]float64{}
+	for _, c := range r.Cues {
+		got[string(c.Kind)+":"+c.Text] = c.Hint
+	}
+	for k, want := range map[string]float64{"caption:A": 8, "caption:B": 0, "image:x.png": 2.5, "section:Act 2": 0, "caption:♪ la ♪": 12, "clear:": 4} {
+		if got[k] != want {
+			t.Errorf("%s: hint %v, want %v (all: %v)", k, got[k], want, got)
+		}
+	}
+	for _, d := range r.Diagnostics {
+		if d.Severity != SevInfo {
+			t.Errorf("unexpected %s: %s", d.Severity, d.Message)
+		}
+	}
+}
+
+func TestPaceProblemsAreReported(t *testing.T) {
+	for in, want := range map[string]string{
+		"[pace]\nA\n":                       "needs a time of more than 0 seconds",
+		"[pace: soon]\nA\n":                 "needs a time of more than 0 seconds",
+		"[pace: 0s]\nA\n":                   "needs a time of more than 0 seconds",
+		"A\n[pace: 5s]\n":                   "no line after it",
+		"[pace: 5s]\n[pace: 6s]\nA\n":       "already applies",
+		"[loop]\n[pace: 5s]\nHi\n[/loop]\n": "can't go inside a loop",
+		"[together]\nALICE: a\n[pace: 5s]\nBOB: b\n[/together]\n": "can't go inside [together]",
+	} {
+		if r := Parse(in, Options{}); !hasDiag(r, SevWarning, want) {
+			t.Errorf("%q: want a warning containing %q, got %+v", in, want, r.Diagnostics)
+		}
+	}
+	r := Parse("[pace: 5s]\n[pace: 6s]\nA\n", Options{})
+	if r.Cues[0].Hint != 6 {
+		t.Errorf("the later [pace] wins: %v", r.Cues[0].Hint)
+	}
+}
+
+// A translation may carry the [pace] lines too: they add no cue, so the structure still matches.
+func TestPaceDoesNotChangeTheStructure(t *testing.T) {
+	a := Parse("[pace: 5s]\nHello\nBye\n", Options{})
+	b := Parse("Hola\nAdiós\n", Options{})
+	if d := CompareStructure(a.Cues, b.Cues, "English"); len(d) != 0 {
+		t.Errorf("%+v", d)
+	}
+}
