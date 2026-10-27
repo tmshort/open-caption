@@ -193,7 +193,8 @@ Back in {timer}
 - It cannot go inside a loop (loops have their own item times) or a `[together]` block; it may precede a `[song]`, whose first lyric then carries it.
 - It adds no cue, so a translation does not need it: the structure comparison is unaffected, and only the main language's `[pace]` lines are used.
 - The cue list the operator page receives carries it as `hint` (seconds). The Run page shows `⏱ about 8 s` on that line and, while that line is the one on screen, adds `· Next is due in 6 s` to the status strip, counting from the operator's last action, then a yellow `· Next is due`. Nothing is shown while the show is in standby.
-- Diagnostics: warning `Line 9: [pace] needs a time of more than 0 seconds, e.g. [pace: 8s]. The line was skipped.`; warning `Line 9: [pace] has no line after it to apply to. It was ignored.`; warning `Line 9: Another [pace] already applies to this line; this one replaced it.`
+- A **note** (info, not a warning: a long pause is sometimes meant) is added when the time is much longer than the line takes to read: more than 10 times the reading time (about three words a second, at least 2 s) **and** more than 30 s. Only captions are judged (an image, fullscreen text, `[clear]` or a loop has nothing to judge it by).
+- Diagnostics: warning `Line 9: [pace] needs a time of more than 0 seconds, e.g. [pace: 8s]. The line was skipped.`; warning `Line 9: [pace] has no line after it to apply to. It was ignored.`; warning `Line 9: Another [pace] already applies to this line; this one replaced it.`; info `Line 9: [pace: 45s] is much longer than this line suggests (about 2 s to read). Check the time.`
 
 ### Loop timers (REQ-065)
 

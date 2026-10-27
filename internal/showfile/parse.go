@@ -6,6 +6,7 @@ package showfile
 import (
 	"errors"
 	"fmt"
+	"math"
 	"regexp"
 	"strconv"
 	"strings"
@@ -128,8 +129,31 @@ func (p *parser) applyPaces() {
 				p.diag(pc.line, SevWarning, "Another [pace] already applies to this line; this one replaced it.")
 			}
 			cues[i].Hint = pc.secs
+			if est := readSeconds(cues[i]); est > 0 && pc.secs > math.Max(paceNoteMin, paceNoteTimes*float64(est)) {
+				p.diag(pc.line, SevInfo, "[pace: %ss] is much longer than this line suggests (about %d s to read). Check the time.", strconv.FormatFloat(pc.secs, 'f', -1, 64), est)
+			}
 		}
 	}
+}
+
+// A [pace] this many times the time the line takes to read, and at least paceNoteMin seconds, gets a note: it is probably a
+// typo, though a long pause after a line is sometimes meant.
+const (
+	paceNoteMin   = 30
+	paceNoteTimes = 10
+)
+
+// readSeconds is roughly how long a caption takes to read (three words a second, at least two seconds); 0 for a cue that
+// is not a caption, whose time there is no way to judge.
+func readSeconds(c Cue) int {
+	if c.Kind != KindCaption {
+		return 0
+	}
+	text := c.Text
+	for _, pt := range c.Parts {
+		text += " " + pt.Text
+	}
+	return max(2, (len(strings.Fields(text))+2)/3)
 }
 
 func (p *parser) diag(line int, sev, format string, a ...any) {

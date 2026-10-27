@@ -346,6 +346,7 @@ OCI18n.add("de", {
  "[pace] needs a time of more than 0 seconds, e.g. [pace: 8s]. The line was skipped.": "[pace] braucht eine Zeit von mehr als 0 Sekunden, z. B. [pace: 8s]. Die Zeile wurde übersprungen.",
  "[pace] has no line after it to apply to. It was ignored.": "Nach [pace] folgt keine Zeile, für die es gelten könnte. Es wurde ignoriert.",
  "Another [pace] already applies to this line; this one replaced it.": "Ein anderes [pace] gilt bereits für diese Zeile; dieses hat es ersetzt.",
+ "[pace: {0}s] is much longer than this line suggests (about {1} s to read). Check the time.": "[pace: {0}s] ist viel länger, als diese Zeile nahelegt (etwa {1} s Lesezeit). Prüfen Sie die Zeit.",
  "CLEAR SCREEN": "BILDSCHIRM LEEREN",
  "BLANK SCREEN": "BILDSCHIRM SCHWARZ",
  "IMAGE: {name}": "BILD: {name}",

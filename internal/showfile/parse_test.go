@@ -772,3 +772,37 @@ func TestPaceDoesNotChangeTheStructure(t *testing.T) {
 		t.Errorf("%+v", d)
 	}
 }
+
+// A [pace] far longer than the line takes to read gets a note (not a warning: a long pause is sometimes meant); a
+// sensible one, one on a line that is not a caption, and a long one on a long line get none.
+func TestPaceMuchLongerThanTheLineGetsANote(t *testing.T) {
+	long := strings.Repeat("word ", 90) // 90 words: about 30 s to read
+	for _, c := range []struct {
+		src  string
+		note bool
+	}{
+		{"[pace: 45s]\nHello there.\n", true},
+		{"[pace: 12s]\nHello there.\n", false},
+		{"[pace: 30s]\nHello there.\n", false}, // at the limit: not over it
+		{"[pace: 31s]\nHello there.\n", true},
+		{"[pace: 45s]\n[clear]\n", false}, // nothing to judge it by
+		{"[pace: 90s]\n" + long + "\n", false},
+		{"[pace: 600s]\n" + long + "\n", true},
+		{"[pace: 45s]\n[together]\nALICE: la la\nBOB: la la\n[/together]\n", true},
+	} {
+		r := Parse(c.src, Options{})
+		got := hasDiag(r, SevInfo, "much longer than this line suggests")
+		if got != c.note {
+			t.Errorf("%.40q: note %v, want %v (%+v)", c.src, got, c.note, r.Diagnostics)
+		}
+		for _, d := range r.Diagnostics {
+			if d.Severity == SevWarning || d.Severity == SevError {
+				t.Errorf("%.40q: unexpected %s %s", c.src, d.Severity, d.Message)
+			}
+		}
+	}
+	r := Parse("[pace: 45s]\nHello there.\n", Options{})
+	if !hasDiag(r, SevInfo, "[pace: 45s] is much longer than this line suggests (about 2 s to read)") {
+		t.Errorf("%+v", r.Diagnostics)
+	}
+}

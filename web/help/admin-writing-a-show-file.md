@@ -128,7 +128,7 @@ Gently down the stream
 - `<!-- like this -->` is a **comment**. Nobody sees it, and it may span several lines.
 - `[note: text]` is a reminder shown to the **operator only**, for example `[note: hold for applause]`.
 - `[section: Act 2, Scene 1]` adds a bookmark in the operator's list. Notes and sections never use up a press of the spacebar.
-- `[pace: 8s]` says how long the next line usually stays on screen, as a reminder for the **operator only**. The Run page shows it beside that line (`⏱ about 8 s`), and once the line is sent it counts down to when the next press is due, turning yellow when it is. It never sends anything by itself. The time is more than 0 seconds. It belongs to the next line the operator sends (sections and notes are passed over) and cannot go inside a loop or a `[together]` block.
+- `[pace: 8s]` says how long the next line usually stays on screen, as a reminder for the **operator only**. The Run page shows it beside that line (`⏱ about 8 s`), and once the line is sent it counts down to when the next press is due, turning yellow when it is. It never sends anything by itself. The time is more than 0 seconds. It belongs to the next line the operator sends (sections and notes are passed over) and cannot go inside a loop or a `[together]` block. If the time is far longer than the line takes to read, the problems list adds a note, in case it is a typo.
 - A line that starts with `#` and a space is a **heading** and works like `[section: …]`: `# Act 2` (or `## Scene 1`, with up to six `#`) adds a bookmark in the operator's list and is never shown to the audience. A `#` with no space after it (a hashtag, say) is ignored, with a note; to start a caption with `#`, write `\#`. Headings cannot go inside a loop.
 
 ```showfile
