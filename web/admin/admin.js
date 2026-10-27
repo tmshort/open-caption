@@ -274,7 +274,8 @@
             ? h('div', {}, h('p', { class: 'hint' }, __('Leave a box empty to keep that password. At least 6 characters. People signed in with a changed password are signed out; you stay signed in.')),
                 h('label', { class: 'field' }, h('span', {}, __('New admin password')), adminPw),
                 h('label', { class: 'field' }, h('span', {}, __('New operator password')), opPw),
-                h('div', { class: 'row' }, changePw, reveal), shown)
+                h('div', { class: 'row' }, changePw, s.operatorPasswordHashed ? null : reveal),
+                s.operatorPasswordHashed ? h('p', { class: 'hint' }, __('The operator password is stored as a digest, so it cannot be shown. Set a new one to replace it.')) : shown)
             : h('p', { class: 'hint' }, __('This copy was started without a settings file, so passwords cannot be changed here.'))),
       ]],
       ['cert', 'Certificate', [sec('Certificate', certBox)]],

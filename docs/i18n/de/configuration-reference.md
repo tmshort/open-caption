@@ -5,7 +5,7 @@
 ## Die Datei
 
 - **Wo sie liegt.** `<Datenordner>/config.yaml`; der Datenordner ist `data_dir`, `--data` oder standardmäßig `<Ihr Benutzer-Konfigurationsordner>/open-caption` (unter macOS `~/Library/Application Support/open-caption`, unter Windows `%AppData%\open-caption`, unter Linux `~/.config/open-caption`). Die ersten Zeilen, die das Programm ausgibt, nennen die verwendete Datei. `--config` benennt eine andere Datei.
-- **Erster Start.** Gibt es keine Datei, schreibt das Programm eine mit zufälligen **Administrator-** und **Bediener**-Passwörtern und gibt sie einmal in der Konsole aus. Die Datei hat den Modus 0600 (privat für Ihr Konto), und die Passwörter stehen im **Klartext**; halten Sie sie also privat.
+- **Erster Start.** Gibt es keine Datei, schreibt das Programm eine mit zufälligen **Administrator-** und **Bediener**-Passwörtern und gibt sie einmal in der Konsole aus. Die Datei hat den Modus 0600 (privat für Ihr Konto), und die Passwörter stehen im **Klartext** (außer Sie speichern einen Hash, siehe „Passwörter“ unten); halten Sie sie also privat.
 - **Sie brauchen nur die Schlüssel, die Sie ändern.** Ein fehlender Schlüssel behält seinen Standardwert (die Tabellen unten). Die erzeugte Datei listet alles auf.
 - **Streng.** Ein falsch geschriebener Schlüssel, ein Wert der falschen Art oder außerhalb des Bereichs stoppt das Programm beim Start und listet **alle** Probleme auf, jedes mit dem Namen der Einstellung (zum Beispiel `audience.max_clients: 0 is not a client count: use 1 to 100000`). Es wird nichts geraten. Die einzige Ausnahme: In einer Datei mit einer neueren `config_version`, als das Programm kennt, werden unbekannte Schlüssel mit einer Warnung ignoriert.
 - **Die Einrichtung ändert einen Teil.** Wenn Sie in der Einrichtung die Passwörter, den `.local`-Namen, die Standby-Nachricht oder die Protokolldetails ändern, werden genau diese Schlüssel in der Datei neu geschrieben; Ihre Kommentare und alle anderen Einstellungen bleiben erhalten. Alles andere bearbeiten Sie von Hand und **starten dann das Programm neu**. (Eine erneuerte Zertifikatsdatei ist das Einzige, was ohne Neustart übernommen wird; siehe `https.cert_file`.)
@@ -31,7 +31,27 @@ Eine Option oder ihre Umgebungsvariable hat für diesen Lauf Vorrang vor der Dat
 | `--check-show FILE [TRANSLATION ...]` | | **Prüft eine Show-Datei** und gibt einen Bericht aus, wie ein „Lint“, dann Ende: kein Server, keine `config.yaml`. Siehe „Eine Show-Datei prüfen“ unten |
 | `--assets FOLDER` | | Der Bilderordner für `--check-show` (Standard: der Ordner `assets` neben der Show-Datei) |
 | `--strict` | | Mit `--check-show`: Auch Warnungen ergeben den Exit-Status 1 |
+| `--hash-password` | | Liest ein Passwort von der Standardeingabe und gibt es als `sha256:`-Hash für `admin_password` oder `operator_password` aus und beendet sich dann: kein Server, keine `config.yaml`. Siehe „Passwörter“ unten |
 | `--dev`, `--show-file` | | **Nur für Entwickler**: nicht authentifizierte Testzugänge auf diesem Computer, kein Standby; nie in einem Haus verwenden |
+
+## Passwörter
+
+`admin_password` und `operator_password` stehen standardmäßig im **Klartext**, deshalb ist die Datei privat für Ihr Konto. Um ein Passwort als **Hash** (eine Einwegprüfsumme, sodass eine Kopie von `config.yaml` das Passwort nicht verrät) in der Datei zu halten, schreiben Sie statt des Passworts den Hash hinein:
+
+| Geschrieben als | Bedeutet |
+|---|---|
+| `hunter22` | das Passwort selbst (ohne Präfix) |
+| `plain:hunter22` | das Passwort selbst, mit Präfix geschrieben; für ein Passwort, das mit `sha256:`, `sha512:`, `sha1:` oder `plain:` beginnt |
+| `sha256:5b11…77d6` | der SHA-256-Hash des Passworts, 64 Hexziffern (`sha512:` und `sha1:` gehen auch, aber `sha1:` ist schwach und das Programm warnt) |
+
+Erzeugen Sie den Hash mit dem Programm; das Passwort wird von der Standardeingabe gelesen, damit es nicht im Verlauf Ihrer Shell landet:
+
+```
+$ printf '%s' 'the password' | open-caption --hash-password
+sha256:5b11618c2e44027877d0cd0921ed166b9f176f50587fc91e7534dd2946db77d6
+```
+
+(`printf '%s' 'the password' | shasum -a 256` liefert unter macOS und Linux dieselben Ziffern; setzen Sie `sha256:` davor.) Zum Anmelden tippt man weiterhin das Passwort selbst. Aus einem Hash lässt sich das Passwort nicht zurückgewinnen: **Einstellungen → Sicherheit** in der Einrichtung kann ein als Hash gespeichertes Operator-Passwort daher nicht anzeigen, nur ersetzen, und das Programm kann es auch nicht erneut ausgeben: bewahren Sie es sicher auf. Ein in der Einrichtung geändertes Passwort wird in der Form des ersetzten gespeichert (ein Hash bleibt ein Hash, Klartext bleibt Klartext); ein Passwort, das Sie nicht geändert haben, wandelt das Programm nie um. Ein Wert, der mit `sha256:`, `sha512:` oder `sha1:` beginnt, aber kein Hash der richtigen Länge ist, stoppt das Programm beim Start und nennt die Einstellung.
 
 ## Eine Show-Datei prüfen
 
@@ -66,8 +86,8 @@ Standardwerte sind das, was Sie ohne den Schlüssel erhalten. „Einrichtung“ 
 | Schlüssel | Standard | Bedeutung |
 |---|---|---|
 | `config_version` | `1` | Vom Programm geschrieben. Eine höhere Nummer, als das Programm kennt, bedeutet, dass die Datei von einer neueren Version stammt |
-| `admin_password` | erzeugt | Das Passwort für die Einrichtung (`/admin`). Darf nicht leer sein (mindestens 6 Zeichen, wenn es in der Einrichtung geändert wird). *Einrichtung: Einstellungen → Sicherheit* |
-| `operator_password` | erzeugt | Das Passwort für die Bedienerseite (`/operator`); das Administratorpasswort funktioniert dort auch. Darf nicht leer sein. *Einrichtung: Einstellungen → Sicherheit* |
+| `admin_password` | erzeugt | Das Passwort für die Einrichtung (`/admin`). Klartext oder ein Hash wie `sha256:…` (siehe „Passwörter“ unten). Darf nicht leer sein (mindestens 6 Zeichen, wenn es in der Einrichtung geändert wird). *Einrichtung: Einstellungen → Sicherheit* |
+| `operator_password` | erzeugt | Das Passwort für die Bedienerseite (`/operator`); das Administratorpasswort funktioniert dort auch. Klartext oder ein Hash wie bei `admin_password`; ein Hash lässt sich in der Einrichtung nicht anzeigen. Darf nicht leer sein. *Einrichtung: Einstellungen → Sicherheit* |
 | `data_dir` | leer | Der Datenordner. Leer bedeutet den oben genannten Standardordner. Darf keine Datei sein |
 
 ### `http`

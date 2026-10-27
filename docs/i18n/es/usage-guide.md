@@ -111,7 +111,7 @@ En orden de fiabilidad:
 ### Seguridad
 
 - La página del público solo puede leer. No puede cambiar el espectáculo ni llegar a las páginas de configuración y del operador.
-- Configuración y operador exigen cada una su propia contraseña (guardada en texto sin cifrar en `config.yaml`, que se crea legible solo para usted). Dé la contraseña de operador al operador, no la de administrador. Las contraseñas se pueden cambiar desde **Ajustes** en Configuración.
+- Configuración y operador exigen cada una su propia contraseña (guardada en texto sin cifrar en `config.yaml`, que se crea legible solo para usted; la referencia de configuración explica cómo guardar un resumen). Dé la contraseña de operador al operador, no la de administrador. Las contraseñas se pueden cambiar desde **Ajustes** en Configuración.
 - En el equipo que ejecuta el programa, Configuración y la página del operador se abren **sin contraseña** cuando la dirección empieza por `localhost`, `127.0.0.1` o `[::1]` (se confía en la persona que está en ese equipo como administrador). Los demás equipos, y cualquier petición retransmitida por un proxy, siguen entrando con contraseña. Ponga `access.local_auto_login: false` en `config.yaml` si otras personas pueden iniciar sesión en este equipo.
 - **Cualquiera que pueda llegar al servidor puede abrir las páginas de inicio de sesión de Configuración y del operador, y con `http://` sencillo las contraseñas viajan sin cifrar por la WiFi.** En una WiFi de invitados compartida eso significa que un espectador curioso podría capturar una contraseña y tomar el control de los subtítulos. Reduzca el riesgo, por este orden:
   1. **Limite qué equipos pueden abrirlas.** En `config.yaml`:

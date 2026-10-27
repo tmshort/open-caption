@@ -7,10 +7,10 @@ import (
 	"context"
 	"crypto/rand"
 	"crypto/sha256"
-	"crypto/subtle"
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
+	"github.com/tmshort/open-caption/internal/config"
 	"github.com/tmshort/open-caption/internal/logx"
 	"net"
 	"net/http"
@@ -64,7 +64,7 @@ func tokenKey(token string) string {
 
 // auth keeps sessions and login rate limits in memory.
 type auth struct {
-	adminPW, operatorPW [32]byte // sha256 of the configured passwords
+	adminPW, operatorPW string // the passwords as stored in config.yaml: plain text or a digest (config.CheckPassword)
 
 	path string // where sessions are saved ("" = memory only)
 	fp   string
@@ -77,7 +77,7 @@ type auth struct {
 // newAuth creates the session store. With a path, sessions survive a restart,
 // so an operator is not signed out if the program is restarted mid-show.
 func newAuth(adminPW, operatorPW, path string) *auth {
-	a := &auth{adminPW: sha256.Sum256([]byte(adminPW)), operatorPW: sha256.Sum256([]byte(operatorPW)), path: path,
+	a := &auth{adminPW: adminPW, operatorPW: operatorPW, path: path,
 		sessions: map[string]session{}, attempts: map[string][]time.Time{}}
 	a.fp = fingerprint(a.adminPW, a.operatorPW)
 	a.load()
@@ -85,8 +85,9 @@ func newAuth(adminPW, operatorPW, path string) *auth {
 }
 
 // fingerprint changes whenever either password does (it is derived from hashes, never the passwords).
-func fingerprint(admin, operator [32]byte) string {
-	h := sha256.Sum256(append(append([]byte("fp:"), admin[:]...), operator[:]...))
+func fingerprint(admin, operator string) string {
+	ia, io := config.PasswordID(admin), config.PasswordID(operator)
+	h := sha256.Sum256(append(append([]byte("fp:"), ia[:]...), io[:]...))
 	return hex.EncodeToString(h[:])
 }
 
@@ -129,11 +130,6 @@ func (a *auth) saveLocked() {
 	}
 }
 
-func pwEqual(a [32]byte, pw string) bool {
-	b := sha256.Sum256([]byte(pw))
-	return subtle.ConstantTimeCompare(a[:], b[:]) == 1
-}
-
 // allow records a login attempt from ip and reports whether it is within the limit.
 func (a *auth) allow(ip string) bool {
 	a.mu.Lock()
@@ -156,12 +152,15 @@ func (a *auth) allow(ip string) bool {
 // login checks a password for the requested role and returns a session token.
 // Role "operator" accepts the operator or the admin password; "admin" only the admin one.
 func (a *auth) login(role, password string) (token, granted string, ok bool) {
+	a.mu.Lock()
+	adminPW, operatorPW := a.adminPW, a.operatorPW
+	a.mu.Unlock()
 	switch {
-	case role == RoleAdmin && pwEqual(a.adminPW, password):
+	case role == RoleAdmin && config.CheckPassword(adminPW, password):
 		granted = RoleAdmin
-	case role == RoleOperator && pwEqual(a.adminPW, password):
+	case role == RoleOperator && config.CheckPassword(adminPW, password):
 		granted = RoleAdmin
-	case role == RoleOperator && pwEqual(a.operatorPW, password):
+	case role == RoleOperator && config.CheckPassword(operatorPW, password):
 		granted = RoleOperator
 	default:
 		return "", "", false
@@ -235,10 +234,10 @@ func (a *auth) setPasswords(adminPW, operatorPW, keep string) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 	if adminPW != "" {
-		a.adminPW = sha256.Sum256([]byte(adminPW))
+		a.adminPW = adminPW
 	}
 	if operatorPW != "" {
-		a.operatorPW = sha256.Sum256([]byte(operatorPW))
+		a.operatorPW = operatorPW
 	}
 	a.fp = fingerprint(a.adminPW, a.operatorPW)
 	for k, s := range a.sessions {

@@ -812,3 +812,55 @@ func TestConcurrentRehearsalStartsDoNotLeakRuntimes(t *testing.T) {
 		t.Errorf("goroutines went from %d to %d: runtimes were leaked", base, after)
 	}
 }
+
+// With the operator password kept as a digest in config.yaml: it signs in, it cannot be shown, and changing a
+// password in Setup writes the new one as a digest too (a plain one stays plain).
+func TestPasswordsKeptAsDigests(t *testing.T) {
+	dir := t.TempDir()
+	cfgPath := dir + "/config.yaml"
+	os.WriteFile(cfgPath, []byte("admin_password: adminpw\noperator_password: "+config.HashPassword("operatorpw")+"\n"), 0o600)
+	cfg := testConfig()
+	cfg.DataDir, cfg.Path = dir, cfgPath
+	cfg.OperatorPassword = config.HashPassword("operatorpw")
+	s := New(cfg, "t")
+	defer s.Close()
+	ts := httptest.NewServer(s.Handler())
+	defer ts.Close()
+
+	admin, op := newClient(t, ts.URL), newClient(t, ts.URL)
+	if admin.login("admin", "adminpw") != 200 || op.login("operator", "operatorpw") != 200 {
+		t.Fatal("both passwords should sign in")
+	}
+	if _, _, ok := s.auth.login("operator", config.HashPassword("operatorpw")); ok { // (the sign-in form's rate limit is not under test)
+		t.Error("the digest itself is not a password")
+	}
+	_, st := admin.do("GET", "/api/admin/settings", nil)
+	if st["operatorPasswordHashed"] != true || strings.Contains(toJSON(st), config.HashPassword("operatorpw")) {
+		t.Errorf("settings: %v", st)
+	}
+	if code, r := admin.do("GET", "/api/admin/settings/operator-password", nil); code != 409 || r["password"] != nil {
+		t.Errorf("a digest cannot be shown: %d %v", code, r)
+	}
+	if code, _ := admin.do("PUT", "/api/admin/settings/passwords", map[string]string{"operator": "operatorpw"}); code != 200 {
+		t.Errorf("setting the same password again is fine")
+	}
+	if code, _ := admin.do("PUT", "/api/admin/settings/passwords", map[string]string{"admin": "operatorpw"}); code != 400 {
+		t.Errorf("the admin password may not equal the operator's even when that is a digest: %d", code)
+	}
+	if code, _ := admin.do("PUT", "/api/admin/settings/passwords", map[string]string{"operator": "brand-new-op", "admin": "brand-new-admin"}); code != 200 {
+		t.Fatal("change both")
+	}
+	b, _ := os.ReadFile(cfgPath)
+	if strings.Contains(string(b), "brand-new-op") || !strings.Contains(string(b), config.HashPassword("brand-new-op")) {
+		t.Errorf("the operator's digest stays a digest:\n%s", b)
+	}
+	if !strings.Contains(string(b), "admin_password: brand-new-admin") {
+		t.Errorf("the admin's plain password stays plain:\n%s", b)
+	}
+	if _, _, ok := s.auth.login("operator", "operatorpw"); ok {
+		t.Error("the old operator password must stop working")
+	}
+	if newClient(t, ts.URL).login("operator", "brand-new-op") != 200 {
+		t.Error("the new operator password works")
+	}
+}

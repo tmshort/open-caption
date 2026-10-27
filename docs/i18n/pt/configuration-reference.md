@@ -5,7 +5,7 @@ O `config.yaml` guarda tudo sobre *este computador e este local*: as senhas, as 
 ## O arquivo
 
 - **Onde fica.** `<pasta de dados>/config.yaml`; a pasta de dados é `data_dir`, `--data`, ou a padrão `<sua pasta de configuração de usuário>/open-caption` (no macOS `~/Library/Application Support/open-caption`, no Windows `%AppData%\open-caption`, no Linux `~/.config/open-caption`). As primeiras linhas que o programa imprime dizem qual arquivo ele está usando. `--config` indica outro arquivo.
-- **Primeira execução.** Se não houver arquivo, o programa escreve um com senhas aleatórias de **administrador** e de **operador** e as imprime uma única vez no console. O arquivo tem modo 0600 (privado para a sua conta) e as senhas ficam em **texto simples**; mantenha-o privado.
+- **Primeira execução.** Se não houver arquivo, o programa escreve um com senhas aleatórias de **administrador** e de **operador** e as imprime uma única vez no console. O arquivo tem modo 0600 (privado para a sua conta) e as senhas ficam em **texto simples** (a menos que você guarde um hash, veja «Senhas» mais abaixo); mantenha-o privado.
 - **Você só precisa das chaves que mudar.** Uma chave ausente mantém o valor padrão (as tabelas abaixo). O arquivo gerado lista tudo.
 - **Rigoroso.** Uma chave escrita errada, um valor de tipo errado ou fora do intervalo faz o programa parar ao iniciar, listando **todos** os problemas, cada um com o nome da configuração (por exemplo `audience.max_clients: 0 is not a client count: use 1 to 100000`). Nada é adivinhado. A única exceção: num arquivo marcado com um `config_version` mais novo do que o programa conhece, as chaves desconhecidas são ignoradas, com um aviso.
 - **A configuração edita uma parte.** Mudar as senhas, o nome `.local`, a mensagem de espera ou o nível do registro na configuração reescreve essas chaves no arquivo e mantém os seus comentários e todas as outras configurações. Todo o resto você edita à mão e depois **reinicia o programa**. (Um arquivo de certificado renovado é a única coisa aproveitada sem reiniciar; veja `https.cert_file`.)
@@ -31,7 +31,27 @@ Uma opção, ou a sua variável de ambiente, tem prioridade sobre o arquivo naqu
 | `--check-show FILE [TRANSLATION ...]` | | **Confere um arquivo do espetáculo** e imprime um relatório, como um «lint», e sai: sem servidor, sem `config.yaml`. Veja «Conferir um arquivo do espetáculo» mais abaixo |
 | `--assets FOLDER` | | A pasta de imagens para `--check-show` (padrão: a pasta `assets` ao lado do arquivo do espetáculo) |
 | `--strict` | | Com `--check-show`: os avisos também dão o status de saída 1 |
+| `--hash-password` | | Lê uma senha da entrada padrão e a imprime como hash `sha256:` para `admin_password` ou `operator_password`, e termina: sem servidor nem `config.yaml`. Veja «Senhas» mais abaixo |
 | `--dev`, `--show-file` | | **Somente para desenvolvedores**: pontos de teste sem autenticação neste computador, sem espera; nunca use em um local |
+
+## Senhas
+
+`admin_password` e `operator_password` ficam em **texto simples** por padrão, por isso o arquivo é privado para a sua conta. Para guardar uma senha no arquivo como **hash** (uma impressão digital de mão única, de modo que uma cópia de `config.yaml` não revele a senha), escreva o hash no lugar dela:
+
+| Escrito como | Significa |
+|---|---|
+| `hunter22` | a própria senha (sem prefixo) |
+| `plain:hunter22` | a própria senha, escrita com prefixo; use-o para uma senha que começa com `sha256:`, `sha512:`, `sha1:` ou `plain:` |
+| `sha256:5b11…77d6` | o hash SHA-256 da senha, 64 dígitos hexadecimais (`sha512:` e `sha1:` também servem, mas `sha1:` é fraco e o programa avisa) |
+
+Gere o hash com o programa, lendo a senha da entrada padrão para que ela não fique no histórico do seu shell:
+
+```
+$ printf '%s' 'the password' | open-caption --hash-password
+sha256:5b11618c2e44027877d0cd0921ed166b9f176f50587fc91e7534dd2946db77d6
+```
+
+(`printf '%s' 'the password' | shasum -a 256` dá os mesmos dígitos no macOS e no Linux; acrescente `sha256:` na frente.) Para entrar, continua-se a digitar a própria senha. De um hash não se volta à senha: por isso **Configurações → Segurança** na configuração não pode mostrar uma senha de operador guardada como hash, só substituí-la, e o programa também não pode imprimi-la de novo: guarde-a em lugar seguro. Uma senha mudada na configuração é guardada na mesma forma da que substitui (um hash continua hash, texto simples continua texto simples); o programa nunca converte uma senha que você não mudou. Um valor que começa com `sha256:`, `sha512:` ou `sha1:` mas não é um hash do tamanho certo interrompe o programa ao iniciar, citando a configuração.
 
 ## Conferir um arquivo do espetáculo
 
@@ -66,8 +86,8 @@ Os valores padrão são os que você obtém sem a chave. «Configuração» diz 
 | Chave | Padrão | Significado |
 |---|---|---|
 | `config_version` | `1` | Escrita pelo programa. Um número maior do que o programa conhece significa que o arquivo veio de uma versão mais nova |
-| `admin_password` | gerada | A senha da configuração (`/admin`). Não pode ficar vazia (6 ou mais caracteres ao mudar na configuração). *Configuração: Configurações → Segurança* |
-| `operator_password` | gerada | A senha da página do operador (`/operator`); a do administrador também vale ali. Não pode ficar vazia. *Configuração: Configurações → Segurança* |
+| `admin_password` | gerada | A senha da configuração (`/admin`). Texto simples ou um hash como `sha256:…` (veja «Senhas» mais abaixo). Não pode ficar vazia (6 ou mais caracteres ao mudar na configuração). *Configuração: Configurações → Segurança* |
+| `operator_password` | gerada | A senha da página do operador (`/operator`); a do administrador também vale ali. Texto simples ou um hash, como `admin_password`; um hash não pode ser mostrado na configuração. Não pode ficar vazia. *Configuração: Configurações → Segurança* |
 | `data_dir` | vazio | A pasta de dados. Vazio significa a pasta padrão acima. Não pode ser um arquivo |
 
 ### `http`

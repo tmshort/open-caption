@@ -46,7 +46,7 @@ One small cost of plain HTTP: browsers only allow "keep the screen awake" on sec
 
 - Setup (`/admin`) and the operator page (`/operator`) each need a password from `config.yaml`. The audience page needs none and cannot change anything.
 - Do not expose the port to the internet.
-- The operator/admin passwords are stored in plain text in `config.yaml` in the program's data folder. Keep that folder private to the people who run the show.
+- The operator/admin passwords are stored in plain text in `config.yaml` in the program's data folder (or as a digest, see the configuration reference). Keep that folder private to the people who run the show.
 
 ## Firewalls on the captioning computer
 

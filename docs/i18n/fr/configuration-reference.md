@@ -5,7 +5,7 @@
 ## Le fichier
 
 - **Où il se trouve.** `<dossier de données>/config.yaml` ; le dossier de données est `data_dir`, `--data`, ou par défaut `<votre dossier de configuration utilisateur>/open-caption` (sous macOS `~/Library/Application Support/open-caption`, sous Windows `%AppData%\open-caption`, sous Linux `~/.config/open-caption`). Les premières lignes affichées par le programme disent quel fichier il utilise. `--config` désigne un autre fichier.
-- **Premier démarrage.** S'il n'y a pas de fichier, le programme en écrit un avec des mots de passe aléatoires d'**administrateur** et d'**opérateur** et les affiche une seule fois dans la console. Le fichier a le mode 0600 (privé pour votre compte) et les mots de passe sont en **clair** ; gardez-le donc privé.
+- **Premier démarrage.** S'il n'y a pas de fichier, le programme en écrit un avec des mots de passe aléatoires d'**administrateur** et d'**opérateur** et les affiche une seule fois dans la console. Le fichier a le mode 0600 (privé pour votre compte) et les mots de passe sont en **clair** (sauf si vous conservez une empreinte, voir « Mots de passe » plus bas) ; gardez-le donc privé.
 - **Vous n'avez besoin que des clés que vous changez.** Une clé absente garde sa valeur par défaut (les tableaux ci-dessous). Le fichier généré liste tout.
 - **Strict.** Une clé mal orthographiée, une valeur d'un mauvais type ou hors limites arrête le programme au démarrage en listant **tous** les problèmes, chacun avec le nom du réglage (par exemple `audience.max_clients: 0 is not a client count: use 1 to 100000`). Rien n'est deviné. Une seule exception : dans un fichier marqué d'un `config_version` plus récent que celui que connaît le programme, les clés inconnues sont ignorées, avec un avertissement.
 - **La configuration en modifie une partie.** Changer les mots de passe, le nom `.local`, le message d'attente ou le niveau du journal dans la configuration réécrit ces clés dans le fichier et conserve vos commentaires et tous les autres réglages. Tout le reste se modifie à la main, puis il faut **redémarrer le programme**. (Un fichier de certificat renouvelé est la seule chose prise en compte sans redémarrage ; voir `https.cert_file`.)
@@ -31,7 +31,27 @@ Une option, ou sa variable d'environnement, l'emporte sur le fichier pour cette 
 | `--check-show FILE [TRANSLATION ...]` | | **Vérifie un fichier de spectacle** et affiche un rapport, comme un « lint », puis quitte : pas de serveur, pas de `config.yaml`. Voir « Vérifier un fichier de spectacle » plus bas |
 | `--assets FOLDER` | | Le dossier d'images pour `--check-show` (par défaut : le dossier `assets` à côté du fichier de spectacle) |
 | `--strict` | | Avec `--check-show` : les avertissements donnent aussi le statut de sortie 1 |
+| `--hash-password` | | Lit un mot de passe sur l'entrée standard et l'affiche sous forme d'empreinte `sha256:` pour `admin_password` ou `operator_password`, puis s'arrête : ni serveur ni `config.yaml`. Voir « Mots de passe » plus bas |
 | `--dev`, `--show-file` | | **Pour les développeurs seulement** : points d'accès de test sans authentification sur cet ordinateur, sans attente ; ne les utilisez jamais dans un lieu |
+
+## Mots de passe
+
+`admin_password` et `operator_password` sont **en clair** par défaut, c'est pourquoi le fichier est privé pour votre compte. Pour conserver un mot de passe dans le fichier sous forme d'**empreinte** (un hachage à sens unique, de sorte qu'une copie de `config.yaml` ne révèle pas le mot de passe), écrivez l'empreinte à sa place :
+
+| Écrit comme | Signifie |
+|---|---|
+| `hunter22` | le mot de passe lui-même (sans préfixe) |
+| `plain:hunter22` | le mot de passe lui-même, écrit avec un préfixe ; à utiliser pour un mot de passe qui commence par `sha256:`, `sha512:`, `sha1:` ou `plain:` |
+| `sha256:5b11…77d6` | l'empreinte SHA-256 du mot de passe, 64 chiffres hexadécimaux (`sha512:` et `sha1:` fonctionnent aussi, mais `sha1:` est faible et le programme avertit) |
+
+Fabriquez l'empreinte avec le programme, en lisant le mot de passe sur l'entrée standard pour qu'il reste hors de l'historique de votre shell :
+
+```
+$ printf '%s' 'the password' | open-caption --hash-password
+sha256:5b11618c2e44027877d0cd0921ed166b9f176f50587fc91e7534dd2946db77d6
+```
+
+(`printf '%s' 'the password' | shasum -a 256` donne les mêmes chiffres sous macOS et Linux ; ajoutez `sha256:` devant.) Pour se connecter, on tape toujours le mot de passe lui-même. Une empreinte ne peut pas redevenir le mot de passe : **Réglages → Sécurité** dans la configuration ne peut donc pas afficher un mot de passe d'opérateur conservé sous forme d'empreinte, seulement le remplacer, et le programme ne peut pas le réafficher : gardez-le en lieu sûr. Un mot de passe changé dans la configuration est conservé sous la même forme que celui qu'il remplace (une empreinte reste une empreinte, le clair reste en clair) ; le programme ne convertit jamais un mot de passe que vous n'avez pas changé. Une valeur qui commence par `sha256:`, `sha512:` ou `sha1:` sans être une empreinte de la bonne longueur arrête le programme au démarrage, en nommant le réglage.
 
 ## Vérifier un fichier de spectacle
 
@@ -66,8 +86,8 @@ Les valeurs par défaut sont celles que vous obtenez sans la clé. « Configurat
 | Clé | Par défaut | Signification |
 |---|---|---|
 | `config_version` | `1` | Écrit par le programme. Un numéro plus grand que celui que connaît le programme signifie que le fichier vient d'une version plus récente |
-| `admin_password` | générée | Le mot de passe de la configuration (`/admin`). Ne doit pas être vide (6 caractères ou plus quand on le change dans la configuration). *Configuration : Réglages → Sécurité* |
-| `operator_password` | générée | Le mot de passe de la page de l'opérateur (`/operator`) ; celui de l'administrateur y fonctionne aussi. Ne doit pas être vide. *Configuration : Réglages → Sécurité* |
+| `admin_password` | générée | Le mot de passe de la configuration (`/admin`). En clair, ou une empreinte telle que `sha256:…` (voir « Mots de passe » plus bas). Ne doit pas être vide (6 caractères ou plus quand on le change dans la configuration). *Configuration : Réglages → Sécurité* |
+| `operator_password` | générée | Le mot de passe de la page de l'opérateur (`/operator`) ; celui de l'administrateur y fonctionne aussi. En clair ou une empreinte, comme `admin_password` ; une empreinte ne peut pas être affichée dans la configuration. Ne doit pas être vide. *Configuration : Réglages → Sécurité* |
 | `data_dir` | vide | Le dossier de données. Vide signifie le dossier par défaut ci-dessus. Ne doit pas être un fichier |
 
 ### `http`

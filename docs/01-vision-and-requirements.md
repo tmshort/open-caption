@@ -78,7 +78,7 @@ Requirement numbers are stable identifiers, not a running count: they were given
 
 ### Configuration and access
 - **REQ-050** Setup is a guided wizard: create show → import show file → upload images → look → test → run.
-- **REQ-051** `/admin` and `/operator` each have their own password (plaintext in `config.yaml`, generated on first run), entered via a login form with a session cookie — not HTTP Basic auth. An admin session also works on `/operator`. The audience interface is open.
+- **REQ-051** `/admin` and `/operator` each have their own password (plain text in `config.yaml` unless stored as a `sha256:`/`sha512:`/`sha1:` digest, generated in plain text on first run), entered via a login form with a session cookie — not HTTP Basic auth. An admin session also works on `/operator`. The audience interface is open.
 - **REQ-052** Show file edits during a live (on air) show require confirmation (typing the show name); the cursor is preserved by cue index, with a warning if the cue count changes.
 - **REQ-055** Setup and operator pages can be limited to listed computers (`access` in `config.yaml`); the audience page is always open. Forged cross-site requests to the API are refused.
 - **REQ-056** Passwords can be changed from the Setup page, without a restart.

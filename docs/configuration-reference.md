@@ -5,7 +5,7 @@
 ## The file
 
 - **Where it is.** `<data folder>/config.yaml`; the data folder is `data_dir`, `--data`, or the default `<your user config folder>/open-caption` (on macOS `~/Library/Application Support/open-caption`, on Windows `%AppData%\open-caption`, on Linux `~/.config/open-caption`). The first lines the program prints say which file it is using. `--config` names another file.
-- **First run.** If there is no file, the program writes one with random **admin** and **operator** passwords and prints them once in the console. The file is mode 0600 (private to your account) and the passwords are **plain text**, so keep it private.
+- **First run.** If there is no file, the program writes one with random **admin** and **operator** passwords and prints them once in the console. The file is mode 0600 (private to your account) and the passwords are **plain text** unless you store a digest instead (see "Passwords" below), so keep it private.
 - **You only need the keys you change.** A missing key keeps its default (the table below). The generated file lists everything.
 - **Strict.** A misspelled key, a value of the wrong kind, or a value out of range stops the program at start-up with **all** the problems listed, each naming the setting (for example `audience.max_clients: 0 is not a client count: use 1 to 100000`). Nothing is guessed. The one exception: a file marked with a newer `config_version` than the program knows has its unknown keys ignored, with a warning.
 - **Setup edits some of it.** Changing the passwords, the `.local` name, the standby message or the log detail in Setup rewrites those keys in the file and keeps your comments and every other setting. Everything else you edit by hand, then **restart the program**. (A renewed certificate file is the one thing picked up without a restart; see `https.cert_file`.)
@@ -31,7 +31,27 @@ A flag, or its environment variable, overrides the file for that run. (The file 
 | `--check-show FILE [TRANSLATION ...]` | | **Check a show file** and print a report, like a lint, then exit: no server, no `config.yaml`. See "Checking a show file" below |
 | `--assets FOLDER` | | The images folder for `--check-show` (default: the `assets` folder beside the show file) |
 | `--strict` | | With `--check-show`: warnings also make the exit status 1 |
+| `--hash-password` | | Read a password from standard input and print it as a `sha256:` digest for `admin_password` or `operator_password`, then exit: no server, no `config.yaml`. See "Passwords" below |
 | `--dev`, `--show-file` | | **Developers only**: unauthenticated test endpoints on this computer, no standby; never use them at a venue |
+
+## Passwords
+
+`admin_password` and `operator_password` are **plain text** by default, which is why the file is private to your account. To keep a password in the file as a **digest** (a one-way hash, so a copy of `config.yaml` does not give the password away), write the digest in its place:
+
+| Written as | Means |
+|---|---|
+| `hunter22` | the password itself (no prefix) |
+| `plain:hunter22` | the password itself, written with a prefix; use it for a password that begins with `sha256:`, `sha512:`, `sha1:` or `plain:` |
+| `sha256:5b11…77d6` | the SHA-256 digest of the password, 64 hex digits (`sha512:` and `sha1:` work too, but `sha1:` is weak and makes the program warn) |
+
+Make the digest with the program, reading the password from standard input so it stays out of your shell's history:
+
+```
+$ printf '%s' 'the password' | open-caption --hash-password
+sha256:5b11618c2e44027877d0cd0921ed166b9f176f50587fc91e7534dd2946db77d6
+```
+
+(`printf '%s' 'the password' | shasum -a 256` gives the same digits on macOS and Linux; add `sha256:` in front.) People still type the password itself to sign in. A digest cannot be turned back into the password, so **Settings → Security** in Setup cannot show a digest-held operator password, only replace it, and the program cannot print it again: keep the password somewhere safe. A password changed in Setup is stored in the form of the one it replaces (a digest stays a digest, plain text stays plain text); the program never converts a password you did not change. A value that begins `sha256:`, `sha512:` or `sha1:` but is not a digest of the right length stops the program at start-up, naming the setting.
 
 ## Checking a show file
 
@@ -66,8 +86,8 @@ Defaults are what you get without the key. "Setup" says where Setup can change i
 | Key | Default | Meaning |
 |---|---|---|
 | `config_version` | `1` | Written by the program. A newer number than the program knows means the file came from a newer version |
-| `admin_password` | generated | The password for Setup (`/admin`). Must not be empty (6 or more characters when changed in Setup). *Setup: Settings → Security* |
-| `operator_password` | generated | The password for the operator page (`/operator`); the admin password works there too. Must not be empty. *Setup: Settings → Security* |
+| `admin_password` | generated | The password for Setup (`/admin`). Plain text, or a digest such as `sha256:…` (see "Passwords" below). Must not be empty (6 or more characters when changed in Setup). *Setup: Settings → Security* |
+| `operator_password` | generated | The password for the operator page (`/operator`); the admin password works there too. Plain text or a digest, like `admin_password`; a digest cannot be shown in Setup. Must not be empty. *Setup: Settings → Security* |
 | `data_dir` | empty | The data folder. Empty means the default folder above. Must not be a file |
 
 ### `http`

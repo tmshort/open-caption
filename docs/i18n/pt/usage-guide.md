@@ -111,7 +111,7 @@ Em ordem de confiabilidade:
 ### Segurança
 
 - A página do público só pode ler. Não pode mudar o espetáculo nem alcançar as páginas de configuração e do operador.
-- Configuração e operador exigem cada uma a sua senha (guardada em texto puro em `config.yaml`, que é criado legível só por você). Dê a senha de operador ao operador, não a de administrador. As senhas podem ser mudadas em **Configurações** na Configuração.
+- Configuração e operador exigem cada uma a sua senha (guardada em texto puro em `config.yaml`, que é criado legível só por você; a referência de configuração mostra como guardar um hash). Dê a senha de operador ao operador, não a de administrador. As senhas podem ser mudadas em **Configurações** na Configuração.
 - No computador que executa o programa, Configuração e a página do operador abrem **sem senha** quando o endereço começa com `localhost`, `127.0.0.1` ou `[::1]` (a pessoa nesse computador é tratada como administrador). Os outros computadores, e qualquer requisição retransmitida por um proxy, continuam entrando com senha. Defina `access.local_auto_login: false` em `config.yaml` se outras pessoas puderem entrar neste computador.
 - **Qualquer pessoa que alcance o servidor pode abrir as páginas de entrada da Configuração e do operador, e com `http://` simples as senhas trafegam sem criptografia pelo WiFi.** Num WiFi de visitantes compartilhado isso significa que um espectador curioso poderia capturar uma senha e assumir o controle das legendas. Reduza o risco, nesta ordem:
   1. **Limite quais computadores podem abri-las.** Em `config.yaml`:

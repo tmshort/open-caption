@@ -26,6 +26,8 @@ open-caption \- open-captioning server for community theater
 .B \-\-check\-show
 .I show-file
 .RI [ translation ...]
+.br
+.B open-caption \-\-hash\-password
 .SH DESCRIPTION
 .B open-caption
 is a single program that shows live captions on the audience's own phones, tablets and screens during a play
@@ -170,6 +172,20 @@ With
 .BR \-\-check\-show :
 warnings also make the exit status 1.
 .TP
+.B \-\-hash\-password
+Read a password from standard input (the first line) and print it as a
+.B sha256:
+digest, then exit; no server starts.
+The digest may be put in
+.B config.yaml
+as
+.B admin_password
+or
+.B operator_password
+in place of the password itself, for example
+.B printf '%s' 'the password' | open-caption \-\-hash\-password
+(the password is read from standard input so that it does not end up in the shell's history).
+.TP
 .B \-\-version
 Print the version, and the DNS providers built into this program for automatic certificates, then exit.
 .TP
@@ -251,7 +267,7 @@ and
 .SH FILES
 .TP
 .IR data-folder /config.yaml
-The settings: passwords (plain text, so the file is created readable by its owner only), listening ports, HTTPS,
+The settings: passwords (plain text unless written as a digest, so the file is created readable by its owner only), listening ports, HTTPS,
 who may open Setup, and the defaults for a show.
 Every setting is described in the configuration reference.
 Setup rewrites a few keys (passwords, the

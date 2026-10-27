@@ -309,7 +309,12 @@ func (s *Server) adminRoutes(mux *http.ServeMux) {
 		w.Header().Set("Cache-Control", "no-store")
 		s.pwMu.Lock()
 		defer s.pwMu.Unlock()
-		writeJSON(w, http.StatusOK, map[string]any{"password": s.cfg.OperatorPassword})
+		pw, plain := config.PlainPassword(s.cfg.OperatorPassword)
+		if !plain { // only its digest is kept
+			writeErr(w, http.StatusConflict, "The operator password is stored as a digest, so it cannot be shown. Set a new one to replace it.")
+			return
+		}
+		writeJSON(w, http.StatusOK, map[string]any{"password": pw})
 	}))
 
 	// Rehearsal: the operator API against a private, isolated runtime (docs/02, "Rehearsal").
@@ -1429,10 +1434,11 @@ func (s *Server) settings(w http.ResponseWriter, r *http.Request) {
 	l := s.listeners
 	s.lmu.Unlock()
 	ns := s.networkSettings()
+	snap := s.snapshot()
 	writeJSON(w, http.StatusOK, map[string]any{
-		"config": s.snapshot().Redacted(), "configPath": s.cfg.Path, "dataDir": s.cfg.DataDir,
+		"config": snap.Redacted(), "configPath": s.cfg.Path, "dataDir": s.cfg.DataDir,
 		"httpAddr": l.HTTPAddr, "httpsAddr": l.HTTPSAddr, "version": s.version,
-		"canChangePasswords": s.cfg.Path != "", "standby": s.standbyView(), "logLevel": logx.Current().String(), "logLevelPinned": s.pinnedLevel, "mdns": s.MDNSStatus(),
+		"canChangePasswords": s.cfg.Path != "", "operatorPasswordHashed": config.IsHashed(snap.OperatorPassword), "standby": s.standbyView(), "logLevel": logx.Current().String(), "logLevelPinned": s.pinnedLevel, "mdns": s.MDNSStatus(),
 		"adminAllow": s.cfg.Access.AdminAllow, "operatorAllow": s.cfg.Access.OperatorAllow,
 		"adminRestricted": s.adminAllow.Restricted(), "operatorRestricted": s.operatorAllow.Restricted(),
 		"network": map[string]any{"interfaces": ns.Interfaces, "restrictListening": ns.RestrictListening}, "networkPinned": s.pinnedNetwork, "interfaces": s.networkInterfaces(r),
@@ -1535,26 +1541,30 @@ func (s *Server) changePasswords(w http.ResponseWriter, r *http.Request) {
 	}
 	s.pwMu.Lock()
 	defer s.pwMu.Unlock()
+	// A new password is stored in the form of the one it replaces: a password kept as a digest stays a digest.
 	newAdmin, newOp := req.Admin, req.Operator
 	effAdmin, effOp := s.cfg.AdminPassword, s.cfg.OperatorPassword
+	var storedAdmin, storedOp string
 	if newAdmin != "" {
-		effAdmin = newAdmin
+		storedAdmin = config.StoredLike(effAdmin, newAdmin)
+		effAdmin = storedAdmin
 	}
 	if newOp != "" {
-		effOp = newOp
+		storedOp = config.StoredLike(effOp, newOp)
+		effOp = storedOp
 	}
-	if effAdmin == effOp {
+	if config.SamePassword(effAdmin, effOp) {
 		writeErr(w, http.StatusBadRequest, "The admin and operator passwords must be different.")
 		return
 	}
-	if err := config.SetPasswords(s.cfg.Path, newAdmin, newOp); err != nil {
+	if err := config.SetPasswords(s.cfg.Path, storedAdmin, storedOp); err != nil {
 		writeErr(w, http.StatusInternalServerError, "Could not save config.yaml: "+err.Error())
 		return
 	}
 	s.cfgMu.Lock()
 	s.cfg.AdminPassword, s.cfg.OperatorPassword = effAdmin, effOp
 	s.cfgMu.Unlock()
-	s.auth.setPasswords(newAdmin, newOp, principal(r).Token)
+	s.auth.setPasswords(storedAdmin, storedOp, principal(r).Token)
 	logx.Infof("passwords changed in Setup (admin: %v, operator: %v); other sessions were signed out", newAdmin != "", newOp != "")
 	writeJSON(w, http.StatusOK, map[string]any{"ok": true, "changed": map[string]bool{"admin": newAdmin != "", "operator": newOp != ""}})
 }

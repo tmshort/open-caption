@@ -46,7 +46,7 @@ Un piccolo costo dell'HTTP semplice: i browser permettono «tieni lo schermo acc
 
 - La configurazione (`/admin`) e la pagina dell'operatore (`/operator`) richiedono ciascuna una password da `config.yaml`. La pagina del pubblico non ne richiede e non può cambiare nulla.
 - Non esporre la porta a internet.
-- Le password operatore e amministratore sono memorizzate in chiaro in `config.yaml`, nella cartella dati del programma. Tieni quella cartella privata per le persone che conducono lo spettacolo.
+- Le password operatore e amministratore sono memorizzate in chiaro in `config.yaml` (o come hash, vedi il riferimento della configurazione), nella cartella dati del programma. Tieni quella cartella privata per le persone che conducono lo spettacolo.
 
 ## Firewall sul computer dei sottotitoli
 

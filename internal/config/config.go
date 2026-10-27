@@ -301,7 +301,8 @@ func (c Config) Save() error {
 	if err != nil {
 		return err
 	}
-	header := "# open-caption configuration. Passwords are stored in plain text; keep this file private.\n" +
+	header := "# open-caption configuration. Passwords are stored in plain text unless written as a digest\n" +
+		"# (sha256:<hex>, made by open-caption --hash-password); keep this file private.\n" +
 		"# access: limits which computers may open the Setup (admin_allow) and operator (operator_allow) pages.\n" +
 		"# The default admin_allow is [localhost]: Setup opens only on this computer. An empty list lets anyone on the\n" +
 		"# network try the password. Entries: localhost, private, an address (192.168.1.50) or a network\n" +
@@ -444,12 +445,15 @@ func (c Config) Validate() error {
 // Warnings are things that work but are probably not what was meant (for the start-up log).
 func (c Config) Warnings() []string {
 	w := append([]string(nil), c.notes...)
-	if c.AdminPassword != "" && c.AdminPassword == c.OperatorPassword {
+	if c.AdminPassword != "" && SamePassword(c.AdminPassword, c.OperatorPassword) {
 		w = append(w, "admin_password and operator_password are the same: anyone with the operator password can open Setup")
 	}
 	for k, v := range map[string]string{"admin_password": c.AdminPassword, "operator_password": c.OperatorPassword} {
-		if v != "" && len(v) < MinPasswordLength {
+		if pw, plain := PlainPassword(v); plain && pw != "" && len(pw) < MinPasswordLength {
 			w = append(w, fmt.Sprintf("%s is shorter than %d characters", k, MinPasswordLength))
+		}
+		if strings.HasPrefix(v, "sha1:") && IsHashed(v) {
+			w = append(w, fmt.Sprintf("%s is a sha1 digest, which is weak: use sha256 (open-caption --hash-password)", k))
 		}
 	}
 	if len(c.Access.AdminAllow) == 0 {
@@ -466,11 +470,11 @@ func (c *Config) normalize() []string {
 	add := func(key string, format string, args ...any) {
 		probs = append(probs, key+": "+fmt.Sprintf(format, args...))
 	}
-	if c.AdminPassword == "" {
-		add("admin_password", "must not be empty")
+	if p := PasswordProblem(c.AdminPassword); p != "" {
+		add("admin_password", "%s", p)
 	}
-	if c.OperatorPassword == "" {
-		add("operator_password", "must not be empty")
+	if p := PasswordProblem(c.OperatorPassword); p != "" {
+		add("operator_password", "%s", p)
 	}
 	if c.DataDir != "" {
 		if fi, err := os.Stat(c.DataDir); err == nil && !fi.IsDir() {

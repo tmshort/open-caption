@@ -84,6 +84,7 @@ OCI18n.add("es", {
  "New operator password": "Nueva contraseña de operador",
  "Operator password: {password}": "Contraseña de operador: {password}",
  "Could not read it": "No se pudo leer",
+ "The operator password is stored as a digest, so it cannot be shown. Set a new one to replace it.": "La contraseña del operador se guarda como resumen (hash), por lo que no se puede mostrar. Establezca una nueva para reemplazarla.",
  "Show the current operator password": "Mostrar la contraseña de operador actual",
  "Announce this computer by name": "Anunciar este equipo por su nombre",
  "Name": "Nombre",

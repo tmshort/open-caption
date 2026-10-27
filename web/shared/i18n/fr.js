@@ -84,6 +84,7 @@ OCI18n.add("fr", {
  "New operator password": "Nouveau mot de passe opérateur",
  "Operator password: {password}": "Mot de passe opérateur : {password}",
  "Could not read it": "Lecture impossible",
+ "The operator password is stored as a digest, so it cannot be shown. Set a new one to replace it.": "Le mot de passe de l'opérateur est conservé sous forme d'empreinte (hash) ; il ne peut donc pas être affiché. Définissez-en un nouveau pour le remplacer.",
  "Show the current operator password": "Afficher le mot de passe opérateur actuel",
  "Announce this computer by name": "Annoncer cet ordinateur par son nom",
  "Name": "Nom",

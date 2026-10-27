@@ -5,7 +5,7 @@
 ## Il file
 
 - **Dove si trova.** `<cartella dati>/config.yaml`; la cartella dati è `data_dir`, `--data`, oppure quella predefinita `<la tua cartella di configurazione utente>/open-caption` (su macOS `~/Library/Application Support/open-caption`, su Windows `%AppData%\open-caption`, su Linux `~/.config/open-caption`). Le prime righe che il programma stampa dicono quale file sta usando. `--config` indica un altro file.
-- **Primo avvio.** Se non c'è il file, il programma ne scrive uno con password casuali di **amministratore** e di **operatore** e le stampa una sola volta nella console. Il file ha modalità 0600 (privato per il tuo account) e le password sono in **chiaro**, quindi tienilo privato.
+- **Primo avvio.** Se non c'è il file, il programma ne scrive uno con password casuali di **amministratore** e di **operatore** e le stampa una sola volta nella console. Il file ha modalità 0600 (privato per il tuo account) e le password sono in **chiaro** (a meno che tu non conservi un hash, vedi «Password» più avanti), quindi tienilo privato.
 - **Ti servono solo le chiavi che cambi.** Una chiave mancante mantiene il suo valore predefinito (le tabelle qui sotto). Il file generato elenca tutto.
 - **Rigoroso.** Una chiave scritta male, un valore del tipo sbagliato o fuori intervallo ferma il programma all'avvio elencando **tutti** i problemi, ciascuno con il nome dell'impostazione (per esempio `audience.max_clients: 0 is not a client count: use 1 to 100000`). Non si indovina nulla. L'unica eccezione: in un file marcato con un `config_version` più recente di quello che il programma conosce, le chiavi sconosciute vengono ignorate, con un avviso.
 - **La configurazione ne modifica una parte.** Cambiare le password, il nome `.local`, il messaggio di attesa o il livello del registro nella configurazione riscrive quelle chiavi nel file e conserva i tuoi commenti e tutte le altre impostazioni. Tutto il resto si modifica a mano, poi **riavvia il programma**. (Un file di certificato rinnovato è l'unica cosa recepita senza riavvio; vedi `https.cert_file`.)
@@ -31,7 +31,27 @@ Un'opzione, o la sua variabile d'ambiente, ha la precedenza sul file per quell'e
 | `--check-show FILE [TRANSLATION ...]` | | **Controlla un file dello spettacolo** e stampa un rapporto, come un «lint», poi esce: nessun server, nessun `config.yaml`. Vedi «Controllare un file dello spettacolo» più sotto |
 | `--assets FOLDER` | | La cartella delle immagini per `--check-show` (predefinita: la cartella `assets` accanto al file dello spettacolo) |
 | `--strict` | | Con `--check-show`: anche gli avvisi danno lo stato di uscita 1 |
+| `--hash-password` | | Legge una password dallo standard input e la stampa come hash `sha256:` per `admin_password` o `operator_password`, poi termina: nessun server e nessun `config.yaml`. Vedi «Password» più avanti |
 | `--dev`, `--show-file` | | **Solo per sviluppatori**: punti di accesso di prova senza autenticazione su questo computer, senza attesa; non usarli mai in un locale |
+
+## Password
+
+`admin_password` e `operator_password` sono **in chiaro** per impostazione predefinita, per questo il file è privato per il tuo account. Per conservare una password nel file come **hash** (un'impronta a senso unico, così una copia di `config.yaml` non rivela la password), scrivi l'hash al suo posto:
+
+| Scritto come | Significa |
+|---|---|
+| `hunter22` | la password stessa (senza prefisso) |
+| `plain:hunter22` | la password stessa, scritta con un prefisso; usalo per una password che inizia con `sha256:`, `sha512:`, `sha1:` o `plain:` |
+| `sha256:5b11…77d6` | l'hash SHA-256 della password, 64 cifre esadecimali (vanno bene anche `sha512:` e `sha1:`, ma `sha1:` è debole e il programma avvisa) |
+
+Crea l'hash con il programma, leggendo la password dallo standard input perché non finisca nella cronologia della shell:
+
+```
+$ printf '%s' 'the password' | open-caption --hash-password
+sha256:5b11618c2e44027877d0cd0921ed166b9f176f50587fc91e7534dd2946db77d6
+```
+
+(`printf '%s' 'the password' | shasum -a 256` dà le stesse cifre su macOS e Linux; aggiungi `sha256:` davanti.) Per accedere si digita sempre la password stessa. Da un hash non si può ricavare la password: **Impostazioni → Sicurezza** nella configurazione non può quindi mostrare una password operatore conservata come hash, solo sostituirla, e il programma non può stamparla di nuovo: conservala in un posto sicuro. Una password cambiata nella configurazione viene conservata nella stessa forma di quella che sostituisce (un hash resta un hash, il testo in chiaro resta in chiaro); il programma non converte mai una password che non hai cambiato. Un valore che inizia con `sha256:`, `sha512:` o `sha1:` ma non è un hash della lunghezza giusta ferma il programma all'avvio, indicando l'impostazione.
 
 ## Controllare un file dello spettacolo
 
@@ -66,8 +86,8 @@ I valori predefiniti sono quelli che ottieni senza la chiave. «Configurazione»
 | Chiave | Predefinito | Significato |
 |---|---|---|
 | `config_version` | `1` | Scritta dal programma. Un numero maggiore di quello che il programma conosce significa che il file viene da una versione più recente |
-| `admin_password` | generata | La password della configurazione (`/admin`). Non può essere vuota (6 o più caratteri se cambiata nella configurazione). *Configurazione: Impostazioni → Sicurezza* |
-| `operator_password` | generata | La password della pagina dell'operatore (`/operator`); anche quella dell'amministratore vale lì. Non può essere vuota. *Configurazione: Impostazioni → Sicurezza* |
+| `admin_password` | generata | La password della configurazione (`/admin`). In chiaro, oppure un hash come `sha256:…` (vedi «Password» più avanti). Non può essere vuota (6 o più caratteri se cambiata nella configurazione). *Configurazione: Impostazioni → Sicurezza* |
+| `operator_password` | generata | La password della pagina dell'operatore (`/operator`); anche quella dell'amministratore vale lì. In chiaro o un hash, come `admin_password`; un hash non può essere mostrato nella configurazione. Non può essere vuota. *Configurazione: Impostazioni → Sicurezza* |
 | `data_dir` | vuoto | La cartella dati. Vuoto significa la cartella predefinita qui sopra. Non può essere un file |
 
 ### `http`

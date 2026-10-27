@@ -46,7 +46,7 @@ Um pequeno custo do HTTP simples: os navegadores só permitem «manter a tela ac
 
 - A Configuração (`/admin`) e a página do operador (`/operator`) exigem cada uma uma senha de `config.yaml`. A página do público não exige nenhuma e não pode mudar nada.
 - Não exponha a porta à internet.
-- As senhas de operador e de administrador ficam em texto puro em `config.yaml`, na pasta de dados do programa. Mantenha essa pasta privada para quem conduz o espetáculo.
+- As senhas de operador e de administrador ficam em texto puro em `config.yaml` (ou como hash, veja a referência de configuração), na pasta de dados do programa. Mantenha essa pasta privada para quem conduz o espetáculo.
 
 ## Firewalls no computador das legendas
 

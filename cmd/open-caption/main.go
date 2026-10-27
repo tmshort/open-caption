@@ -52,10 +52,15 @@ func main() {
 		devShow   = flag.String("show-file", "", "with --dev: load this show file as the active show")
 		devAsset  = flag.String("assets", "", "folder of images: for --check-show (default: the assets folder beside the show file), or with --dev for --show-file")
 		checkShow = flag.String("check-show", "", "check a show file and print a report, like a lint (more files after it are translations of it); starts no server")
+		hashPw    = flag.Bool("hash-password", false, "read a password from standard input and print it as a sha256: digest, for admin_password or operator_password in config.yaml; starts no server")
 		strict    = flag.Bool("strict", false, "with --check-show: exit with status 1 on warnings too, not only on errors")
 	)
 	flag.Usage = usage
 	flag.Parse()
+	if *hashPw {
+		fi, err := os.Stdin.Stat()
+		os.Exit(hashPassword(os.Stdin, os.Stdout, os.Stderr, err == nil && fi.Mode()&os.ModeCharDevice != 0))
+	}
 	if *checkShow != "" {
 		// The same analysis as Setup's editor (internal/check, internal/showfile); no config, no server.
 		os.Exit(check.Run(os.Stdout, check.Options{Files: append([]string{*checkShow}, flag.Args()...), AssetsDir: *devAsset, Strict: *strict}))
@@ -291,6 +296,7 @@ func usage() {
 Usage: open-caption [options]
 
 To check a show file without starting anything (a lint): open-caption --check-show show.md [translation.es.md ...]
+To keep a password in config.yaml as a digest, not in plain text: printf '%%s' 'the password' | open-caption --hash-password
 
 Run with no options to start with the defaults: the first run writes config.yaml with random passwords and prints
 them, then prints the addresses to open (Setup at /admin, the operator page at /operator, the audience page at /).

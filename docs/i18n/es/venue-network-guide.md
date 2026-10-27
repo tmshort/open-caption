@@ -46,7 +46,7 @@ Un pequeño inconveniente del HTTP sencillo: los navegadores solo permiten «man
 
 - Configuración (`/admin`) y la página del operador (`/operator`) necesitan cada una una contraseña de `config.yaml`. La página del público no necesita ninguna y no puede cambiar nada.
 - No exponga el puerto a internet.
-- Las contraseñas de operador y de administrador se guardan en texto sin cifrar en `config.yaml`, en la carpeta de datos del programa. Mantenga esa carpeta privada para quienes llevan el espectáculo.
+- Las contraseñas de operador y de administrador se guardan en texto sin cifrar en `config.yaml` (o como resumen, véase la referencia de configuración), en la carpeta de datos del programa. Mantenga esa carpeta privada para quienes llevan el espectáculo.
 
 ## Cortafuegos en el equipo de subtitulado
 

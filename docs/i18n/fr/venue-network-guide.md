@@ -46,7 +46,7 @@ Un petit inconvénient du HTTP simple : les navigateurs n'autorisent « garder l
 
 - La configuration (`/admin`) et la page de l'opérateur (`/operator`) exigent chacune un mot de passe tiré de `config.yaml`. La page du public n'en exige aucun et ne peut rien modifier.
 - N'exposez pas le port sur internet.
-- Les mots de passe opérateur et administrateur sont stockés en clair dans `config.yaml`, dans le dossier de données du programme. Gardez ce dossier privé pour les personnes qui conduisent le spectacle.
+- Les mots de passe opérateur et administrateur sont stockés en clair dans `config.yaml` (ou sous forme d'empreinte, voir la référence de configuration), dans le dossier de données du programme. Gardez ce dossier privé pour les personnes qui conduisent le spectacle.
 
 ## Pare-feu sur l'ordinateur de sous-titrage
 

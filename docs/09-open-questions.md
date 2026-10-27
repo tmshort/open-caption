@@ -10,7 +10,7 @@ that reflect it. Add new questions at the bottom.
 | Q1 | Setup and Operator: one app or separate URLs? | Separate: `/admin` (setup) and `/operator` (live) | 04, 05 |
 | Q2 | Caption granularity? | One show file line = one cue; long lines wrap; the author splits lines to match the performance style. No auto-splitting | 03 |
 | Q3 | HTTP vs HTTPS? | Support both side by side, no redirect. ACME/Let's Encrypt is built as an option (DNS-01; doc 10) | 01 (REQ-006), 06 |
-| Q4 | Authentication? | Separate passwords for `/admin` and `/operator`, plaintext in `config.yaml` for now, login form + session cookie, **no HTTP Basic auth**. Config generated on first run with random passwords; admin session also opens `/operator` | 01, 02, 04 |
+| Q4 | Authentication? | Separate passwords for `/admin` and `/operator`, plaintext in `config.yaml` (a `sha256:`/`sha512:`/`sha1:` digest may be written instead; `plain:` forces plain text), login form + session cookie, **no HTTP Basic auth**. Config generated on first run with random passwords; admin session also opens `/operator` | 01, 02, 04 |
 | Q5 | SVG? | Not supported. PNG/JPG/GIF/WebP; browser scales; server doesn't rescale. Mitigations: prefetch upcoming images, warn on files > 1 MB | 04, 05, 06 |
 | Q6 | Audience scrollback? | Rolling, dimmed with age, bounded (200) | 02, 05 |
 | Q7 | Edit show file during a live show? | Allowed with confirmation; cursor kept by index, warn if cue count changes | 01 (REQ-052), 05 |
@@ -35,6 +35,6 @@ that reflect it. Add new questions at the bottom.
 
 - **Real devices:** the automated tests run in desktop Chrome (the browser end-to-end test also runs on Linux, macOS and Windows in CI). Some testing on real devices has been done by hand, but it is not recorded against the acceptance checklist; the keep-awake video in particular is not known to be tested on real iPhones and Android phones. A rehearsal on the oldest phones, tablets and computers you expect, on the real WiFi, is the main remaining risk (see the acceptance checklist).
 - **Browser floor:** now defined and enforced in code (doc 01, REQ-042: audience about iOS 12 / Chrome 66, Setup and operator about iOS 14.1 / Chrome 87; `<dialog>` is filled in; older browsers get a plain message), but derived from the features used, not from testing old devices.
-- **Passwords are plain text** in `config.yaml` by decision (Q4); hashing them is a later option.
+- **Passwords are plain text** in `config.yaml` unless a digest is written there instead (Q4); the program does not convert existing passwords, and a digest-held operator password cannot be shown in Setup.
 - **Release packaging:** releases are plain archives made by GoReleaser from a `v*` tag (`docs/releasing.md`); no signed or notarized builds, installers or auto-update, by decision. The README and release notes explain the macOS and Windows warnings.
 - **Accessibility:** an automated audit (axe-core, contrast, reflow, keyboard focus) now passes on every page, in both colour schemes (doc 07). Testing with real screen readers and forced-colors modes has not been done.

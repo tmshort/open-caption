@@ -1003,6 +1003,27 @@ async function main() {
       check('reaching the same computer by its network address asks for the password', await lp2.evaluate(() => !document.getElementById('login').hidden));
       await lp2.close(); await ctx2.close();
     }
+    // A password kept in config.yaml as a digest: it signs in, and Setup says it cannot be shown instead of offering to show it
+    section('Passwords kept as digests');
+    await stopServer(); await sleep(400);
+    const digest = 'sha256:' + require('crypto').createHash('sha256').update(OPERATOR).digest('hex');
+    fs.writeFileSync(path.join(dataDir, 'config.yaml'), `admin_password: ${ADMIN}\noperator_password: ${digest}\nmdns:\n  enabled: false\naccess:\n  admin_allow: []\n  local_auto_login: false\n`);
+    await startServer(); await sleep(T(1500));
+    {
+      const ctx3 = await b.createBrowserContext(); const hp = await ctx3.newPage(); hp.setDefaultTimeout(T(8000));
+      await hp.goto(B + '/operator'); await hp.waitForSelector('#pw', { visible: true }).catch(() => {});
+      await hp.type('#pw', OPERATOR); await hp.keyboard.press('Enter');
+      await hp.waitForFunction(() => !document.getElementById('app').hidden, { timeout: T(8000) }).catch(() => {});
+      check('the operator signs in with the password whose digest is in config.yaml', await hp.evaluate(() => document.getElementById('login').hidden && !document.getElementById('app').hidden));
+      await hp.goto(B + '/admin'); await hp.waitForSelector('#pw', { visible: true }).catch(() => {});
+      await hp.type('#pw', ADMIN); await hp.keyboard.press('Enter');
+      await hp.waitForSelector('#settingsbtn', { visible: true }).catch(() => {});
+      await hp.evaluate(() => document.getElementById('settingsbtn').click()); await hp.waitForSelector('#settab-sec').catch(() => {});
+      await hp.evaluate(() => document.getElementById('settab-sec').click()); await sleep(300);
+      const sec = await hp.evaluate(() => ({ text: document.getElementById('dlg').innerText, reveal: [...document.querySelectorAll('#dlg button')].some((x) => /operator password/.test(x.textContent) && /Show|Hide/.test(x.textContent)) }));
+      check('Settings says a digest-held operator password cannot be shown, and offers no Show button', /stored as a digest, so it cannot be shown/.test(sec.text) && !sec.reveal, sec);
+      await hp.close(); await ctx3.close();
+    }
   } finally {
     await b.close();
   }
