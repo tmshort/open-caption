@@ -197,7 +197,9 @@ a.quiet { background: none; border: none; color: var(--dim); text-decoration: no
 .urlgroup:first-child .urlhead { margin-top: 0; }
 .localonly { margin-top: .6rem; }
 /* the way on: the next step of Setup, below the step's own content */
-.nextstep { max-width: 60rem; margin: 0 auto; padding: 0 1rem 2rem; display: flex; justify-content: flex-end; }
+.nextstep { max-width: 70rem; margin: 0 auto; padding: 0 1rem 2rem; display: flex; justify-content: flex-end; } /* the width and padding of main, so the button sits under the content's right edge */
+.nextstep button { margin-left: auto; }
+main.wide + .nextstep { max-width: none; } /* the Show file step uses the whole window */
 .nextstep[hidden] { display: none; }
 .urls input[type=radio] { margin: 4px 8px 4px 6px; } /* room around the small radio so each is a comfortable touch target */
 .radiogap { margin-right: 8px; margin-left: 6px; }

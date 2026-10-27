@@ -935,6 +935,9 @@ async function main() {
     check('the operator status strip shows how far through the show it is', /^(Item \d+ of \d+|\d+ items)$/.test(await op.evaluate(() => document.getElementById('progress').textContent)));
     await guard.evaluate(() => { location.hash = 'images'; }); await sleep(900);
     check('Setup offers the next step under the current one', await guard.evaluate(() => { const b = document.querySelector('#nextstep button'); return !!b && b.offsetWidth > 0 && /^Next: /.test(b.textContent); }));
+    const guardView = guard.viewport(); await guard.setViewport({ width: 1600, height: 900 }); await sleep(300);
+    check('the Next button sits under the right edge of the content, however wide the window', await guard.evaluate(() => { const b = document.querySelector('#nextstep button').getBoundingClientRect(), m = document.getElementById('panel'), r = m.getBoundingClientRect(); return Math.abs(b.right - (r.right - parseFloat(getComputedStyle(m).paddingRight))) <= 2; }));
+    await guard.setViewport(guardView); await sleep(300);
     check('the operator page has a title with the show and its state', /^Run — .+ \((ON AIR|STANDBY)\)$/.test(await op.title()), await op.title());
     await stopServer(); await sleep(T(3500));
     const lost = (pg) => pg.evaluate(() => !document.getElementById('connbar').hidden && /lost/.test(document.getElementById('connbar').textContent));
