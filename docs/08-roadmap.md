@@ -83,3 +83,4 @@ Nothing is planned. Ideas are added here when someone asks for one.
 - Signed/notarized macOS build and a Windows installer: the cost of the certificates is not worth it for this project; the downloads stay plain archives and users deal with the unsigned-program warnings.
 - Print-friendly show file / cue sheet export: the browser prints the show file as it is, and a nicer layout was judged not worth building.
 - Auto-follow (speech recognition that advances or suggests the next line): the chance of wrong advances on stage audio (reverb, music, overlapping speech) is too high for what it saves, and a wrong line shows on every audience screen. The operator stays in control.
+- Salted, slow password hashes (bcrypt or similar) in `config.yaml`: a plain SHA-256 digest (`sha256:`, the default for `--hash-password`) is enough here. The audience is small, and Setup opens only on the computer that runs the program by default (`access.admin_allow: [localhost]`).
