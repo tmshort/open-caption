@@ -44,6 +44,7 @@ type Device struct {
 	Address     string    `json:"address"`
 	Kind        string    `json:"kind"`
 	Projector   bool      `json:"projector,omitempty"` // opened as a projector / shared screen
+	Viewer      bool      `json:"viewer,omitempty"`    // a second device that only watches the Run page (/follow): listed, never counted
 	Languages   []string  `json:"languages"`
 	First       time.Time `json:"first"`
 	Last        time.Time `json:"last"`
@@ -133,6 +134,7 @@ type conn struct {
 	kind      string
 	lang      string
 	projector bool
+	viewer    bool // a /follow page, not an audience device
 }
 
 // Tracker follows the audience connections and records the run in progress.
@@ -152,6 +154,7 @@ type run struct {
 	showID, show string
 	started      time.Time
 	devs         map[string]*device
+	viewers      map[string]*device // devices that only watch (/follow): in the report's list, in none of its numbers
 	peak         int
 	peakAt       time.Time
 	series       []Point
@@ -195,6 +198,31 @@ func (t *Tracker) Connect(address, agent, kind, lang string, projector bool) (di
 	}
 }
 
+// ConnectViewer records that a second device opened the Run page only to watch (/follow). It is listed in the report
+// with the audience's devices but is not an audience device: it is in no total, no language and not in the graph.
+func (t *Tracker) ConnectViewer(address, agent, kind string) (disconnect func()) {
+	t.mu.Lock()
+	t.next++
+	id := t.next
+	c := &conn{id: "v" + ID(address, agent)[1:], address: address, agent: agent, kind: kind, viewer: true}
+	t.conns[id] = c
+	if t.run != nil {
+		t.addLocked(c, t.now())
+	}
+	t.mu.Unlock()
+	var once sync.Once
+	return func() {
+		once.Do(func() {
+			t.mu.Lock()
+			defer t.mu.Unlock()
+			delete(t.conns, id)
+			if t.run != nil {
+				t.dropLocked(c, t.now())
+			}
+		})
+	}
+}
+
 // Sync tells the tracker whether the show is on the air, and which one. Going on the air starts a run (counting the
 // devices already connected); going off the air, or a different show, ends it.
 func (t *Tracker) Sync(onAir bool, showID, show string, loop *LoopInfo) {
@@ -208,7 +236,7 @@ func (t *Tracker) Sync(onAir bool, showID, show string, loop *LoopInfo) {
 		t.run = nil
 	}
 	if onAir && t.run == nil {
-		t.run = &run{showID: showID, show: show, started: now, devs: map[string]*device{}}
+		t.run = &run{showID: showID, show: show, started: now, devs: map[string]*device{}, viewers: map[string]*device{}}
 		ids := make([]uint64, 0, len(t.conns))
 		for id := range t.conns {
 			ids = append(ids, id)
@@ -233,10 +261,14 @@ func (t *Tracker) Sync(onAir bool, showID, show string, loop *LoopInfo) {
 
 func (t *Tracker) addLocked(c *conn, now time.Time) {
 	r := t.run
-	d := r.devs[c.id]
+	set := r.devs
+	if c.viewer {
+		set = r.viewers
+	}
+	d := set[c.id]
 	if d == nil {
-		d = &device{Device: Device{ID: c.id, Address: c.address, Kind: c.kind, First: now}, langs: map[string]bool{}}
-		r.devs[c.id] = d
+		d = &device{Device: Device{ID: c.id, Address: c.address, Kind: c.kind, First: now, Viewer: c.viewer}, langs: map[string]bool{}}
+		set[c.id] = d
 	}
 	d.Connections++
 	d.Last = now
@@ -250,6 +282,9 @@ func (t *Tracker) addLocked(c *conn, now time.Time) {
 		d.since = now
 	}
 	d.open++
+	if c.viewer {
+		return // not an audience device: no peak, no point on the graph
+	}
 	if n := r.connectedLocked(); n > r.peak {
 		r.peak, r.peakAt = n, now
 	}
@@ -299,7 +334,11 @@ func (t *Tracker) loopLocked(now time.Time, loop *LoopInfo) {
 }
 
 func (t *Tracker) dropLocked(c *conn, now time.Time) {
-	d := t.run.devs[c.id]
+	set := t.run.devs
+	if c.viewer {
+		set = t.run.viewers
+	}
+	d := set[c.id]
 	if d == nil || d.open == 0 {
 		return // connected before this run began and gone before it: not part of it
 	}
@@ -308,7 +347,9 @@ func (t *Tracker) dropLocked(c *conn, now time.Time) {
 	if d.open == 0 {
 		t.endStay(d, now)
 	}
-	t.markLocked(now)
+	if !c.viewer {
+		t.markLocked(now)
+	}
 }
 
 func (t *Tracker) endStay(d *device, now time.Time) {
@@ -399,6 +440,33 @@ func (t *Tracker) reportLocked(now time.Time, running bool) Report {
 	}
 	if tot.Devices > 0 {
 		tot.AvgConnected = sum / Span(tot.Devices)
+	}
+	// the devices that only watch: listed after the audience's, counted in nothing
+	vids := make([]string, 0, len(r.viewers))
+	for id := range r.viewers {
+		vids = append(vids, id)
+	}
+	sort.Slice(vids, func(i, j int) bool {
+		a, b := r.viewers[vids[i]], r.viewers[vids[j]]
+		if !a.First.Equal(b.First) {
+			return a.First.Before(b.First)
+		}
+		return a.ID < b.ID
+	})
+	for _, id := range vids {
+		d := r.viewers[id]
+		out := d.Device
+		out.Connected, out.Longest, out.Languages = d.Connected, d.Longest, []string{}
+		if d.open > 0 {
+			out.Now = true
+			stay := Span(now.Sub(d.since))
+			out.Connected += stay
+			if stay > out.Longest {
+				out.Longest = stay
+			}
+			out.Last = now
+		}
+		rep.Devices = append(rep.Devices, out)
 	}
 	tot.Peak, tot.PeakAt = r.peak, r.peakAt
 	rep.Series = append([]Point{}, r.series...)

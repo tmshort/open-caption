@@ -107,9 +107,10 @@
       h('div', { class: 'scroll', tabindex: '0', role: 'region', 'aria-label': __('Devices') },
         table('devices', [__('Device'), __('Address'), __('Type'), __('Languages'), __('First seen'), __('Last seen'), __('Connections'), __('Time connected'), __('Longest stay'), __('At the end')],
           r.devices.length ? r.devices.map((x) => h('tr', {},
-            h('td', {}, x.id), h('td', {}, x.address), h('td', {}, x.projector ? __('Projector screen') : kindName(x.kind)), h('td', {}, (x.languages || []).join(', ')),
+            h('td', {}, x.id), h('td', {}, x.address), h('td', {}, x.viewer ? __('Viewer') + ' — ' + kindName(x.kind) : x.projector ? __('Projector screen') : kindName(x.kind)), h('td', {}, (x.languages || []).join(', ')),
             h('td', {}, when(x.first)), h('td', {}, when(x.last)), h('td', { class: 'num' }, String(x.connections)), h('td', { class: 'num' }, span(x.connected)), h('td', { class: 'num' }, span(x.longest)),
-            h('td', {}, x.now ? __('yes') : __('no')))) : [h('tr', {}, h('td', { colspan: '10' }, '—'))], 'devices')));
+            h('td', {}, x.now ? __('yes') : __('no')))) : [h('tr', {}, h('td', { colspan: '10' }, '—'))], 'devices'),
+        r.devices.some((x) => x.viewer) ? h('p', { class: 'hint' }, __('Rows marked Viewer are second devices that only watch the show; they are not counted in the numbers above or in the graph.')) : null));
   }
 
   // the text of a report in the menu of reports: the show and when it started

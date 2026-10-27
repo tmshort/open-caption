@@ -14,6 +14,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/tmshort/open-caption/internal/config"
 	"github.com/tmshort/open-caption/internal/showfile"
@@ -282,4 +283,59 @@ func TestViewerAllowLimitsOnlyTheViewerPassword(t *testing.T) {
 	if w := postFrom(open, "/api/login", "198.51.100.4:5000", `{"role":"viewer","password":"viewerpw"}`, nil); w.Code != 200 {
 		t.Errorf("no viewer_allow: %d", w.Code)
 	}
+}
+
+// A page that only watches (/follow) appears in the connected-devices list, marked as a viewer, and in the report of the
+// run, but is not an audience device: the audience count and the list's total leave it out. An ordinary operator is not listed.
+func TestAViewerIsListedWithTheDevicesButNotCounted(t *testing.T) {
+	s, ts := viewerServer(t, nil)
+	s.syncReport()
+	op := newClient(t, ts.URL)
+	op.login("operator", "operatorpw")
+	op2 := newClient(t, ts.URL) // an ordinary operator page: not a viewer
+	op2.login("operator", "operatorpw")
+	v := newClient(t, ts.URL)
+	v.do("POST", "/api/login", map[string]string{"role": "viewer", "password": "viewerpw"})
+	open := func(c *client, query string) context.CancelFunc {
+		ctx, cancel := context.WithCancel(context.Background())
+		req, _ := http.NewRequestWithContext(ctx, "GET", ts.URL+"/api/operator/stream"+query, nil)
+		resp, err := c.hc.Do(req)
+		if err != nil || resp.StatusCode != 200 {
+			t.Fatalf("stream: %v %v", resp, err)
+		}
+		buf := make([]byte, 64)
+		resp.Body.Read(buf)
+		return cancel
+	}
+	stopOp := open(op, "")
+	defer stopOp()
+	stopV := open(v, "?follow=1")
+	stopFollowingOperator := open(op2, "?follow=1") // an operator who opened /follow is a watcher too
+	defer stopFollowingOperator()
+	code, r := op.do("GET", "/api/operator/clients", nil)
+	rows, _ := r["clients"].([]any)
+	if code != 200 || len(rows) != 2 || r["total"] != float64(0) {
+		t.Fatalf("clients: %d %v", code, r)
+	}
+	for _, x := range rows {
+		if x.(map[string]any)["role"] != "viewer" {
+			t.Errorf("row %v is marked a viewer", x)
+		}
+	}
+	if s.Runtime().AudienceCount() != 0 {
+		t.Error("a viewer is not an audience device")
+	}
+	stopV()
+	waitFor(t, func() bool { _, r := op.do("GET", "/api/operator/clients", nil); return len(r["clients"].([]any)) == 1 })
+}
+
+func waitFor(t *testing.T, ok func() bool) {
+	t.Helper()
+	for i := 0; i < 100; i++ {
+		if ok() {
+			return
+		}
+		time.Sleep(20 * time.Millisecond)
+	}
+	t.Fatal("timed out")
 }

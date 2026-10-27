@@ -271,6 +271,13 @@ func (s *Server) runCommand(w http.ResponseWriter, r *http.Request, rt *Runtime,
 func (s *Server) operatorStream(w http.ResponseWriter, r *http.Request, rt *Runtime) {
 	rc := http.NewResponseController(w)
 	tok := principal(r).Token
+	if principal(r).Role == RoleViewer || r.URL.Query().Get("follow") == "1" { // a page that only watches (/follow): shown with the other devices
+		defer rt.addViewer(clientIP(r), r.UserAgent())()
+		if rt == s.rt { // never a rehearsal
+			kind, _, _ := describeDevice(r.UserAgent(), false)
+			defer s.tracker.ConnectViewer(clientIP(r), r.UserAgent(), kind)()
+		}
+	}
 	cl := rt.OpHub.Subscribe()
 	rt.streamOpen(tok)
 	defer func() { rt.OpHub.Unsubscribe(cl); rt.streamClose(tok) }()

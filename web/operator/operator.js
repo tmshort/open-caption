@@ -95,7 +95,7 @@
   function openStream() {
     if (S.parked) return; // the page is on its way out (or in the back/forward cache): it must not hold a connection
     if (S.es) S.es.close();
-    const es = new EventSource(API + '/stream');
+    const es = new EventSource(API + '/stream' + (S.viewer ? '?follow=1' : '')); // (a page that only watches says so, to be listed with the devices)
     S.es = es;
     S.lastEvent = Date.now();
     const up = () => { S.lastEvent = Date.now(); clearTimeout(S.lostTimer); S.lostTimer = 0; $('connbar').hidden = true; };

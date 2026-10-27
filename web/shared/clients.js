@@ -36,7 +36,7 @@
     t.appendChild(head);
     rows.forEach(function (c) {
       var tr = document.createElement('tr');
-      tr.appendChild(cell('td', device(c))); tr.appendChild(cell('td', c.ip)); tr.appendChild(cell('td', c.langName || c.lang));
+      tr.appendChild(cell('td', device(c))); tr.appendChild(cell('td', c.ip)); tr.appendChild(cell('td', c.role === 'viewer' ? __('Viewer (watching only)') : (c.langName || c.lang)));
       t.appendChild(tr);
     });
     box.appendChild(t);

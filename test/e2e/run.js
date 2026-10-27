@@ -1056,6 +1056,19 @@ async function main() {
       check('a viewer\'s keys do nothing', (await cursorOf()) === before);
       const sent = await vp.evaluate(async () => [(await fetch('/api/operator/next', { method: 'POST', body: '{}' })).status, (await fetch('/api/operator/claim', { method: 'POST', body: '{"takeover":true}' })).status, (await fetch('/api/admin/ping')).status]);
       check('and the program refuses a viewer every command, taking control and Setup', JSON.stringify(sent) === '[403,403,403]', sent);
+      // the viewer's page is listed with the devices on the operator's Run page, marked as a viewer
+      const ctx6 = await b.createBrowserContext(); const lp3 = await ctx6.newPage(); lp3.setDefaultTimeout(T(8000));
+      await lp3.goto(B + '/operator'); await lp3.waitForSelector('#pw', { visible: true }).catch(() => {});
+      await lp3.type('#pw', OPERATOR); await lp3.keyboard.press('Enter');
+      await lp3.waitForFunction(() => !document.getElementById('app').hidden, { timeout: T(8000) }).catch(() => {});
+      await lp3.click('#viewers'); await lp3.waitForFunction(() => document.getElementById('clientsdlg').open, { timeout: T(5000) }).catch(() => {});
+      await sleep(400);
+      const listed = await lp3.evaluate(() => {
+        const rows = [...document.querySelectorAll('#clientsbody tr')].slice(1).map((r) => r.innerText), watching = rows.filter((r) => /Viewer \(watching only\)/.test(r)).length;
+        return { rows: rows.length, watching, pill: Number((document.getElementById('viewers').textContent.match(/\d+/) || [-1])[0]) };
+      });
+      check('a page that only watches is listed with the connected devices, marked Viewer, and is not counted', listed.watching === 1 && listed.pill === listed.rows - listed.watching, listed);
+      await lp3.close(); await ctx6.close();
       check('a viewer has no link to the Run page or Setup', await vp.evaluate(() => document.getElementById('runlink').hidden && document.getElementById('setuplink').hidden));
       await vp.goto(B + '/operator'); await vp.waitForFunction(() => location.pathname === '/follow', { timeout: T(8000) }).catch(() => {});
       check('a viewer who opens the operator page is taken to the page that watches', await vp.evaluate(() => location.pathname === '/follow'));

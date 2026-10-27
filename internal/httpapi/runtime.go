@@ -135,6 +135,8 @@ type Runtime struct {
 	ctrl     string // session token of the controlling operator
 	ctrlSeen time.Time
 	streams  map[string]int
+	viewers  map[uint64]ClientRow // pages open only to watch (/follow), for the devices list; not audience devices
+	viewerN  uint64
 
 	opDirty   chan struct{}
 	saveDirty chan struct{}
@@ -150,7 +152,7 @@ const controllerLease = 30 * time.Second
 // NewRuntime creates a runtime with no show loaded (audience sees the idle message).
 func NewRuntime(cfg config.Config) *Runtime {
 	rt := &Runtime{cfg: cfg, OpHub: hub.New(0), hubs: map[string]*hub.Hub{}, langs: map[string]*langRT{},
-		theme: DefaultTheme(cfg.Defaults.IdleMessage), streams: map[string]int{},
+		theme: DefaultTheme(cfg.Defaults.IdleMessage), streams: map[string]int{}, viewers: map[uint64]ClientRow{},
 		assetStamp: strconv.FormatInt(time.Now().UnixNano(), 36),
 		opDirty:    make(chan struct{}, 1), saveDirty: make(chan struct{}, 1), quit: make(chan struct{})}
 	rt.SetShow("", "", "", nil, rt.theme)

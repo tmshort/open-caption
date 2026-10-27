@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/tmshort/open-caption/internal/hub"
 	"github.com/tmshort/open-caption/internal/showfile"
@@ -20,7 +21,8 @@ type ClientRow struct {
 	Browser  string `json:"browser"` // Safari, Chrome, ... ("" if unknown)
 	Lang     string `json:"lang"`
 	LangName string `json:"langName"`
-	Since    int64  `json:"since"` // unix ms
+	Since    int64  `json:"since"`          // unix ms
+	Role     string `json:"role,omitempty"` // "viewer": a second device that only watches the Run page (/follow), not an audience device
 }
 
 // describeDevice guesses what a browser is from its User-Agent. It is only a label for a human reading the
@@ -75,8 +77,23 @@ func describeDevice(ua string, projector bool) (kind, os, browser string) {
 	return kind, os, browser
 }
 
+// addViewer records a page open only to watch the show, so the devices list can show it; the returned function removes it.
+func (rt *Runtime) addViewer(ip, ua string) func() {
+	kind, os, br := describeDevice(ua, false)
+	rt.ctrlMu.Lock()
+	rt.viewerN++
+	id := rt.viewerN
+	rt.viewers[id] = ClientRow{IP: ip, Kind: kind, OS: os, Browser: br, Role: "viewer", Since: time.Now().UnixMilli()}
+	rt.ctrlMu.Unlock()
+	return func() {
+		rt.ctrlMu.Lock()
+		delete(rt.viewers, id)
+		rt.ctrlMu.Unlock()
+	}
+}
+
 // Clients lists the connected audience devices (every language), oldest first within a language, languages in the
-// show's order.
+// show's order, then the pages that only watch (marked Role "viewer"), oldest first.
 func (rt *Runtime) Clients() []ClientRow {
 	rt.mu.RLock()
 	order := append([]string(nil), rt.order...)
@@ -113,11 +130,24 @@ func (rt *Runtime) Clients() []ClientRow {
 			out = append(out, ClientRow{IP: c.IP, Kind: kind, OS: os, Browser: br, Lang: code, LangName: name, Since: c.Since.UnixMilli()})
 		}
 	}
-	return out
+	rt.ctrlMu.Lock()
+	watching := make([]ClientRow, 0, len(rt.viewers))
+	for _, v := range rt.viewers {
+		watching = append(watching, v)
+	}
+	rt.ctrlMu.Unlock()
+	sort.Slice(watching, func(i, j int) bool { return watching[i].Since < watching[j].Since })
+	return append(out, watching...)
 }
 
 // listClients is GET .../clients: who is connected to the audience page right now.
 func (s *Server) listClients(w http.ResponseWriter, r *http.Request, rt *Runtime) {
 	c := rt.Clients()
-	writeJSON(w, http.StatusOK, map[string]any{"clients": c, "total": len(c)})
+	audience := 0
+	for _, x := range c {
+		if x.Role == "" {
+			audience++
+		}
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"clients": c, "total": audience})
 }

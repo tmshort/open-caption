@@ -321,3 +321,53 @@ func TestALongRunKeepsTheGraphSmall(t *testing.T) {
 		}
 	}
 }
+
+// A device that only watches the Run page is listed with the audience's devices but is in none of the numbers.
+func TestViewersAreListedAndNeverCounted(t *testing.T) {
+	c := newClock()
+	tr := New(c.now)
+	tr.ConnectViewer("192.168.1.60", ipad, Tablet) // already open when the show goes on the air
+	tr.Sync(true, "s", "Show", nil)
+	phone := tr.Connect("192.168.1.20", iphone, Phone, "en", false)
+	c.add(time.Minute)
+	stop := tr.ConnectViewer("192.168.1.61", desktop, Computer)
+	c.add(time.Second)
+	// the same address and browser as the phone: still its own row, and the phone is still one device
+	tr.ConnectViewer("192.168.1.20", iphone, Phone)
+	c.add(time.Minute - time.Second)
+	stop()
+	phone()
+	rep, _ := tr.Current()
+	if rep.Totals.Devices != 1 || rep.Totals.Phones != 1 || rep.Totals.Peak != 1 || rep.Totals.Connections != 1 || rep.Languages["en"] != 1 {
+		t.Errorf("viewers must not be counted: %+v %v", rep.Totals, rep.Languages)
+	}
+	for _, p := range rep.Series {
+		if p.N > 1 {
+			t.Errorf("viewers must not be on the graph: %+v", rep.Series)
+		}
+	}
+	var rows []string
+	ids := map[string]bool{}
+	for _, d := range rep.Devices {
+		rows = append(rows, d.Address+map[bool]string{true: " viewer", false: ""}[d.Viewer])
+		if ids[d.ID] {
+			t.Errorf("two rows share the code %s", d.ID)
+		}
+		ids[d.ID] = true
+		if d.Viewer && len(d.Languages) != 0 {
+			t.Errorf("a viewer has no language: %+v", d)
+		}
+	}
+	if got, want := strings.Join(rows, ","), "192.168.1.20,192.168.1.60 viewer,192.168.1.61 viewer,192.168.1.20 viewer"; got != want {
+		t.Errorf("rows %q, want the audience's first and the viewers after, oldest first: %q", got, want)
+	}
+	if v := rep.Devices[1]; !v.Now || v.Connected != Span(2*time.Minute) {
+		t.Errorf("a viewer's time is kept like a device's: %+v", v)
+	}
+	var buf bytes.Buffer
+	if err := WriteCSV(&buf, rep); err != nil || strings.Count(buf.String(), ",viewer,") != 3 || strings.Count(buf.String(), ",device,") != 1 {
+		t.Errorf("csv %v\n%s", err, buf.String())
+	}
+	// viewers who come and go in standby leave no trace in the next run
+	tr.Sync(false, "", "", nil)
+}

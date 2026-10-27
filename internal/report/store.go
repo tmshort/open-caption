@@ -149,6 +149,9 @@ func WriteCSV(w io.Writer, r Report) error {
 		if d.Projector {
 			screen = "projector"
 		}
+		if d.Viewer {
+			screen = "viewer" // a second device that only watches the Run page: listed, not counted
+		}
 		now := "no"
 		if d.Now {
 			now = "yes"
