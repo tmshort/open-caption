@@ -407,13 +407,15 @@ func (p *parser) directive(raw string, lineNo int) {
 			p.diag(lineNo, SevWarning, "[image] needs a file name, e.g. [image: curtain.jpg]. The line was skipped.")
 			return
 		}
+		p.timeOutsideLoop(lineNo, name, secs)
 		p.addImage(lineNo, fields[0], strings.Join(fields[1:], " | "), secs)
 	case "fullscreen":
 		if args == "" {
 			p.fullscreenBlock(lineNo)
 			return
 		}
-		fields, _ := p.splitDuration(lineNo, args, false)
+		fields, secs := p.splitDuration(lineNo, args, false)
+		p.timeOutsideLoop(lineNo, name, secs)
 		h, t := RenderInline(strings.Join(fields, " | "))
 		p.res.Cues = append(p.res.Cues, Cue{Kind: KindFullscreen, Line: lineNo, Text: t, HTML: h,
 			Item: &Item{Kind: "text", HTML: h, Text: t}})
@@ -629,6 +631,14 @@ func (p *parser) loopItem(t string, lineNo int) (Item, bool) {
 	fields, secs := p.splitDuration(lineNo, t, false)
 	h, pl := RenderInline(strings.Join(fields, " | "))
 	return p.timerItem(Item{Kind: "text", HTML: h, Text: pl, Seconds: secs}, lineNo), true
+}
+
+// timeOutsideLoop warns about a time on an [image] or [fullscreen] line that is not in a loop: the operator moves on
+// from those, so the time does nothing.
+func (p *parser) timeOutsideLoop(lineNo int, name string, secs float64) {
+	if secs > 0 {
+		p.diag(lineNo, SevWarning, "A time on [%s] only works inside a [loop]; here it was ignored. The operator moves on from it.", name)
+	}
 }
 
 func (p *parser) addImage(lineNo int, file, caption string, secs float64) {

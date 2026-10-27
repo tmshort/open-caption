@@ -677,3 +677,17 @@ func TestSummaryCountsImagesAndFullscreenInsideLoops(t *testing.T) {
 		t.Errorf("summary %q, want %q", summary, want)
 	}
 }
+
+// A time on [image] or [fullscreen] means something only inside a loop; elsewhere it is ignored, and the file says so.
+func TestTimeOutsideLoopIsWarnedAbout(t *testing.T) {
+	src := "[image: a.png | Caption | 5s]\n[fullscreen: Intermission | 10s]\n[loop]\n[image: b.png | 5s]\n[fullscreen: Exits | 10s]\n[/loop]\n[image: c.png]\n[fullscreen: Quiet]\n"
+	var lines []int
+	for _, d := range Parse(src, Options{}).Diagnostics {
+		if d.Severity == SevWarning && strings.Contains(d.Message, "only works inside a [loop]") {
+			lines = append(lines, d.Line)
+		}
+	}
+	if len(lines) != 2 || lines[0] != 1 || lines[1] != 2 {
+		t.Errorf("warned on lines %v, want [1 2]", lines)
+	}
+}

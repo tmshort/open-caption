@@ -507,6 +507,7 @@ OCI18n.add("de", {
  "[[ ]] blocks can't go inside a loop. This line was skipped.": "[[ ]]-Blöcke dürfen nicht in einer Schleife stehen. Diese Zeile wurde übersprungen.",
  "[image] needs a file name. The line was skipped.": "[image] braucht einen Dateinamen. Die Zeile wurde übersprungen.",
  "Inside a loop, [fullscreen] needs text on the same line. The line was skipped.": "In einer Schleife braucht [fullscreen] Text in derselben Zeile. Die Zeile wurde übersprungen.",
+ "A time on [{0}] only works inside a [loop]; here it was ignored. The operator moves on from it.": "Eine Zeitangabe bei [{0}] wirkt nur in einem [loop]; hier wurde sie ignoriert. Die Bedienung schaltet selbst weiter.",
  "Loops can't be nested. This line was skipped.": "Schleifen dürfen nicht verschachtelt werden. Diese Zeile wurde übersprungen.",
  "[{0}] can't go inside a loop. This line was skipped.": "[{0}] darf nicht in einer Schleife stehen. Diese Zeile wurde übersprungen.",
  "Image {0} not found. Did you mean {1}?": "Bild {0} nicht gefunden. Meinten Sie {1}?",

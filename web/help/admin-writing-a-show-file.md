@@ -156,7 +156,7 @@ A line in square brackets is a command. Names are not case-sensitive.
 | `[language: es]` | Marks a translated show file. See [Languages](topic:admin-languages) |
 | `[settings]` … `[/settings]` | The show's title and look. See *Show settings* above |
 
-The time options only mean something inside a [loop](topic:admin-loops): `| 15s` after an image or fullscreen text, and `[blank: 3s]`. Elsewhere an image or fullscreen text stays until the operator moves on, a time on it is ignored, and a time on `[blank]` is reported as a warning.
+The time options only mean something inside a [loop](topic:admin-loops): `| 15s` after an image or fullscreen text, and `[blank: 3s]`. Elsewhere an image or fullscreen text stays until the operator moves on, a time on it is ignored and reported as a warning, as is a time on `[blank]`.
 
 ```showfile
 [clear]

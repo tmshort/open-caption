@@ -156,7 +156,7 @@ Eine Zeile in eckigen Klammern ist ein Befehl. Bei Namen wird nicht zwischen Gro
 | `[language: es]` | Kennzeichnet eine übersetzte Show-Datei. Siehe [Sprachen](topic:admin-languages) |
 | `[settings]` … `[/settings]` | Titel und Erscheinungsbild der Show. Siehe *Show-Einstellungen* oben |
 
-Die Zeitangaben haben nur innerhalb einer [Schleife](topic:admin-loops) eine Bedeutung: `| 15s` nach einem Bild oder Vollbildtext und `[blank: 3s]`. Außerhalb einer Schleife bleibt ein Bild oder Vollbildtext stehen, bis der Operator weitergeht, eine Zeitangabe wird ignoriert, und eine Zeit bei `[blank]` wird als Warnung gemeldet.
+Die Zeitangaben haben nur innerhalb einer [Schleife](topic:admin-loops) eine Bedeutung: `| 15s` nach einem Bild oder Vollbildtext und `[blank: 3s]`. Außerhalb einer Schleife bleibt ein Bild oder Vollbildtext stehen, bis der Operator weitergeht, eine Zeitangabe wird ignoriert und als Warnung gemeldet, ebenso eine Zeit bei `[blank]`.
 
 ```showfile
 [clear]

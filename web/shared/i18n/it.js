@@ -507,6 +507,7 @@ OCI18n.add("it", {
  "[[ ]] blocks can't go inside a loop. This line was skipped.": "I blocchi [[ ]] non possono stare dentro un ciclo. Questa riga è stata saltata.",
  "[image] needs a file name. The line was skipped.": "[image] richiede un nome di file. La riga è stata saltata.",
  "Inside a loop, [fullscreen] needs text on the same line. The line was skipped.": "Dentro un ciclo, [fullscreen] richiede il testo sulla stessa riga. La riga è stata saltata.",
+ "A time on [{0}] only works inside a [loop]; here it was ignored. The operator moves on from it.": "Un tempo su [{0}] funziona solo dentro un [loop]; qui è stato ignorato. L'operatore passa oltre.",
  "Loops can't be nested. This line was skipped.": "I cicli non possono essere annidati. Questa riga è stata saltata.",
  "[{0}] can't go inside a loop. This line was skipped.": "[{0}] non può stare dentro un ciclo. Questa riga è stata saltata.",
  "Image {0} not found. Did you mean {1}?": "Immagine {0} non trovata. Intendevi {1}?",

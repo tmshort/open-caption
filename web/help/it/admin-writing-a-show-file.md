@@ -156,7 +156,7 @@ Una riga tra parentesi quadre è un comando. I nomi non distinguono maiuscole e 
 | `[language: es]` | Segna un file dello spettacolo tradotto. Vedi [Lingue](topic:admin-languages) |
 | `[settings]` … `[/settings]` | Il titolo e l'aspetto dello spettacolo. Vedi *Impostazioni dello spettacolo* sopra |
 
-Le opzioni di tempo hanno senso solo dentro un [ciclo](topic:admin-loops): `| 15s` dopo un'immagine o un testo a schermo intero, e `[blank: 3s]`. Fuori da un ciclo un'immagine o un testo a schermo intero resta finché l'operatore non passa oltre, il tempo viene ignorato, e un tempo su `[blank]` viene segnalato come avviso.
+Le opzioni di tempo hanno senso solo dentro un [ciclo](topic:admin-loops): `| 15s` dopo un'immagine o un testo a schermo intero, e `[blank: 3s]`. Fuori da un ciclo un'immagine o un testo a schermo intero resta finché l'operatore non passa oltre, il tempo viene ignorato e segnalato come avviso, come un tempo su `[blank]`.
 
 ```showfile
 [clear]

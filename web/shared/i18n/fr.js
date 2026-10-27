@@ -507,6 +507,7 @@ OCI18n.add("fr", {
  "[[ ]] blocks can't go inside a loop. This line was skipped.": "Les blocs [[ ]] ne peuvent pas aller dans une boucle. Cette ligne a été ignorée.",
  "[image] needs a file name. The line was skipped.": "[image] a besoin d'un nom de fichier. La ligne a été ignorée.",
  "Inside a loop, [fullscreen] needs text on the same line. The line was skipped.": "Dans une boucle, [fullscreen] a besoin de texte sur la même ligne. La ligne a été ignorée.",
+ "A time on [{0}] only works inside a [loop]; here it was ignored. The operator moves on from it.": "Une durée sur [{0}] ne fonctionne que dans un [loop] ; ici, elle a été ignorée. L'opérateur passe à la suite.",
  "Loops can't be nested. This line was skipped.": "Les boucles ne peuvent pas être imbriquées. Cette ligne a été ignorée.",
  "[{0}] can't go inside a loop. This line was skipped.": "[{0}] ne peut pas aller dans une boucle. Cette ligne a été ignorée.",
  "Image {0} not found. Did you mean {1}?": "Image {0} introuvable. Vouliez-vous dire {1} ?",

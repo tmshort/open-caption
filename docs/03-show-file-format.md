@@ -93,7 +93,8 @@ show file records exactly how it looks wherever it is copied. A show whose file 
 
 A directive is a single line `[name]` or `[name: arguments]`. Arguments are
 separated by `|`. A final argument that looks like a duration (`15s`, `2.5s`)
-is the item's display time (only meaningful inside a loop).
+is the item's display time (only meaningful inside a loop; on an `[image]` or `[fullscreen]` outside a loop the time is ignored
+and a warning says so).
 
 | Directive | Effect |
 |-----------|--------|
