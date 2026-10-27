@@ -76,7 +76,9 @@ Each milestone is shippable and ends with a demoable result. Tasks reference req
 - [x] Command line: `--check-show` (a lint for show files, sharing its analysis with Setup's editor), `--help`, the man page (`docs/open-caption.1`), the configuration reference (`docs/configuration-reference.md`)
 
 ## Stretch / Later
-- Signed/notarized macOS build; Windows installer
 - Remote operator via second device with restricted view
 - Optional auto-follow (speech recognition) as an assistant to operator
-- Print-friendly show file/cue sheet export
+
+## Decided against
+- Signed/notarized macOS build and a Windows installer: the cost of the certificates is not worth it for this project; the downloads stay plain archives and users deal with the unsigned-program warnings.
+- Print-friendly show file / cue sheet export: the browser prints the show file as it is, and a nicer layout was judged not worth building.
