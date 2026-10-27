@@ -64,4 +64,4 @@ Para empezar un **espectáculo nuevo** a partir de un archivo, use **Importar un
 
 - Lea el archivo una vez de principio a fin como lo haría el público, no como un corrector.
 - Compruebe que cada nombre de `[image: ...]` coincide con una imagen subida, y que cada `[loop]`, `[song]`, `[together]` y `[fullscreen]` tiene su línea de cierre.
-- Entregue al operador una copia del archivo y los nombres de las secciones, para que sepa dónde encontrar su sitio. [Canciones y música](topic:admin-musicals), [Bucles](topic:admin-loops) e [Idiomas](topic:admin-languages) detallan esas partes.
+- Entregue al operador una copia del archivo y los nombres de las secciones, para que sepa dónde encontrar su sitio. [Canciones y música](admin-musicals.md), [Bucles](admin-loops.md) e [Idiomas](admin-languages.md) detallan esas partes.

@@ -65,4 +65,4 @@ That I've been dreaming of?
 MRS. CORNEY: That's quite enough of that!
 ```
 
-Siehe auch [Eine Show-Datei schreiben](topic:admin-writing-a-show-file).
+Siehe auch [Eine Show-Datei schreiben](admin-writing-a-show-file.md).

@@ -42,4 +42,4 @@ Per dire al pubblico quali parole vanno con quale riga, tieni le righe in passo:
 - **Conteggi:** la pagina dell'operatore mostra quanti dispositivi leggono ciascuna lingua, per esempio `👥 83 (en 60 · es 23)`.
 - **Copie di sicurezza:** Esporta salva ogni lingua; Duplica le copia tutte.
 
-Vedi anche [Scrivere un file dello spettacolo](topic:admin-writing-a-show-file).
+Vedi anche [Scrivere un file dello spettacolo](admin-writing-a-show-file.md).

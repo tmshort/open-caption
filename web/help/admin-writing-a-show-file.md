@@ -107,7 +107,7 @@ OLIVER: ~ Where is love? ~ || NANCY: ~ Who will buy? ~
 
 Voices that join in **one after another** are separate lines: press Space for each. Use `[together]` only for lines that appear at the same moment. A `[together]` block holds only lines of text, needs at least two, and inside a `[song]` every voice is sung.
 
-A tilde in the middle of a line, such as `about ~5 minutes`, is just text. To start an ordinary line with one, write `\~`. See [Musicals](topic:admin-musicals) for more advice.
+A tilde in the middle of a line, such as `about ~5 minutes`, is just text. To start an ordinary line with one, write `\~`. See [Musicals](admin-musicals.md) for more advice.
 
 ## Several lines in one caption
 
@@ -148,15 +148,15 @@ A line in square brackets is a command. Names are not case-sensitive.
 | `[image: file.png]` | Show a picture full screen. Add a caption with `[image: file.png \| text]` |
 | `![caption](file.png)` | The same, written the Markdown way |
 | `[fullscreen: text]` | Show large text full screen. For several lines use `[fullscreen]` … `[/fullscreen]` |
-| `[loop]` … `[/loop]` | A repeating set of full-screen items for pre-show or intermission. See [Loops](topic:admin-loops) |
-| `[together]` … `[/together]` | Two or more voices shown at the same time. See [Songs and music](topic:admin-musicals) |
-| `[song: title]` … `[/song]` | A song: every line inside is shown as a sung lyric. See [Songs and music](topic:admin-musicals) |
+| `[loop]` … `[/loop]` | A repeating set of full-screen items for pre-show or intermission. See [Loops](admin-loops.md) |
+| `[together]` … `[/together]` | Two or more voices shown at the same time. See [Songs and music](admin-musicals.md) |
+| `[song: title]` … `[/song]` | A song: every line inside is shown as a sung lyric. See [Songs and music](admin-musicals.md) |
 | `[section: name]` | A bookmark for the operator |
 | `[note: text]` | A note for the operator |
-| `[language: es]` | Marks a translated show file. See [Languages](topic:admin-languages) |
+| `[language: es]` | Marks a translated show file. See [Languages](admin-languages.md) |
 | `[settings]` … `[/settings]` | The show's title and look. See *Show settings* above |
 
-The time options only mean something inside a [loop](topic:admin-loops): `| 15s` after an image or fullscreen text, and `[blank: 3s]`. Elsewhere an image or fullscreen text stays until the operator moves on, a time on it is ignored and reported as a warning, as is a time on `[blank]`.
+The time options only mean something inside a [loop](admin-loops.md): `| 15s` after an image or fullscreen text, and `[blank: 3s]`. Elsewhere an image or fullscreen text stays until the operator moves on, a time on it is ignored and reported as a warning, as is a time on `[blank]`.
 
 ```showfile
 [clear]

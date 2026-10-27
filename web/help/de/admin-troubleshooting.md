@@ -22,15 +22,15 @@ Geräte, die eingeschlafen sind, trennen sich und verbinden sich beim Aufwachen 
 
 Große Bilder brauchen in einem ausgelasteten WLAN Zeit. Suchen Sie im Schritt Bilder nach als „groß“ gekennzeichneten Dateien und ersetzen Sie sie durch kleinere.
 
-Die vollständige Liste der Prüfungen auf der Netzwerkseite finden Sie im [Netzwerkleitfaden für das Haus](topic:admin-venue-network-guide).
+Die vollständige Liste der Prüfungen auf der Netzwerkseite finden Sie im [Netzwerkleitfaden für das Haus](../../../docs/i18n/de/venue-network-guide.md).
 
 ## Für das Publikum fehlt eine Sprache
 
-Öffnen Sie den Schritt Show-Datei und sehen Sie sich den Tab dieser Sprache an: Ein ⚠ bedeutet, dass ihre Show-Datei nicht mehr dieselben Einsätze hat wie die Hauptdatei. Beheben Sie den angezeigten Fehler; die Sprache kommt zurück, sobald Sie speichern. Siehe [Sprachen](topic:admin-languages).
+Öffnen Sie den Schritt Show-Datei und sehen Sie sich den Tab dieser Sprache an: Ein ⚠ bedeutet, dass ihre Show-Datei nicht mehr dieselben Einsätze hat wie die Hauptdatei. Beheben Sie den angezeigten Fehler; die Sprache kommt zurück, sobald Sie speichern. Siehe [Sprachen](admin-languages.md).
 
 ## Probleme in der Show-Datei
 
-Siehe „Was die Warnungen bedeuten“ unter [Eine Show-Datei schreiben](topic:admin-writing-a-show-file).
+Siehe „Was die Warnungen bedeuten“ unter [Eine Show-Datei schreiben](admin-writing-a-show-file.md).
 
 ## Passwörter
 

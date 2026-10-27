@@ -22,15 +22,15 @@ Les appareils qui se sont endormis se déconnectent et se reconnectent tout seul
 
 Les grandes images prennent du temps sur un WiFi chargé. Cherchez à l'étape Images les fichiers marqués « volumineuse » et remplacez-les par des plus petits.
 
-Pour la liste complète des vérifications côté réseau, voir le [guide réseau de la salle](topic:admin-venue-network-guide).
+Pour la liste complète des vérifications côté réseau, voir le [guide réseau de la salle](../../../docs/i18n/fr/venue-network-guide.md).
 
 ## Une langue manque pour le public
 
-Ouvrez l'étape Fichier du spectacle et regardez l'onglet de cette langue : un ⚠ signifie que son fichier du spectacle n'a plus les mêmes tops que le principal. Corrigez l'erreur affichée ; la langue revient dès que vous enregistrez. Voir [Langues](topic:admin-languages).
+Ouvrez l'étape Fichier du spectacle et regardez l'onglet de cette langue : un ⚠ signifie que son fichier du spectacle n'a plus les mêmes tops que le principal. Corrigez l'erreur affichée ; la langue revient dès que vous enregistrez. Voir [Langues](admin-languages.md).
 
 ## Problèmes du fichier du spectacle
 
-Voir « Ce que signifient les avertissements » dans [Écrire un fichier du spectacle](topic:admin-writing-a-show-file).
+Voir « Ce que signifient les avertissements » dans [Écrire un fichier du spectacle](admin-writing-a-show-file.md).
 
 ## Mots de passe
 

@@ -18,4 +18,4 @@ Téléverser un fichier du même nom le remplace. Supprimer une image que le fic
 
 ## Dans une boucle
 
-Les images d'une boucle passent à tour de rôle à l'écran : `[image: sponsors.png | 15s]` montre celle-ci pendant 15 secondes. Voir [Boucles](topic:admin-loops).
+Les images d'une boucle passent à tour de rôle à l'écran : `[image: sponsors.png | 15s]` montre celle-ci pendant 15 secondes. Voir [Boucles](admin-loops.md).

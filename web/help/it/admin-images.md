@@ -18,4 +18,4 @@ Caricare un file con lo stesso nome lo sostituisce. Eliminare un'immagine che il
 
 ## In un ciclo
 
-Le immagini di un ciclo si alternano sullo schermo: `[image: sponsor.png | 15s]` mostra quella per 15 secondi. Vedi [Cicli](topic:admin-loops).
+Le immagini di un ciclo si alternano sullo schermo: `[image: sponsor.png | 15s]` mostra quella per 15 secondi. Vedi [Cicli](admin-loops.md).

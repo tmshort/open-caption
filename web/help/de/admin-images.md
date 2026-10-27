@@ -18,4 +18,4 @@ Wenn Sie eine Datei mit demselben Namen hochladen, wird sie ersetzt. Ein Bild zu
 
 ## In einer Schleife
 
-Bilder in einer Schleife wechseln sich auf dem Bildschirm ab: `[image: sponsoren.png | 15s]` zeigt dieses 15 Sekunden lang. Siehe [Schleifen](topic:admin-loops).
+Bilder in einer Schleife wechseln sich auf dem Bildschirm ab: `[image: sponsoren.png | 15s]` zeigt dieses 15 Sekunden lang. Siehe [Schleifen](admin-loops.md).

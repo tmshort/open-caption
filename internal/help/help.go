@@ -230,7 +230,8 @@ var (
 
 // Render converts a help topic's Markdown to HTML. All text is escaped; only
 // tags generated here appear in the output. Links may point to another topic
-// (topic:<id>) or to a path on this server (/...); anything else is plain text.
+// (written as its file, admin-loops.md, which GitHub can follow; topic:<id> also works), to a guide (docs/usage-guide.md)
+// or to a path on this server (/...); anything else is plain text.
 func Render(md string) string {
 	var b strings.Builder
 	lines := strings.Split(strings.ReplaceAll(md, "\r\n", "\n"), "\n")
@@ -414,6 +415,10 @@ var pathLinks = map[string]string{
 	"web/help/admin-writing-a-show-file.md":   "admin-writing-a-show-file",
 }
 
+// guideFile is a guide written as its file under docs/ (docs/usage-guide.md, docs/i18n/es/usage-guide.md), which is how
+// a help topic links to it so GitHub can follow the link; in the app it is the guide's topic.
+var guideFile = regexp.MustCompile(`^docs/(?:i18n/[a-z]{2}/)?(usage-guide|venue-network-guide|https-certificate-guide|configuration-reference)\.md$`)
+
 // relativeTarget drops the leading "../" of a relative link, so a guide links the same way from docs/ and from
 // docs/i18n/<code>/ (where the right number of "../" differs but the target is the same file).
 func relativeTarget(base string) string {
@@ -441,6 +446,9 @@ func link(text, href string) string {
 		return `<a href="#` + base[6:] + `" data-topic="` + base[6:] + `"` + fragAttr + `>` + label + "</a>"
 	case topicFile.MatchString(base):
 		id := topicFile.FindStringSubmatch(base)[1]
+		return `<a href="#` + id + `" data-topic="` + id + `"` + fragAttr + `>` + label + "</a>"
+	case guideFile.MatchString(rel):
+		id := "admin-" + guideFile.FindStringSubmatch(rel)[1]
 		return `<a href="#` + id + `" data-topic="` + id + `"` + fragAttr + `>` + label + "</a>"
 	case rel == "sample/sample-show.md": // the starter file, as GitHub shows it; in the app it is the download
 		return `<a href="/help/sample-show.md">` + label + "</a>"

@@ -175,7 +175,7 @@ volunteers: plain language, short, with examples.
 - Works offline; content is embedded in the binary.
 - **Operator safety:** while the help viewer is open on `/operator`, show-control keys (Space, Shift+Q, etc.) are disabled, so reading help can't advance the show. An amber bar at the top of the help panel reminds the operator "Keys are paused. Close help to resume." beside a **Close (Esc)** button. Help opens as a panel beside the show file where space allows so the operator can keep an eye on the show.
 
-**Format and source.** Topics are Markdown files in `web/help/`, rendered with the same renderer as show files. Examples are fenced code blocks with a **Copy** button.
+**Format and source.** Topics are Markdown files in `web/help/`, rendered with the same renderer as show files. Examples are fenced code blocks with a **Copy** button. A link to another topic is written as its file (`[Loops](admin-loops.md)`), and a link to a guide as the guide's file (`[Usage guide](../../docs/usage-guide.md)`, `../../../docs/i18n/<code>/…` in a translation), so GitHub can follow it; the app turns both into links to the topic (`topic:<id>` also works).
 
 **Topics for admins** (in the order of the list, which opens on the first)
 1. *Getting started* — the six wizard steps; how to find the audience URL/QR; where passwords are (`config.yaml`).

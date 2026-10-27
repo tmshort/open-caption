@@ -107,7 +107,7 @@ OLIVER: ~ Where is love? ~ || NANCY: ~ Who will buy? ~
 
 As vozes que entram **uma depois da outra** são linhas separadas: aperte Espaço para cada uma. Use `[together]` só para linhas que aparecem no mesmo instante. Um bloco `[together]` contém só linhas de texto, precisa de pelo menos duas, e dentro de um `[song]` toda voz é cantada.
 
-Um til no meio de uma linha, como `about ~5 minutes`, é só texto. Para começar uma linha comum com um, escreva `\~`. Veja [Musicais](topic:admin-musicals) para mais conselhos.
+Um til no meio de uma linha, como `about ~5 minutes`, é só texto. Para começar uma linha comum com um, escreva `\~`. Veja [Musicais](admin-musicals.md) para mais conselhos.
 
 ## Várias linhas em uma legenda
 
@@ -148,15 +148,15 @@ Uma linha entre colchetes é um comando. Os nomes não diferenciam maiúsculas d
 | `[image: file.png]` | Mostra uma imagem em tela cheia. Acrescente uma legenda com `[image: file.png \| text]` |
 | `![caption](file.png)` | O mesmo, escrito à maneira do Markdown |
 | `[fullscreen: text]` | Mostra um texto grande em tela cheia. Para várias linhas use `[fullscreen]` … `[/fullscreen]` |
-| `[loop]` … `[/loop]` | Um conjunto repetido de itens em tela cheia para o pré-espetáculo ou o intervalo. Veja [Laços](topic:admin-loops) |
-| `[together]` … `[/together]` | Duas ou mais vozes mostradas ao mesmo tempo. Veja [Músicas e trilha](topic:admin-musicals) |
-| `[song: title]` … `[/song]` | Uma música: toda linha dentro é mostrada como letra cantada. Veja [Músicas e trilha](topic:admin-musicals) |
+| `[loop]` … `[/loop]` | Um conjunto repetido de itens em tela cheia para o pré-espetáculo ou o intervalo. Veja [Laços](admin-loops.md) |
+| `[together]` … `[/together]` | Duas ou mais vozes mostradas ao mesmo tempo. Veja [Músicas e trilha](admin-musicals.md) |
+| `[song: title]` … `[/song]` | Uma música: toda linha dentro é mostrada como letra cantada. Veja [Músicas e trilha](admin-musicals.md) |
 | `[section: name]` | Um marcador para o operador |
 | `[note: text]` | Uma nota para o operador |
-| `[language: es]` | Marca um arquivo do espetáculo traduzido. Veja [Idiomas](topic:admin-languages) |
+| `[language: es]` | Marca um arquivo do espetáculo traduzido. Veja [Idiomas](admin-languages.md) |
 | `[settings]` … `[/settings]` | O título e a aparência do espetáculo. Veja *Configurações do espetáculo* acima |
 
-As opções de tempo só fazem sentido dentro de um [laço](topic:admin-loops): `| 15s` depois de uma imagem ou de um texto em tela cheia, e `[blank: 3s]`. Fora de um laço, uma imagem ou um texto em tela cheia fica até o operador passar adiante, o tempo é ignorado e apontado como aviso, assim como um tempo em `[blank]`.
+As opções de tempo só fazem sentido dentro de um [laço](admin-loops.md): `| 15s` depois de uma imagem ou de um texto em tela cheia, e `[blank: 3s]`. Fora de um laço, uma imagem ou um texto em tela cheia fica até o operador passar adiante, o tempo é ignorado e apontado como aviso, assim como um tempo em `[blank]`.
 
 ```showfile
 [clear]

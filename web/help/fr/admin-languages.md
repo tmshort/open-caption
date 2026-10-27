@@ -42,4 +42,4 @@ Pour indiquer au public quels mots vont avec quelle ligne, gardez les lignes en 
 - **Décomptes :** la page de l'opérateur montre combien d'appareils lisent chaque langue, par exemple `👥 83 (en 60 · es 23)`.
 - **Sauvegardes :** Exporter enregistre toutes les langues ; Dupliquer les copie aussi.
 
-Voir aussi [Écrire un fichier du spectacle](topic:admin-writing-a-show-file).
+Voir aussi [Écrire un fichier du spectacle](admin-writing-a-show-file.md).

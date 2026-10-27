@@ -27,7 +27,7 @@ Los subtítulos, `[clear]`, las secciones, las notas y otros bucles no pueden ir
 - Cualquier otro bucle (por ejemplo en el descanso) empieza cuando el operador pulsa la barra espaciadora sobre él.
 - La barra espaciadora termina el bucle y envía la línea siguiente. **Mayús+Q** detiene el bucle y deja la pantalla en blanco. **Atrás** vuelve al bucle y lo reinicia desde el primer elemento.
 
-La lista del operador muestra un bucle como una sola entrada que se despliega para enumerar sus elementos. Consulte [Bucles para el operador](topic:operator-loops).
+La lista del operador muestra un bucle como una sola entrada que se despliega para enumerar sus elementos. Consulte [Bucles para el operador](operator-loops.md).
 
 ## Un temporizador de cuenta atrás
 

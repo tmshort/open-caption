@@ -64,4 +64,4 @@ Pour créer un **nouveau spectacle** à partir d'un fichier, utilisez **Importer
 
 - Relisez le fichier une fois de haut en bas comme le public, et non comme un correcteur.
 - Vérifiez que chaque nom d'`[image: ...]` correspond à une image envoyée, et que chaque `[loop]`, `[song]`, `[together]` et `[fullscreen]` a sa ligne de fermeture.
-- Donnez à l'opérateur une copie du fichier et les noms des sections, pour qu'il sache où retrouver sa place. [Chansons et musique](topic:admin-musicals), [Boucles](topic:admin-loops) et [Langues](topic:admin-languages) détaillent ces parties.
+- Donnez à l'opérateur une copie du fichier et les noms des sections, pour qu'il sache où retrouver sa place. [Chansons et musique](admin-musicals.md), [Boucles](admin-loops.md) et [Langues](admin-languages.md) détaillent ces parties.

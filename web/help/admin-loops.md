@@ -27,7 +27,7 @@ Captions, `[clear]`, sections, notes and other loops cannot go inside a loop.
 - Any other loop (for example at intermission) starts when the operator presses the spacebar on it.
 - The spacebar ends the loop and sends the next line. **Shift+Q** stops the loop and leaves the screen blank. **Back** returns to the loop and restarts it from the first item.
 
-The operator's list shows a loop as one entry that expands to list its items. See [Loops for the operator](topic:operator-loops).
+The operator's list shows a loop as one entry that expands to list its items. See [Loops for the operator](operator-loops.md).
 
 ## A countdown timer
 

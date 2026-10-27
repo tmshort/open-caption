@@ -27,7 +27,7 @@ Legendas, `[clear]`, seções, notas e outros laços não podem ficar dentro de 
 - Qualquer outro laço (por exemplo no intervalo) começa quando o operador aperta a barra de espaço sobre ele.
 - A barra de espaço encerra o laço e envia a próxima linha. **Shift+Q** para o laço e deixa a tela em branco. **Voltar** retorna ao laço e o reinicia a partir do primeiro item.
 
-A lista do operador mostra um laço como uma única entrada que se expande para listar os itens. Veja [Laços para o operador](topic:operator-loops).
+A lista do operador mostra um laço como uma única entrada que se expande para listar os itens. Veja [Laços para o operador](operator-loops.md).
 
 ## Um temporizador de contagem regressiva
 

@@ -22,15 +22,15 @@ I dispositivi che si sono addormentati si disconnettono e si riconnettono da sol
 
 Le immagini grandi richiedono tempo su un WiFi affollato. Cerca nel passo Immagini i file segnati come «grande» e sostituiscili con altri più piccoli.
 
-Per l'elenco completo dei controlli lato rete, vedi la [guida di rete del locale](topic:admin-venue-network-guide).
+Per l'elenco completo dei controlli lato rete, vedi la [guida di rete del locale](../../../docs/i18n/it/venue-network-guide.md).
 
 ## Manca una lingua per il pubblico
 
-Apri il passo File dello spettacolo e guarda la scheda di quella lingua: un ⚠ significa che il suo file dello spettacolo non ha più le stesse battute di quello principale. Correggi l'errore mostrato; la lingua torna non appena salvi. Vedi [Lingue](topic:admin-languages).
+Apri il passo File dello spettacolo e guarda la scheda di quella lingua: un ⚠ significa che il suo file dello spettacolo non ha più le stesse battute di quello principale. Correggi l'errore mostrato; la lingua torna non appena salvi. Vedi [Lingue](admin-languages.md).
 
 ## Problemi del file dello spettacolo
 
-Vedi «Cosa significano gli avvisi» in [Scrivere un file dello spettacolo](topic:admin-writing-a-show-file).
+Vedi «Cosa significano gli avvisi» in [Scrivere un file dello spettacolo](admin-writing-a-show-file.md).
 
 ## Password
 

@@ -107,7 +107,7 @@ OLIVER: ~ Where is love? ~ || NANCY: ~ Who will buy? ~
 
 Stimmen, die **nacheinander** einsetzen, sind getrennte Zeilen: Drücken Sie für jede die Leertaste. Verwenden Sie `[together]` nur für Zeilen, die im selben Moment erscheinen. Ein `[together]`-Block enthält nur Textzeilen, braucht mindestens zwei, und innerhalb eines `[song]` wird jede Stimme gesungen.
 
-Eine Tilde mitten in einer Zeile, etwa `about ~5 minutes`, ist nur Text. Um eine gewöhnliche Zeile mit einer zu beginnen, schreiben Sie `\~`. Weitere Hinweise finden Sie unter [Musicals](topic:admin-musicals).
+Eine Tilde mitten in einer Zeile, etwa `about ~5 minutes`, ist nur Text. Um eine gewöhnliche Zeile mit einer zu beginnen, schreiben Sie `\~`. Weitere Hinweise finden Sie unter [Musicals](admin-musicals.md).
 
 ## Mehrere Zeilen in einem Untertitel
 
@@ -148,15 +148,15 @@ Eine Zeile in eckigen Klammern ist ein Befehl. Bei Namen wird nicht zwischen Gro
 | `[image: file.png]` | Zeigt ein Bild im Vollbild. Fügen Sie mit `[image: file.png \| text]` eine Beschriftung hinzu |
 | `![caption](file.png)` | Dasselbe, in Markdown-Schreibweise |
 | `[fullscreen: text]` | Zeigt großen Text im Vollbild. Für mehrere Zeilen verwenden Sie `[fullscreen]` … `[/fullscreen]` |
-| `[loop]` … `[/loop]` | Eine sich wiederholende Folge von Vollbild-Elementen für die Zeit vor der Show oder die Pause. Siehe [Schleifen](topic:admin-loops) |
-| `[together]` … `[/together]` | Zwei oder mehr gleichzeitig gezeigte Stimmen. Siehe [Lieder und Musik](topic:admin-musicals) |
-| `[song: title]` … `[/song]` | Ein Lied: Jede Zeile darin wird als gesungener Text gezeigt. Siehe [Lieder und Musik](topic:admin-musicals) |
+| `[loop]` … `[/loop]` | Eine sich wiederholende Folge von Vollbild-Elementen für die Zeit vor der Show oder die Pause. Siehe [Schleifen](admin-loops.md) |
+| `[together]` … `[/together]` | Zwei oder mehr gleichzeitig gezeigte Stimmen. Siehe [Lieder und Musik](admin-musicals.md) |
+| `[song: title]` … `[/song]` | Ein Lied: Jede Zeile darin wird als gesungener Text gezeigt. Siehe [Lieder und Musik](admin-musicals.md) |
 | `[section: name]` | Ein Lesezeichen für den Operator |
 | `[note: text]` | Eine Notiz für den Operator |
-| `[language: es]` | Kennzeichnet eine übersetzte Show-Datei. Siehe [Sprachen](topic:admin-languages) |
+| `[language: es]` | Kennzeichnet eine übersetzte Show-Datei. Siehe [Sprachen](admin-languages.md) |
 | `[settings]` … `[/settings]` | Titel und Erscheinungsbild der Show. Siehe *Show-Einstellungen* oben |
 
-Die Zeitangaben haben nur innerhalb einer [Schleife](topic:admin-loops) eine Bedeutung: `| 15s` nach einem Bild oder Vollbildtext und `[blank: 3s]`. Außerhalb einer Schleife bleibt ein Bild oder Vollbildtext stehen, bis der Operator weitergeht, eine Zeitangabe wird ignoriert und als Warnung gemeldet, ebenso eine Zeit bei `[blank]`.
+Die Zeitangaben haben nur innerhalb einer [Schleife](admin-loops.md) eine Bedeutung: `| 15s` nach einem Bild oder Vollbildtext und `[blank: 3s]`. Außerhalb einer Schleife bleibt ein Bild oder Vollbildtext stehen, bis der Operator weitergeht, eine Zeitangabe wird ignoriert und als Warnung gemeldet, ebenso eine Zeit bei `[blank]`.
 
 ```showfile
 [clear]

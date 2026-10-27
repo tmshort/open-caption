@@ -107,7 +107,7 @@ OLIVER: ~ Where is love? ~ || NANCY: ~ Who will buy? ~
 
 Les voix qui s'ajoutent **l'une après l'autre** sont des lignes séparées : appuyez sur Espace pour chacune. N'utilisez `[together]` que pour des lignes qui apparaissent au même instant. Un bloc `[together]` ne contient que des lignes de texte, en exige au moins deux, et dans un `[song]` toutes les voix sont chantées.
 
-Un tilde au milieu d'une ligne, comme `about ~5 minutes`, n'est que du texte. Pour commencer une ligne ordinaire par un tilde, écrivez `\~`. Voir [Comédies musicales](topic:admin-musicals) pour d'autres conseils.
+Un tilde au milieu d'une ligne, comme `about ~5 minutes`, n'est que du texte. Pour commencer une ligne ordinaire par un tilde, écrivez `\~`. Voir [Comédies musicales](admin-musicals.md) pour d'autres conseils.
 
 ## Plusieurs lignes dans un sous-titre
 
@@ -148,15 +148,15 @@ Une ligne entre crochets est une commande. Les noms ne distinguent pas les majus
 | `[image: file.png]` | Affiche une image en plein écran. Ajoutez une légende avec `[image: file.png \| text]` |
 | `![caption](file.png)` | Pareil, écrit à la manière de Markdown |
 | `[fullscreen: text]` | Affiche un grand texte en plein écran. Pour plusieurs lignes, utilisez `[fullscreen]` … `[/fullscreen]` |
-| `[loop]` … `[/loop]` | Un ensemble répété d'éléments plein écran pour l'avant-spectacle ou l'entracte. Voir [Boucles](topic:admin-loops) |
-| `[together]` … `[/together]` | Deux voix ou plus montrées en même temps. Voir [Chansons et musique](topic:admin-musicals) |
-| `[song: title]` … `[/song]` | Une chanson : chaque ligne à l'intérieur est affichée comme une parole chantée. Voir [Chansons et musique](topic:admin-musicals) |
+| `[loop]` … `[/loop]` | Un ensemble répété d'éléments plein écran pour l'avant-spectacle ou l'entracte. Voir [Boucles](admin-loops.md) |
+| `[together]` … `[/together]` | Deux voix ou plus montrées en même temps. Voir [Chansons et musique](admin-musicals.md) |
+| `[song: title]` … `[/song]` | Une chanson : chaque ligne à l'intérieur est affichée comme une parole chantée. Voir [Chansons et musique](admin-musicals.md) |
 | `[section: name]` | Un signet pour l'opérateur |
 | `[note: text]` | Une note pour l'opérateur |
-| `[language: es]` | Marque un fichier de spectacle traduit. Voir [Langues](topic:admin-languages) |
+| `[language: es]` | Marque un fichier de spectacle traduit. Voir [Langues](admin-languages.md) |
 | `[settings]` … `[/settings]` | Le titre et l'apparence du spectacle. Voir *Réglages du spectacle* plus haut |
 
-Les options de durée n'ont de sens que dans une [boucle](topic:admin-loops) : `| 15s` après une image ou un texte plein écran, et `[blank: 3s]`. En dehors d'une boucle, une image ou un texte plein écran reste affiché jusqu'à ce que l'opérateur passe à la suite, la durée est ignorée et signalée par un avertissement, tout comme une durée sur `[blank]`.
+Les options de durée n'ont de sens que dans une [boucle](admin-loops.md) : `| 15s` après une image ou un texte plein écran, et `[blank: 3s]`. En dehors d'une boucle, une image ou un texte plein écran reste affiché jusqu'à ce que l'opérateur passe à la suite, la durée est ignorée et signalée par un avertissement, tout comme une durée sur `[blank]`.
 
 ```showfile
 [clear]

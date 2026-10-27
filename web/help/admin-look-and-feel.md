@@ -9,7 +9,7 @@ The **Look** step sets how captions appear on every audience device. The default
 - **Speaker name position:** above the line (the default), **beside the text** on the same line (in bold), or **in a column** to the left of the text, like a script. Voices shown together always put the name beside their own text.
 - **Pre-show message:** shown until the first line is sent, if the show file does not begin with a loop.
 
-Changes are saved with **Save look** and reach connected devices straight away. **Save look writes your choices into the `[settings]` block at the top of the show file** (see [Writing a show file](topic:admin-writing-a-show-file)), so the show file carries its own look wherever it is copied; you can also edit that block by hand. Anything the show file does not set uses the defaults from `config.yaml` (its `defaults` section), which in turn start from the program's built-in values. If the Show file editor has unsaved changes, save them before saving the look.
+Changes are saved with **Save look** and reach connected devices straight away. **Save look writes your choices into the `[settings]` block at the top of the show file** (see [Writing a show file](admin-writing-a-show-file.md)), so the show file carries its own look wherever it is copied; you can also edit that block by hand. Anything the show file does not set uses the defaults from `config.yaml` (its `defaults` section), which in turn start from the program's built-in values. If the Show file editor has unsaved changes, save them before saving the look.
 
 ## A screen for the whole room
 

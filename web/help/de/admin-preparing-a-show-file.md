@@ -64,4 +64,4 @@ Um aus einer Datei eine **neue Show** zu beginnen, verwenden Sie im Schritt Show
 
 - Lesen Sie die Datei einmal von oben nach unten so, wie es das Publikum täte, nicht wie ein Korrekturleser.
 - Prüfen Sie, dass jeder `[image: ...]`-Name zu einem hochgeladenen Bild passt und dass jedes `[loop]`, `[song]`, `[together]` und `[fullscreen]` seine abschließende Zeile hat.
-- Geben Sie dem Bediener eine Kopie der Datei und die Abschnittsnamen, damit er seine Stelle findet. [Lieder und Musik](topic:admin-musicals), [Schleifen](topic:admin-loops) und [Sprachen](topic:admin-languages) erklären diese Teile im Einzelnen.
+- Geben Sie dem Bediener eine Kopie der Datei und die Abschnittsnamen, damit er seine Stelle findet. [Lieder und Musik](admin-musicals.md), [Schleifen](admin-loops.md) und [Sprachen](admin-languages.md) erklären diese Teile im Einzelnen.

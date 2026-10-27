@@ -24,22 +24,22 @@ Renomear, Duplicar, Exportar, Arquivar e Excluir estão no menu **Mais ▾** de 
 
 ## Antes de começar
 
-- Este computador precisa estar na mesma rede WiFi dos telefones e tablets do público. Veja [Rede e conexão](topic:admin-network).
+- Este computador precisa estar na mesma rede WiFi dos telefones e tablets do público. Veja [Rede e conexão](admin-network.md).
 - A senha de administrador e a de operador estão em `config.yaml`; elas também apareceram no console na primeira vez que o programa iniciou. A página do operador tem a sua própria senha, para que você possa entregá-la a outra pessoa sem dar acesso à configuração. No computador que executa o programa, Configuração e a página do operador abrem **sem senha** quando o endereço começa com `localhost`, `127.0.0.1` ou `[::1]` (a pessoa nesse computador é tratada como administrador). Os outros computadores, e qualquer requisição retransmitida por um proxy, continuam entrando com senha. Defina `access.local_auto_login: false` em `config.yaml` se outras pessoas puderem entrar neste computador.
 - A configuração, a página do operador e esta ajuda estão disponíveis em inglês, espanhol, francês, alemão, italiano e português. Use o menu de idioma no alto de cada página; a escolha fica lembrada nesse navegador.
 - Seu trabalho fica salvo neste computador. Use **Exportar** (menu **Mais ▾** de um espetáculo) na etapa Espetáculos para fazer uma cópia de segurança que você possa levar a outro computador. A exportação é um `.zip` com `show.md` (o arquivo do espetáculo, com título e aparência), um `show.<idioma>.md` para cada tradução e uma pasta `assets` com as imagens; **Importar** transforma um zip desses em um novo espetáculo, e também aceita um arquivo de espetáculo de texto simples (`.md` ou `.txt`, com qualquer nome) como novo espetáculo.
 
 ## Novo nos arquivos de espetáculo?
 
-Um arquivo do espetáculo é só texto. Cada linha é uma legenda, e um toque na barra de espaço envia uma linha. Para todo o trabalho, do texto ao arquivo pronto (incluindo editar no seu próprio programa e trazer o arquivo de volta), leia [Preparar um arquivo do espetáculo](topic:admin-preparing-a-show-file). As marcações estão listadas em [Escrever um arquivo do espetáculo](topic:admin-writing-a-show-file). Ou crie o espetáculo de exemplo e veja como ele foi escrito. Um modelo para baixar está em [sample-show.md](../../sample/sample-show.md).
+Um arquivo do espetáculo é só texto. Cada linha é uma legenda, e um toque na barra de espaço envia uma linha. Para todo o trabalho, do texto ao arquivo pronto (incluindo editar no seu próprio programa e trazer o arquivo de volta), leia [Preparar um arquivo do espetáculo](admin-preparing-a-show-file.md). As marcações estão listadas em [Escrever um arquivo do espetáculo](admin-writing-a-show-file.md). Ou crie o espetáculo de exemplo e veja como ele foi escrito. Um modelo para baixar está em [sample-show.md](../../sample/sample-show.md).
 
 ## Planejar o equipamento
 
-Para saber o que comprar, onde pôr o ponto de acesso WiFi e ter uma lista de verificação para o dia, leia o [guia de uso](topic:admin-usage-guide). O [guia de rede do local](topic:admin-venue-network-guide) é para quem cuida do WiFi do prédio.
+Para saber o que comprar, onde pôr o ponto de acesso WiFi e ter uma lista de verificação para o dia, leia o [guia de uso](../../../docs/i18n/pt/usage-guide.md). O [guia de rede do local](../../../docs/i18n/pt/venue-network-guide.md) é para quem cuida do WiFi do prédio.
 
 ## Para onde ir em seguida
 
-- [Musicais](topic:admin-musicals)
-- [Escrever um arquivo do espetáculo](topic:admin-writing-a-show-file)
-- [Laços: antes do espetáculo e intervalo](topic:admin-loops)
-- [Solução de problemas](topic:admin-troubleshooting)
+- [Musicais](admin-musicals.md)
+- [Escrever um arquivo do espetáculo](admin-writing-a-show-file.md)
+- [Laços: antes do espetáculo e intervalo](admin-loops.md)
+- [Solução de problemas](admin-troubleshooting.md)

@@ -50,7 +50,7 @@ A show file can do the same with the `[blank]` and `[clear]` commands; they appe
 - A one-off announcement such as "The show will resume shortly" can be sent with **Announcement…**. Press **Back** to remove it. While it is on the screens, a blue banner on this page quotes it.
 - **Go to standby…** (top right) takes the show off the audience's screens: they see the standby screen again, and the show keeps its place. **START** puts it back on air exactly where it was.
 
-See [the keyboard](topic:operator-keyboard) and [If something goes wrong](topic:operator-if-something-goes-wrong).
+See [the keyboard](operator-keyboard.md) and [If something goes wrong](operator-if-something-goes-wrong.md).
 
 ## After the show: the audience report
 

@@ -18,4 +18,4 @@ Subir un archivo con el mismo nombre lo reemplaza. Eliminar una imagen que el ar
 
 ## En un bucle
 
-Las imágenes de un bucle se turnan en pantalla: `[image: patrocinadores.png | 15s]` muestra esa durante 15 segundos. Consulte [Bucles](topic:admin-loops).
+Las imágenes de un bucle se turnan en pantalla: `[image: patrocinadores.png | 15s]` muestra esa durante 15 segundos. Consulte [Bucles](admin-loops.md).

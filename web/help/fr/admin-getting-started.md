@@ -24,22 +24,22 @@ Renommer, Dupliquer, Exporter, Archiver et Supprimer se trouvent dans le menu **
 
 ## Avant de commencer
 
-- Cet ordinateur doit être sur le même réseau WiFi que les téléphones et tablettes du public. Voir [Réseau et connexion](topic:admin-network).
+- Cet ordinateur doit être sur le même réseau WiFi que les téléphones et tablettes du public. Voir [Réseau et connexion](admin-network.md).
 - Le mot de passe administrateur et le mot de passe opérateur se trouvent dans `config.yaml` ; ils ont aussi été affichés dans la console au premier démarrage du programme. La page de l'opérateur a son propre mot de passe, pour que vous puissiez le confier à quelqu'un d'autre sans lui donner accès à la configuration. Sur l'ordinateur qui exécute le programme, la Configuration et la page de l'opérateur s'ouvrent **sans mot de passe** lorsque l'adresse commence par `localhost`, `127.0.0.1` ou `[::1]` (la personne devant cet ordinateur est considérée comme l'administrateur). Les autres ordinateurs, et toute requête relayée par un proxy, se connectent toujours avec un mot de passe. Mettez `access.local_auto_login: false` dans `config.yaml` si d'autres personnes peuvent ouvrir une session sur cet ordinateur.
 - La configuration, la page de l'opérateur et cette aide sont disponibles en anglais, espagnol, français, allemand, italien et portugais. Utilisez le menu de langue en haut de chaque page ; le choix est mémorisé dans ce navigateur.
 - Votre travail est enregistré sur cet ordinateur. Utilisez **Exporter** (menu **Plus ▾** d'un spectacle) à l'étape Spectacles pour faire une sauvegarde que vous pourrez emporter sur un autre ordinateur. L'exportation est un `.zip` contenant `show.md` (le fichier du spectacle, avec son titre et son apparence), un `show.<langue>.md` pour chaque traduction et un dossier `assets` d'images ; **Importer** transforme un tel zip en nouveau spectacle, et accepte aussi un fichier de spectacle en texte brut (`.md` ou `.txt`, de n'importe quel nom) comme nouveau spectacle.
 
 ## Nouveau avec les fichiers de spectacle ?
 
-Un fichier du spectacle est simplement du texte. Chaque ligne est un sous-titre, et une pression sur la barre d'espace envoie une ligne. Pour tout le travail, du texte au fichier terminé (y compris la modification dans votre propre programme et le retour du fichier), lisez [Préparer un fichier de spectacle](topic:admin-preparing-a-show-file). Les marquages sont énumérés dans [Écrire un fichier du spectacle](topic:admin-writing-a-show-file). Ou créez le spectacle d'exemple et regardez comment il est écrit. Un modèle à télécharger se trouve à l'adresse [sample-show.md](../../sample/sample-show.md).
+Un fichier du spectacle est simplement du texte. Chaque ligne est un sous-titre, et une pression sur la barre d'espace envoie une ligne. Pour tout le travail, du texte au fichier terminé (y compris la modification dans votre propre programme et le retour du fichier), lisez [Préparer un fichier de spectacle](admin-preparing-a-show-file.md). Les marquages sont énumérés dans [Écrire un fichier du spectacle](admin-writing-a-show-file.md). Ou créez le spectacle d'exemple et regardez comment il est écrit. Un modèle à télécharger se trouve à l'adresse [sample-show.md](../../sample/sample-show.md).
 
 ## Prévoir le matériel
 
-Pour savoir quoi acheter, où placer le point d'accès WiFi et disposer d'une liste de vérification pour le jour J, lisez le [guide d'utilisation](topic:admin-usage-guide). Le [guide réseau de la salle](topic:admin-venue-network-guide) s'adresse à la personne qui s'occupe du WiFi du bâtiment.
+Pour savoir quoi acheter, où placer le point d'accès WiFi et disposer d'une liste de vérification pour le jour J, lisez le [guide d'utilisation](../../../docs/i18n/fr/usage-guide.md). Le [guide réseau de la salle](../../../docs/i18n/fr/venue-network-guide.md) s'adresse à la personne qui s'occupe du WiFi du bâtiment.
 
 ## Où aller ensuite
 
-- [Comédies musicales](topic:admin-musicals)
-- [Écrire un fichier du spectacle](topic:admin-writing-a-show-file)
-- [Boucles : avant le spectacle et entracte](topic:admin-loops)
-- [Dépannage](topic:admin-troubleshooting)
+- [Comédies musicales](admin-musicals.md)
+- [Écrire un fichier du spectacle](admin-writing-a-show-file.md)
+- [Boucles : avant le spectacle et entracte](admin-loops.md)
+- [Dépannage](admin-troubleshooting.md)

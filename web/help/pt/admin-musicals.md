@@ -65,4 +65,4 @@ That I've been dreaming of?
 MRS. CORNEY: That's quite enough of that!
 ```
 
-Veja também [Escrever um arquivo do espetáculo](topic:admin-writing-a-show-file).
+Veja também [Escrever um arquivo do espetáculo](admin-writing-a-show-file.md).

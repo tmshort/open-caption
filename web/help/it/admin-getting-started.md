@@ -24,22 +24,22 @@ Rinomina, Duplica, Esporta, Archivia ed Elimina sono nel menu **Altro ▾** di o
 
 ## Prima di iniziare
 
-- Questo computer deve essere nella stessa rete WiFi dei telefoni e tablet del pubblico. Vedi [Rete e connessione](topic:admin-network).
+- Questo computer deve essere nella stessa rete WiFi dei telefoni e tablet del pubblico. Vedi [Rete e connessione](admin-network.md).
 - La password amministratore e la password operatore sono in `config.yaml`; sono state anche mostrate nella console al primo avvio del programma. La pagina dell'operatore ha una password propria, così puoi darla a un'altra persona senza concederle l'accesso alla configurazione. Sul computer che esegue il programma, Configurazione e la pagina dell'operatore si aprono **senza password** quando l'indirizzo inizia con `localhost`, `127.0.0.1` o `[::1]` (la persona a quel computer è considerata amministratore). Gli altri computer, e qualsiasi richiesta inoltrata da un proxy, accedono ancora con una password. Imposta `access.local_auto_login: false` in `config.yaml` se altre persone possono accedere a questo computer.
 - La configurazione, la pagina dell'operatore e questo aiuto sono disponibili in inglese, spagnolo, francese, tedesco, italiano e portoghese. Usa il menu della lingua in alto in ogni pagina; la scelta viene ricordata in quel browser.
 - Il tuo lavoro viene salvato su questo computer. Usa **Esporta** (menu **Altro ▾** di uno spettacolo) nel passo Spettacoli per fare una copia di sicurezza da portare su un altro computer. L'esportazione è uno `.zip` che contiene `show.md` (il file dello spettacolo, con titolo e aspetto), un `show.<lingua>.md` per ogni traduzione e una cartella `assets` con le immagini; **Importa** trasforma uno zip così in un nuovo spettacolo, e accetta anche un file dello spettacolo di testo semplice (`.md` o `.txt`, con qualsiasi nome) come nuovo spettacolo.
 
 ## Sei nuovo ai file dello spettacolo?
 
-Un file dello spettacolo è solo testo. Ogni riga è un sottotitolo, e una pressione della barra spaziatrice invia una riga. Per tutto il lavoro, dal copione al file finito (compresa la modifica nel tuo programma e il ritorno del file), leggi [Preparare un file dello spettacolo](topic:admin-preparing-a-show-file). I marcatori sono elencati in [Scrivere un file dello spettacolo](topic:admin-writing-a-show-file). Oppure crea lo spettacolo di esempio e guarda come è scritto. Un modello scaricabile si trova su [sample-show.md](../../sample/sample-show.md).
+Un file dello spettacolo è solo testo. Ogni riga è un sottotitolo, e una pressione della barra spaziatrice invia una riga. Per tutto il lavoro, dal copione al file finito (compresa la modifica nel tuo programma e il ritorno del file), leggi [Preparare un file dello spettacolo](admin-preparing-a-show-file.md). I marcatori sono elencati in [Scrivere un file dello spettacolo](admin-writing-a-show-file.md). Oppure crea lo spettacolo di esempio e guarda come è scritto. Un modello scaricabile si trova su [sample-show.md](../../sample/sample-show.md).
 
 ## Pianificare l'attrezzatura
 
-Per sapere cosa acquistare, dove mettere il punto di accesso WiFi e avere una lista di controllo per il giorno dello spettacolo, leggi la [guida all'uso](topic:admin-usage-guide). La [guida di rete del locale](topic:admin-venue-network-guide) è per chi si occupa del WiFi dell'edificio.
+Per sapere cosa acquistare, dove mettere il punto di accesso WiFi e avere una lista di controllo per il giorno dello spettacolo, leggi la [guida all'uso](../../../docs/i18n/it/usage-guide.md). La [guida di rete del locale](../../../docs/i18n/it/venue-network-guide.md) è per chi si occupa del WiFi dell'edificio.
 
 ## Dove andare dopo
 
-- [Musical](topic:admin-musicals)
-- [Scrivere un file dello spettacolo](topic:admin-writing-a-show-file)
-- [Cicli: prima dello spettacolo e intervallo](topic:admin-loops)
-- [Risoluzione dei problemi](topic:admin-troubleshooting)
+- [Musical](admin-musicals.md)
+- [Scrivere un file dello spettacolo](admin-writing-a-show-file.md)
+- [Cicli: prima dello spettacolo e intervallo](admin-loops.md)
+- [Risoluzione dei problemi](admin-troubleshooting.md)

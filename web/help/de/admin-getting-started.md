@@ -24,22 +24,22 @@ Umbenennen, Duplizieren, Exportieren, Archivieren und Löschen finden Sie im Men
 
 ## Bevor Sie anfangen
 
-- Dieser Computer muss im selben WLAN sein wie die Telefone und Tablets des Publikums. Siehe [Netzwerk und Verbindung](topic:admin-network).
+- Dieser Computer muss im selben WLAN sein wie die Telefone und Tablets des Publikums. Siehe [Netzwerk und Verbindung](admin-network.md).
 - Das Administrator- und das Operator-Passwort stehen in `config.yaml`; sie wurden auch beim ersten Start des Programms in der Konsole ausgegeben. Die Operator-Seite hat ein eigenes Passwort, damit Sie es jemand anderem geben können, ohne Zugang zur Einrichtung zu gewähren. Auf dem Computer, auf dem das Programm läuft, öffnen sich Einrichtung und Bedienerseite **ohne Passwort**, wenn die Adresse mit `localhost`, `127.0.0.1` oder `[::1]` beginnt (der Person an diesem Computer wird als Admin vertraut). Andere Computer und jede über einen Proxy weitergeleitete Anfrage melden sich weiterhin mit Passwort an. Setzen Sie `access.local_auto_login: false` in `config.yaml`, wenn sich andere Personen an diesem Computer anmelden können.
 - Die Einrichtung, die Operator-Seite und diese Hilfe gibt es auf Englisch, Spanisch, Französisch, Deutsch, Italienisch und Portugiesisch. Verwenden Sie das Sprachmenü oben auf jeder Seite; die Wahl wird in diesem Browser gemerkt.
 - Ihre Arbeit wird auf diesem Computer gespeichert. Mit **Exportieren** (Menü **Mehr ▾** einer Show) im Schritt Shows machen Sie eine Sicherung, die Sie auf einen anderen Computer mitnehmen können. Der Export ist eine `.zip`-Datei mit `show.md` (der Show-Datei samt Titel und Erscheinungsbild), je einer `show.<Sprache>.md` pro Übersetzung und einem Ordner `assets` mit den Bildern; **Importieren** macht aus einem solchen Zip eine neue Show und nimmt auch eine einfache Show-Textdatei (`.md` oder `.txt`, mit beliebigem Namen) als neue Show.
 
 ## Neu bei Show-Dateien?
 
-Eine Show-Datei ist einfach Text. Jede Zeile ist ein Untertitel, und ein Druck auf die Leertaste sendet eine Zeile. Für die ganze Arbeit, vom Stück bis zur fertigen Datei (auch das Bearbeiten im eigenen Programm und das Zurückholen der Datei), lesen Sie [Eine Show-Datei vorbereiten](topic:admin-preparing-a-show-file). Die Auszeichnungen stehen in [Eine Show-Datei schreiben](topic:admin-writing-a-show-file). Oder legen Sie die Beispiel-Show an und sehen Sie sich an, wie sie geschrieben ist. Eine Vorlage zum Herunterladen finden Sie unter [sample-show.md](../../sample/sample-show.md).
+Eine Show-Datei ist einfach Text. Jede Zeile ist ein Untertitel, und ein Druck auf die Leertaste sendet eine Zeile. Für die ganze Arbeit, vom Stück bis zur fertigen Datei (auch das Bearbeiten im eigenen Programm und das Zurückholen der Datei), lesen Sie [Eine Show-Datei vorbereiten](admin-preparing-a-show-file.md). Die Auszeichnungen stehen in [Eine Show-Datei schreiben](admin-writing-a-show-file.md). Oder legen Sie die Beispiel-Show an und sehen Sie sich an, wie sie geschrieben ist. Eine Vorlage zum Herunterladen finden Sie unter [sample-show.md](../../sample/sample-show.md).
 
 ## Die Ausstattung planen
 
-Was Sie kaufen sollten, wo der WLAN-Zugangspunkt stehen soll und eine Checkliste für den Tag der Vorstellung finden Sie in der [Bedienungsanleitung](topic:admin-usage-guide). Der [Netzwerkleitfaden für das Haus](topic:admin-venue-network-guide) richtet sich an die Person, die das WLAN des Gebäudes betreut.
+Was Sie kaufen sollten, wo der WLAN-Zugangspunkt stehen soll und eine Checkliste für den Tag der Vorstellung finden Sie in der [Bedienungsanleitung](../../../docs/i18n/de/usage-guide.md). Der [Netzwerkleitfaden für das Haus](../../../docs/i18n/de/venue-network-guide.md) richtet sich an die Person, die das WLAN des Gebäudes betreut.
 
 ## Wie es weitergeht
 
-- [Musicals](topic:admin-musicals)
-- [Eine Show-Datei schreiben](topic:admin-writing-a-show-file)
-- [Schleifen: vor der Show und Pause](topic:admin-loops)
-- [Fehlerbehebung](topic:admin-troubleshooting)
+- [Musicals](admin-musicals.md)
+- [Eine Show-Datei schreiben](admin-writing-a-show-file.md)
+- [Schleifen: vor der Show und Pause](admin-loops.md)
+- [Fehlerbehebung](admin-troubleshooting.md)

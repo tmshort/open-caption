@@ -42,4 +42,4 @@ Para indicar al público qué palabras van con qué línea, mantenga las líneas
 - **Recuentos:** la página del operador muestra cuántos dispositivos leen cada idioma, por ejemplo `👥 83 (en 60 · es 23)`.
 - **Copias de seguridad:** Exportar guarda todos los idiomas; Duplicar también los copia.
 
-Consulte también [Escribir un archivo del espectáculo](topic:admin-writing-a-show-file).
+Consulte también [Escribir un archivo del espectáculo](admin-writing-a-show-file.md).

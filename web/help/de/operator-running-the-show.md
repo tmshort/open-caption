@@ -50,7 +50,7 @@ Eine Show-Datei kann dasselbe mit den Befehlen `[blank]` und `[clear]` tun; in I
 - Eine einmalige Durchsage wie „Die Show geht gleich weiter“ lässt sich mit **Durchsage …** senden. Mit **Zurück** entfernen Sie sie. Solange sie auf den Bildschirmen steht, zitiert sie ein blaues Banner auf dieser Seite.
 - **In den Standby …** (oben rechts) nimmt die Show von den Bildschirmen des Publikums: Es sieht wieder den Standby-Bildschirm, und die Show behält ihren Platz. **START** bringt sie genau dort wieder auf Sendung.
 
-Siehe [die Tastatur](topic:operator-keyboard) und [Wenn etwas schiefgeht](topic:operator-if-something-goes-wrong).
+Siehe [die Tastatur](operator-keyboard.md) und [Wenn etwas schiefgeht](operator-if-something-goes-wrong.md).
 
 ## Nach der Show: der Publikumsbericht
 

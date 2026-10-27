@@ -50,7 +50,7 @@ Um arquivo do espetáculo pode fazer o mesmo com os comandos `[blank]` e `[clear
 - Um aviso avulso como «O espetáculo recomeça em instantes» pode ser enviado com **Aviso…**. Aperte **Voltar** para removê-lo. Enquanto está nas telas, um aviso azul desta página o cita.
 - **Colocar em espera…** (no alto, à direita) tira o espetáculo das telas do público: elas voltam a ver a tela de espera e o espetáculo mantém o seu lugar. **INICIAR** o coloca de volta no ar exatamente onde estava.
 
-Veja [o teclado](topic:operator-keyboard) e [Se algo der errado](topic:operator-if-something-goes-wrong).
+Veja [o teclado](operator-keyboard.md) e [Se algo der errado](operator-if-something-goes-wrong.md).
 
 ## Depois do espetáculo: o relatório do público
 

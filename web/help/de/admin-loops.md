@@ -27,7 +27,7 @@ Untertitel, `[clear]`, Abschnitte, Notizen und andere Schleifen dürfen nicht in
 - Jede andere Schleife (zum Beispiel in der Pause) startet, wenn der Operator die Leertaste darauf drückt.
 - Die Leertaste beendet die Schleife und sendet die nächste Zeile. **Umschalt+Q** stoppt die Schleife und lässt den Bildschirm leer. **Zurück** kehrt zur Schleife zurück und startet sie beim ersten Element neu.
 
-Die Liste des Operators zeigt eine Schleife als einen Eintrag, der sich aufklappen lässt, um ihre Elemente aufzulisten. Siehe [Schleifen für den Operator](topic:operator-loops).
+Die Liste des Operators zeigt eine Schleife als einen Eintrag, der sich aufklappen lässt, um ihre Elemente aufzulisten. Siehe [Schleifen für den Operator](operator-loops.md).
 
 ## Ein Countdown-Timer
 

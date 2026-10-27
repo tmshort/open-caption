@@ -27,7 +27,7 @@ Les sous-titres, `[clear]`, les sections, les notes et les autres boucles ne peu
 - Toute autre boucle (par exemple à l'entracte) démarre quand l'opérateur appuie sur la barre d'espace dessus.
 - La barre d'espace termine la boucle et envoie la ligne suivante. **Maj+Q** arrête la boucle et laisse l'écran vide. **Retour** revient à la boucle et la redémarre au premier élément.
 
-La liste de l'opérateur montre une boucle comme une seule entrée qui se déplie pour lister ses éléments. Voir [Les boucles pour l'opérateur](topic:operator-loops).
+La liste de l'opérateur montre une boucle comme une seule entrée qui se déplie pour lister ses éléments. Voir [Les boucles pour l'opérateur](operator-loops.md).
 
 ## Un minuteur de compte à rebours
 

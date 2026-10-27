@@ -64,4 +64,4 @@ Per iniziare uno **spettacolo nuovo** da un file, usa **Importa uno spettacolo**
 
 - Leggi il file una volta dall'inizio alla fine come farebbe il pubblico, non come un correttore di bozze.
 - Controlla che ogni nome in `[image: ...]` corrisponda a un'immagine caricata, e che ogni `[loop]`, `[song]`, `[together]` e `[fullscreen]` abbia la riga di chiusura.
-- Dai all'operatore una copia del file e i nomi delle sezioni, così sa dove ritrovare il punto. [Canzoni e musica](topic:admin-musicals), [Cicli](topic:admin-loops) e [Lingue](topic:admin-languages) spiegano quelle parti nel dettaglio.
+- Dai all'operatore una copia del file e i nomi delle sezioni, così sa dove ritrovare il punto. [Canzoni e musica](admin-musicals.md), [Cicli](admin-loops.md) e [Lingue](admin-languages.md) spiegano quelle parti nel dettaglio.

@@ -18,4 +18,4 @@ Enviar um arquivo com o mesmo nome o substitui. Excluir uma imagem que o arquivo
 
 ## Em um laço
 
-As imagens de um laço se alternam na tela: `[image: patrocinadores.png | 15s]` mostra essa por 15 segundos. Veja [Laços](topic:admin-loops).
+As imagens de um laço se alternam na tela: `[image: patrocinadores.png | 15s]` mostra essa por 15 segundos. Veja [Laços](admin-loops.md).

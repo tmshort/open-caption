@@ -22,15 +22,15 @@ Os dispositivos que adormeceram se desconectam e se reconectam sozinhos quando a
 
 Imagens grandes demoram num WiFi cheio. Procure na etapa Imagens os arquivos marcados como «grande» e troque-os por outros menores.
 
-Para a lista completa de verificações do lado da rede, veja o [guia de rede do local](topic:admin-venue-network-guide).
+Para a lista completa de verificações do lado da rede, veja o [guia de rede do local](../../../docs/i18n/pt/venue-network-guide.md).
 
 ## Falta um idioma para o público
 
-Abra a etapa Arquivo do espetáculo e olhe a aba desse idioma: um ⚠ significa que o arquivo do espetáculo dele já não tem as mesmas deixas do principal. Corrija o erro mostrado; o idioma volta assim que você salvar. Veja [Idiomas](topic:admin-languages).
+Abra a etapa Arquivo do espetáculo e olhe a aba desse idioma: um ⚠ significa que o arquivo do espetáculo dele já não tem as mesmas deixas do principal. Corrija o erro mostrado; o idioma volta assim que você salvar. Veja [Idiomas](admin-languages.md).
 
 ## Problemas no arquivo do espetáculo
 
-Veja «O que significam os avisos» em [Escrever um arquivo do espetáculo](topic:admin-writing-a-show-file).
+Veja «O que significam os avisos» em [Escrever um arquivo do espetáculo](admin-writing-a-show-file.md).
 
 ## Senhas
 

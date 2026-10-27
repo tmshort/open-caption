@@ -18,4 +18,4 @@ Uploading a file with the same name replaces it. Deleting a picture that the sho
 
 ## In a loop
 
-Pictures in a loop take turns on screen: `[image: sponsors.png | 15s]` shows that one for 15 seconds. See [Loops](topic:admin-loops).
+Pictures in a loop take turns on screen: `[image: sponsors.png | 15s]` shows that one for 15 seconds. See [Loops](admin-loops.md).

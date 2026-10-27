@@ -27,7 +27,7 @@ Sottotitoli, `[clear]`, sezioni, note e altri cicli non possono stare dentro un 
 - Qualsiasi altro ciclo (per esempio nell'intervallo) parte quando l'operatore preme la barra spaziatrice su di esso.
 - La barra spaziatrice termina il ciclo e invia la riga successiva. **Maiusc+Q** ferma il ciclo e lascia lo schermo vuoto. **Indietro** torna al ciclo e lo riavvia dal primo elemento.
 
-L'elenco dell'operatore mostra un ciclo come una sola voce che si espande per elencarne gli elementi. Vedi [I cicli per l'operatore](topic:operator-loops).
+L'elenco dell'operatore mostra un ciclo come una sola voce che si espande per elencarne gli elementi. Vedi [I cicli per l'operatore](operator-loops.md).
 
 ## Un timer con conto alla rovescia
 

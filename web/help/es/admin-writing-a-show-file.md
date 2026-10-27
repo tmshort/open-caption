@@ -107,7 +107,7 @@ OLIVER: ~ Where is love? ~ || NANCY: ~ Who will buy? ~
 
 Las voces que se unen **una tras otra** son líneas separadas: pulse Espacio para cada una. Use `[together]` solo para líneas que aparecen en el mismo momento. Un bloque `[together]` contiene solo líneas de texto, necesita al menos dos, y dentro de un `[song]` todas las voces se cantan.
 
-Una tilde en medio de una línea, como `about ~5 minutes`, es solo texto. Para empezar una línea normal con una, escriba `\~`. Consulte [Musicales](topic:admin-musicals) para más consejos.
+Una tilde en medio de una línea, como `about ~5 minutes`, es solo texto. Para empezar una línea normal con una, escriba `\~`. Consulte [Musicales](admin-musicals.md) para más consejos.
 
 ## Varias líneas en un subtítulo
 
@@ -148,15 +148,15 @@ Una línea entre corchetes es un comando. Los nombres no distinguen mayúsculas 
 | `[image: file.png]` | Muestra una imagen a pantalla completa. Añada una leyenda con `[image: file.png \| text]` |
 | `![caption](file.png)` | Lo mismo, escrito a la manera de Markdown |
 | `[fullscreen: text]` | Muestra un texto grande a pantalla completa. Para varias líneas use `[fullscreen]` … `[/fullscreen]` |
-| `[loop]` … `[/loop]` | Un conjunto repetido de elementos a pantalla completa para la previa o el descanso. Consulte [Bucles](topic:admin-loops) |
-| `[together]` … `[/together]` | Dos o más voces mostradas al mismo tiempo. Consulte [Canciones y música](topic:admin-musicals) |
-| `[song: title]` … `[/song]` | Una canción: todas las líneas de dentro se muestran como letra cantada. Consulte [Canciones y música](topic:admin-musicals) |
+| `[loop]` … `[/loop]` | Un conjunto repetido de elementos a pantalla completa para la previa o el descanso. Consulte [Bucles](admin-loops.md) |
+| `[together]` … `[/together]` | Dos o más voces mostradas al mismo tiempo. Consulte [Canciones y música](admin-musicals.md) |
+| `[song: title]` … `[/song]` | Una canción: todas las líneas de dentro se muestran como letra cantada. Consulte [Canciones y música](admin-musicals.md) |
 | `[section: name]` | Un marcador para el operador |
 | `[note: text]` | Una nota para el operador |
-| `[language: es]` | Marca un archivo del espectáculo traducido. Consulte [Idiomas](topic:admin-languages) |
+| `[language: es]` | Marca un archivo del espectáculo traducido. Consulte [Idiomas](admin-languages.md) |
 | `[settings]` … `[/settings]` | El título y el aspecto del espectáculo. Consulte *Ajustes del espectáculo* más arriba |
 
-Las opciones de tiempo solo tienen sentido dentro de un [bucle](topic:admin-loops): `| 15s` tras una imagen o un texto a pantalla completa, y `[blank: 3s]`. Fuera de un bucle, una imagen o un texto a pantalla completa permanece hasta que el operador pasa a la siguiente línea, el tiempo se ignora y se señala como advertencia, igual que un tiempo en `[blank]`.
+Las opciones de tiempo solo tienen sentido dentro de un [bucle](admin-loops.md): `| 15s` tras una imagen o un texto a pantalla completa, y `[blank: 3s]`. Fuera de un bucle, una imagen o un texto a pantalla completa permanece hasta que el operador pasa a la siguiente línea, el tiempo se ignora y se señala como advertencia, igual que un tiempo en `[blank]`.
 
 ```showfile
 [clear]

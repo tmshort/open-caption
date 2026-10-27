@@ -42,4 +42,4 @@ Damit das Publikum erkennt, welche Wörter zu welcher Zeile gehören, halten Sie
 - **Zählungen:** Die Operator-Seite zeigt, wie viele Geräte jede Sprache lesen, zum Beispiel `👥 83 (en 60 · es 23)`.
 - **Sicherungen:** Exportieren speichert jede Sprache; Duplizieren kopiert sie ebenfalls.
 
-Siehe auch [Eine Show-Datei schreiben](topic:admin-writing-a-show-file).
+Siehe auch [Eine Show-Datei schreiben](admin-writing-a-show-file.md).

@@ -65,4 +65,4 @@ That I've been dreaming of?
 MRS. CORNEY: That's quite enough of that!
 ```
 
-See also [Writing a show file](topic:admin-writing-a-show-file).
+See also [Writing a show file](admin-writing-a-show-file.md).

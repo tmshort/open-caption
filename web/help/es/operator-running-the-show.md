@@ -50,7 +50,7 @@ Un archivo del espectáculo puede hacer lo mismo con los comandos `[blank]` y `[
 - Un aviso puntual como «El espectáculo se reanudará en breve» se puede enviar con **Anuncio…**. Pulse **Atrás** para quitarlo. Mientras está en las pantallas, un cartel azul de esta página lo cita.
 - **Poner en espera…** (arriba a la derecha) quita el espectáculo de las pantallas del público: vuelven a ver la pantalla de espera y el espectáculo conserva su lugar. **INICIAR** lo vuelve a poner en el aire exactamente donde estaba.
 
-Consulte [el teclado](topic:operator-keyboard) y [Si algo sale mal](topic:operator-if-something-goes-wrong).
+Consulte [el teclado](operator-keyboard.md) y [Si algo sale mal](operator-if-something-goes-wrong.md).
 
 ## Después del espectáculo: el informe del público
 

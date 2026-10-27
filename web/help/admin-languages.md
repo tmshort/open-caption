@@ -42,4 +42,4 @@ To tell the audience which words go with which line, keep the lines in step: if 
 - **Counts:** the operator page shows how many devices are reading each language, for example `👥 83 (en 60 · es 23)`.
 - **Backups:** Export saves every language; Duplicate copies them too.
 
-See also [Writing a show file](topic:admin-writing-a-show-file).
+See also [Writing a show file](admin-writing-a-show-file.md).

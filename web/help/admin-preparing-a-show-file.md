@@ -64,4 +64,4 @@ To start a **new show** from a file, use **Import a show** on the Shows step and
 
 - Read the file once from top to bottom as the audience would, not as a proofreader.
 - Check that every `[image: ...]` name matches an uploaded picture, and that every `[loop]`, `[song]`, `[together]` and `[fullscreen]` has its closing line.
-- Give the operator a copy of the file and the section names, so they know where to find their place. [Songs and music](topic:admin-musicals), [Loops](topic:admin-loops) and [Languages](topic:admin-languages) have the details for those parts.
+- Give the operator a copy of the file and the section names, so they know where to find their place. [Songs and music](admin-musicals.md), [Loops](admin-loops.md) and [Languages](admin-languages.md) have the details for those parts.

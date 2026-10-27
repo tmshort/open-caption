@@ -107,7 +107,7 @@ OLIVER: ~ Where is love? ~ || NANCY: ~ Who will buy? ~
 
 Le voci che entrano **una dopo l'altra** sono righe separate: premi Spazio per ognuna. Usa `[together]` solo per righe che compaiono nello stesso momento. Un blocco `[together]` contiene solo righe di testo, ne richiede almeno due, e dentro un `[song]` ogni voce è cantata.
 
-Una tilde in mezzo a una riga, come `about ~5 minutes`, è solo testo. Per iniziare una riga normale con una tilde, scrivi `\~`. Vedi [Musical](topic:admin-musicals) per altri consigli.
+Una tilde in mezzo a una riga, come `about ~5 minutes`, è solo testo. Per iniziare una riga normale con una tilde, scrivi `\~`. Vedi [Musical](admin-musicals.md) per altri consigli.
 
 ## Più righe in un sottotitolo
 
@@ -148,15 +148,15 @@ Una riga tra parentesi quadre è un comando. I nomi non distinguono maiuscole e 
 | `[image: file.png]` | Mostra un'immagine a schermo intero. Aggiungi una didascalia con `[image: file.png \| text]` |
 | `![caption](file.png)` | Lo stesso, scritto alla maniera di Markdown |
 | `[fullscreen: text]` | Mostra un testo grande a schermo intero. Per più righe usa `[fullscreen]` … `[/fullscreen]` |
-| `[loop]` … `[/loop]` | Un insieme ripetuto di elementi a schermo intero per il pre-spettacolo o l'intervallo. Vedi [Cicli](topic:admin-loops) |
-| `[together]` … `[/together]` | Due o più voci mostrate nello stesso momento. Vedi [Canzoni e musica](topic:admin-musicals) |
-| `[song: title]` … `[/song]` | Una canzone: ogni riga all'interno è mostrata come testo cantato. Vedi [Canzoni e musica](topic:admin-musicals) |
+| `[loop]` … `[/loop]` | Un insieme ripetuto di elementi a schermo intero per il pre-spettacolo o l'intervallo. Vedi [Cicli](admin-loops.md) |
+| `[together]` … `[/together]` | Due o più voci mostrate nello stesso momento. Vedi [Canzoni e musica](admin-musicals.md) |
+| `[song: title]` … `[/song]` | Una canzone: ogni riga all'interno è mostrata come testo cantato. Vedi [Canzoni e musica](admin-musicals.md) |
 | `[section: name]` | Un segnalibro per l'operatore |
 | `[note: text]` | Una nota per l'operatore |
-| `[language: es]` | Segna un file dello spettacolo tradotto. Vedi [Lingue](topic:admin-languages) |
+| `[language: es]` | Segna un file dello spettacolo tradotto. Vedi [Lingue](admin-languages.md) |
 | `[settings]` … `[/settings]` | Il titolo e l'aspetto dello spettacolo. Vedi *Impostazioni dello spettacolo* sopra |
 
-Le opzioni di tempo hanno senso solo dentro un [ciclo](topic:admin-loops): `| 15s` dopo un'immagine o un testo a schermo intero, e `[blank: 3s]`. Fuori da un ciclo un'immagine o un testo a schermo intero resta finché l'operatore non passa oltre, il tempo viene ignorato e segnalato come avviso, come un tempo su `[blank]`.
+Le opzioni di tempo hanno senso solo dentro un [ciclo](admin-loops.md): `| 15s` dopo un'immagine o un testo a schermo intero, e `[blank: 3s]`. Fuori da un ciclo un'immagine o un testo a schermo intero resta finché l'operatore non passa oltre, il tempo viene ignorato e segnalato come avviso, come un tempo su `[blank]`.
 
 ```showfile
 [clear]

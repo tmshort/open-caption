@@ -50,7 +50,7 @@ Un file dello spettacolo può fare lo stesso con i comandi `[blank]` e `[clear]`
 - Un annuncio singolo come «Lo spettacolo riprenderà a breve» si può inviare con **Annuncio…**. Premi **Indietro** per toglierlo. Finché è sugli schermi, un banner blu in questa pagina lo cita.
 - **Metti in attesa…** (in alto a destra) toglie lo spettacolo dagli schermi del pubblico: rivede la schermata di attesa e lo spettacolo mantiene il suo punto. **AVVIA** lo rimette in onda esattamente dov'era.
 
-Vedi [la tastiera](topic:operator-keyboard) e [Se qualcosa va storto](topic:operator-if-something-goes-wrong).
+Vedi [la tastiera](operator-keyboard.md) e [Se qualcosa va storto](operator-if-something-goes-wrong.md).
 
 ## Dopo lo spettacolo: il rapporto sul pubblico
 

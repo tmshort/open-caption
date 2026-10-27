@@ -50,7 +50,7 @@ Un fichier de spectacle peut faire la même chose avec les commandes `[blank]` e
 - Une annonce ponctuelle comme « Le spectacle reprendra bientôt » s'envoie avec **Annonce…**. Appuyez sur **Retour** pour la retirer. Tant qu'elle est à l'écran, un bandeau bleu de cette page la cite.
 - **Mettre en attente…** (en haut à droite) retire le spectacle des écrans du public : il revoit l'écran d'attente, et le spectacle garde sa place. **DÉMARRER** le remet à l'antenne exactement où il en était.
 
-Voir [le clavier](topic:operator-keyboard) et [En cas de problème](topic:operator-if-something-goes-wrong).
+Voir [le clavier](operator-keyboard.md) et [En cas de problème](operator-if-something-goes-wrong.md).
 
 ## Après le spectacle : le rapport sur le public
 

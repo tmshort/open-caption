@@ -420,7 +420,7 @@ func TestEveryTopicAndGuideIsTranslatedIntoEveryLanguageWithTheSameShape(t *test
 					}
 				}
 			}
-			if strings.Join(s.targets, " ") != strings.Join(es.targets, " ") {
+			if strings.Join(s.targets, " ") != strings.Join(es.targets, " ") && strings.ReplaceAll(strings.Join(s.targets, " "), "docs/i18n/"+lang+"/", "docs/") != strings.Join(es.targets, " ") { // a guide is the translated file
 				t.Errorf("%s/%s: links differ: %v, English %v", lang, id, s.targets, es.targets)
 			}
 			if len(s.anchors) != len(es.anchors) {
@@ -557,5 +557,18 @@ func TestTopicFileLinksWorkLikeTopicLinks(t *testing.T) {
 	}
 	if got := link("x", "admin-nonsense/../evil.md"); strings.Contains(got, "<a") {
 		t.Errorf("a path that is not a topic file became a link: %s", got)
+	}
+}
+
+// A topic can link to a guide as its file (docs/usage-guide.md, or the translated one) so GitHub follows it; in the app it is the guide's topic.
+func TestGuideFileLinksWorkLikeTopicLinks(t *testing.T) {
+	for _, href := range []string{"../../docs/usage-guide.md", "../../../docs/i18n/es/usage-guide.md#network", "../../docs/venue-network-guide.md"} {
+		got := link("x", href)
+		if !strings.Contains(got, `data-topic="admin-`) {
+			t.Errorf("%s: %s", href, got)
+		}
+	}
+	if got := link("x", "../../docs/other.md"); strings.Contains(got, "<a ") {
+		t.Errorf("unknown file should stay text: %s", got)
 	}
 }
