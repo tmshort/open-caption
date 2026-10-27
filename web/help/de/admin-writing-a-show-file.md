@@ -128,7 +128,7 @@ Gently down the stream
 - `<!-- so -->` ist ein **Kommentar**. Niemand sieht ihn, und er darf sich über mehrere Zeilen erstrecken.
 - `[note: Text]` ist eine Erinnerung, die **nur der Operator** sieht, zum Beispiel `[note: hold for applause]`.
 - `[section: Act 2, Scene 1]` fügt in der Liste des Operators ein Lesezeichen hinzu. Notizen und Abschnitte verbrauchen nie einen Druck auf die Leertaste.
-- Zeilen, die mit `#` beginnen, sind für Überschriften in einer künftigen Version reserviert und werden ignoriert. Verwenden Sie stattdessen einen Kommentar.
+- Eine Zeile, die mit `#` und einem Leerzeichen beginnt, ist eine **Überschrift** und funktioniert wie `[section: …]`: `# Act 2` (oder `## Scene 1`, mit bis zu sechs `#`) fügt in der Liste des Operators ein Lesezeichen hinzu und wird dem Publikum nie gezeigt. Ein `#` ohne Leerzeichen dahinter (zum Beispiel ein Hashtag) wird mit einem Hinweis ignoriert; um eine Untertitelzeile mit `#` zu beginnen, schreiben Sie `\#`. Überschriften können nicht in einer Schleife stehen.
 
 ```showfile
 <!-- Act 1 captions, version 3 -->

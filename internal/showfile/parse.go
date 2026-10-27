@@ -131,14 +131,22 @@ func stripComments(src string, res *Result) string {
 	}
 }
 
+// headingRe is a Markdown heading (one to six # and a space, then the text; a closing run of # is dropped). It marks a
+// section for the operator, like [section: text].
+var headingRe = regexp.MustCompile(`^#{1,6}[ \t]+(.*?)(?:[ \t]+#+)?$`)
+
+const notHeading = "A line starting with # is a heading only when a space follows the # (# Act 2), so this line was ignored. Write \\# to start a caption with a #."
+
 func (p *parser) run() {
 	for p.i = 0; p.i < len(p.lines); p.i++ {
 		raw := strings.TrimSpace(p.lines[p.i])
 		lineNo := p.i + 1
 		switch {
 		case raw == "":
+		case headingRe.MatchString(raw): // a Markdown heading is a section marker: the same as [section: text]
+			p.directive("[section: "+headingRe.FindStringSubmatch(raw)[1]+"]", lineNo)
 		case strings.HasPrefix(raw, "#"):
-			p.diag(lineNo, SevInfo, "Lines starting with # are reserved for headings and were ignored. Use <!-- comment --> for comments or [note: …] for operator notes.")
+			p.diag(lineNo, SevInfo, notHeading)
 		case raw == "[[":
 			p.multiLine(lineNo)
 		case imageMdRe.MatchString(raw):
@@ -591,8 +599,11 @@ func (p *parser) timerItem(it Item, lineNo int) Item {
 
 func (p *parser) loopItem(t string, lineNo int) (Item, bool) {
 	switch {
+	case headingRe.MatchString(t):
+		p.diag(lineNo, SevWarning, "A heading can't go inside a loop. This line was skipped.")
+		return Item{}, false
 	case strings.HasPrefix(t, "#"):
-		p.diag(lineNo, SevInfo, "Lines starting with # are reserved for headings and were ignored.")
+		p.diag(lineNo, SevInfo, notHeading)
 		return Item{}, false
 	case imageMdRe.MatchString(t):
 		m := imageMdRe.FindStringSubmatch(t)

@@ -66,13 +66,45 @@ func TestUnclosedComment(t *testing.T) {
 	}
 }
 
-func TestHeadingsReserved(t *testing.T) {
-	r := Parse("# Title\nA\n\\# literal\n", Options{})
-	if len(r.Cues) != 2 || r.Cues[1].Text != "# literal" {
-		t.Fatalf("got %+v", r.Cues)
+// A Markdown heading marks a section for the operator, exactly like [section: text]; it takes no keypress.
+func TestMarkdownHeadingsAreSections(t *testing.T) {
+	r := Parse("# Act 1\nA\n## Scene 2, **late** ##\n###### Deep\n\\# literal\n", Options{})
+	var kinds []string
+	for _, c := range r.Cues {
+		kinds = append(kinds, string(c.Kind)+":"+c.Text)
 	}
-	if !hasDiag(r, SevInfo, "reserved for headings") {
-		t.Error("missing heading diagnostic")
+	want := "section:Act 1 caption:A section:Scene 2, late section:Deep caption:# literal"
+	if strings.Join(kinds, " ") != want {
+		t.Errorf("got %q, want %q", strings.Join(kinds, " "), want)
+	}
+	if r.Cues[2].HTML != "Scene 2, <strong>late</strong>" {
+		t.Errorf("heading text is rendered like a section's: %q", r.Cues[2].HTML)
+	}
+	same := Parse("[section: Act 1]\nA\n[section: Scene 2, **late**]\n[section: Deep]\n\\# literal\n", Options{})
+	if len(same.Cues) != len(r.Cues) {
+		t.Errorf("a heading and [section:] give different cues")
+	}
+}
+
+// A # that is not followed by a space (or seven of them) is not a heading: it is ignored, and the file says why.
+func TestHashWithoutSpaceIsIgnoredWithAnExplanation(t *testing.T) {
+	for _, in := range []string{"#hashtag", "####### seven", "#"} {
+		r := Parse("A\n"+in+"\nB\n", Options{})
+		if len(r.Cues) != 2 || !hasDiag(r, SevInfo, "heading only when a space follows") {
+			t.Errorf("%q: %+v %+v", in, r.Cues, r.Diagnostics)
+		}
+	}
+}
+
+// Headings are sections, and sections cannot go inside a loop or a [together] block.
+func TestHeadingInsideALoopOrTogetherIsRefused(t *testing.T) {
+	r := Parse("[loop]\nWelcome\n# Act 1\n[/loop]\n", Options{})
+	if !hasDiag(r, SevWarning, "heading can't go inside a loop") {
+		t.Errorf("loop: %+v", r.Diagnostics)
+	}
+	r = Parse("[together]\nALICE: a\nBOB: b\n# Act 1\n[/together]\n", Options{})
+	if !hasDiag(r, SevWarning, "can't go inside [together]") {
+		t.Errorf("together: %+v", r.Diagnostics)
 	}
 }
 

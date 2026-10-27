@@ -128,7 +128,7 @@ Gently down the stream
 - `<!-- like this -->` is a **comment**. Nobody sees it, and it may span several lines.
 - `[note: text]` is a reminder shown to the **operator only**, for example `[note: hold for applause]`.
 - `[section: Act 2, Scene 1]` adds a bookmark in the operator's list. Notes and sections never use up a press of the spacebar.
-- Lines beginning with `#` are reserved for headings in a future version and are ignored. Use a comment instead.
+- A line that starts with `#` and a space is a **heading** and works like `[section: …]`: `# Act 2` (or `## Scene 1`, with up to six `#`) adds a bookmark in the operator's list and is never shown to the audience. A `#` with no space after it (a hashtag, say) is ignored, with a note; to start a caption with `#`, write `\#`. Headings cannot go inside a loop.
 
 ```showfile
 <!-- Act 1 captions, version 3 -->

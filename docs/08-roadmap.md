@@ -70,11 +70,11 @@ Each milestone is shippable and ends with a demoable result. Tasks reference req
 - [x] Loop countdown timers (REQ-065); announcements for the operator's one-off notice
 - [x] Local automatic sign-in on the computer that runs the program (REQ-067)
 - [x] One interface for Setup and the operator page (`web/shared/ui.css`, `header.css`), a connection-lost notice, the show list's More menu, the status strip
+- [x] Markdown headings (`# Act 1`) are section markers, the same as `[section: Act 1]`
 - [x] Command line: `--check-show` (a lint for show files, sharing its analysis with Setup's editor), `--help`, the man page (`docs/open-caption.1`), the configuration reference (`docs/configuration-reference.md`)
 
 ## Stretch / Later
 - Signed/notarized macOS build; Windows installer
-- Markdown headings as section markers
 - Hashed passwords in config
 - Cue timing hints for the operator (loops already have a countdown timer)
 - Remote operator via second device with restricted view

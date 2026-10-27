@@ -128,7 +128,7 @@ Gently down the stream
 - `<!-- comme ceci -->` est un **commentaire**. Personne ne le voit, et il peut s'étendre sur plusieurs lignes.
 - `[note: texte]` est un rappel montré **à l'opérateur seul**, par exemple `[note: hold for applause]`.
 - `[section: Act 2, Scene 1]` ajoute un signet dans la liste de l'opérateur. Les notes et les sections ne consomment jamais une pression sur la barre d'espace.
-- Les lignes commençant par `#` sont réservées aux titres dans une version future et sont ignorées. Utilisez plutôt un commentaire.
+- Une ligne qui commence par `#` et une espace est un **titre** et fonctionne comme `[section: …]` : `# Act 2` (ou `## Scene 1`, avec jusqu'à six `#`) ajoute un signet dans la liste de l'opérateur et n'est jamais montré au public. Un `#` sans espace derrière (un hashtag, par exemple) est ignoré, avec une remarque ; pour commencer un sous-titre par `#`, écrivez `\#`. Les titres ne peuvent pas aller dans une boucle.
 
 ```showfile
 <!-- Act 1 captions, version 3 -->

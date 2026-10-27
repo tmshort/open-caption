@@ -128,7 +128,7 @@ Gently down the stream
 - `<!-- así -->` es un **comentario**. Nadie lo ve, y puede ocupar varias líneas.
 - `[note: texto]` es un recordatorio que ve **solo el operador**, por ejemplo `[note: hold for applause]`.
 - `[section: Act 2, Scene 1]` añade un marcador en la lista del operador. Las notas y las secciones nunca gastan una pulsación de la barra espaciadora.
-- Las líneas que empiezan con `#` están reservadas para títulos en una versión futura y se ignoran. Use un comentario en su lugar.
+- Una línea que empieza con `#` y un espacio es un **título** y funciona como `[section: …]`: `# Act 2` (o `## Scene 1`, con hasta seis `#`) añade un marcador en la lista del operador y nunca se muestra al público. Un `#` sin espacio detrás (un hashtag, por ejemplo) se ignora, con una nota; para empezar un subtítulo con `#`, escriba `\#`. Los títulos no pueden ir dentro de un bucle.
 
 ```showfile
 <!-- Act 1 captions, version 3 -->

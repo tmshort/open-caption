@@ -21,9 +21,9 @@ emits only the small set of tags it generates itself.
    Comments are never shown to anyone. A comment may also appear inside a line; it is removed, and a line left empty is ignored. (This is the only HTML the format accepts.)
    To leave a message for the **operator**, use `[note: text]` instead; it is
    visible in the operator view but never sent to the audience.
-   Lines starting with `#` are Markdown headings: they are **reserved for future
-   use** (e.g. as section markers) and ignored for now, so don't use `#` for
-   comments. A caption that must begin with a literal `#` is written `\#`.
+   A line starting with one to six `#` and a space is a Markdown **heading** and is a section marker, the same as
+   `[section: text]` (see the directive table); don't use `#` for comments. A `#` not followed by a space
+   (`#hashtag`) is ignored with an info message. A caption that must begin with a literal `#` is written `\#`.
 5. Lines in **square brackets** are **directives** (commands), case-insensitive.
 6. An optional upper-case speaker prefix `NAME: text` is rendered as a label
    (see *Speaker detection*).
@@ -107,7 +107,7 @@ and a warning says so).
 | `[together]` … `[/together]` (aliases `[duet]`, `[counterpoint]`) | Voices shown at the same time, one cue |
 | `[song]` … `[/song]` / `[song: title]` | Every caption inside is a sung lyric (see *Songs and lyrics*) |
 | `[settings]` … `[/settings]` | Show-wide settings (see *Settings*); never a cue |
-| `[section: name]` | Operator-only marker/bookmark; no audience effect |
+| `[section: name]` or `# name` | Operator-only marker/bookmark; no audience effect. A Markdown heading (`#` to `######` and a space) is the same cue; a closing run of `#` is dropped |
 | `[note: text]` | Operator-only note shown inline in the operator view (e.g. "wait for door slam") |
 | `[language: es]` or `[language: es \| Español]` | First line of a translated show file, with an optional display name for the picker; see *Languages* |
 
@@ -148,7 +148,7 @@ Please silence your phones
   loop's period (`[loop: 10s]`); otherwise `defaults.loop_item_seconds` from
   `config.yaml` (default 10 s).
 - A time can be at most 3600 seconds; a longer one is cut to 3600 with a warning.
-- Loops can't be nested. Captions, `[clear]`, `[section]` and `[note]` inside a
+- Loops can't be nested. Captions, `[clear]`, `[section]` (and so a `#` heading) and `[note]` inside a
   loop produce a warning and are skipped.
 - The loop is **one cue** with one position in the operator list.
 - A loop can have a **name** (`[loop: 10s, name Intermission]`; see *Loop names* below).
@@ -318,7 +318,8 @@ Each is reported with a line number and a plain-English message:
 - warning: `Line 60: This caption shows 5 voices at once. A phone stacks them and a shared screen may not have room for them all; consider splitting it into two captions.` (voices shown together, `[together]` or ` || `, from `ManyVoices`, 5)
 - error: `Line 88: [loop] was opened but never closed.`
 - error: `Line 12: comment <!-- was opened but never closed.`
-- info: `Line 30: lines starting with # are reserved for headings and were ignored. Use <!-- comment --> for comments or [note: …] for operator notes.`
+- info: `Line 30: A line starting with # is a heading only when a space follows the # (# Act 2), so this line was ignored. Write \# to start a caption with a #.` (`#hashtag`, seven or more `#`, or a bare `#`)
+- warning: `Line 31: A heading can't go inside a loop. This line was skipped.` (a heading is a section; inside `[together]` the usual "can't go inside [together]" applies)
 - info: `Line 5: HTML is not supported; "<b>" will appear as plain text. Use **bold** instead.`
 - info: summary — `312 captions, 4 images, 2 loops, 3 sections`. The image count is the number of different image files the show file uses (those inside a loop too, a file used twice once), the same number the Images step shows as in use; fullscreen messages inside loops are counted as well.
 
