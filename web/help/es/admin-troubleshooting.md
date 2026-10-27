@@ -34,7 +34,7 @@ Consulte «Qué significan los avisos» en [Escribir un archivo del espectáculo
 
 ## Contraseñas
 
-Para cambiar cualquiera de las dos contraseñas, use **Ajustes** en la parte superior de la página de Configuración. La nueva contraseña surte efecto de inmediato y se guarda en `config.yaml`. Cualquiera que haya iniciado sesión con una contraseña que cambió cierra sesión; usted sigue conectado. La misma ventana puede mostrar la contraseña de operador actual para que se la dé al operador.
+Para cambiar cualquiera de las dos contraseñas, use **Ajustes** en la parte superior de la página de Configuración. La nueva contraseña surte efecto de inmediato y se guarda en `config.yaml`. Cualquiera que haya iniciado sesión con una contraseña que cambió cierra sesión; usted sigue conectado. La misma ventana puede mostrar la contraseña de operador actual para que se la dé al operador. Una **contraseña de espectador** opcional deja que un segundo dispositivo, como la tableta de un regidor, entre en la página del operador solo para mirar: muestra las líneas, las notas y la posición, y desde ella no se puede enviar nada.
 
 Si no puede iniciar sesión de ninguna manera, las dos contraseñas están en `config.yaml`, en la carpeta de datos del programa. Abra el archivo con cualquier editor de texto. Su ubicación se imprime cuando arranca el programa.
 

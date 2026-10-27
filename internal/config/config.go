@@ -147,19 +147,22 @@ const CurrentVersion = 1
 type Config struct {
 	// ConfigVersion lets a newer program mark its file. A file with a newer version than this program knows
 	// may have settings it does not recognise; those are ignored with a warning instead of stopping it.
-	ConfigVersion    int      `yaml:"config_version"`
-	AdminPassword    string   `yaml:"admin_password"`
-	OperatorPassword string   `yaml:"operator_password"`
-	DataDir          string   `yaml:"data_dir"`
-	HTTP             Listener `yaml:"http"`
-	HTTPS            HTTPS    `yaml:"https"`
-	Defaults         Defaults `yaml:"defaults"`
-	Audience         Audience `yaml:"audience"`
-	Access           Access   `yaml:"access"`
-	Log              Log      `yaml:"log"`
-	MDNS             MDNS     `yaml:"mdns"`
-	Network          Network  `yaml:"network"`
-	Standby          Standby  `yaml:"standby"`
+	ConfigVersion    int    `yaml:"config_version"`
+	AdminPassword    string `yaml:"admin_password"`
+	OperatorPassword string `yaml:"operator_password"`
+	// ViewerPassword opens the operator page for watching only (a stage manager's tablet): it shows the show's position
+	// and the operator's notes, and can send nothing. Empty (the default) means there is no viewer sign-in.
+	ViewerPassword string   `yaml:"viewer_password"`
+	DataDir        string   `yaml:"data_dir"`
+	HTTP           Listener `yaml:"http"`
+	HTTPS          HTTPS    `yaml:"https"`
+	Defaults       Defaults `yaml:"defaults"`
+	Audience       Audience `yaml:"audience"`
+	Access         Access   `yaml:"access"`
+	Log            Log      `yaml:"log"`
+	MDNS           MDNS     `yaml:"mdns"`
+	Network        Network  `yaml:"network"`
+	Standby        Standby  `yaml:"standby"`
 
 	// Path is where the config was loaded from or generated (not serialized).
 	Path string `yaml:"-"`
@@ -448,7 +451,14 @@ func (c Config) Warnings() []string {
 	if c.AdminPassword != "" && SamePassword(c.AdminPassword, c.OperatorPassword) {
 		w = append(w, "admin_password and operator_password are the same: anyone with the operator password can open Setup")
 	}
-	for k, v := range map[string]string{"admin_password": c.AdminPassword, "operator_password": c.OperatorPassword} {
+	if c.ViewerPassword != "" {
+		for k, v := range map[string]string{"admin_password": c.AdminPassword, "operator_password": c.OperatorPassword} {
+			if SamePassword(c.ViewerPassword, v) {
+				w = append(w, fmt.Sprintf("viewer_password is the same as %s: that password signs in as %s, not as a viewer", k, strings.TrimSuffix(k, "_password")))
+			}
+		}
+	}
+	for k, v := range map[string]string{"admin_password": c.AdminPassword, "operator_password": c.OperatorPassword, "viewer_password": c.ViewerPassword} {
 		if pw, plain := PlainPassword(v); plain && pw != "" && len(pw) < MinPasswordLength {
 			w = append(w, fmt.Sprintf("%s is shorter than %d characters", k, MinPasswordLength))
 		}
@@ -475,6 +485,11 @@ func (c *Config) normalize() []string {
 	}
 	if p := PasswordProblem(c.OperatorPassword); p != "" {
 		add("operator_password", "%s", p)
+	}
+	if c.ViewerPassword != "" { // optional: empty means no viewer sign-in
+		if p := PasswordProblem(c.ViewerPassword); p != "" {
+			add("viewer_password", "%s", p)
+		}
 	}
 	if c.DataDir != "" {
 		if fi, err := os.Stat(c.DataDir); err == nil && !fi.IsDir() {
@@ -596,6 +611,9 @@ func checkAddr(a string) error {
 // Redacted returns a copy with passwords masked, for display/support bundles.
 func (c Config) Redacted() Config {
 	c.AdminPassword, c.OperatorPassword = "********", "********"
+	if c.ViewerPassword != "" {
+		c.ViewerPassword = "********"
+	}
 	if len(c.HTTPS.ACME.DNS.Credentials) > 0 { // the DNS provider's secrets (a new map: the original must not change)
 		hidden := make(map[string]string, len(c.HTTPS.ACME.DNS.Credentials))
 		for k := range c.HTTPS.ACME.DNS.Credentials {

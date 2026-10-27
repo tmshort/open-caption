@@ -14,7 +14,7 @@ import (
 // sessions or write the sessions file each time.
 func TestAutomaticSessionsAreCappedAndNotSaved(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "sessions.json")
-	a := newAuth("a", "o", path)
+	a := newAuth("a", "o", "", path)
 	for i := 0; i < 5*maxAutoSessions; i++ {
 		if _, ok := a.issue(RoleAdmin, true); !ok {
 			t.Fatal("issue failed")
@@ -36,7 +36,7 @@ func TestAutomaticSessionsAreCappedAndNotSaved(t *testing.T) {
 }
 
 func TestPruneForgetsOldLoginAttempts(t *testing.T) {
-	a := newAuth("a", "o", "")
+	a := newAuth("a", "o", "", "")
 	a.attempts["10.0.0.1"] = []time.Time{time.Now().Add(-2 * loginWindow)}
 	a.attempts["10.0.0.2"] = []time.Time{time.Now()}
 	a.prune()

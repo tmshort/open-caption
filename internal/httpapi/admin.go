@@ -1438,7 +1438,7 @@ func (s *Server) settings(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{
 		"config": snap.Redacted(), "configPath": s.cfg.Path, "dataDir": s.cfg.DataDir,
 		"httpAddr": l.HTTPAddr, "httpsAddr": l.HTTPSAddr, "version": s.version,
-		"canChangePasswords": s.cfg.Path != "", "operatorPasswordHashed": config.IsHashed(snap.OperatorPassword), "standby": s.standbyView(), "logLevel": logx.Current().String(), "logLevelPinned": s.pinnedLevel, "mdns": s.MDNSStatus(),
+		"canChangePasswords": s.cfg.Path != "", "operatorPasswordHashed": config.IsHashed(snap.OperatorPassword), "viewerPasswordSet": snap.ViewerPassword != "", "standby": s.standbyView(), "logLevel": logx.Current().String(), "logLevelPinned": s.pinnedLevel, "mdns": s.MDNSStatus(),
 		"adminAllow": s.cfg.Access.AdminAllow, "operatorAllow": s.cfg.Access.OperatorAllow,
 		"adminRestricted": s.adminAllow.Restricted(), "operatorRestricted": s.operatorAllow.Restricted(),
 		"network": map[string]any{"interfaces": ns.Interfaces, "restrictListening": ns.RestrictListening}, "networkPinned": s.pinnedNetwork, "interfaces": s.networkInterfaces(r),
@@ -1517,23 +1517,31 @@ func (s *Server) setLogLevel(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, resp)
 }
 
-// changePasswords sets new admin and/or operator passwords (blank = keep). The new values are written to
-// config.yaml, take effect immediately, and sign out anyone using a password that changed (except the caller).
+// changePasswords sets new admin, operator and/or viewer passwords (blank = keep), or turns viewer sign-in off
+// (removeViewer). The new values are written to config.yaml, take effect immediately, and sign out anyone using a
+// password that changed (except the caller).
 func (s *Server) changePasswords(w http.ResponseWriter, r *http.Request) {
-	var req struct{ Admin, Operator string }
+	var req struct {
+		Admin, Operator, Viewer string
+		RemoveViewer            bool
+	}
 	if !decode(w, r, &req) {
 		return
 	}
-	req.Admin, req.Operator = strings.TrimSpace(req.Admin), strings.TrimSpace(req.Operator)
+	req.Admin, req.Operator, req.Viewer = strings.TrimSpace(req.Admin), strings.TrimSpace(req.Operator), strings.TrimSpace(req.Viewer)
 	if s.cfg.Path == "" {
 		writeErr(w, http.StatusConflict, "This copy was started without a config file, so passwords cannot be changed here.")
 		return
 	}
-	if req.Admin == "" && req.Operator == "" {
+	if req.Admin == "" && req.Operator == "" && req.Viewer == "" && !req.RemoveViewer {
 		writeErr(w, http.StatusBadRequest, "Enter a new password in at least one box.")
 		return
 	}
-	for _, pw := range []string{req.Admin, req.Operator} {
+	if req.Viewer != "" && req.RemoveViewer {
+		writeErr(w, http.StatusBadRequest, "Enter a viewer password or turn viewer sign-in off, not both.")
+		return
+	}
+	for _, pw := range []string{req.Admin, req.Operator, req.Viewer} {
 		if pw != "" && len(pw) < config.MinPasswordLength {
 			writeErr(w, http.StatusBadRequest, fmt.Sprintf("Passwords must be at least %d characters.", config.MinPasswordLength))
 			return
@@ -1542,9 +1550,9 @@ func (s *Server) changePasswords(w http.ResponseWriter, r *http.Request) {
 	s.pwMu.Lock()
 	defer s.pwMu.Unlock()
 	// A new password is stored in the form of the one it replaces: a password kept as a digest stays a digest.
-	newAdmin, newOp := req.Admin, req.Operator
-	effAdmin, effOp := s.cfg.AdminPassword, s.cfg.OperatorPassword
-	var storedAdmin, storedOp string
+	newAdmin, newOp, newViewer := req.Admin, req.Operator, req.Viewer
+	effAdmin, effOp, effViewer := s.cfg.AdminPassword, s.cfg.OperatorPassword, s.cfg.ViewerPassword
+	var storedAdmin, storedOp, storedViewer string
 	if newAdmin != "" {
 		storedAdmin = config.StoredLike(effAdmin, newAdmin)
 		effAdmin = storedAdmin
@@ -1553,20 +1561,45 @@ func (s *Server) changePasswords(w http.ResponseWriter, r *http.Request) {
 		storedOp = config.StoredLike(effOp, newOp)
 		effOp = storedOp
 	}
+	if newViewer != "" {
+		storedViewer = config.StoredLike(effViewer, newViewer)
+		effViewer = storedViewer
+	} else if req.RemoveViewer {
+		effViewer = ""
+	}
 	if config.SamePassword(effAdmin, effOp) {
 		writeErr(w, http.StatusBadRequest, "The admin and operator passwords must be different.")
 		return
 	}
-	if err := config.SetPasswords(s.cfg.Path, storedAdmin, storedOp); err != nil {
+	if effViewer != "" && (config.SamePassword(effViewer, effAdmin) || config.SamePassword(effViewer, effOp)) {
+		writeErr(w, http.StatusBadRequest, "The viewer password must be different from the admin and operator passwords.")
+		return
+	}
+	kv := map[string]any{}
+	if newAdmin != "" {
+		kv["admin_password"] = storedAdmin
+	}
+	if newOp != "" {
+		kv["operator_password"] = storedOp
+	}
+	var viewerChange *string
+	if newViewer != "" || req.RemoveViewer {
+		kv["viewer_password"] = effViewer
+		viewerChange = &effViewer
+	}
+	if err := config.SetValues(s.cfg.Path, kv); err != nil {
 		writeErr(w, http.StatusInternalServerError, "Could not save config.yaml: "+err.Error())
 		return
 	}
 	s.cfgMu.Lock()
-	s.cfg.AdminPassword, s.cfg.OperatorPassword = effAdmin, effOp
+	s.cfg.AdminPassword, s.cfg.OperatorPassword, s.cfg.ViewerPassword = effAdmin, effOp, effViewer
 	s.cfgMu.Unlock()
-	s.auth.setPasswords(storedAdmin, storedOp, principal(r).Token)
-	logx.Infof("passwords changed in Setup (admin: %v, operator: %v); other sessions were signed out", newAdmin != "", newOp != "")
-	writeJSON(w, http.StatusOK, map[string]any{"ok": true, "changed": map[string]bool{"admin": newAdmin != "", "operator": newOp != ""}})
+	s.auth.setPasswords(storedAdmin, storedOp, viewerChange, principal(r).Token)
+	logx.Infof("passwords changed in Setup (admin: %v, operator: %v, viewer: %v); other sessions were signed out", newAdmin != "", newOp != "", viewerChange != nil)
+	if req.RemoveViewer {
+		logx.Infof("viewer sign-in turned off in Setup")
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"ok": true, "changed": map[string]bool{"admin": newAdmin != "", "operator": newOp != "", "viewer": newViewer != ""}})
 }
 
 // ---- support bundle (REQ-061) ----

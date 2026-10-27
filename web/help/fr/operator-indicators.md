@@ -8,6 +8,7 @@
 | Icône de personnes et un nombre | Combien d'appareils du public sont connectés. Avec plusieurs langues, le nombre est suivi d'un décompte par langue, comme `(en 60 · es 23)` |
 | **Vous avez la main** | Vos touches pilotent le spectacle |
 | **Un autre opérateur a la main** | Vous pouvez regarder mais pas envoyer. **Reprendre la main** la lui retire |
+| **Vous suivez ce spectacle (lecture seule)** | Vous vous êtes connecté avec le mot de passe spectateur : vous pouvez regarder, notes comprises, mais rien ne peut être envoyé et il n'y a rien à prendre en main |
 | Bandeau jaune **L'écran du public est vide** | Le public voit un écran vide (Écran vide ou Arrêt a été utilisé). **Espace** envoie la ligne suivante, **B** réaffiche les précédentes, **Retour arrière** annule |
 | Bandeau vert **BOUCLE EN COURS** | Une boucle d'avant-spectacle ou d'entracte est à l'écran |
 | **Fin du spectacle.** | Il n'y a plus de lignes à envoyer |

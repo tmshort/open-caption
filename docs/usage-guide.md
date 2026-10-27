@@ -111,7 +111,7 @@ In order of reliability:
 ### Security
 
 - The audience page can only read. It cannot change the show or reach the setup and operator pages.
-- Setup and operator each require their own password (stored in plain text in `config.yaml`, which is created readable only by you; the configuration reference shows how to store a digest instead). Give the operator password to the operator, not the admin password. Passwords can be changed from **Settings** in Setup.
+- Setup and operator each require their own password (stored in plain text in `config.yaml`, which is created readable only by you; the configuration reference shows how to store a digest instead). An optional **viewer** password (in **Settings**) lets a second device, such as a stage manager's tablet, watch the operator page without being able to send anything. Give the operator password to the operator, not the admin password. Passwords can be changed from **Settings** in Setup.
 - On the computer that runs the program, Setup and the operator page open **without a password** when the address starts with `localhost`, `127.0.0.1` or `[::1]` (the person at that computer is trusted as the admin). Other computers, and any request that has been relayed by a proxy, still sign in with a password. Set `access.local_auto_login: false` in `config.yaml` if other people can log in to this computer.
 - **Anyone who can reach the server can open the Setup and operator sign-in pages, and over plain `http://` the passwords travel across the WiFi unencrypted.** On a shared guest WiFi that means a curious audience member could capture a password and take control of the captions. Reduce the risk, in this order:
   1. **Limit which computers may open them.** In `config.yaml`:

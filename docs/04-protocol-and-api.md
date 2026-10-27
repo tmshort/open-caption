@@ -54,7 +54,7 @@ everywhere an operator session is; the reverse is not true.
 
 | Method | Path | Description |
 |--------|------|-------------|
-| POST | `/api/login` | `{role: "admin"\|"operator", password}` → sets cookie; role `operator` accepts the operator **or** admin password, role `admin` only the admin password; rate-limited (5 attempts/min/IP) |
+| POST | `/api/login` | `{role: "admin"\|"operator", password}` → sets cookie; role `operator` accepts the operator or admin password, **or the viewer password when `viewer_password` is set (the answer says `role: "viewer"`; see REQ-071)**, role `admin` only the admin password; rate-limited (5 attempts/min/IP) |
 | POST | `/api/logout` | Clears the session |
 | GET | `/api/me` | `{role, sid}` of the signed-in session (operator or admin), where `sid` is the session's public identifier (a hash of the token, safe to send to browsers) that the operator page compares with the controller's to know whether it is in control (REQ-034). `401` without a session |
 
@@ -88,7 +88,7 @@ everywhere an operator session is; the reverse is not true.
 | POST | `/api/admin/rehearsal/{next,back,stop,jump,blank,clear,reset}` | Same bodies/semantics as `/api/operator/*`, applied to the rehearsal engine only |
 | GET | `/api/admin/rehearsal/events` | SSE of the rehearsal's audience-view events (drives the preview pane). `?lang=<code>` selects the rehearsal language, and `?display=projector` marks a projector client in the rehearsal clients list |
 | GET | `/api/admin/settings` | Effective config (passwords redacted), settings file and data folder locations, listening ports, `adminAllow`/`operatorAllow` and whether they restrict anyone |
-| PUT | `/api/admin/settings/passwords` | `{admin?, operator?}` (min 6 characters, different from each other) written to `config.yaml`, effective at once; signs out others using a changed password |
+| PUT | `/api/admin/settings/passwords` | `{admin?, operator?, viewer?, removeViewer?}` (min 6 characters, different from each other; `removeViewer` turns viewer sign-in off; `GET /api/admin/settings` says whether one is set as `viewerPasswordSet`) written to `config.yaml`, effective at once; signs out others using a changed password |
 | GET | `/api/admin/settings/operator-password` | The current operator password (for handing over); 409 when `config.yaml` holds only its digest (`GET /api/admin/settings` says so as `operatorPasswordHashed`) |
 | GET | `/api/admin/network` | Host IPs, ports, audience URL(s); QR PNG at `/api/admin/network/qr.png?url=` (400 unless the address is one of this computer's: a numeric address, `localhost`, the host name, the `.local` name or a name in the HTTPS certificate). The warning that HTTPS uses a self-signed certificate is given only when neither `https.cert_file` nor `https.acme` supplies the certificate |
 | PUT | `/api/admin/settings/mdns` | `{enabled, name}`: announce this computer as `<name>.local` (name: letters, digits, hyphens; a trailing `.local` is accepted). Applies at once (waits up to 6 s for the name to be claimed), is saved in `config.yaml` (`mdns.enabled`, `mdns.name`), and returns `{mdns: {enabled, requested, name, host, active, renamed, error}, saved}`. `GET /api/admin/settings` includes `mdns`; `GET /api/admin/network` lists the name first (`name: true`) |
@@ -107,7 +107,7 @@ everywhere an operator session is; the reverse is not true.
 
 | Method | Path | Body | Description |
 |--------|------|------|-------------|
-| GET | `/api/operator/state` | | `OperatorState` + cue list |
+| GET | `/api/operator/state` | | `OperatorState` + cue list (also for a viewer session, whose `role` is `"viewer"`: every other `/api/operator/*` call and everything under `/api/admin/*` answers 403) |
 | GET | `/api/operator/stream` | | SSE of operator events (cursor, audience count, controller, loop) |
 | POST | `/api/operator/claim` | `{takeover:bool}` | Become the controlling operator |
 | POST | `/api/operator/next` | `{rev}` | NEXT: send the next cue. If the cue is a loop, starts it. If a loop is running, ends it and sends the next cue |

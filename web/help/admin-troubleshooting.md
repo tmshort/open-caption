@@ -34,7 +34,7 @@ See "What the warnings mean" in [Writing a show file](admin-writing-a-show-file.
 
 ## Passwords
 
-To change either password, use **Settings** at the top of the Setup page. The new password takes effect immediately and is saved in `config.yaml`. Anyone signed in with a password that changed is signed out; you stay signed in. The same window can show the current operator password so you can give it to the operator.
+To change either password, use **Settings** at the top of the Setup page. The new password takes effect immediately and is saved in `config.yaml`. Anyone signed in with a password that changed is signed out; you stay signed in. The same window can show the current operator password so you can give it to the operator. An optional **viewer password** lets a second device, such as a stage manager's tablet, sign in on the operator page for watching only: it shows the lines, the notes and the position, and nothing can be sent from it. An optional **viewer password** lets a second device, such as a stage manager's tablet, sign in on the operator page for watching only: it shows the lines, the notes and the position, and nothing can be sent from it.
 
 If you cannot sign in at all, both passwords are in `config.yaml`, in the program's data folder. Open the file in any text editor. Its location is printed when the program starts.
 

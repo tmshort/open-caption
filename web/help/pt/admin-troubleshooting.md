@@ -34,7 +34,7 @@ Veja «O que significam os avisos» em [Escrever um arquivo do espetáculo](admi
 
 ## Senhas
 
-Para mudar qualquer uma das senhas, use **Configurações** no alto da página de Configuração. A nova senha vale na hora e é salva em `config.yaml`. Quem estiver conectado com uma senha que mudou é desconectado; você continua conectado. A mesma janela pode mostrar a senha de operador atual para que você a entregue ao operador.
+Para mudar qualquer uma das senhas, use **Configurações** no alto da página de Configuração. A nova senha vale na hora e é salva em `config.yaml`. Quem estiver conectado com uma senha que mudou é desconectado; você continua conectado. A mesma janela pode mostrar a senha de operador atual para que você a entregue ao operador. Uma **senha de espectador** opcional permite que um segundo dispositivo, como o tablet de um contrarregra, entre na página do operador só para acompanhar: ela mostra as linhas, as notas e a posição, e dela não se pode enviar nada.
 
 Se você não consegue entrar de jeito nenhum, as duas senhas estão em `config.yaml`, na pasta de dados do programa. Abra o arquivo em qualquer editor de texto. O local dele é mostrado quando o programa inicia.
 

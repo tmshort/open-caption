@@ -59,10 +59,12 @@
     $('login').hidden = true;
     $('app').hidden = false;
     S.me = r.data.me;
+    S.viewer = r.data.role === 'viewer'; // signed in with the viewer password: this page only watches (nothing can be sent or taken over)
+    document.body.classList.toggle('follower', S.viewer);
     $('setuplink').hidden = r.data.role !== 'admin' || REHEARSAL; // signed in with the admin password: a way back to Setup
     $('logout').hidden = !!r.data.auto; // on the computer that runs the program there is no password to sign out of
     applyState(r.data.cues, r.data.payload);
-    await claim(false);
+    if (!S.viewer) await claim(false);
     openStream();
   }
   function showLogin() { $('app').hidden = true; $('login').hidden = false; $('pw').focus(); }
@@ -288,8 +290,8 @@
     $('viewers').title = OCClients.title(p.audience);
     const mine = isController();
     document.body.classList.toggle('viewonly', !mine);
-    $('ctrl').textContent = mine ? __('You are in control') : (p.controller ? __('Another operator is in control') : __('Nobody is in control'));
-    $('takeover').hidden = mine; $('statusbar').classList.toggle('other', !mine);
+    $('ctrl').textContent = S.viewer ? __('You are following this show (view only)') : mine ? __('You are in control') : (p.controller ? __('Another operator is in control') : __('Nobody is in control'));
+    $('takeover').hidden = mine || S.viewer; $('statusbar').classList.toggle('other', !mine && !S.viewer);
     $('takeover').textContent = p.controller ? __('Take over') : __('Take control');
     $('stop').disabled = !o.loop; // always in place, so the buttons never move while the show runs
     // Standby: the show is not on air. NEXT becomes START (same place, same key), the rest wait.
@@ -311,12 +313,13 @@
       if (S.timerEnds) { const t = document.createElement('b'); t.id = 'bannertimer'; b.appendChild(document.createTextNode(' ')); b.appendChild(t); paintBannerTimer(); }
     }
     else if (o.mode === 'blank') { b.hidden = false; b.className = ''; b.textContent = '⬛ ' + __('Audience screen is blank. Space (NEXT) sends the next line, B shows the earlier lines again, Back undoes.'); }
-    else if (o.nextIndex < 0 && o.total > 0 && o.cursor >= o.total) { b.hidden = false; b.className = ''; b.textContent = __('End of the show.') + ' '; const rl = document.createElement('a'); rl.href = '/operator/report'; rl.target = '_blank'; rl.rel = 'noopener'; rl.className = 'reportlink'; rl.textContent = __('Audience report'); if (!REHEARSAL) b.appendChild(rl); }
+    else if (o.nextIndex < 0 && o.total > 0 && o.cursor >= o.total) { b.hidden = false; b.className = ''; b.textContent = __('End of the show.') + ' '; const rl = document.createElement('a'); rl.href = '/operator/report'; rl.target = '_blank'; rl.rel = 'noopener'; rl.className = 'reportlink'; rl.textContent = __('Audience report'); if (!REHEARSAL && !S.viewer) b.appendChild(rl); }
     else b.hidden = true;
   }
 
   // ---- commands ----
   async function send(name, extra) {
+    if (S.viewer) { toast(__('This screen is view only')); return; }
     if (!isController()) { toast(__('Another operator is in control — use Take over'), 6000); return; }
     if (S.inflight) return;
     S.inflight = true;
@@ -352,7 +355,7 @@
   function clearSel() { S.sel = null; $('jumpbar').hidden = true; renderMarkers(false); }
   function confirmJump() { const i = S.sel; if (i === null) return; send('jump', { index: i }).then(clearSel); }
   $('list').addEventListener('click', (e) => {
-    const li = e.target.closest('.cue'); if (!li) return;
+    const li = e.target.closest('.cue'); if (!li || S.viewer) return;
     const i = Number(li.dataset.i);
     if (S.sel === i) confirmJump(); else select(i);
   });
@@ -381,6 +384,7 @@
   $('reset').addEventListener('click', () => $('resetdlg').showModal());
   // The audience count opens the list of connected devices (device, address, language), kept up to date while it is open.
   $('viewers').addEventListener('click', async () => {
+    if (S.viewer) return; // the list of devices is for the operator
     let timer = 0;
     const fill = async () => { const r = await api('GET', API + '/clients'); if (r.ok) $('clientsbody').replaceChildren(OCClients.table(r.data.clients)); };
     await fill();
@@ -412,6 +416,7 @@
     if (e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
     if (helpOpen) { if (e.key === 'Escape' || e.key === 'F1' || e.key === '?') { e.preventDefault(); closeHelp(); } return; }
     if (document.querySelector('dialog[open]')) return;
+    if (S.viewer && e.key !== '?' && e.key !== 'F1') return; // a viewer's keys do nothing
     const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);
     if (typing) return;
     let handled = true;

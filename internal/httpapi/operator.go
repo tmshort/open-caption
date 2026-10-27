@@ -115,8 +115,8 @@ func (s *Server) operatorRoutes(mux *http.ServeMux) {
 // runtime resolve returns. The real show uses it at /api/operator/, and each
 // admin's rehearsal at /api/admin/rehearsal/, so both behave identically.
 func (s *Server) operatorAPI(mux *http.ServeMux, prefix, role string, resolve resolver) {
-	guard := func(h func(http.ResponseWriter, *http.Request, *Runtime)) http.HandlerFunc {
-		return s.require(role, func(w http.ResponseWriter, r *http.Request) {
+	guardAt := func(min string, h func(http.ResponseWriter, *http.Request, *Runtime)) http.HandlerFunc {
+		return s.require(min, func(w http.ResponseWriter, r *http.Request) {
 			rt := resolve(r)
 			if rt == nil {
 				writeErr(w, http.StatusNotFound, "no rehearsal is running; start one from Setup")
@@ -125,8 +125,14 @@ func (s *Server) operatorAPI(mux *http.ServeMux, prefix, role string, resolve re
 			h(w, r, rt)
 		})
 	}
-	mux.HandleFunc("GET "+prefix+"state", guard(s.operatorState))
-	mux.HandleFunc("GET "+prefix+"stream", guard(s.operatorStream))
+	guard := func(h func(http.ResponseWriter, *http.Request, *Runtime)) http.HandlerFunc { return guardAt(role, h) }
+	// Watching the show is all a viewer (viewer_password) may do: the state and its stream, nothing that sends or changes.
+	watch := role
+	if role == RoleOperator {
+		watch = RoleViewer
+	}
+	mux.HandleFunc("GET "+prefix+"state", guardAt(watch, s.operatorState))
+	mux.HandleFunc("GET "+prefix+"stream", guardAt(watch, s.operatorStream))
 	mux.HandleFunc("GET "+prefix+"clients", guard(s.listClients))
 	mux.HandleFunc("POST "+prefix+"claim", guard(func(w http.ResponseWriter, r *http.Request, rt *Runtime) {
 		var req struct{ Takeover bool }

@@ -136,6 +136,14 @@
     let netChanged = false;
     const adminPw = h('input', { type: 'password', autocomplete: 'new-password', 'aria-label': __('New admin password'), minlength: '6' });
     const opPw = h('input', { type: 'password', autocomplete: 'new-password', 'aria-label': __('New operator password'), minlength: '6' });
+    const viewerPw = h('input', { type: 'password', autocomplete: 'new-password', 'aria-label': __('New viewer password'), minlength: '6' });
+    const viewerState = h('span', { class: 'hint', role: 'status' }, s.viewerPasswordSet ? __('Viewer sign-in is on.') : __('Viewer sign-in is off.'));
+    const viewerOff = h('button', { type: 'button', class: 'quiet', hidden: !s.viewerPasswordSet, onclick: async () => {
+      const res = await api('PUT', '/api/admin/settings/passwords', { removeViewer: true });
+      if (!res.ok) return fail(res);
+      viewerPw.value = ''; viewerOff.hidden = true; viewerState.textContent = __('Viewer sign-in is off.');
+      toast(__('Viewer sign-in turned off'));
+    } }, __('Turn viewer sign-in off'));
     const shown = h('div', { class: 'hint', role: 'status' });
     const reveal = h('button', { type: 'button', class: 'quiet' }, __('Show the current operator password'));
     reveal.addEventListener('click', async () => { // the same button shows it and hides it again
@@ -145,10 +153,11 @@
       if (x.ok) reveal.textContent = __('Hide the operator password');
     });
     const changePw = h('button', { type: 'button', onclick: async () => {
-      if (!adminPw.value && !opPw.value) { adminPw.focus(); toast(__('Enter a new password in at least one box.')); return; }
-      const res = await api('PUT', '/api/admin/settings/passwords', { admin: adminPw.value, operator: opPw.value });
+      if (!adminPw.value && !opPw.value && !viewerPw.value) { adminPw.focus(); toast(__('Enter a new password in at least one box.')); return; }
+      const res = await api('PUT', '/api/admin/settings/passwords', { admin: adminPw.value, operator: opPw.value, viewer: viewerPw.value });
       if (!res.ok) return fail(res);
-      adminPw.value = opPw.value = ''; shown.textContent = ''; reveal.textContent = __('Show the current operator password');
+      if (viewerPw.value) { viewerOff.hidden = false; viewerState.textContent = __('Viewer sign-in is on.'); }
+      adminPw.value = opPw.value = viewerPw.value = ''; shown.textContent = ''; reveal.textContent = __('Show the current operator password');
       toast(__('Passwords changed'));
     } }, __('Change passwords'));
     const row = (k, v) => h('tr', {}, h('td', {}, __(k)), h('td', {}, v ? __(v) : '—'));
@@ -274,6 +283,8 @@
             ? h('div', {}, h('p', { class: 'hint' }, __('Leave a box empty to keep that password. At least 6 characters. People signed in with a changed password are signed out; you stay signed in.')),
                 h('label', { class: 'field' }, h('span', {}, __('New admin password')), adminPw),
                 h('label', { class: 'field' }, h('span', {}, __('New operator password')), opPw),
+                h('label', { class: 'field' }, h('span', {}, __('New viewer password (optional)')), viewerPw),
+                h('p', { class: 'hint' }, __('A viewer password opens the Run page for watching only, for example on a stage manager’s tablet: nothing can be sent from it.'), ' ', viewerState, ' ', viewerOff),
                 h('div', { class: 'row' }, changePw, s.operatorPasswordHashed ? null : reveal),
                 s.operatorPasswordHashed ? h('p', { class: 'hint' }, __('The operator password is stored as a digest, so it cannot be shown. Set a new one to replace it.')) : shown)
             : h('p', { class: 'hint' }, __('This copy was started without a settings file, so passwords cannot be changed here.'))),

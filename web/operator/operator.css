@@ -82,3 +82,7 @@ button small kbd { font: inherit; border: 1px solid currentColor; border-radius:
 .items li.playing .pl::before { content: "▶"; color: var(--ok); }
 /* The stage scale: the lines, the banner and the footer controls are a size larger than the rest of the interface, on purpose. */
 footer button, footer select, footer #search { min-height: 2.8rem; font-size: 1.125rem; }
+/* Signed in with the viewer password: watching only, so everything that sends or takes control is gone */
+body.follower footer, body.follower #offair, body.follower #reset, body.follower #takeover, body.follower #jumpbar { display: none; }
+body.follower .cue { cursor: default; }
+body.follower #viewers { cursor: default; }

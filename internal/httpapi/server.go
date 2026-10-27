@@ -62,7 +62,7 @@ type Server struct {
 
 // New creates a Server with an empty runtime.
 func New(cfg config.Config, version string) *Server {
-	s := &Server{cfg: cfg, version: version, rt: NewRuntime(cfg), auth: newAuth(cfg.AdminPassword, cfg.OperatorPassword, sessionsPath(cfg)),
+	s := &Server{cfg: cfg, version: version, rt: NewRuntime(cfg), auth: newAuth(cfg.AdminPassword, cfg.OperatorPassword, cfg.ViewerPassword, sessionsPath(cfg)),
 		rehearsals: map[string]*Runtime{}, started: time.Now(), quit: make(chan struct{}), mdns: newMDNSManager(cfg.MDNS)}
 	// An unreadable list denies everything: never fall back to "anyone" by accident.
 	s.adminAllow, _ = config.ParseAllowList(cfg.Access.AdminAllow)

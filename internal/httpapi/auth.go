@@ -24,6 +24,7 @@ import (
 
 // Roles. An admin session also satisfies operator checks (docs/04).
 const (
+	RoleViewer   = "viewer" // watches the operator page and can send nothing (viewer_password)
 	RoleOperator = "operator"
 	RoleAdmin    = "admin"
 )
@@ -64,7 +65,7 @@ func tokenKey(token string) string {
 
 // auth keeps sessions and login rate limits in memory.
 type auth struct {
-	adminPW, operatorPW string // the passwords as stored in config.yaml: plain text or a digest (config.CheckPassword)
+	adminPW, operatorPW, viewerPW string // the passwords as stored in config.yaml: plain text or a digest (config.CheckPassword); viewerPW "" = no viewer sign-in
 
 	path string // where sessions are saved ("" = memory only)
 	fp   string
@@ -76,18 +77,23 @@ type auth struct {
 
 // newAuth creates the session store. With a path, sessions survive a restart,
 // so an operator is not signed out if the program is restarted mid-show.
-func newAuth(adminPW, operatorPW, path string) *auth {
-	a := &auth{adminPW: adminPW, operatorPW: operatorPW, path: path,
+func newAuth(adminPW, operatorPW, viewerPW, path string) *auth {
+	a := &auth{adminPW: adminPW, operatorPW: operatorPW, viewerPW: viewerPW, path: path,
 		sessions: map[string]session{}, attempts: map[string][]time.Time{}}
-	a.fp = fingerprint(a.adminPW, a.operatorPW)
+	a.fp = fingerprint(a.adminPW, a.operatorPW, a.viewerPW)
 	a.load()
 	return a
 }
 
 // fingerprint changes whenever either password does (it is derived from hashes, never the passwords).
-func fingerprint(admin, operator string) string {
+func fingerprint(admin, operator, viewer string) string {
 	ia, io := config.PasswordID(admin), config.PasswordID(operator)
-	h := sha256.Sum256(append(append([]byte("fp:"), ia[:]...), io[:]...))
+	b := append(append([]byte("fp:"), ia[:]...), io[:]...)
+	if viewer != "" { // (without one the fingerprint is what it was before viewers existed, so nobody is signed out by the upgrade)
+		iv := config.PasswordID(viewer)
+		b = append(b, iv[:]...)
+	}
+	h := sha256.Sum256(b)
 	return hex.EncodeToString(h[:])
 }
 
@@ -104,7 +110,7 @@ func (a *auth) load() {
 		return // unreadable, or a password changed: everyone signs in again
 	}
 	for k, s := range sv.Sessions {
-		if exp := time.Unix(s.Expires, 0); time.Now().Before(exp) && (s.Role == RoleAdmin || s.Role == RoleOperator) {
+		if exp := time.Unix(s.Expires, 0); time.Now().Before(exp) && (s.Role == RoleAdmin || s.Role == RoleOperator || s.Role == RoleViewer) {
 			a.sessions[k] = session{role: s.Role, expires: exp, auto: s.Auto}
 		}
 	}
@@ -153,7 +159,7 @@ func (a *auth) allow(ip string) bool {
 // Role "operator" accepts the operator or the admin password; "admin" only the admin one.
 func (a *auth) login(role, password string) (token, granted string, ok bool) {
 	a.mu.Lock()
-	adminPW, operatorPW := a.adminPW, a.operatorPW
+	adminPW, operatorPW, viewerPW := a.adminPW, a.operatorPW, a.viewerPW
 	a.mu.Unlock()
 	switch {
 	case role == RoleAdmin && config.CheckPassword(adminPW, password):
@@ -162,6 +168,8 @@ func (a *auth) login(role, password string) (token, granted string, ok bool) {
 		granted = RoleAdmin
 	case role == RoleOperator && config.CheckPassword(operatorPW, password):
 		granted = RoleOperator
+	case role == RoleOperator && viewerPW != "" && config.CheckPassword(viewerPW, password): // the same sign-in form: the password says which
+		granted = RoleViewer
 	default:
 		return "", "", false
 	}
@@ -230,21 +238,26 @@ func (a *auth) lookup(token string) (session, bool) {
 
 // setPasswords switches to new passwords. Logins made with a password that changed are dropped, except
 // keep (the person making the change, who stays signed in).
-func (a *auth) setPasswords(adminPW, operatorPW, keep string) {
+//
+// viewerPW is nil to leave the viewer password alone, or the new stored value ("" turns viewer sign-in off).
+func (a *auth) setPasswords(adminPW, operatorPW string, viewerPW *string, keep string) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
+	if viewerPW != nil {
+		a.viewerPW = *viewerPW
+	}
 	if adminPW != "" {
 		a.adminPW = adminPW
 	}
 	if operatorPW != "" {
 		a.operatorPW = operatorPW
 	}
-	a.fp = fingerprint(a.adminPW, a.operatorPW)
+	a.fp = fingerprint(a.adminPW, a.operatorPW, a.viewerPW)
 	for k, s := range a.sessions {
 		if k == tokenKey(keep) {
 			continue
 		}
-		if (adminPW != "" && s.role == RoleAdmin) || (operatorPW != "" && s.role == RoleOperator) {
+		if (adminPW != "" && s.role == RoleAdmin) || (operatorPW != "" && s.role == RoleOperator) || (viewerPW != nil && s.role == RoleViewer) {
 			delete(a.sessions, k)
 		}
 	}
@@ -404,6 +417,19 @@ func (s *Server) localTrusted(r *http.Request) bool {
 	return false
 }
 
+// roleRank orders the roles: a viewer may do least, an admin most. Anything else is nothing.
+func roleRank(role string) int {
+	switch role {
+	case RoleAdmin:
+		return 3
+	case RoleOperator:
+		return 2
+	case RoleViewer:
+		return 1
+	}
+	return 0
+}
+
 // require wraps h so only sessions with at least role may call it. A browser on this computer is signed in as
 // admin automatically (localTrusted); everyone else needs a session from /api/login.
 func (s *Server) require(role string, h http.HandlerFunc) http.HandlerFunc {
@@ -419,7 +445,7 @@ func (s *Server) require(role string, h http.HandlerFunc) http.HandlerFunc {
 			sess, ok = s.auth.lookup(c.Value)
 			token = c.Value
 		}
-		if (!ok || (role == RoleAdmin && sess.role != RoleAdmin)) && s.localTrusted(r) {
+		if (!ok || roleRank(sess.role) < roleRank(role)) && s.localTrusted(r) {
 			if t, issued := s.auth.issue(RoleAdmin, true); issued {
 				http.SetCookie(w, &http.Cookie{Name: cookieName, Value: t, Path: "/", HttpOnly: true,
 					SameSite: http.SameSiteStrictMode, Secure: r.TLS != nil, MaxAge: int(sessionTTL.Seconds())})
@@ -431,7 +457,7 @@ func (s *Server) require(role string, h http.HandlerFunc) http.HandlerFunc {
 			writeErr(w, http.StatusUnauthorized, "login required")
 			return
 		}
-		if role == RoleAdmin && sess.role != RoleAdmin {
+		if roleRank(sess.role) < roleRank(role) {
 			writeErr(w, http.StatusForbidden, "not allowed")
 			return
 		}
@@ -499,7 +525,7 @@ func (s *Server) authRoutes(mux *http.ServeMux) {
 			SameSite: http.SameSiteStrictMode, Secure: r.TLS != nil})
 		writeJSON(w, http.StatusOK, map[string]any{"ok": true})
 	})
-	mux.HandleFunc("GET /api/me", s.require(RoleOperator, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("GET /api/me", s.require(RoleViewer, func(w http.ResponseWriter, r *http.Request) {
 		p := principal(r)
 		writeJSON(w, http.StatusOK, map[string]any{"role": p.Role, "sid": SID(p.Token)})
 	}))

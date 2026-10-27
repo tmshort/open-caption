@@ -8,6 +8,7 @@
 | Icona di persone e un numero | Quanti dispositivi del pubblico sono connessi. Con più lingue il numero è seguito da un conteggio per lingua, come `(en 60 · es 23)` |
 | **Hai il controllo** | I tuoi tasti controllano lo spettacolo |
 | **Un altro operatore ha il controllo** | Puoi guardare ma non inviare. **Subentra** glielo toglie |
+| **Stai seguendo questo spettacolo (sola lettura)** | Hai effettuato l'accesso con la password spettatore: puoi guardare, note comprese, ma non si può inviare nulla e non c'è nulla da prendere in mano |
 | Banner giallo **Lo schermo del pubblico è vuoto** | Il pubblico vede uno schermo vuoto (è stato usato Schermo vuoto o Stop). **Spazio** invia la riga successiva, **B** mostra di nuovo le precedenti, **Backspace** annulla |
 | Banner verde **CICLO IN CORSO** | Un ciclo di pre-spettacolo o di intervallo è sugli schermi |
 | **Fine dello spettacolo.** | Non ci sono più righe da inviare |

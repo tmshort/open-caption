@@ -16,7 +16,7 @@ const fs = require('fs'), os = require('os'), path = require('path'), net = requ
 const CHROME = process.env.CHROME || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const BIN = process.env.OC_BIN || path.join(__dirname, '..', '..', 'bin', 'open-caption' + (process.platform === 'win32' ? '.exe' : ''));
 const SHOTS = process.env.OC_SHOTS || '';
-const ADMIN = 'e2e-admin-pw', OPERATOR = 'e2e-operator-pw';
+const ADMIN = 'e2e-admin-pw', OPERATOR = 'e2e-operator-pw', VIEWER = 'e2e-viewer-pw';
 // Slow computers (CI runners, a laptop on battery): OC_E2E_SLOW stretches every pause and time limit (default 2 on CI, else 1).
 const SLOW = Number(process.env.OC_E2E_SLOW) || (process.env.CI ? 2 : 1);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms * SLOW));
@@ -1022,7 +1022,7 @@ async function main() {
     section('Passwords kept as digests');
     await stopServer(); await sleep(400);
     const digest = 'sha256:' + require('crypto').createHash('sha256').update(OPERATOR).digest('hex');
-    fs.writeFileSync(path.join(dataDir, 'config.yaml'), `admin_password: ${ADMIN}\noperator_password: ${digest}\nmdns:\n  enabled: false\naccess:\n  admin_allow: []\n  local_auto_login: false\n`);
+    fs.writeFileSync(path.join(dataDir, 'config.yaml'), `admin_password: ${ADMIN}\noperator_password: ${digest}\nviewer_password: ${VIEWER}\nmdns:\n  enabled: false\naccess:\n  admin_allow: []\n  local_auto_login: false\n`);
     await startServer(); await sleep(T(1500));
     {
       const ctx3 = await b.createBrowserContext(); const hp = await ctx3.newPage(); hp.setDefaultTimeout(T(8000));
@@ -1038,6 +1038,24 @@ async function main() {
       const sec = await hp.evaluate(() => ({ text: document.getElementById('dlg').innerText, reveal: [...document.querySelectorAll('#dlg button')].some((x) => /operator password/.test(x.textContent) && /Show|Hide/.test(x.textContent)) }));
       check('Settings says a digest-held operator password cannot be shown, and offers no Show button', /stored as a digest, so it cannot be shown/.test(sec.text) && !sec.reveal, sec);
       await hp.close(); await ctx3.close();
+      // The viewer password opens the Run page for watching only
+      const ctx4 = await b.createBrowserContext(); const vp = await ctx4.newPage(); vp.setDefaultTimeout(T(8000));
+      await vp.goto(B + '/operator'); await vp.waitForSelector('#pw', { visible: true }).catch(() => {});
+      await vp.type('#pw', VIEWER); await vp.keyboard.press('Enter');
+      await vp.waitForSelector('#list .cue', { timeout: T(8000) }).catch(() => {});
+      const cursorOf = () => vp.evaluate(async () => (await (await fetch('/api/operator/state')).json()).payload.op.cursor);
+      const before = await cursorOf();
+      const view = await vp.evaluate(() => ({
+        follower: document.body.classList.contains('follower'), cues: document.querySelectorAll('#list .cue').length,
+        footer: getComputedStyle(document.querySelector('footer')).display, takeover: getComputedStyle(document.getElementById('takeover')).display,
+        standby: getComputedStyle(document.getElementById('offair')).display, ctrl: document.getElementById('ctrl').textContent,
+      }));
+      check('the viewer password opens the Run page for watching: the lines are there, and the controls and Take over are not', view.follower && view.cues > 0 && view.footer === 'none' && view.takeover === 'none' && view.standby === 'none' && /following this show \(view only\)/.test(view.ctrl), view);
+      await vp.keyboard.press('Space'); await vp.keyboard.press('b'); await sleep(400);
+      check('a viewer\'s keys do nothing', (await cursorOf()) === before);
+      const sent = await vp.evaluate(async () => [(await fetch('/api/operator/next', { method: 'POST', body: '{}' })).status, (await fetch('/api/operator/claim', { method: 'POST', body: '{"takeover":true}' })).status, (await fetch('/api/admin/ping')).status]);
+      check('and the program refuses a viewer every command, taking control and Setup', JSON.stringify(sent) === '[403,403,403]', sent);
+      await vp.close(); await ctx4.close();
     }
   } finally {
     await b.close();

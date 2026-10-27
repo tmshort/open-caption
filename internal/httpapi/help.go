@@ -81,7 +81,7 @@ func (s *Server) helpRoutes(mux *http.ServeMux) {
 		w.Header().Set("X-Content-Type-Options", "nosniff")
 		static.ServeHTTP(w, r)
 	})
-	op := func(h http.HandlerFunc) http.HandlerFunc { return s.require(RoleOperator, h) }
+	op := func(h http.HandlerFunc) http.HandlerFunc { return s.require(RoleViewer, h) } // a viewer reads the help too
 	mux.HandleFunc("GET /api/help/topics", op(func(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusOK, map[string]any{"topics": byLang[langOf(r)]})
 	}))

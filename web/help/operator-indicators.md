@@ -8,6 +8,7 @@
 | People icon and a number | How many audience devices are connected. With several languages the number is followed by a count per language, such as `(en 60 · es 23)` |
 | **You are in control** | Your keys control the show |
 | **Another operator is in control** | You can watch but not send. **Take over** takes control from them |
+| **You are following this show (view only)** | You signed in with the viewer password: you can watch, notes included, but nothing can be sent and there is nothing to take over |
 | Yellow banner **Audience screen is blank** | The audience sees a blank screen (Blank or Stop was used). **Space** sends the next line, **B** shows the earlier lines again, **Backspace** undoes |
 | Green banner **LOOP RUNNING** | A pre-show or intermission loop is on the screens |
 | **End of the show.** | There are no more lines to send |

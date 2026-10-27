@@ -154,6 +154,9 @@ func main() {
 	for _, w := range cfg.Warnings() {
 		logx.Warnf("config: %s", w)
 	}
+	if cfg.ViewerPassword != "" {
+		logx.Infof("a viewer password is set, so the operator page can also be opened for watching only")
+	}
 	if cfg.Generated {
 		fmt.Printf("\nFirst run: created %s\n  admin password:    %s\n  operator password: %s\n(Keep these; they are stored in plain text in that file.)\n\n",
 			cfg.Path, cfg.AdminPassword, cfg.OperatorPassword)
