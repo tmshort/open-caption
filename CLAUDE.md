@@ -32,6 +32,10 @@ Outside contributions: `CONTRIBUTING.md` (no code PRs accepted yet; DCO sign-off
 
 `docs/` is the source of truth (`docs/developing.md`'s *Spec-driven workflow* table lists the specifications `01`–`10`; the README's *Documentation* table lists the guides for users); change the spec in the same commit as behavior. Requirements are numbered `REQ-xxx`; reference them from tests and commits. Terminology: the text file a show is written in is the **show file** — never "script".
 
+## Requests (always)
+
+- **Ask questions to refine a request** before building it, whenever it leaves a real choice open: what a feature should do, who it is for, what it may and may not touch, the syntax or wording, or what to leave out. Put the questions to the maintainer (a few at a time, each with a recommended answer and what the alternatives would mean), then build what they chose. Don't ask what the code, the specifications (`docs/`) or an earlier decision already answers, and don't stall on a detail that has a sensible default: pick it and say so. When the request is clear, just do it.
+
 ## Commits and documentation (always)
 
 - **One fix or feature per commit.** Never bundle two changes: if a request has several parts, make several commits, each complete on its own (code, tests, docs, translations). Don't mix refactors or unrelated tidying into a feature or fix; give them their own commit. Commit messages have a short headline of **at most 80 characters** (a summary of the change, no detail); the detail (what changed and why, the docs and tests touched) goes in the description after a blank line. Reference `REQ-xxx` where there is one, and end with the co-author line.
