@@ -63,6 +63,7 @@
     if (r.data.role === 'viewer' && !FOLLOW) { location.replace('/follow'); return; } // a viewer password opens only the page that watches
     S.viewer = FOLLOW || r.data.role === 'viewer'; // this page only watches (nothing can be sent or taken over)
     document.body.classList.toggle('follower', S.viewer);
+    $('runlink').hidden = !FOLLOW || (r.data.role !== 'admin' && r.data.role !== 'operator'); // an operator or admin may go from watching to running
     $('setuplink').hidden = r.data.role !== 'admin' || REHEARSAL; // signed in with the admin password: a way back to Setup
     $('logout').hidden = !!r.data.auto; // on the computer that runs the program there is no password to sign out of
     applyState(r.data.cues, r.data.payload);

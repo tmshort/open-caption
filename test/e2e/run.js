@@ -1056,6 +1056,7 @@ async function main() {
       check('a viewer\'s keys do nothing', (await cursorOf()) === before);
       const sent = await vp.evaluate(async () => [(await fetch('/api/operator/next', { method: 'POST', body: '{}' })).status, (await fetch('/api/operator/claim', { method: 'POST', body: '{"takeover":true}' })).status, (await fetch('/api/admin/ping')).status]);
       check('and the program refuses a viewer every command, taking control and Setup', JSON.stringify(sent) === '[403,403,403]', sent);
+      check('a viewer has no link to the Run page or Setup', await vp.evaluate(() => document.getElementById('runlink').hidden && document.getElementById('setuplink').hidden));
       await vp.goto(B + '/operator'); await vp.waitForFunction(() => location.pathname === '/follow', { timeout: T(8000) }).catch(() => {});
       check('a viewer who opens the operator page is taken to the page that watches', await vp.evaluate(() => location.pathname === '/follow'));
       await vp.close(); await ctx4.close();
@@ -1065,6 +1066,10 @@ async function main() {
       await fp.type('#pw', OPERATOR); await fp.keyboard.press('Enter');
       await fp.waitForSelector('#list .cue', { timeout: T(8000) }).catch(() => {});
       check('the operator password also opens the Follow page, which still has no controls', await fp.evaluate(() => document.body.classList.contains('follower') && getComputedStyle(document.querySelector('footer')).display === 'none' && /view only/.test(document.getElementById('ctrl').textContent) && location.pathname === '/follow'));
+      check('and an operator can go from there to the Run page, which a viewer cannot', await fp.evaluate(() => { const a = document.getElementById('runlink'); return !a.hidden && a.getAttribute('href') === '/operator' && document.getElementById('setuplink').hidden; }));
+      await fp.click('#runlink'); await fp.waitForFunction(() => location.pathname === '/operator', { timeout: T(8000) }).catch(() => {});
+      await fp.waitForSelector('#list .cue', { timeout: T(8000) }).catch(() => {});
+      check('and the Run page it opens has the controls', await fp.evaluate(() => location.pathname === '/operator' && !document.body.classList.contains('follower') && getComputedStyle(document.querySelector('footer')).display !== 'none'));
       await fp.close(); await ctx5.close();
     }
   } finally {
