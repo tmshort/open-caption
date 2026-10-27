@@ -18,9 +18,10 @@
 </head>
 <body class="viewonly">
 <main id="login" hidden><form>
-  <h1>Open Caption — Run</h1>
-  <p data-t>Enter the <strong>operator</strong> password. The admin password works too.</p>
-  <label>Operator password <input id="pw" type="password" name="password" autocomplete="current-password" required></label>
+  <h1><span class="for-run">Open Caption — Run</span><span class="for-follow" hidden>Open Caption — Follow</span></h1>
+  <p data-t class="for-run">Enter the <strong>operator</strong> password. The admin password works too.</p>
+  <p data-t class="for-follow" hidden>Enter the <strong>viewer</strong> password. The operator and admin passwords work too.</p>
+  <label><span class="for-run">Operator password</span><span class="for-follow" hidden>Viewer password</span> <input id="pw" type="password" name="password" autocomplete="current-password" required></label>
   <button class="primary">Sign in</button>
   <p id="loginerr" role="alert"></p>
 </form></main>

@@ -284,7 +284,7 @@
                 h('label', { class: 'field' }, h('span', {}, __('New admin password')), adminPw),
                 h('label', { class: 'field' }, h('span', {}, __('New operator password')), opPw),
                 h('label', { class: 'field' }, h('span', {}, __('New viewer password (optional)')), viewerPw),
-                h('p', { class: 'hint' }, __('A viewer password opens the Run page for watching only, for example on a stage manager’s tablet: nothing can be sent from it.'), ' ', viewerState, ' ', viewerOff),
+                h('p', { class: 'hint' }, __('A viewer password opens the Follow page (/follow) for watching only, for example on a stage manager’s tablet: nothing can be sent from it. The operator and admin passwords open it too.'), ' ', viewerState, ' ', viewerOff),
                 h('div', { class: 'row' }, changePw, s.operatorPasswordHashed ? null : reveal),
                 s.operatorPasswordHashed ? h('p', { class: 'hint' }, __('The operator password is stored as a digest, so it cannot be shown. Set a new one to replace it.')) : shown)
             : h('p', { class: 'hint' }, __('This copy was started without a settings file, so passwords cannot be changed here.'))),
@@ -1230,6 +1230,10 @@
     // always the numeric address (never the .local name), so it can be copied, and chosen like the others
     const projBase = (net.data.urls.find((u) => u.kind === 'http' && !u.name && u.public) || httpUrl || net.data.urls[0] || {}).url;
     const projU = projBase ? { url: projBase + (projBase.includes('?') ? '&' : '?') + 'display=projector' } : null;
+    // The page for a second device that only watches (a stage manager's tablet): shown when a viewer password is set
+    const followBase = projBase ? new URL(projBase).origin + '/follow' : '';
+    const followRow = net.data.viewerPasswordSet && followBase ? h('div', { class: 'row projrow' }, link(followBase),
+      h('span', { class: 'hint' }, __('(for a second device that only watches, such as a stage manager’s tablet; it signs in with the viewer password)'))) : null;
     const projRow = projU ? h('div', { class: 'row projrow' }, h('label', { class: 'row' }, radio(projU), link(projU.url)),
       h('span', { class: 'hint' }, __('(for a projector or shared screen; open it on that computer)'))) : null;
     const where = (u) => (u.adapter === 'wifi' ? ' (' + __('Wi-Fi') + ')' : u.adapter === 'ethernet' ? ' (' + __('Ethernet') + ')' : '');
@@ -1248,7 +1252,7 @@
     const list = h('div', { class: 'urls' },
       ...(hasHttps ? [group(__('Secure (https)'), ...certRows, ...(certRows.length ? [h('div', { class: 'hint namehint' }, __('The name in the HTTPS certificate. It works on devices that can find this computer by that name.'))] : []), ...numeric('https')),
         group(__('Plain (http)'), ...plain)] : plain),
-      projRow);
+      projRow, followRow);
     p.append(h('h2', {}, __('Share')), checks,
       h('div', { class: 'card' }, h('h3', {}, __('Tell the audience this address')), big,
         h('div', { class: 'row' }, h('button', { onclick: async () => { try { await navigator.clipboard.writeText(chosen); toast(__('Copied')); } catch (e) { toast(__('Select the address and copy it')); } } }, __('Copy address')),

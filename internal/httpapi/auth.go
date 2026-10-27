@@ -156,7 +156,8 @@ func (a *auth) allow(ip string) bool {
 }
 
 // login checks a password for the requested role and returns a session token.
-// Role "operator" accepts the operator or the admin password; "admin" only the admin one.
+// Role "operator" accepts the operator or the admin password; "admin" only the admin one; "viewer" (the /follow page) the
+// viewer, operator or admin password, and a session keeps the role of the password that opened it.
 func (a *auth) login(role, password string) (token, granted string, ok bool) {
 	a.mu.Lock()
 	adminPW, operatorPW, viewerPW := a.adminPW, a.operatorPW, a.viewerPW
@@ -168,7 +169,11 @@ func (a *auth) login(role, password string) (token, granted string, ok bool) {
 		granted = RoleAdmin
 	case role == RoleOperator && config.CheckPassword(operatorPW, password):
 		granted = RoleOperator
-	case role == RoleOperator && viewerPW != "" && config.CheckPassword(viewerPW, password): // the same sign-in form: the password says which
+	case role == RoleViewer && config.CheckPassword(adminPW, password): // /follow takes any of the three passwords, each keeping its own role
+		granted = RoleAdmin
+	case role == RoleViewer && config.CheckPassword(operatorPW, password):
+		granted = RoleOperator
+	case role == RoleViewer && viewerPW != "" && config.CheckPassword(viewerPW, password):
 		granted = RoleViewer
 	default:
 		return "", "", false
@@ -494,7 +499,7 @@ func (s *Server) authRoutes(mux *http.ServeMux) {
 			writeErr(w, http.StatusBadRequest, "bad request")
 			return
 		}
-		if (req.Role == RoleAdmin || req.Role == RoleOperator) && !s.allowedFor(req.Role, r) {
+		if (req.Role == RoleAdmin || req.Role == RoleOperator || req.Role == RoleViewer) && !s.allowedFor(req.Role, r) {
 			logx.Warnf("sign-in as %s refused from %s: not on the access list", req.Role, clientIP(r))
 			writeErr(w, http.StatusForbidden, "signing in is not available from this computer")
 			return

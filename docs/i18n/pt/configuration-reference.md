@@ -88,7 +88,7 @@ Os valores padrão são os que você obtém sem a chave. «Configuração» diz 
 | `config_version` | `1` | Escrita pelo programa. Um número maior do que o programa conhece significa que o arquivo veio de uma versão mais nova |
 | `admin_password` | gerada | A senha da configuração (`/admin`). Texto simples ou um hash como `sha256:…` (veja «Senhas» mais abaixo). Não pode ficar vazia (6 ou mais caracteres ao mudar na configuração). *Configuração: Configurações → Segurança* |
 | `operator_password` | gerada | A senha da página do operador (`/operator`); a do administrador também vale ali. Texto simples ou um hash, como `admin_password`; um hash não pode ser mostrado na configuração. Não pode ficar vazia. *Configuração: Configurações → Segurança* |
-| `viewer_password` | *(nenhuma)* | Uma terceira senha opcional que permite a um segundo dispositivo (o tablet de um contrarregra) **acompanhar** a página do operador: entra em `/operator` com esta senha e vê as linhas, as notas e a posição, mas não pode enviar nada nem assumir o controle. Vazia = sem acesso de espectador. Texto simples ou um hash, diferente das outras duas. *Configuração: Configurações → Segurança* |
+| `viewer_password` | *(nenhuma)* | Uma terceira senha opcional que permite a um segundo dispositivo (o tablet de um contrarregra) **acompanhar** o espetáculo: abre `/follow`, entra com esta senha e vê as linhas, as notas e a posição, mas não pode enviar nada nem assumir o controle. As senhas de operador e de administrador também abrem `/follow`. Vazia = sem acesso só de espectador. Texto simples ou um hash, diferente das outras duas. *Configuração: Configurações → Segurança* |
 | `data_dir` | vazio | A pasta de dados. Vazio significa a pasta padrão acima. Não pode ser um arquivo |
 
 ### `http`

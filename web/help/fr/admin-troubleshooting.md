@@ -34,7 +34,7 @@ Voir « Ce que signifient les avertissements » dans [Écrire un fichier du spec
 
 ## Mots de passe
 
-Pour changer l'un ou l'autre mot de passe, utilisez **Réglages** en haut de la page de configuration. Le nouveau mot de passe prend effet immédiatement et est enregistré dans `config.yaml`. Toute personne connectée avec un mot de passe qui a changé est déconnectée ; vous restez connecté. La même fenêtre peut afficher le mot de passe opérateur actuel pour que vous le donniez à l'opérateur. Un **mot de passe spectateur** facultatif permet à un deuxième appareil, comme la tablette d'un régisseur, de se connecter à la page de l'opérateur en simple consultation : elle affiche les lignes, les notes et la position, et rien ne peut en être envoyé.
+Pour changer l'un ou l'autre mot de passe, utilisez **Réglages** en haut de la page de configuration. Le nouveau mot de passe prend effet immédiatement et est enregistré dans `config.yaml`. Toute personne connectée avec un mot de passe qui a changé est déconnectée ; vous restez connecté. La même fenêtre peut afficher le mot de passe opérateur actuel pour que vous le donniez à l'opérateur. Un **mot de passe spectateur** facultatif permet à un deuxième appareil, comme la tablette d'un régisseur, d'ouvrir la page de suivi (`/follow`) en simple consultation : elle affiche les lignes, les notes et la position, et rien ne peut en être envoyé. Les mots de passe opérateur et administrateur ouvrent aussi cette page.
 
 Si vous ne pouvez pas du tout vous connecter, les deux mots de passe se trouvent dans `config.yaml`, dans le dossier de données du programme. Ouvrez le fichier avec n'importe quel éditeur de texte. Son emplacement est affiché au démarrage du programme.
 

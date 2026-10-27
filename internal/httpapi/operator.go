@@ -96,6 +96,8 @@ func (s *Server) operatorRoutes(mux *http.ServeMux) {
 	sub, _ := fs.Sub(web.Operator, "operator")
 	static := http.StripPrefix("/static/operator/", http.FileServer(http.FS(sub)))
 	mux.HandleFunc("GET /operator", s.gate(RoleOperator, func(w http.ResponseWriter, r *http.Request) { servePage(w, sub, "index.html") }))
+	// The page for a second device that only watches (REQ-071): the same page, which sees from its address that it is to follow.
+	mux.HandleFunc("GET /follow", s.gate(RoleViewer, func(w http.ResponseWriter, r *http.Request) { servePage(w, sub, "index.html") }))
 	mux.HandleFunc("GET /static/operator/", s.gate(RoleOperator, func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-cache")
 		w.Header().Set("X-Content-Type-Options", "nosniff")

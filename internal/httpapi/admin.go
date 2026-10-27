@@ -1255,7 +1255,7 @@ func (s *Server) network(w http.ResponseWriter, r *http.Request) {
 		warnings = append(warnings, "HTTPS is using a self-signed certificate. Each device shows a security warning the first time. Plain http:// avoids this.")
 	}
 	writeJSON(w, http.StatusOK, map[string]any{"hostname": host, "ips": ipStrings(ips), "urls": urls, "warnings": warnings,
-		"audience": s.rt.AudienceCount(), "mdns": s.MDNSStatus()})
+		"audience": s.rt.AudienceCount(), "mdns": s.MDNSStatus(), "viewerPasswordSet": s.snapshot().ViewerPassword != ""})
 }
 
 // certificateNames are the DNS names a browser accepts for the HTTPS certificate: the ACME domain, or the names in the

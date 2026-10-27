@@ -27,6 +27,7 @@ Query parameters on `/` and `/events`: `?display=projector`, `?size=<pct>`,
 
 | Method | Path | Description |
 |--------|------|-------------|
+| GET | `/follow` | The operator page for a second device that only watches (REQ-071): same page, no controls; same access list as `/operator` |
 | GET | `/help` | Help viewer page (topic list + content); `?role=admin\|operator` picks the default topic set |
 | GET | `/help/{topic}` | One topic as rendered HTML fragment (`?format=md` returns the Markdown source) |
 | GET | `/help/sample-show.md` | Downloadable starter show file demonstrating every convention |
@@ -54,7 +55,7 @@ everywhere an operator session is; the reverse is not true.
 
 | Method | Path | Description |
 |--------|------|-------------|
-| POST | `/api/login` | `{role: "admin"\|"operator", password}` → sets cookie; role `operator` accepts the operator or admin password, **or the viewer password when `viewer_password` is set (the answer says `role: "viewer"`; see REQ-071)**, role `admin` only the admin password; rate-limited (5 attempts/min/IP) |
+| POST | `/api/login` | `{role: "admin"\|"operator"\|"viewer", password}` → sets cookie; role `operator` accepts the operator or admin password, **role `viewer` (the `/follow` page, REQ-071) accepts the viewer, operator or admin password and the answer says which role the password gave**, role `admin` only the admin password; rate-limited (5 attempts/min/IP) |
 | POST | `/api/logout` | Clears the session |
 | GET | `/api/me` | `{role, sid}` of the signed-in session (operator or admin), where `sid` is the session's public identifier (a hash of the token, safe to send to browsers) that the operator page compares with the controller's to know whether it is in control (REQ-034). `401` without a session |
 

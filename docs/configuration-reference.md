@@ -88,7 +88,7 @@ Defaults are what you get without the key. "Setup" says where Setup can change i
 | `config_version` | `1` | Written by the program. A newer number than the program knows means the file came from a newer version |
 | `admin_password` | generated | The password for Setup (`/admin`). Plain text, or a digest such as `sha256:…` (see "Passwords" below). Must not be empty (6 or more characters when changed in Setup). *Setup: Settings → Security* |
 | `operator_password` | generated | The password for the operator page (`/operator`); the admin password works there too. Plain text or a digest, like `admin_password`; a digest cannot be shown in Setup. Must not be empty. *Setup: Settings → Security* |
-| `viewer_password` | *(none)* | An optional third password that lets a second device (a stage manager's tablet) **watch** the operator page: it signs in at `/operator` with this password and sees the lines, notes and position, but can send nothing and take no control. Empty = no viewer sign-in. Plain text or a digest, different from the other two. *Setup: Settings → Security* |
+| `viewer_password` | *(none)* | An optional third password that lets a second device (a stage manager's tablet) **watch** the show: it opens `/follow` and signs in with this password, and sees the lines, notes and position, but can send nothing and take no control. The operator and admin passwords open `/follow` too. Empty = no viewer-only sign-in. Plain text or a digest, different from the other two. *Setup: Settings → Security* |
 | `data_dir` | empty | The data folder. Empty means the default folder above. Must not be a file |
 
 ### `http`

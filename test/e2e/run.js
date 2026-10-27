@@ -1040,7 +1040,8 @@ async function main() {
       await hp.close(); await ctx3.close();
       // The viewer password opens the Run page for watching only
       const ctx4 = await b.createBrowserContext(); const vp = await ctx4.newPage(); vp.setDefaultTimeout(T(8000));
-      await vp.goto(B + '/operator'); await vp.waitForSelector('#pw', { visible: true }).catch(() => {});
+      await vp.goto(B + '/follow'); await vp.waitForSelector('#pw', { visible: true }).catch(() => {});
+      check('the Follow sign-in asks for the viewer password', await vp.evaluate(() => /viewer/i.test(document.getElementById('login').innerText) && !/Operator password/.test(document.getElementById('login').innerText) && document.title.length > 0));
       await vp.type('#pw', VIEWER); await vp.keyboard.press('Enter');
       await vp.waitForSelector('#list .cue', { timeout: T(8000) }).catch(() => {});
       const cursorOf = () => vp.evaluate(async () => (await (await fetch('/api/operator/state')).json()).payload.op.cursor);
@@ -1055,7 +1056,16 @@ async function main() {
       check('a viewer\'s keys do nothing', (await cursorOf()) === before);
       const sent = await vp.evaluate(async () => [(await fetch('/api/operator/next', { method: 'POST', body: '{}' })).status, (await fetch('/api/operator/claim', { method: 'POST', body: '{"takeover":true}' })).status, (await fetch('/api/admin/ping')).status]);
       check('and the program refuses a viewer every command, taking control and Setup', JSON.stringify(sent) === '[403,403,403]', sent);
+      await vp.goto(B + '/operator'); await vp.waitForFunction(() => location.pathname === '/follow', { timeout: T(8000) }).catch(() => {});
+      check('a viewer who opens the operator page is taken to the page that watches', await vp.evaluate(() => location.pathname === '/follow'));
       await vp.close(); await ctx4.close();
+      // the operator password opens /follow too (the passwords are a hierarchy) and the page still only watches
+      const ctx5 = await b.createBrowserContext(); const fp = await ctx5.newPage(); fp.setDefaultTimeout(T(8000));
+      await fp.goto(B + '/follow'); await fp.waitForSelector('#pw', { visible: true }).catch(() => {});
+      await fp.type('#pw', OPERATOR); await fp.keyboard.press('Enter');
+      await fp.waitForSelector('#list .cue', { timeout: T(8000) }).catch(() => {});
+      check('the operator password also opens the Follow page, which still has no controls', await fp.evaluate(() => document.body.classList.contains('follower') && getComputedStyle(document.querySelector('footer')).display === 'none' && /view only/.test(document.getElementById('ctrl').textContent) && location.pathname === '/follow'));
+      await fp.close(); await ctx5.close();
     }
   } finally {
     await b.close();

@@ -8,6 +8,7 @@
   const $ = (id) => document.getElementById(id);
   // In a rehearsal (started from Setup) the same page drives an isolated, private show.
   const REHEARSAL = new URLSearchParams(location.search).has('rehearsal');
+  const FOLLOW = /^\/follow\/?$/.test(location.pathname); // the page for a second device that only watches: no controls, and its own sign-in
   const API = REHEARSAL ? '/api/admin/rehearsal' : '/api/operator';
   const S = { cues: [], payload: null, me: '', cuesVer: -1, sel: null, inflight: false, es: null, lastEvent: 0, rows: [] };
 
@@ -59,7 +60,8 @@
     $('login').hidden = true;
     $('app').hidden = false;
     S.me = r.data.me;
-    S.viewer = r.data.role === 'viewer'; // signed in with the viewer password: this page only watches (nothing can be sent or taken over)
+    if (r.data.role === 'viewer' && !FOLLOW) { location.replace('/follow'); return; } // a viewer password opens only the page that watches
+    S.viewer = FOLLOW || r.data.role === 'viewer'; // this page only watches (nothing can be sent or taken over)
     document.body.classList.toggle('follower', S.viewer);
     $('setuplink').hidden = r.data.role !== 'admin' || REHEARSAL; // signed in with the admin password: a way back to Setup
     $('logout').hidden = !!r.data.auto; // on the computer that runs the program there is no password to sign out of
@@ -67,10 +69,15 @@
     if (!S.viewer) await claim(false);
     openStream();
   }
-  function showLogin() { $('app').hidden = true; $('login').hidden = false; $('pw').focus(); }
+  function showLogin() {
+    $('app').hidden = true; $('login').hidden = false;
+    document.querySelectorAll('.for-run').forEach((e) => { e.hidden = FOLLOW; });
+    document.querySelectorAll('.for-follow').forEach((e) => { e.hidden = !FOLLOW; });
+    $('pw').focus();
+  }
   $('login').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const r = await api('POST', '/api/login', { role: 'operator', password: $('pw').value });
+    const r = await api('POST', '/api/login', { role: FOLLOW ? 'viewer' : 'operator', password: $('pw').value });
     if (r.ok) { $('loginerr').textContent = ''; $('pw').value = ''; boot(); return; }
     $('loginerr').textContent = r.status === 429 ? __('Too many attempts. Wait a minute.') : __('That password was not accepted.');
   });
@@ -284,7 +291,7 @@
     const p = S.payload; if (!p) return;
     const o = p.op;
     $('show').textContent = (REHEARSAL ? __('REHEARSAL') + ' — ' : '') + (p.show.name || p.show.id || __('No show loaded'));
-    if (!REHEARSAL) document.title = __('Run') + ' — ' + (p.show.name || p.show.id || __('No show loaded')) + ' (' + (o.live ? __('ON AIR') : __('STANDBY')) + ')';
+    if (!REHEARSAL) document.title = (S.viewer ? __('Follow') : __('Run')) + ' — ' + (p.show.name || p.show.id || __('No show loaded')) + ' (' + (o.live ? __('ON AIR') : __('STANDBY')) + ')';
     const live = $('live'); live.textContent = o.live ? '● ' + __('ON AIR') : __('STANDBY'); live.classList.toggle('on', o.live); live.classList.toggle('standby', !!o.standby);
     $('viewers').textContent = OCClients.label(p); // languages nobody is using are left out
     $('viewers').title = OCClients.title(p.audience);

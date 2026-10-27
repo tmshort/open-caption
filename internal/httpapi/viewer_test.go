@@ -39,7 +39,7 @@ func viewerServer(t *testing.T, mutate func(*config.Config)) (*Server, *httptest
 func TestViewerCanWatchAndNothingElse(t *testing.T) {
 	s, ts := viewerServer(t, nil)
 	v := newClient(t, ts.URL)
-	if code, r := v.do("POST", "/api/login", map[string]string{"role": "operator", "password": "viewerpw"}); code != 200 || r["role"] != RoleViewer {
+	if code, r := v.do("POST", "/api/login", map[string]string{"role": "viewer", "password": "viewerpw"}); code != 200 || r["role"] != RoleViewer {
 		t.Fatalf("viewer sign-in: %d %v", code, r)
 	}
 	code, st := v.do("GET", "/api/operator/state", nil)
@@ -85,31 +85,54 @@ func TestViewerCanWatchAndNothingElse(t *testing.T) {
 	}
 }
 
-// The other passwords still work as before, and the viewer password does not open Setup or the admin sign-in.
-func TestViewerPasswordDoesNotOpenAnythingElse(t *testing.T) {
-	s, _ := viewerServer(t, nil)
-	for role, pw := range map[string]string{"admin": "viewerpw", "operator": "wrong"} {
-		if _, _, ok := s.auth.login(role, pw); ok {
-			t.Errorf("%s accepted %q", role, pw)
+// /follow takes any of the three passwords and each keeps its own role; the operator and admin forms are as they were,
+// and the viewer password opens neither.
+func TestFollowTakesEveryPasswordAndTheViewerPasswordOnlyThat(t *testing.T) {
+	s, ts := viewerServer(t, nil)
+	for pw, want := range map[string]string{"viewerpw": RoleViewer, "operatorpw": RoleOperator, "adminpw": RoleAdmin} {
+		if _, got, ok := s.auth.login("viewer", pw); !ok || got != want {
+			t.Errorf("/follow with the %s password: %q %v", want, got, ok)
 		}
 	}
-	if _, got, ok := s.auth.login("operator", "operatorpw"); !ok || got != RoleOperator {
-		t.Errorf("operator: %v %v", got, ok)
+	if _, _, ok := s.auth.login("viewer", "wrong"); ok {
+		t.Error("a wrong password signed in on /follow")
+	}
+	for role, pw := range map[string]string{"admin": "viewerpw", "operator": "viewerpw"} {
+		if _, _, ok := s.auth.login(role, pw); ok {
+			t.Errorf("the %s form accepted the viewer password", role)
+		}
 	}
 	if _, got, ok := s.auth.login("operator", "adminpw"); !ok || got != RoleAdmin {
 		t.Errorf("admin on the operator form: %v %v", got, ok)
 	}
-	// no viewer password: nothing signs in as a viewer, whatever is typed (an empty password included)
+	// no viewer password: /follow still takes the operator and admin passwords, and nothing else, an empty password included
 	off, _ := viewerServer(t, func(c *config.Config) { c.ViewerPassword = "" })
 	for _, pw := range []string{"", "viewerpw", "viewer"} {
-		if _, _, ok := off.auth.login("operator", pw); ok {
-			t.Errorf("with viewer sign-in off, %q signed in", pw)
+		if _, _, ok := off.auth.login("viewer", pw); ok {
+			t.Errorf("with no viewer password, %q signed in on /follow", pw)
 		}
 	}
-	// the same password for viewer and operator: it signs in as the operator, never less
+	if _, got, ok := off.auth.login("viewer", "operatorpw"); !ok || got != RoleOperator {
+		t.Errorf("operator password on /follow without a viewer password: %v %v", got, ok)
+	}
+	// the same password for viewer and operator: it signs in as the operator, never as less
 	same, _ := viewerServer(t, func(c *config.Config) { c.ViewerPassword = c.OperatorPassword })
-	if _, got, _ := same.auth.login("operator", "operatorpw"); got != RoleOperator {
+	if _, got, _ := same.auth.login("viewer", "operatorpw"); got != RoleOperator {
 		t.Errorf("same password: %v", got)
+	}
+	// the page itself, from the same access list as the operator page
+	c := newClient(t, ts.URL)
+	resp, err := c.hc.Get(ts.URL + "/follow")
+	if err != nil || resp.StatusCode != 200 {
+		t.Fatalf("GET /follow: %v %v", resp, err)
+	}
+	resp.Body.Close()
+	closed, cts := viewerServer(t, func(c *config.Config) {
+		c.Access.AdminAllow, c.Access.OperatorAllow = []string{"192.0.2.0/24"}, []string{"192.0.2.0/24"}
+	})
+	_ = closed
+	if resp, err := newClient(t, cts.URL).hc.Get(cts.URL + "/follow"); err != nil || resp.StatusCode != 403 {
+		t.Errorf("/follow follows operator_allow: %v %v", resp, err)
 	}
 }
 
@@ -168,7 +191,7 @@ func TestSetupManagesTheViewerPassword(t *testing.T) {
 		t.Errorf("settings after (the password itself is never sent): %v", st)
 	}
 	v := newClient(t, ts.URL)
-	if v.login("operator", "tablet-pw") != 200 {
+	if v.login("viewer", "tablet-pw") != 200 {
 		t.Fatal("the new viewer password signs in")
 	}
 	if code, _ := v.do("GET", "/api/operator/state", nil); code != 200 {
@@ -181,18 +204,18 @@ func TestSetupManagesTheViewerPassword(t *testing.T) {
 	if code, _ := v.do("GET", "/api/operator/state", nil); code != 200 {
 		t.Errorf("a viewer stays signed in when another password changes: %d", code)
 	}
-	if _, _, ok := s.auth.login("operator", "tablet-pw"); !ok {
+	if _, _, ok := s.auth.login("viewer", "tablet-pw"); !ok {
 		t.Error("the viewer password still works after another password changed")
 	}
 	v2 := newClient(t, ts.URL)
-	v2.login("operator", "tablet-pw")
+	v2.login("viewer", "tablet-pw")
 	if code, _ := admin.do("PUT", "/api/admin/settings/passwords", map[string]any{"removeViewer": true}); code != 200 {
 		t.Fatal("remove viewer")
 	}
 	if code, _ := v2.do("GET", "/api/operator/state", nil); code != 401 {
 		t.Errorf("turning viewer sign-in off signs viewers out: %d", code)
 	}
-	if _, _, ok := s.auth.login("operator", "tablet-pw"); ok {
+	if _, _, ok := s.auth.login("viewer", "tablet-pw"); ok {
 		t.Error("the viewer password must stop working")
 	}
 	if b, _ := os.ReadFile(cfgPath); strings.Contains(string(b), "tablet-pw") {
