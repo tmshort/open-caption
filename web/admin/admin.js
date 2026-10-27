@@ -733,7 +733,7 @@
   // ---- step 2: show file ----
   const SNIPPETS = {
     clear: '[clear]\n', blank: '[blank]\n', fullscreen: '[fullscreen: INTERMISSION]\n', section: '[section: Act 1, Scene 1]\n',
-    note: '[note: reminder for the operator]\n', comment: '<!-- a comment nobody sees -->\n',
+    note: '[note: reminder for the operator]\n', pace: '[pace: 8s]\n', comment: '<!-- a comment nobody sees -->\n',
     loop: '[loop: 10s]\n[fullscreen: Welcome!]\nPlease silence your phones\n[/loop]\n',
     settings: '[settings]\ntitle: The name of my show\nfont: system\ntext size: 100%\n[/settings]\n',
     together: '[together]\nANNA: ~ first voice ~\nKRIS: ~ second voice sung at the same time ~\n[/together]\n',
@@ -935,7 +935,7 @@
     editor.addEventListener('drop', (e) => { e.preventDefault(); editor.classList.remove('drop'); readFile(e.dataTransfer.files[0]); });
 
     const tools = h('div', { class: 'tools' },
-      ...[['Clear', 'clear'], ['Blank', 'blank'], ['Fullscreen text', 'fullscreen'], ['Section', 'section'], ['Operator note', 'note'], ['Comment', 'comment'], ['Loop', 'loop']].map(([l, k]) => h('button', { onclick: () => insert(SNIPPETS[k]) }, __(l))),
+      ...[['Clear', 'clear'], ['Blank', 'blank'], ['Fullscreen text', 'fullscreen'], ['Section', 'section'], ['Operator note', 'note'], ['Pace', 'pace', 'How long the next line usually stays up: a reminder for the operator'], ['Comment', 'comment'], ['Loop', 'loop']].map(([l, k, t]) => h('button', { onclick: () => insert(SNIPPETS[k]), title: t ? __(t) : false }, __(l))),
       h('button', { onclick: pickImage }, __('Image…')),
       h('button', { onclick: insertSettings, title: __('Title, colors, font, size and other options for the whole show') }, __('Settings')),
       h('span', { class: 'tools-sep', 'aria-hidden': 'true' }, '|'),

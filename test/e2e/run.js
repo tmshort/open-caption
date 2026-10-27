@@ -125,6 +125,12 @@ async function main() {
     check('the sample show file has no problems', (await admin.evaluate(() => document.querySelector('.diags').innerText)).includes('No problems') || (await admin.evaluate(() => document.getElementById('panel').innerText)).includes('No problems found'));
     const tabs = await admin.evaluate(() => [...document.querySelectorAll('.langtabs button')].map((x) => x.textContent.trim()));
     check('English (main) and Español tabs are offered', tabs.some((t) => t.startsWith('English')) && tabs.some((t) => t.startsWith('Español')), tabs);
+    {
+      const before = await admin.evaluate(() => document.querySelector('.editor textarea').value);
+      await admin.evaluate(() => { const ta = document.querySelector('.editor textarea'); ta.focus(); ta.setSelectionRange(0, 0); [...document.querySelectorAll('.tools button')].find((x) => x.textContent === 'Pace').click(); });
+      check('the editor has a Pace button that inserts [pace: 8s]', await admin.evaluate(() => document.querySelector('.editor textarea').value.includes('[pace: 8s]\n')));
+      await admin.evaluate((v) => { const ta = document.querySelector('.editor textarea'); ta.value = v; ta.dispatchEvent(new Event('input', { bubbles: true })); }, before); // put the sample back as it was
+    }
     const showId = (await api(admin, 'GET', '/api/admin/shows')).body.shows[0].id;
     await shot(admin, '01-setup-showfile');
 

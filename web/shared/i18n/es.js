@@ -385,6 +385,7 @@ OCI18n.add("es", {
  "Fullscreen text": "Texto a pantalla completa",
  "Section": "Sección",
  "Operator note": "Nota del operador",
+ "Pace": "Ritmo",
  "Comment": "Comentario",
  "Loop": "Bucle",
  "Errors only": "Solo errores",
