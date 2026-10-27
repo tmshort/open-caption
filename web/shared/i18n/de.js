@@ -498,6 +498,7 @@ OCI18n.add("de", {
  "login required": "Anmeldung erforderlich",
  "not allowed": "nicht erlaubt",
  "signing in is not available from this computer": "die Anmeldung ist von diesem Computer aus nicht möglich",
+ "signing in as a viewer is not available from this computer": "die Anmeldung als Zuschauer ist von diesem Computer aus nicht möglich",
  "too many attempts; wait a minute": "zu viele Versuche; warten Sie eine Minute",
  "wrong password": "falsches Passwort",
  "no rehearsal is running; start one from Setup": "es läuft keine Probe; starten Sie eine in der Einrichtung",

@@ -30,6 +30,7 @@ type Server struct {
 	store   *show.Store
 
 	adminAllow, operatorAllow config.AllowList // which computers may open Setup / the operator page
+	viewerAllow               config.AllowList // where the viewer-only password works (access.viewer_allow)
 	mdns                      *mdnsManager     // the local network name (open-caption.local)
 	standby                   bool             // shows start in standby (production); off for --dev
 	pinnedLevel               string           // the --log-level / OPEN_CAPTION_LOG_LEVEL value, if one was given
@@ -67,6 +68,7 @@ func New(cfg config.Config, version string) *Server {
 	// An unreadable list denies everything: never fall back to "anyone" by accident.
 	s.adminAllow, _ = config.ParseAllowList(cfg.Access.AdminAllow)
 	s.operatorAllow, _ = config.ParseAllowList(cfg.Access.OperatorAllow)
+	s.viewerAllow, _ = config.ParseAllowList(cfg.Access.ViewerAllow)
 	if cfg.DataDir != "" {
 		if st, err := show.NewStore(filepath.Join(cfg.DataDir, "shows"), showDefaults(cfg)); err == nil {
 			s.store = st

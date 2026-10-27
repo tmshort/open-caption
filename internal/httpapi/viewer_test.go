@@ -225,3 +225,61 @@ func TestSetupManagesTheViewerPassword(t *testing.T) {
 		t.Errorf("settings after removing: %v", st)
 	}
 }
+
+// postFrom is a JSON POST made as if from remote, with the session cookie if there is one.
+func postFrom(s *Server, path, remote, body string, cookie *http.Cookie) *httptest.ResponseRecorder {
+	r := httptest.NewRequest("POST", "http://localhost"+path, strings.NewReader(body))
+	r.RemoteAddr, r.Host = remote, "localhost"
+	r.Header.Set("Content-Type", "application/json")
+	if cookie != nil {
+		r.AddCookie(cookie)
+	}
+	w := httptest.NewRecorder()
+	s.Handler().ServeHTTP(w, r)
+	return w
+}
+
+// access.viewer_allow limits where the viewer-only password works. The operator and admin passwords are not limited by it
+// (they follow operator_allow and admin_allow), and an empty list means anywhere.
+func TestViewerAllowLimitsOnlyTheViewerPassword(t *testing.T) {
+	s, _ := viewerServer(t, func(c *config.Config) { c.Access.ViewerAllow = []string{"192.0.2.0/24"} })
+	login := func(remote, pw string) *httptest.ResponseRecorder {
+		return postFrom(s, "/api/login", remote, `{"role":"viewer","password":"`+pw+`"}`, nil)
+	}
+	if w := login("192.0.2.9:5000", "viewerpw"); w.Code != 200 {
+		t.Fatalf("a listed computer signs in as a viewer: %d %s", w.Code, w.Body)
+	}
+	if w := login("198.51.100.4:5000", "viewerpw"); w.Code != 403 || len(w.Result().Cookies()) != 0 {
+		t.Errorf("an unlisted computer is refused the viewer password: %d %s", w.Code, w.Body)
+	}
+	s.auth.mu.Lock()
+	n := len(s.auth.sessions)
+	s.auth.mu.Unlock()
+	if n != 1 {
+		t.Errorf("a refused viewer sign-in leaves no session behind: %d sessions", n)
+	}
+	for pw, want := range map[string]string{"operatorpw": RoleOperator, "adminpw": RoleAdmin} {
+		w := login("198.51.100.4:5000", pw)
+		if w.Code != 200 || !strings.Contains(w.Body.String(), want) {
+			t.Errorf("the %s password is not limited by viewer_allow: %d %s", want, w.Code, w.Body)
+		}
+	}
+	// a viewer cookie is only good on the listed computers
+	ck := login("192.0.2.9:5000", "viewerpw").Result().Cookies()[0]
+	get := func(remote string) int {
+		r := httptest.NewRequest("GET", "http://localhost/api/operator/state", nil)
+		r.RemoteAddr, r.Host = remote, "localhost"
+		r.AddCookie(ck)
+		w := httptest.NewRecorder()
+		s.Handler().ServeHTTP(w, r)
+		return w.Code
+	}
+	if get("192.0.2.9:5000") != 200 || get("198.51.100.4:5000") != 403 {
+		t.Error("a viewer session works from a listed computer and not from another")
+	}
+	// empty = anywhere
+	open, _ := viewerServer(t, nil)
+	if w := postFrom(open, "/api/login", "198.51.100.4:5000", `{"role":"viewer","password":"viewerpw"}`, nil); w.Code != 200 {
+		t.Errorf("no viewer_allow: %d", w.Code)
+	}
+}

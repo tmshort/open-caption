@@ -534,6 +534,9 @@ func (c *Config) normalize() []string {
 	if _, err := ParseAllowList(c.Access.OperatorAllow); err != nil {
 		add("access.operator_allow", "%v", err)
 	}
+	if _, err := ParseAllowList(c.Access.ViewerAllow); err != nil {
+		add("access.viewer_allow", "%v", err)
+	}
 	for i, e := range c.Network.Interfaces {
 		if c.Network.Interfaces[i] = strings.TrimSpace(e); c.Network.Interfaces[i] == "" {
 			add("network.interfaces", "entry %d is empty: use an interface's name such as Ethernet, Wi-Fi, en0 or eth0", i+1)

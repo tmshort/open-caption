@@ -498,6 +498,7 @@ OCI18n.add("fr", {
  "login required": "connexion requise",
  "not allowed": "non autorisé",
  "signing in is not available from this computer": "la connexion n'est pas disponible depuis cet ordinateur",
+ "signing in as a viewer is not available from this computer": "la connexion en tant que spectateur n'est pas disponible depuis cet ordinateur",
  "too many attempts; wait a minute": "trop de tentatives ; attendez une minute",
  "wrong password": "mot de passe incorrect",
  "no rehearsal is running; start one from Setup": "aucune répétition en cours ; lancez-en une depuis la configuration",

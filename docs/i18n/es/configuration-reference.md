@@ -160,6 +160,7 @@ Quién puede abrir la configuración y la página del operador. La página del p
 |---|---|---|
 | `access.admin_allow` | `[localhost]` | Equipos que pueden abrir la configuración; por defecto, solo el equipo que ejecuta el programa. Una lista vacía (`[]`) significa que **cualquier equipo de la red puede probar la contraseña**; el programa lo advierte. Entradas: `localhost`, `private` (las redes domésticas y de oficina habituales), una dirección (`192.168.1.50`) o una red (`192.168.1.0/24`). Ejemplo: `[localhost]` |
 | `access.operator_allow` | `[]` | Lo mismo, para la página del operador |
+| `access.viewer_allow` | `[]` | Dónde funciona la **contraseña solo de espectador** (`viewer_password`), por ejemplo solo la tableta del regidor. No limita las contraseñas de operador y de administrador, que abren `/follow` igual que `/operator` y siguen `operator_allow` y `admin_allow`. Vacía = en cualquier sitio desde el que se alcance la página del operador |
 | `access.local_auto_login` | `yes` | Un navegador en el equipo que ejecuta el programa (abierto en `localhost`, `127.0.0.1` o `[::1]`) entra como administrador sin contraseña. Los demás equipos usan siempre contraseña. Desactívelo en un equipo en el que puedan iniciar sesión otras personas |
 
 ### `log`, `mdns`, `standby`
@@ -227,6 +228,7 @@ audience:
 access:
   admin_allow: [localhost]
   operator_allow: [private]
+  viewer_allow: [192.168.1.60]
   local_auto_login: yes
 log:
   level: info

@@ -498,6 +498,7 @@ OCI18n.add("es", {
  "login required": "se requiere iniciar sesión",
  "not allowed": "no permitido",
  "signing in is not available from this computer": "iniciar sesión no está disponible desde este equipo",
+ "signing in as a viewer is not available from this computer": "iniciar sesión como espectador no está disponible desde este equipo",
  "too many attempts; wait a minute": "demasiados intentos; espere un minuto",
  "wrong password": "contraseña incorrecta",
  "no rehearsal is running; start one from Setup": "no hay ningún ensayo en curso; inicie uno desde Configuración",

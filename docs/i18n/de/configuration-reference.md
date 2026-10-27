@@ -160,6 +160,7 @@ Wer die Einrichtung und die Bedienerseite öffnen darf. Die Publikumsseite ist i
 |---|---|---|
 | `access.admin_allow` | `[localhost]` | Computer, die die Einrichtung öffnen dürfen; standardmäßig nur der Computer, auf dem das Programm läuft. Eine leere Liste (`[]`) bedeutet: **Jeder Computer im Netz darf das Passwort versuchen**; das Programm warnt davor. Einträge: `localhost`, `private` (die üblichen Heim- und Büronetze), eine Adresse (`192.168.1.50`) oder ein Netz (`192.168.1.0/24`). Beispiel: `[localhost]` |
 | `access.operator_allow` | `[]` | Dasselbe für die Bedienerseite |
+| `access.viewer_allow` | `[]` | Wo das **reine Zuschauer-Passwort** (`viewer_password`) funktioniert, zum Beispiel nur auf dem Tablet der Inspizienz. Es schränkt das Operator- und das Administrator-Passwort nicht ein; diese öffnen `/follow` wie `/operator` und folgen `operator_allow` und `admin_allow`. Leer = überall, wo die Bedienerseite erreichbar ist |
 | `access.local_auto_login` | `yes` | Ein Browser auf dem Computer, auf dem das Programm läuft (geöffnet unter `localhost`, `127.0.0.1` oder `[::1]`), wird ohne Passwort als Administrator angemeldet. Andere Computer verwenden immer ein Passwort. Schalten Sie es auf einem Computer aus, an dem sich andere Personen anmelden können |
 
 ### `log`, `mdns`, `standby`
@@ -227,6 +228,7 @@ audience:
 access:
   admin_allow: [localhost]
   operator_allow: [private]
+  viewer_allow: [192.168.1.60]
   local_auto_login: yes
 log:
   level: info

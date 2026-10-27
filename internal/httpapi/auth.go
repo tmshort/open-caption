@@ -337,6 +337,15 @@ func (s *Server) allowedFor(role string, r *http.Request) bool {
 	return s.operatorAllow.Allows(ip) || s.adminAllow.Allows(ip)
 }
 
+// viewerAllowedHere reports whether a viewer-role session may be used from this computer (access.viewer_allow; empty = anywhere).
+func (s *Server) viewerAllowedHere(r *http.Request) bool {
+	ip := clientAddr(r)
+	if !ip.IsValid() {
+		return !s.viewerAllow.Restricted()
+	}
+	return s.viewerAllow.Allows(ip)
+}
+
 const notFromHere = "That page is not available from this computer. It can only be opened from the computers listed under access in config.yaml."
 
 // gate protects a page (HTML or its JavaScript) with the access list.
@@ -462,6 +471,10 @@ func (s *Server) require(role string, h http.HandlerFunc) http.HandlerFunc {
 			writeErr(w, http.StatusUnauthorized, "login required")
 			return
 		}
+		if sess.role == RoleViewer && !s.viewerAllowedHere(r) { // a viewer session is only good on the computers viewer_allow names
+			writeErr(w, http.StatusForbidden, "not available from this computer")
+			return
+		}
 		if roleRank(sess.role) < roleRank(role) {
 			writeErr(w, http.StatusForbidden, "not allowed")
 			return
@@ -514,6 +527,12 @@ func (s *Server) authRoutes(mux *http.ServeMux) {
 		if !ok {
 			logx.Warnf("failed sign-in as %s from %s: wrong password", req.Role, clientIP(r))
 			writeErr(w, http.StatusUnauthorized, "wrong password")
+			return
+		}
+		if role == RoleViewer && !s.viewerAllowedHere(r) {
+			s.auth.revoke(token)
+			logx.Warnf("sign-in as viewer refused from %s: not on access.viewer_allow", clientIP(r))
+			writeErr(w, http.StatusForbidden, "signing in as a viewer is not available from this computer")
 			return
 		}
 		http.SetCookie(w, &http.Cookie{Name: cookieName, Value: token, Path: "/", HttpOnly: true,
