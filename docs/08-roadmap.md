@@ -77,8 +77,9 @@ Each milestone is shippable and ends with a demoable result. Tasks reference req
 - [x] Command line: `--check-show` (a lint for show files, sharing its analysis with Setup's editor), `--help`, the man page (`docs/open-caption.1`), the configuration reference (`docs/configuration-reference.md`)
 
 ## Stretch / Later
-- Optional auto-follow (speech recognition) as an assistant to operator
+Nothing is planned. Ideas are added here when someone asks for one.
 
 ## Decided against
 - Signed/notarized macOS build and a Windows installer: the cost of the certificates is not worth it for this project; the downloads stay plain archives and users deal with the unsigned-program warnings.
 - Print-friendly show file / cue sheet export: the browser prints the show file as it is, and a nicer layout was judged not worth building.
+- Auto-follow (speech recognition that advances or suggests the next line): the chance of wrong advances on stage audio (reverb, music, overlapping speech) is too high for what it saves, and a wrong line shows on every audience screen. The operator stays in control.
