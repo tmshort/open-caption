@@ -394,6 +394,21 @@ async function main() {
       check('and the text is full size again for the next ordinary caption', await proj.evaluate(() => parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--fit')) === 1));
       await aud.close(); await proj.close(); await en.bringToFront(); // a background tab is throttled, which the timer checks below would feel
     }
+    // The largest text size (300 percent) on a small phone, with a very long word and voices at once: nothing runs off the side
+    {
+      const big = '[settings]\ntext size: 300%\n[/settings]\nALICE: Hello there, everyone\nBOB: Supercalifragilisticexpialidocious_antidisestablishmentarianism\n[together]\nALICE: la la la\nBOB: ooh ooh ooh\nCAROL: aah aah aah\n[/together]\n';
+      const bid = (await api(op, 'POST', '/api/admin/shows', { name: 'Big text test' })).body.id;
+      await api(op, 'PUT', `/api/admin/shows/${bid}/showfile`, { text: big });
+      await api(op, 'POST', `/api/admin/shows/${bid}/activate`, { force: true, start: true }); await sleep(T(800));
+      for (const [w, h] of [[320, 568], [568, 320]]) {
+        const aud = await open({ viewport: { width: w, height: h } }); await aud.goto(B + '/'); await sleep(T(900));
+        await nextN(3); await sleep(T(900));
+        const m = await aud.evaluate(() => { const c = document.getElementById('captions'); return { scale: getComputedStyle(document.documentElement).getPropertyValue('--scale'), caps: c.children.length, page: document.documentElement.scrollWidth, shown: c.clientWidth, wide: [...c.querySelectorAll('.cap, .part')].filter((e) => e.scrollWidth > e.clientWidth + 1).length }; });
+        check(`text size 300% on a ${w}x${h} screen wraps every line and never scrolls sideways`, m.scale.trim() === '3' && m.caps === 3 && m.page <= w && m.wide === 0, m);
+        await aud.close();
+      }
+      await en.bringToFront();
+    }
     const tid = (await api(op, 'POST', '/api/admin/shows', { name: 'Timer test' })).body.id;
     await api(op, 'PUT', `/api/admin/shows/${tid}/showfile`, { text: '[loop: timer 15 minutes]\n**INTERMISSION**\nBack in {timer}\n[/loop]\nWelcome back' });
     await api(op, 'POST', `/api/admin/shows/${tid}/activate`, { force: true, start: true });
