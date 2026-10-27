@@ -425,7 +425,10 @@ async function main() {
       await nextN(1);
       const due = (re) => op.waitForFunction((s) => new RegExp(s).test(document.getElementById('lastsent').textContent), { timeout: T(6000) }, re).then(() => true, () => false);
       check('once that line is sent the status strip counts down to when the next press is due', await due('Next is due in \\d'));
+      const filling = await op.evaluate(() => { const b = document.getElementById('pacebar'); return { due: b.classList.contains('due'), width: b.firstChild.style.width, framed: !!document.querySelector('#list .cue.due'), text: document.getElementById('lastsent').textContent }; });
+      check('the bar along the strip is filling while it is not due, and no line is framed', !filling.due && parseFloat(filling.width) < 100 && !filling.framed, filling);
       check('and says so, in yellow, when it is due', (await due('Next is due$')) && await op.evaluate(() => document.getElementById('lastsent').classList.contains('due')));
+      check('when it is due the bar is full and yellow and the next line is framed', await op.evaluate(() => { const b = document.getElementById('pacebar'), n = document.querySelector('#list .cue.next.due'); return b.classList.contains('due') && b.firstChild.style.width === '100%' && !!n && /255, 212, 0/.test(getComputedStyle(b.firstChild).backgroundColor); }));
       await op.evaluate(async () => { await fetch('/api/operator/blank', { method: 'POST', body: JSON.stringify({ on: true }) }); }); await sleep(T(1500));
       check('blanking the screen does not restart the countdown: the line was sent long ago', await op.evaluate(() => /Next is due$/.test(document.getElementById('lastsent').textContent)));
       await op.evaluate(async () => { await fetch('/api/operator/blank', { method: 'POST', body: JSON.stringify({ on: false }) }); });

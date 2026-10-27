@@ -12,7 +12,7 @@
 | Banner amarillo **La pantalla del público está en blanco** | El público ve una pantalla en blanco (se usó Pantalla en blanco o Parar). **Espacio** envía la línea siguiente, **B** vuelve a mostrar las anteriores, **Retroceso** deshace |
 | Banner verde **BUCLE EN CURSO** | Hay un bucle de previa o de descanso en las pantallas |
 | **Fin del espectáculo.** | No quedan más líneas por enviar |
-| **Último envío hace 12 s** | Tiempo desde que el operador envió algo por última vez. Se pone amarillo tras dos minutos. Si la línea en pantalla tiene un `[pace]` en el archivo del espectáculo, sigue con `· Next is due in 6 s` y luego un `· Next is due` amarillo |
+| **Último envío hace 12 s** | Tiempo desde que el operador envió algo por última vez. Se pone amarillo tras dos minutos. Si la línea en pantalla tiene un `[pace]` en el archivo del espectáculo, sigue con `· Next is due in 6 s` y luego un `· Next is due` amarillo, con una barra fina a lo largo de la franja que se llena con el tiempo y se pone amarilla cuando toca la siguiente pulsación (y un marco amarillo alrededor de la línea siguiente) |
 | Botones atenuados | No tiene el control, así que los mandos están desactivados |
 | `IMAGEN: nombre` | Se muestra una imagen en las pantallas del público; usted solo ve su nombre |
 | `NOTA:` (morado) y marcadores (azul) | Solo para usted; el público nunca los ve |

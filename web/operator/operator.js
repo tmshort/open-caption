@@ -164,18 +164,22 @@
   const span = (s) => (s < 60 ? s + ' s' : Math.floor(s / 60) + ' min ' + (s % 60) + ' s');
   function renderLastSent() {
     const el = $('lastsent'), o = S.payload && S.payload.op, at = o && o.lastAt;
-    if (!at) { el.textContent = ''; el.classList.remove('due'); return; }
+    if (!at) { el.textContent = ''; el.classList.remove('due'); $('pacebar').firstChild.style.width = '0%'; $('pacebar').classList.remove('due'); S.rows.forEach((li) => li.classList.remove('due')); return; }
     const s = Math.max(0, Math.round((Date.now() - at) / 1000));
-    let text = __('Last sent {when} ago', { when: span(s) }), due = false;
+    let text = __('Last sent {when} ago', { when: span(s) }), due = false, filled = 0;
     // A [pace] in the show file says how long the line on screen usually stays up: count down to when the next press is due.
     const c = S.cues[currentIndex()];
     if (c && c.hint && !o.standby) {
-      const left = Math.round(c.hint - (Date.now() - (o.sentAt || at)) / 1000); // from when that line was sent, not from the last action of any kind
+      const gone = (Date.now() - (o.sentAt || at)) / 1000, left = Math.round(c.hint - gone); // from when that line was sent, not from the last action of any kind
       due = left <= 0;
+      filled = Math.min(1, gone / c.hint);
       text += ' · ' + (due ? __('Next is due') : __('Next is due in {when}', { when: span(left) }));
     }
     el.textContent = text;
     el.classList.toggle('due', due);
+    $('pacebar').firstChild.style.width = (due ? 100 : Math.round(filled * 100)) + '%'; // (set through the DOM: the page's CSP forbids style attributes)
+    $('pacebar').classList.toggle('due', due);
+    S.rows.forEach((li, i) => li.classList.toggle('due', due && i === o.nextIndex)); // a frame round the next line when its time is up
     el.classList.toggle('stale', s >= 120);
   }
   setInterval(renderLastSent, 1000);

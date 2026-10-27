@@ -12,7 +12,7 @@
 | Faixa amarela **A tela do público está em branco** | O público vê uma tela em branco (Em branco ou Parar foi usado). **Espaço** envia a próxima linha, **B** volta a mostrar as anteriores, **Backspace** desfaz |
 | Faixa verde **LAÇO EM ANDAMENTO** | Um laço de pré-espetáculo ou de intervalo está nas telas |
 | **Fim do espetáculo.** | Não há mais linhas para enviar |
-| **Último envio há 12 s** | Tempo desde que o operador enviou algo pela última vez. Fica amarelo depois de dois minutos. Se a linha na tela tem um `[pace]` no arquivo do espetáculo, continua com `· Next is due in 6 s`, depois um `· Next is due` amarelo |
+| **Último envio há 12 s** | Tempo desde que o operador enviou algo pela última vez. Fica amarelo depois de dois minutos. Se a linha na tela tem um `[pace]` no arquivo do espetáculo, continua com `· Next is due in 6 s`, depois um `· Next is due` amarelo, com uma barra fina ao longo da faixa que se enche com o tempo e fica amarela quando o próximo toque é devido (e uma moldura amarela em volta da próxima linha) |
 | Botões esmaecidos | Você não tem o controle, então os comandos estão desligados |
 | `IMAGEM: nome` | Uma imagem é mostrada nas telas do público; você vê só o nome dela |
 | `NOTA:` (roxo) e marcadores (azul) | Só para você; o público nunca os vê |

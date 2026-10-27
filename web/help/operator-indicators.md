@@ -12,7 +12,7 @@
 | Yellow banner **Audience screen is blank** | The audience sees a blank screen (Blank or Stop was used). **Space** sends the next line, **B** shows the earlier lines again, **Backspace** undoes |
 | Green banner **LOOP RUNNING** | A pre-show or intermission loop is on the screens |
 | **End of the show.** | There are no more lines to send |
-| **Last sent 12 s ago** | Time since the operator last sent anything. Turns yellow after two minutes. When the line on screen has a `[pace]` in the show file it goes on with `· Next is due in 6 s`, then a yellow `· Next is due` |
+| **Last sent 12 s ago** | Time since the operator last sent anything. Turns yellow after two minutes. When the line on screen has a `[pace]` in the show file it goes on with `· Next is due in 6 s`, then a yellow `· Next is due`, with a thin bar along the strip that fills as the time passes and turns yellow when the next press is due (and a yellow frame round the next line) |
 | Faded buttons | You are not in control, so the controls are off |
 | `IMAGE: name` | A picture is shown on the audience screens; you see only its name |
 | `NOTE:` (purple) and bookmarks (blue) | For you only; the audience never sees them |

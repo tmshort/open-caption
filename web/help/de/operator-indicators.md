@@ -12,7 +12,7 @@
 | Gelbes Banner **Der Publikumsbildschirm ist leer** | Das Publikum sieht einen leeren Bildschirm (Ausblenden oder Stopp wurde benutzt). **Leertaste** sendet die nächste Zeile, **B** zeigt die früheren wieder, **Rücktaste** macht es rückgängig |
 | Grünes Banner **SCHLEIFE LÄUFT** | Eine Schleife vor der Show oder in der Pause ist auf den Bildschirmen |
 | **Ende der Show.** | Es gibt keine weiteren Zeilen zu senden |
-| **Zuletzt gesendet vor 12 s** | Zeit seit dem letzten Senden durch den Operator. Wird nach zwei Minuten gelb. Hat die Zeile auf dem Bildschirm ein `[pace]` in der Show-Datei, folgt `· Next is due in 6 s`, dann ein gelbes `· Next is due` |
+| **Zuletzt gesendet vor 12 s** | Zeit seit dem letzten Senden durch den Operator. Wird nach zwei Minuten gelb. Hat die Zeile auf dem Bildschirm ein `[pace]` in der Show-Datei, folgt `· Next is due in 6 s`, dann ein gelbes `· Next is due`, mit einem dünnen Balken am Rand der Leiste, der sich mit der Zeit füllt und gelb wird, wenn der nächste Tastendruck fällig ist (und einem gelben Rahmen um die nächste Zeile) |
 | Ausgeblendete Schaltflächen | Sie haben nicht die Steuerung, die Bedienelemente sind also aus |
 | `BILD: Name` | Auf den Publikumsbildschirmen wird ein Bild gezeigt; Sie sehen nur seinen Namen |
 | `NOTIZ:` (violett) und Lesezeichen (blau) | Nur für Sie; das Publikum sieht sie nie |
