@@ -108,7 +108,7 @@ everywhere an operator session is; the reverse is not true.
 
 | Method | Path | Body | Description |
 |--------|------|------|-------------|
-| GET | `/api/operator/state` | | `OperatorState` + cue list (also for a viewer session, whose `role` is `"viewer"`: every other `/api/operator/*` call and everything under `/api/admin/*` answers 403) |
+| GET | `/api/operator/state` | | `OperatorState` (including `lastAt`, the last operator action, and `sentAt`, when the line on screen was sent, which a `[pace]` counts from) + cue list (also for a viewer session, whose `role` is `"viewer"`: every other `/api/operator/*` call and everything under `/api/admin/*` answers 403) |
 | GET | `/api/operator/stream` | | SSE of operator events (cursor, audience count, controller, loop) |
 | POST | `/api/operator/claim` | `{takeover:bool}` | Become the controlling operator |
 | POST | `/api/operator/next` | `{rev}` | NEXT: send the next cue. If the cue is a loop, starts it. If a loop is running, ends it and sends the next cue |

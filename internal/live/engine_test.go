@@ -850,3 +850,79 @@ func TestSkippedLinesAreRemembered(t *testing.T) {
 		t.Errorf("Reset: %v", op.Skipped)
 	}
 }
+
+// SentAt is when the line now on screen was sent: Next and Jump set it, Back brings the earlier one back, other actions
+// (blank, clear) leave it, going on air restarts it, and it survives a restart of the program.
+func TestSentAtIsWhenTheLineOnScreenWasSent(t *testing.T) {
+	e, _ := newEngine(t, "A\nB\nC\n")
+	if e.Operator().SentAt != 0 {
+		t.Fatal("nothing sent yet")
+	}
+	pause := func() { time.Sleep(3 * time.Millisecond) }
+	mustNext(t, e)
+	a := e.Operator().SentAt
+	if a == 0 || a != e.Operator().LastAt {
+		t.Fatalf("Next sets it to the moment of the action: %d %d", a, e.Operator().LastAt)
+	}
+	pause()
+	if _, err := e.SetBlank(true, -1); err != nil {
+		t.Fatal(err)
+	}
+	pause()
+	if o := e.Operator(); o.SentAt != a || o.LastAt <= a {
+		t.Errorf("blanking is an action but does not send a line: sent %d, last %d, was %d", o.SentAt, o.LastAt, a)
+	}
+	pause()
+	mustNext(t, e)
+	b := e.Operator().SentAt
+	if b <= a {
+		t.Errorf("the next line is sent later: %d %d", a, b)
+	}
+	p := e.Export()
+	e2, _ := newEngine(t, "A\nB\nC\n")
+	e2.Restore(p)
+	if e2.Operator().SentAt != b {
+		t.Errorf("kept over a restart: %d, want %d", e2.Operator().SentAt, b)
+	}
+	if _, err := e2.Back(-1); err != nil {
+		t.Fatal(err)
+	}
+	if got := e2.Operator().SentAt; got != a {
+		t.Errorf("Back (even after a restart) brings back when the earlier line was sent: %d", got)
+	}
+	if _, err := e.Back(-1); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := e.Back(-1); err != nil {
+		t.Fatal(err)
+	}
+	pause()
+	if _, err := e.Jump(2, -1); err != nil {
+		t.Fatal(err)
+	}
+	if j := e.Operator().SentAt; j <= b {
+		t.Errorf("a jump puts a line on screen now: %d", j)
+	}
+	if _, err := e.Reset(-1); err != nil || e.Operator().SentAt != 0 {
+		t.Errorf("Reset forgets it: %v %d", err, e.Operator().SentAt)
+	}
+}
+
+func TestSentAtRestartsWhenTheShowGoesBackOnAir(t *testing.T) {
+	e, _ := newStandby(t, "A\nB\n")
+	if _, err := e.Start(-1); err != nil {
+		t.Fatal(err)
+	}
+	mustNext(t, e)
+	first := e.Operator().SentAt
+	if _, err := e.OffAir(-1); err != nil {
+		t.Fatal(err)
+	}
+	time.Sleep(3 * time.Millisecond)
+	if _, err := e.Start(-1); err != nil {
+		t.Fatal(err)
+	}
+	if got := e.Operator().SentAt; got <= first {
+		t.Errorf("back on air, the line on screen counts from now: %d, was %d", got, first)
+	}
+}

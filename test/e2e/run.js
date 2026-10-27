@@ -420,6 +420,9 @@ async function main() {
       const due = (re) => op.waitForFunction((s) => new RegExp(s).test(document.getElementById('lastsent').textContent), { timeout: T(6000) }, re).then(() => true, () => false);
       check('once that line is sent the status strip counts down to when the next press is due', await due('Next is due in \\d'));
       check('and says so, in yellow, when it is due', (await due('Next is due$')) && await op.evaluate(() => document.getElementById('lastsent').classList.contains('due')));
+      await op.evaluate(async () => { await fetch('/api/operator/blank', { method: 'POST', body: JSON.stringify({ on: true }) }); }); await sleep(T(1500));
+      check('blanking the screen does not restart the countdown: the line was sent long ago', await op.evaluate(() => /Next is due$/.test(document.getElementById('lastsent').textContent)));
+      await op.evaluate(async () => { await fetch('/api/operator/blank', { method: 'POST', body: JSON.stringify({ on: false }) }); });
       await nextN(1); await sleep(T(600));
       check('a line without a hint shows no countdown', await op.evaluate(() => !/Next is due/.test(document.getElementById('lastsent').textContent)));
       await en.bringToFront();

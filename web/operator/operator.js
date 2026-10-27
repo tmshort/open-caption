@@ -170,7 +170,7 @@
     // A [pace] in the show file says how long the line on screen usually stays up: count down to when the next press is due.
     const c = S.cues[currentIndex()];
     if (c && c.hint && !o.standby) {
-      const left = Math.round(c.hint - (Date.now() - at) / 1000);
+      const left = Math.round(c.hint - (Date.now() - (o.sentAt || at)) / 1000); // from when that line was sent, not from the last action of any kind
       due = left <= 0;
       text += ' · ' + (due ? __('Next is due') : __('Next is due in {when}', { when: span(left) }));
     }

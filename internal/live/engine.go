@@ -118,6 +118,7 @@ type OperatorState struct {
 	// Announcement is the text of the operator's one-off notice while it is on the audience's screens ("" = none).
 	Announcement string      `json:"announcement,omitempty"`
 	LastAt       int64       `json:"lastAt"` // unix ms of the operator's last action (0 = none yet)
+	SentAt       int64       `json:"sentAt"` // unix ms when the line now on screen was sent (0 = none yet): a [pace] counts from here
 	Loop         *LoopStatus `json:"loop"`
 	// Skipped lists the cues the operator passed over without sending (Skip), so the page can show them as skipped.
 	Skipped []int `json:"skipped,omitempty"`
@@ -140,6 +141,7 @@ type Config struct {
 }
 
 type snapshot struct {
+	sentAt  int64 // when the line on screen then was sent
 	st      State
 	cursor  int
 	loopCue int // -1: no loop was running
@@ -173,6 +175,7 @@ type Engine struct {
 	standby    bool
 	resumeLoop int
 	lastAt     int64 // unix ms of the last operator action (0 = none yet)
+	sentAt     int64 // unix ms when the line now on screen was sent (Next, Jump; Back restores the earlier one)
 	skipped    []int // cues passed over with Skip, ascending; all are before the cursor
 }
 
@@ -244,7 +247,7 @@ func (e *Engine) Operator() OperatorState {
 
 func (e *Engine) operatorLocked() OperatorState {
 	o := OperatorState{Seq: e.st.Seq, Rev: e.rev, Cursor: e.cursor, NextIndex: e.visibleFrom(e.cursor),
-		Total: len(e.cues), Live: e.liveLocked(), Standby: e.standby, Mode: e.st.Mode, LastAt: e.lastAt,
+		Total: len(e.cues), Live: e.liveLocked(), Standby: e.standby, Mode: e.st.Mode, LastAt: e.lastAt, SentAt: e.sentAt,
 		Skipped: append([]int(nil), e.skipped...)}
 	if f := e.st.Fullscreen; f != nil && f.Announcement && !e.standby {
 		o.Announcement = f.Text
@@ -285,6 +288,7 @@ func (e *Engine) Next(rev int64) (OperatorState, error) {
 	e.cursor = idx + 1
 	e.touched = true
 	e.bumpLocked()
+	e.sentAt = e.lastAt
 	return e.operatorLocked(), nil
 }
 
@@ -327,6 +331,7 @@ func (e *Engine) Back(rev int64) (OperatorState, error) {
 	e.st = s.st.clone()
 	e.st.Seq = seq
 	e.cursor = s.cursor
+	e.sentAt = s.sentAt
 	e.skipped = append([]int(nil), s.skipped...)
 	e.touched = e.cursor > e.initialCursor()
 	if s.loopCue >= 0 && s.loopCue < len(e.cues) {
@@ -420,6 +425,7 @@ func (e *Engine) jumpLocked(index int) {
 		e.beginLoopLocked(loopCue, false)
 	}
 	e.touched = cursor > e.initialCursor()
+	e.sentAt = time.Now().UnixMilli() // the line now on screen counts from the jump
 }
 
 // SetBlank blanks or un-blanks the audience screen (ad hoc).
@@ -491,6 +497,9 @@ func (e *Engine) Start(rev int64) (OperatorState, error) {
 	}
 	e.resumeLoop = -1
 	e.bumpLocked()
+	if e.sentAt != 0 {
+		e.sentAt = e.lastAt // back on air with a line on screen: it counts from now
+	}
 	e.emitSnapshot()
 	return e.operatorLocked(), nil
 }
@@ -615,7 +624,7 @@ func (e *Engine) pushLocked() {
 	if e.loop != nil {
 		lc = e.loop.cue
 	}
-	e.history = append(e.history, snapshot{st: e.st.clone(), cursor: e.cursor, loopCue: lc, skipped: append([]int(nil), e.skipped...)})
+	e.history = append(e.history, snapshot{sentAt: e.sentAt, st: e.st.clone(), cursor: e.cursor, loopCue: lc, skipped: append([]int(nil), e.skipped...)})
 	if len(e.history) > historyMax {
 		e.history = e.history[len(e.history)-historyMax:]
 	}
@@ -626,7 +635,7 @@ func (e *Engine) pushLocked() {
 func (e *Engine) initialLocked() {
 	st, cursor, loopCue := e.replayLocked(0)
 	seq := e.st.Seq
-	e.st, e.cursor, e.touched = st, cursor, false
+	e.st, e.cursor, e.touched, e.sentAt = st, cursor, false, 0
 	e.st.Seq = seq
 	e.standby, e.resumeLoop = e.cfg.Standby, -1
 	if loopCue >= 0 {
@@ -811,12 +820,14 @@ type Persisted struct {
 	ResumeLoop int   `json:"resumeLoop,omitempty"`
 	Skipped    []int `json:"skipped,omitempty"` // cues passed over with Skip
 	LastAt     int64 `json:"lastAt,omitempty"`
+	SentAt     int64 `json:"sentAt,omitempty"`
 	// History holds the most recent undo steps so Back still works after a restart.
 	History []HistoryEntry `json:"history,omitempty"`
 }
 
 // HistoryEntry is one saved undo step.
 type HistoryEntry struct {
+	SentAt  int64 `json:"sentAt,omitempty"`
 	State   State `json:"state"`
 	Cursor  int   `json:"cursor"`
 	LoopCue int   `json:"loopCue"`
@@ -832,10 +843,10 @@ func (e *Engine) Export() Persisted {
 	defer e.mu.Unlock()
 	p := Persisted{Cursor: e.cursor, Rev: e.rev, NextID: e.nextID, Seq: e.st.Seq, Mode: e.st.Mode,
 		Scrollback: append([]CaptionItem(nil), e.st.Scrollback...), Fullscreen: e.st.Fullscreen,
-		LoopCue: -1, Touched: e.touched, LastAt: e.lastAt, Standby: e.standby, ResumeLoop: e.resumeLoop, Skipped: append([]int(nil), e.skipped...)}
+		LoopCue: -1, Touched: e.touched, LastAt: e.lastAt, SentAt: e.sentAt, Standby: e.standby, ResumeLoop: e.resumeLoop, Skipped: append([]int(nil), e.skipped...)}
 	from := max(0, len(e.history)-persistedHistory)
 	for _, h := range e.history[from:] {
-		p.History = append(p.History, HistoryEntry{State: h.st.clone(), Cursor: h.cursor, LoopCue: h.loopCue, Skipped: h.skipped})
+		p.History = append(p.History, HistoryEntry{SentAt: h.sentAt, State: h.st.clone(), Cursor: h.cursor, LoopCue: h.loopCue, Skipped: h.skipped})
 	}
 	if e.loop != nil {
 		p.LoopCue, p.LoopDeadline = e.loop.cue, e.loop.deadline
@@ -849,10 +860,10 @@ func (e *Engine) Restore(p Persisted) {
 	defer e.mu.Unlock()
 	e.stopLoopLocked()
 	e.history = nil
-	e.lastAt = p.LastAt
+	e.lastAt, e.sentAt = p.LastAt, p.SentAt
 	for _, h := range p.History {
 		if h.Cursor >= 0 && h.Cursor <= len(e.cues) && h.LoopCue < len(e.cues) {
-			e.history = append(e.history, snapshot{st: h.State.clone(), cursor: h.Cursor, loopCue: h.LoopCue, skipped: dropFrom(h.Skipped, len(e.cues))})
+			e.history = append(e.history, snapshot{sentAt: h.SentAt, st: h.State.clone(), cursor: h.Cursor, loopCue: h.LoopCue, skipped: dropFrom(h.Skipped, len(e.cues))})
 		}
 	}
 	if p.Cursor < 0 || p.Cursor > len(e.cues) {
