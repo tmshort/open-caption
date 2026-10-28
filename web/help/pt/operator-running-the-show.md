@@ -40,6 +40,7 @@ Um arquivo do espetáculo pode fazer o mesmo com os comandos `[blank]` e `[clear
 
 ## Durante o espetáculo
 
+- **Ritmo:** quando uma linha tem um `[pace]` no arquivo do espetáculo, o tempo aparece ao lado da próxima linha e uma barra fina, na borda inferior da faixa de estado, se enche enquanto a linha está na tela. Quando a próxima pressão é devida, a próxima linha ganha uma moldura amarela e a barra fica amarela. Nada é enviado sozinho e não há som.
 - As linhas marcadas como notas ou seções são para você. Elas nunca gastam um toque em Espaço.
 - Imagens e mensagens em tela cheia aparecem aqui só como um rótulo, como `IMAGEM: cortina.jpg`. Você nunca vê a imagem em si.
 - **Músicas:** as linhas cantadas têm notas musicais (♪) em volta e aparecem em itálico nas telas do público. O título de uma música aparece como um marcador azul só para você. Procure apertar Espaço no começo de cada frase.

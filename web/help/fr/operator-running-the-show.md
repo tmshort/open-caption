@@ -40,6 +40,7 @@ Un fichier de spectacle peut faire la même chose avec les commandes `[blank]` e
 
 ## Pendant le spectacle
 
+- **Rythme :** quand une ligne a un `[pace]` dans le fichier du spectacle, son temps s'affiche à côté de la ligne suivante et une fine barre, au bas de la bande d'état, se remplit tant que la ligne est à l'écran. Quand la prochaine pression est due, la ligne suivante reçoit un cadre jaune et la barre devient jaune. Rien n'est envoyé tout seul et il n'y a aucun son.
 - Les lignes marquées comme notes ou sections sont pour vous. Elles ne consomment jamais une pression sur Espace.
 - Les images et les messages plein écran n'apparaissent ici que sous forme d'étiquette, comme `IMAGE : rideau.jpg`. Vous ne voyez jamais l'image elle-même.
 - **Chansons :** les lignes chantées sont entourées de notes de musique (♪) et s'affichent en italique sur les écrans du public. Le titre d'une chanson apparaît comme un signet bleu pour vous seul. Essayez d'appuyer sur Espace au début de chaque phrase.

@@ -40,6 +40,7 @@ Un file dello spettacolo può fare lo stesso con i comandi `[blank]` e `[clear]`
 
 ## Durante lo spettacolo
 
+- **Ritmo:** quando una riga ha un `[pace]` nel file dello spettacolo, il suo tempo compare accanto alla riga successiva e una barra sottile, lungo il bordo inferiore della striscia di stato, si riempie finché la riga è sullo schermo. Quando è dovuta la pressione successiva, la riga successiva riceve una cornice gialla e la barra diventa gialla. Nulla viene inviato da solo e non c'è alcun suono.
 - Le righe segnate come note o sezioni sono per te. Non consumano mai una pressione di Spazio.
 - Le immagini e i messaggi a schermo intero compaiono qui solo come etichetta, come `IMMAGINE: sipario.jpg`. Non vedi mai l'immagine vera e propria.
 - **Canzoni:** le righe cantate hanno note musicali (♪) intorno e sono mostrate in corsivo sugli schermi del pubblico. Il titolo di una canzone appare come segnalibro blu solo per te. Cerca di premere Spazio all'inizio di ogni frase.

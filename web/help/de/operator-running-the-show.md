@@ -40,6 +40,7 @@ Eine Show-Datei kann dasselbe mit den Befehlen `[blank]` und `[clear]` tun; in I
 
 ## Während der Show
 
+- **Tempo:** Hat eine Zeile in der Showdatei ein `[pace]`, steht die Zeit neben der nächsten Zeile, und ein dünner Balken am unteren Rand der Statusleiste füllt sich, solange die Zeile auf dem Bildschirm ist. Ist der nächste Druck fällig, bekommt die nächste Zeile einen gelben Rahmen und der Balken wird gelb. Nichts wird von selbst gesendet, und es gibt keinen Ton.
 - Als Notizen oder Abschnitte markierte Zeilen sind für Sie. Sie verbrauchen nie einen Druck auf die Leertaste.
 - Bilder und Vollbildnachrichten erscheinen hier nur als Bezeichnung, etwa `BILD: vorhang.jpg`. Das Bild selbst sehen Sie nie.
 - **Lieder:** Gesungene Zeilen sind von Noten (♪) umgeben und werden auf den Publikumsbildschirmen kursiv gezeigt. Der Titel eines Lieds erscheint nur für Sie als blaues Lesezeichen. Drücken Sie die Leertaste möglichst, wenn jede Phrase beginnt.

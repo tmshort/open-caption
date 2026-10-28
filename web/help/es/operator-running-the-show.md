@@ -40,6 +40,7 @@ Un archivo del espectáculo puede hacer lo mismo con los comandos `[blank]` y `[
 
 ## Durante el espectáculo
 
+- **Ritmo:** cuando una línea tiene un `[pace]` en el archivo del espectáculo, su tiempo se muestra junto a la línea siguiente y una barra fina en el borde inferior de la franja de estado se llena mientras la línea está en pantalla. Cuando toca la siguiente pulsación, la línea siguiente recibe un marco amarillo y la barra se vuelve amarilla. Nada se envía solo y no hay sonido.
 - Las líneas marcadas como notas o secciones son para usted. Nunca gastan una pulsación de Espacio.
 - Las imágenes y los mensajes a pantalla completa aparecen aquí solo como una etiqueta, como `IMAGEN: telon.jpg`. Nunca ve la imagen en sí.
 - **Canciones:** las líneas cantadas llevan notas musicales (♪) alrededor y se muestran en cursiva en las pantallas del público. El título de una canción aparece como marcador azul solo para usted. Intente pulsar Espacio al empezar cada frase.

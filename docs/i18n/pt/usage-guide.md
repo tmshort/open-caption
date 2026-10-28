@@ -188,7 +188,7 @@ EDWIN: Whistling all day long
 - As **indicações de cena** entre `(parênteses)` aparecem em itálico.
 - As **letras de música** entre notas `♪`, em itálico: comece uma linha com `~`, ou envolva a música em `[song]`…`[/song]`. Para dois cantores ao mesmo tempo (um dueto ou contraponto), ponha as linhas deles entre `[together]` e `[/together]`, ou una-as com ` || ` numa linha; as duas aparecem juntas com um toque em Espaço. Os botões **♪**, **♫** e **🎵 Música** do editor as inserem. Veja o tópico de ajuda *Musicais*.
 - Os **laços** (pré-espetáculo e intervalo) repetem imagens e texto até o operador seguir adiante. Um laço bem no início do arquivo do espetáculo começa quando o operador coloca o espetáculo no ar (INICIAR).
-- As **notas** `[note: …]` e os marcadores `[section: …]` são só para o operador.
+- As **notas** `[note: …]` e os marcadores `[section: …]` são só para o operador. `[pace: 8s]` diz ao operador quanto tempo a próxima linha costuma ficar, e uma linha que começa com `# ` é um título que funciona como um marcador.
 - O tópico de ajuda **Escrever um arquivo do espetáculo** lista tudo, com exemplos, e a *cola do arquivo do espetáculo* do editor o resume.
 
 ### Configurações do espetáculo (título, aparência e mais)

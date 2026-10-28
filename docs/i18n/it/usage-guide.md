@@ -188,7 +188,7 @@ EDWIN: Whistling all day long
 - Le **indicazioni di scena** tra `(parentesi)` vengono mostrate in corsivo.
 - I **testi delle canzoni** tra note `♪`, in corsivo: inizia una riga con `~`, oppure racchiudi la canzone in `[song]`…`[/song]`. Per due cantanti insieme (un duetto o contrappunto), metti le loro righe tra `[together]` e `[/together]`, oppure uniscile con ` || ` su una riga; entrambe compaiono insieme con una pressione di Spazio. I pulsanti **♪**, **♫** e **🎵 Canzone** dell'editor li inseriscono. Vedi l'argomento di aiuto *Musical*.
 - I **cicli** (pre-spettacolo e intervallo) ripetono immagini e testo finché l'operatore non va avanti. Un ciclo proprio all'inizio del file dello spettacolo parte quando l'operatore mette lo spettacolo in onda (AVVIA).
-- Le **note** `[note: …]` e i segnalibri `[section: …]` sono solo per l'operatore.
+- Le **note** `[note: …]` e i segnalibri `[section: …]` sono solo per l'operatore. `[pace: 8s]` dice all'operatore quanto resta di solito la riga successiva, e una riga che inizia con `# ` è un titolo che funziona come un segnalibro.
 - L'argomento di aiuto **Scrivere un file dello spettacolo** elenca tutto, con esempi, e il *promemoria del file dello spettacolo* dell'editor lo riassume.
 
 ### Impostazioni dello spettacolo (titolo, aspetto e altro)

@@ -10,7 +10,7 @@ install and nothing to hand out. The venue can also put the captions on a
 computer connected to it.
 
 - **Audience:** open one address (or scan a QR code) on a phone, tablet, projector or TV; large high-contrast captions, text size and dyslexia-friendly fonts, scroll back, the screen stays awake, several languages in one show.
-- **Operator:** one key does it all (Space sends the next line, Backspace undoes it); notes, loops for pre-show and intermission, songs and two voices at once; a standby screen until the show starts.
+- **Operator:** one key does it all (Space sends the next line, Backspace undoes it); notes, loops for pre-show and intermission, songs and two voices at once; pacing hints with a countdown; a standby screen until the show starts; a second device can watch at `/follow`.
 - **Setup:** a guided page for the show file, images, look, a private rehearsal and a printable QR sign; a report of how many devices used the captions, once the show ends.
 - **A show is one plain-text Markdown file** you can edit in any program; earlier versions are kept.
 - **Six languages:** Setup, the operator page, Help and the guides are in English, Spanish, French, German, Italian and Portuguese.

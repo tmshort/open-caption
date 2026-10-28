@@ -188,7 +188,7 @@ EDWIN: Whistling all day long
 - Las **acotaciones** entre `(paréntesis)` se muestran en cursiva.
 - Las **letras** entre notas `♪`, en cursiva: empiece una línea con `~`, o envuelva la canción en `[song]`…`[/song]`. Para dos cantantes a la vez (un dúo o contrapunto), ponga sus líneas entre `[together]` y `[/together]`, o únalas con ` || ` en una línea; ambas se muestran a la vez con una pulsación de Espacio. Los botones **♪**, **♫** y **🎵 Canción** del editor los insertan. Consulte el tema de ayuda *Musicales*.
 - Los **bucles** (previa y descanso) repiten imágenes y texto hasta que el operador continúa. Un bucle justo al principio del archivo del espectáculo arranca cuando el operador pone el espectáculo en el aire (INICIAR).
-- Las **notas** `[note: …]` y los marcadores `[section: …]` son solo para el operador.
+- Las **notas** `[note: …]` y los marcadores `[section: …]` son solo para el operador. `[pace: 8s]` indica al operador cuánto suele quedarse la línea siguiente, y una línea que empieza por `# ` es un encabezado que funciona como un marcador.
 - El tema de ayuda **Escribir un archivo del espectáculo** lo enumera todo, con ejemplos, y la *chuleta del archivo del espectáculo* del editor lo resume.
 
 ### Ajustes del espectáculo (título, aspecto y más)

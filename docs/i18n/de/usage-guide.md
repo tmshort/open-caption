@@ -188,7 +188,7 @@ EDWIN: Whistling all day long
 - **Bühnenanweisungen** in `(Klammern)` werden kursiv gezeigt.
 - **Liedtexte** zwischen `♪`-Noten, kursiv: Beginnen Sie eine Zeile mit `~` oder fassen Sie das Lied in `[song]`…`[/song]`. Für zwei Singende gleichzeitig (ein Duett oder Kontrapunkt) setzen Sie ihre Zeilen zwischen `[together]` und `[/together]` oder verbinden Sie sie mit ` || ` in einer Zeile; beide erscheinen mit einem Druck auf die Leertaste zugleich. Die Schaltflächen **♪**, **♫** und **🎵 Lied** des Editors fügen diese ein. Siehe das Hilfethema *Musicals*.
 - **Schleifen** (vor der Show und Pause) wiederholen Bilder und Text, bis der Bediener weitermacht. Eine Schleife ganz am Anfang der Show-Datei startet, wenn der Bediener die Show auf Sendung bringt (START).
-- **Notizen** `[note: …]` und Lesezeichen `[section: …]` sind nur für den Operator.
+- **Notizen** `[note: …]` und Lesezeichen `[section: …]` sind nur für den Operator. `[pace: 8s]` sagt dem Operator, wie lange die nächste Zeile üblicherweise stehen bleibt, und eine Zeile, die mit `# ` beginnt, ist eine Überschrift, die wie ein Lesezeichen funktioniert.
 - Das Hilfethema **Eine Show-Datei schreiben** listet alles mit Beispielen auf, und der *Spickzettel zur Show-Datei* des Editors fasst es zusammen.
 
 ### Show-Einstellungen (Titel, Erscheinungsbild und mehr)

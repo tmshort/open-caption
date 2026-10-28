@@ -40,6 +40,7 @@ A show file can do the same with the `[blank]` and `[clear]` commands; they appe
 
 ## During the show
 
+- **Pace:** when a line has a `[pace]` in the show file, its time is shown beside the next line, and a thin bar along the bottom of the status strip fills as the line is on screen. When the next press is due the next line gets a yellow frame and the bar turns yellow. Nothing is sent by itself and there is no sound.
 - Lines marked as notes or sections are for you. They never use up a press of Space.
 - Pictures and full-screen messages show only as a label here, such as `IMAGE: curtain.jpg`. You never see the picture itself.
 - **Songs:** sung lines have music notes (♪) around them and are shown in italics on the audience's screens. A song's title appears as a blue bookmark for you only. Aim to press Space as each phrase begins.

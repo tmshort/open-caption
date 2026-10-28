@@ -188,7 +188,7 @@ EDWIN: Whistling all day long
 - **Stage directions** in `(parentheses)` are shown in italics.
 - **Lyrics** between `♪` notes, in italics: start a line with `~`, or wrap the song in `[song]`…`[/song]`. For two singers at the same time (a duet or counterpoint), put their lines between `[together]` and `[/together]`, or join them with ` || ` on one line; both show at once on one press of Space. The editor's **♪**, **♫** and **🎵 Song** buttons insert these. See the *Musicals* help topic.
 - **Loops** (pre-show and intermission) repeat pictures and text until the operator moves on. A loop at the very start of the show file starts when the operator puts the show on air (START).
-- **Notes** `[note: …]` and bookmarks `[section: …]` are for the operator only.
+- **Notes** `[note: …]` and bookmarks `[section: …]` are for the operator only. `[pace: 8s]` tells the operator how long the next line usually stays up, and a line starting with `# ` is a heading that works like a bookmark.
 - The **Writing a show file** help topic lists everything, with examples, and the editor's *Show file cheat sheet* summarizes it.
 
 ### Show settings (title, look and more)
