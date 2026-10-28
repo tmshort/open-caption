@@ -7,7 +7,7 @@ Preparare uno spettacolo richiede sei passi (un settimo, **Rapporto**, è per do
 3. **Immagini** — carica le immagini usate dal file dello spettacolo.
 4. **Aspetto** — scegli i colori e la dimensione del testo.
 5. **Prova** — fai una prova in privato prima che ci sia qualcuno in sala.
-6. **Condividi** — condividi l'indirizzo con il pubblico e apri la pagina dell'operatore, da cui si avvia lo spettacolo.
+6. **Condividi** — condividi l'indirizzo con il pubblico e apri la pagina dell'operatore, da cui si avvia lo spettacolo. Facoltativo: la pagina di seguimento (`/follow`) permette a un secondo dispositivo di guardare senza poter inviare nulla.
 7. **Rapporto** — dopo lo spettacolo: quanti dispositivi hanno usato la pagina del pubblico, con un grafico nel tempo.
 
 ## Attesa e messa in onda

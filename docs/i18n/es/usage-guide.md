@@ -13,6 +13,7 @@ Contenido: [Las piezas](#las-piezas) · [Recomendaciones de despliegue](#recomen
 | **El servidor** | El programa `open-caption`, funcionando en un equipo (macOS, Windows o Linux). Guarda el archivo del espectáculo y envía las líneas a todos. |
 | **Página de Configuración** (`/admin`) | Donde las personas voluntarias preparan un espectáculo: archivo del espectáculo, imágenes, aspecto, ensayo. Contraseña de administrador. |
 | **Página del operador** (`/operator`) | Donde el operador sigue el espectáculo y envía las líneas. Contraseña de operador. El paso **Compartir** de la configuración y su enlace del menú la abren. |
+| **Página de seguimiento** (`/follow`) | Un segundo dispositivo, como la tableta del director de escena, que solo mira el espectáculo: ve las líneas, las notas y la posición y no puede enviar nada. Contraseña de espectador opcional; las contraseñas de operador y de administrador también la abren. El paso **Compartir** de la configuración la muestra. |
 | **Página del público** (`/`) | Lo que el público abre en sus dispositivos. Sin contraseña. Un navegador en un proyector o un monitor grande puede mostrar la misma página para toda la sala. |
 
 Todo funciona en un solo equipo. El público, el operador y las personas de configuración usan navegadores web corrientes.

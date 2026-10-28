@@ -7,7 +7,7 @@ Preparar un espectáculo lleva seis pasos (un séptimo, **Informe**, es para des
 3. **Imágenes** — suba las imágenes que use el archivo del espectáculo.
 4. **Aspecto** — elija los colores y el tamaño del texto.
 5. **Prueba** — ensaye en privado antes de que haya nadie en la sala.
-6. **Compartir** — comparta la dirección con el público y abra la página del operador, donde se inicia el espectáculo.
+6. **Compartir** — comparta la dirección con el público y abra la página del operador, donde se inicia el espectáculo. Opcionalmente, la página de seguimiento (`/follow`) permite que un segundo dispositivo mire sin poder enviar nada.
 7. **Informe** — después del espectáculo: cuántos dispositivos usaron la página del público, con un gráfico a lo largo del tiempo.
 
 ## En espera y en el aire

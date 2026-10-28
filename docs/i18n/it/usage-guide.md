@@ -13,6 +13,7 @@ Indice: [Le componenti](#le-componenti) · [Raccomandazioni di installazione](#r
 | **Il server** | Il programma `open-caption`, in esecuzione su un computer (macOS, Windows o Linux). Conserva il file dello spettacolo e invia le righe a tutti. |
 | **Pagina di configurazione** (`/admin`) | Dove i volontari preparano uno spettacolo: file dello spettacolo, immagini, aspetto, prova. Password amministratore. |
 | **Pagina dell'operatore** (`/operator`) | Dove l'operatore segue lo spettacolo e invia le righe. Password operatore. Il passo **Condividi** della configurazione e il suo link nel menu la aprono. |
+| **Pagina di seguimento** (`/follow`) | Un secondo dispositivo, come il tablet del direttore di scena, che si limita a guardare lo spettacolo: vede le righe, le note e la posizione e non può inviare nulla. Password spettatore facoltativa; la aprono anche le password di operatore e amministratore. Il passo **Condividi** della configurazione la elenca. |
 | **Pagina del pubblico** (`/`) | Ciò che il pubblico apre sui propri dispositivi. Nessuna password. Un browser su un proiettore o un grande monitor può mostrare la stessa pagina per tutta la sala. |
 
 Tutto gira su un solo computer. Il pubblico, l'operatore e i volontari della configurazione usano normali browser web.

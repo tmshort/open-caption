@@ -7,7 +7,7 @@ Setting up a show takes six steps (a seventh, **Report**, is for after the show)
 3. **Images** — upload any pictures the show file uses.
 4. **Look** — choose colors and text size.
 5. **Test** — rehearse privately before anyone is in the room.
-6. **Share** — share the address with the audience and open the operator page, where the operator starts the show.
+6. **Share** — share the address with the audience and open the operator page, where the operator starts the show. Optionally, the Follow page (`/follow`) lets a second device watch without being able to send anything.
 7. **Report** — after the show: how many devices used the audience page, with a graph over time.
 
 ## Standby and going on air

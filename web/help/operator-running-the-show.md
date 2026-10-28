@@ -34,6 +34,7 @@ A show file can do the same with the `[blank]` and `[clear]` commands; they appe
 
 - Run the operator page on a computer with a keyboard (a laptop is fine). It is built around the **Space** key, and a phone or tablet is not recommended: a touch screen is easy to mis-tap during a show.
 - Sign in to the operator page. You will see "You are in control". If it says another operator is in control, use **Take over** only if you are meant to be the operator.
+- A second device (a stage manager's tablet) can watch from the Follow page, `/follow`, with the viewer password (or the operator or admin password). It shows what you see, notes included, but cannot send anything; Setup's **Share** step lists its address.
 - Check the viewer count (the people icon). It shows how many devices are connected.
 - A loaded show waits in **standby**: the audience sees the venue's standby screen (a logo and a message) and nothing of the show, and this page says **STANDBY**. Press **Space** (the button says **START**) to put the show on air. If the show file starts with a pre-show loop, it begins then.
 

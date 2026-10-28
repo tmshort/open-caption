@@ -34,6 +34,7 @@ Un file dello spettacolo può fare lo stesso con i comandi `[blank]` e `[clear]`
 
 - Usa la pagina dell'operatore su un computer con tastiera (va bene un portatile). È pensata per il tasto **Spazio**, e un telefono o un tablet non è consigliato: su un touch screen è facile toccare per sbaglio durante lo spettacolo.
 - Accedi alla pagina dell'operatore. Vedrai «Hai il controllo». Se dice che un altro operatore ha il controllo, usa **Subentra** solo se sei tu a dover fare l'operatore.
+- Un secondo dispositivo (il tablet del direttore di scena) può guardare dalla pagina di seguimento, `/follow`, con la password spettatore (o quella di operatore o amministratore). Mostra ciò che vedi tu, note comprese, ma non può inviare nulla; il passo **Condividi** della configurazione ne indica l'indirizzo.
 - Controlla il conteggio degli spettatori (l'icona di persone). Mostra quanti dispositivi sono connessi.
 - Uno spettacolo caricato resta **in attesa**: il pubblico vede la schermata di attesa della sala (un logo e un messaggio) e nulla dello spettacolo, e questa pagina dice **IN ATTESA**. Premi **Spazio** (il pulsante dice **AVVIA**) per mettere lo spettacolo in onda. Se il file dello spettacolo inizia con un ciclo di pre-spettacolo, parte allora.
 

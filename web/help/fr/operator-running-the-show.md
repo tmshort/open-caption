@@ -34,6 +34,7 @@ Un fichier de spectacle peut faire la même chose avec les commandes `[blank]` e
 
 - Utilisez la page de l'opérateur sur un ordinateur avec clavier (un portable convient). Elle est pensée pour la touche **Espace**, et un téléphone ou une tablette n'est pas recommandé : un écran tactile se touche trop facilement par erreur pendant le spectacle.
 - Connectez-vous à la page de l'opérateur. Vous verrez « Vous avez la main ». Si elle indique qu'un autre opérateur a la main, utilisez **Reprendre la main** seulement si c'est bien vous l'opérateur.
+- Un second appareil (la tablette du régisseur) peut regarder depuis la page de suivi, `/follow`, avec le mot de passe spectateur (ou celui de l'opérateur ou de l'administrateur). Il montre ce que vous voyez, notes comprises, mais ne peut rien envoyer ; l'étape **Partager** de la configuration indique son adresse.
 - Vérifiez le nombre de spectateurs (l'icône de personnes). Il indique combien d'appareils sont connectés.
 - Un spectacle chargé reste **en attente** : le public voit l'écran d'attente du lieu (un logo et un message) et rien du spectacle, et cette page indique **EN ATTENTE**. Appuyez sur **Espace** (le bouton indique **DÉMARRER**) pour mettre le spectacle à l'antenne. Si le fichier du spectacle commence par une boucle d'avant-spectacle, elle commence alors.
 

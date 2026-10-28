@@ -13,6 +13,7 @@ Sommaire : [Les éléments](#les-elements) · [Recommandations de déploiement](
 | **Le serveur** | Le programme `open-caption`, qui tourne sur un ordinateur (macOS, Windows ou Linux). Il conserve le fichier du spectacle et envoie les lignes à tout le monde. |
 | **Page de configuration** (`/admin`) | Là où les bénévoles préparent un spectacle : fichier du spectacle, images, apparence, répétition. Mot de passe administrateur. |
 | **Page de l'opérateur** (`/operator`) | Là où l'opérateur suit le spectacle et envoie les lignes. Mot de passe opérateur. L'étape **Partager** de la configuration et son lien du menu l'ouvrent. |
+| **Page de suivi** (`/follow`) | Un second appareil, comme la tablette du régisseur, qui ne fait que regarder le spectacle : il voit les lignes, les notes et la position et ne peut rien envoyer. Mot de passe spectateur facultatif ; les mots de passe opérateur et administrateur l'ouvrent aussi. L'étape **Partager** de la configuration la présente. |
 | **Page du public** (`/`) | Ce que le public ouvre sur ses appareils. Sans mot de passe. Un navigateur sur un projecteur ou un grand moniteur peut afficher la même page pour toute la salle. |
 
 Tout tourne sur un seul ordinateur. Le public, l'opérateur et les bénévoles de la configuration utilisent des navigateurs web ordinaires.

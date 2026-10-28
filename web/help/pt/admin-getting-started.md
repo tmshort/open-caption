@@ -7,7 +7,7 @@ Preparar um espetáculo leva seis etapas (uma sétima, **Relatório**, é para d
 3. **Imagens** — envie as imagens que o arquivo do espetáculo usa.
 4. **Aparência** — escolha as cores e o tamanho do texto.
 5. **Teste** — ensaie em particular antes de haver alguém na sala.
-6. **Compartilhar** — compartilhe o endereço com o público e abra a página do operador, de onde o espetáculo é iniciado.
+6. **Compartilhar** — compartilhe o endereço com o público e abra a página do operador, de onde o espetáculo é iniciado. Opcionalmente, a página de acompanhamento (`/follow`) permite que um segundo dispositivo assista sem poder enviar nada.
 7. **Relatório** — depois do espetáculo: quantos dispositivos usaram a página do público, com um gráfico ao longo do tempo.
 
 ## Espera e entrada no ar

@@ -34,6 +34,7 @@ Eine Show-Datei kann dasselbe mit den Befehlen `[blank]` und `[clear]` tun; in I
 
 - Nutzen Sie die Operator-Seite an einem Computer mit Tastatur (ein Laptop genügt). Sie ist auf die **Leertaste** ausgelegt, und ein Telefon oder Tablet wird nicht empfohlen: Auf einem Touchscreen tippt man während der Vorstellung leicht daneben.
 - Melden Sie sich auf der Operator-Seite an. Sie sehen „Sie haben die Steuerung“. Steht dort, dass ein anderer Operator die Steuerung hat, nutzen Sie **Übernehmen** nur, wenn Sie der Operator sein sollen.
+- Ein zweites Gerät (das Tablet der Inspizienz) kann auf der Zuschauer-Seite `/follow` mit dem Zuschauer-Passwort (oder dem Operator- oder Admin-Passwort) zusehen. Es zeigt, was Sie sehen, Notizen eingeschlossen, kann aber nichts senden; der Schritt **Teilen** der Einrichtung nennt die Adresse.
 - Prüfen Sie die Zuschauerzahl (das Personensymbol). Sie zeigt, wie viele Geräte verbunden sind.
 - Eine geladene Show wartet im **Standby**: Das Publikum sieht den Standby-Bildschirm des Hauses (ein Logo und eine Meldung) und nichts von der Show, und diese Seite zeigt **STANDBY**. Drücken Sie die **Leertaste** (die Schaltfläche heißt **START**), um die Show auf Sendung zu bringen. Beginnt die Show-Datei mit einer Schleife vor der Show, startet sie dann.
 

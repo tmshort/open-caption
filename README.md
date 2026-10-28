@@ -43,6 +43,7 @@ The first run creates `config.yaml` (in your user config folder; the path is pri
 
 - **Setup:** `http://localhost/admin` (or the `:8080` address printed if port 80 was busy; on Linux a normal user cannot use port 80, see the Linux guide). It needs no password on the computer that runs the program; elsewhere, the admin password. Follow the steps; "Create a sample show" is a good first try.
 - **Operator:** opened from Setup's Share step (or `/operator`, with the operator password). Space sends the next line.
+- **Follow (optional):** `/follow`, with the viewer password (or the operator or admin one), lets a second device such as a stage manager's tablet watch the show; it can send nothing.
 - **Audience:** the address or QR code in Setup → Share, on the same WiFi.
 - **Help:** the **Help** button in Setup and the operator page; [Getting started](web/help/admin-getting-started.md) and [Preparing a show file](web/help/admin-preparing-a-show-file.md) cover the rest.
 

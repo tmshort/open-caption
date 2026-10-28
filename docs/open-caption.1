@@ -44,6 +44,10 @@ It asks for the admin password.
 The operator page: the person following the show presses the space bar for each line.
 It asks for the operator password (the admin password also works).
 .TP
+.B /follow
+The follow page: a second device that only watches the show and can send nothing.
+It asks for the viewer password, if one is set (\fBviewer_password\fR); the operator and admin passwords also open it.
+.TP
 .B /
 The audience page: open to everyone on the network.
 .PP
@@ -375,6 +379,8 @@ in the settings file, for example
 Setup is already limited to the computer that runs the program by default
 .RB ( "admin_allow: [localhost]" );
 add the address of another computer to use Setup from it.
+The viewer-only password has its own list,
+.BR access.viewer_allow .
 A browser on the computer that runs the program is signed in as admin without a password unless
 .B access.local_auto_login
 is turned off.

@@ -34,6 +34,7 @@ Un archivo del espectáculo puede hacer lo mismo con los comandos `[blank]` y `[
 
 - Use la página del operador en un equipo con teclado (un portátil sirve). Está pensada para la tecla **Espacio**, y no se recomienda un teléfono ni una tableta: en una pantalla táctil es fácil pulsar mal durante la función.
 - Inicie sesión en la página del operador. Verá «Usted tiene el control». Si dice que otro operador tiene el control, use **Asumir el control** solo si le corresponde ser el operador.
+- Un segundo dispositivo (la tableta del director de escena) puede mirar desde la página de seguimiento, `/follow`, con la contraseña de espectador (o la de operador o administrador). Muestra lo mismo que usted ve, notas incluidas, pero no puede enviar nada; el paso **Compartir** de la configuración muestra su dirección.
 - Compruebe el recuento de espectadores (el icono de personas). Muestra cuántos dispositivos están conectados.
 - Un espectáculo cargado queda en **espera**: el público ve la pantalla de espera del local (un logotipo y un mensaje) y nada del espectáculo, y esta página dice **EN ESPERA**. Pulse **Espacio** (el botón dice **INICIAR**) para poner el espectáculo en el aire. Si el archivo del espectáculo empieza con un bucle de previa, empieza entonces.
 

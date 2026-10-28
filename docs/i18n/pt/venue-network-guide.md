@@ -44,7 +44,7 @@ Um pequeno custo do HTTP simples: os navegadores só permitem «manter a tela ac
 
 ## Segurança
 
-- A Configuração (`/admin`) e a página do operador (`/operator`) exigem cada uma uma senha de `config.yaml`. A página do público não exige nenhuma e não pode mudar nada.
+- A Configuração (`/admin`) e a página do operador (`/operator`) exigem cada uma uma senha de `config.yaml`. A página do público não exige nenhuma e não pode mudar nada. Uma senha de espectador opcional abre a página de acompanhamento (`/follow`), que só permite assistir.
 - Não exponha a porta à internet.
 - As senhas de operador e de administrador ficam em texto puro em `config.yaml` (ou como hash, veja a referência de configuração), na pasta de dados do programa. Mantenha essa pasta privada para quem conduz o espetáculo.
 

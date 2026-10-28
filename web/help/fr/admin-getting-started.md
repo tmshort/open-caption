@@ -7,7 +7,7 @@ Préparer un spectacle demande six étapes (une septième, **Rapport**, est pour
 3. **Images** — téléversez les images utilisées par le fichier du spectacle.
 4. **Apparence** — choisissez les couleurs et la taille du texte.
 5. **Test** — répétez en privé avant que personne ne soit dans la salle.
-6. **Partager** — partagez l'adresse avec le public et ouvrez la page de l'opérateur, d'où le spectacle est lancé.
+6. **Partager** — partagez l'adresse avec le public et ouvrez la page de l'opérateur, d'où le spectacle est lancé. Facultatif : la page de suivi (`/follow`) permet à un second appareil de regarder sans pouvoir rien envoyer.
 7. **Rapport** — après le spectacle : combien d'appareils ont utilisé la page du public, avec un graphique au fil du temps.
 
 ## Attente et passage à l'antenne

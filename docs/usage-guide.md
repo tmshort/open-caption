@@ -13,6 +13,7 @@ Contents: [The pieces](#the-pieces) · [Deployment recommendations](#deployment-
 | **The server** | The `open-caption` program, running on one computer (macOS, Windows or Linux). It holds the show file and sends lines to everyone. |
 | **Setup page** (`/admin`) | Where volunteers prepare a show: show file, images, look, rehearsal. Admin password. |
 | **Operator page** (`/operator`) | Where the operator follows the show and sends lines. Operator password. Setup's **Open the Run page** button and **Run** menu link open it. |
+| **Follow page** (`/follow`) | A second device, such as a stage manager's tablet, that only watches the show: it sees the lines, notes and position and can send nothing. Optional viewer password; the operator and admin passwords open it too. The **Share** step of Setup lists it. |
 | **Audience page** (`/`) | What audiences open on their devices. No password. A browser on a projector or large monitor can show the same page for the whole room. |
 
 Everything runs on one computer. The audience, the operator and the setup volunteers all use ordinary web browsers.
