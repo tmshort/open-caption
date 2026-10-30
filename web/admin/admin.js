@@ -121,9 +121,14 @@
   function startTour(first) {
     if (OCTour.running()) return;
     const stepBtn = (n) => () => document.querySelector('#steps button:nth-child(' + n + ')');
+    // With no shows the first step is about making one; with shows (the tour replayed) it is about choosing one, then adding another.
+    const showSteps = unarchived().length ? [
+      { target: () => document.querySelector('#panel .card.show') || stepBtn(1)(), title: __('Choose a show'), text: __('Pick the show to work on. The More menu beside it renames, duplicates, exports, archives or deletes it.') },
+      { target: () => document.querySelector('#panel .addrow') || stepBtn(1)(), title: __('Add another show'), text: __('Create another show, import one, or add the sample show here.') }] : [
+      { target: () => document.querySelector('#panel .addrow') || stepBtn(1)(), title: __('Shows'), text: __('Start here: create a show, import one, or add the sample show to look around.') }];
     const steps = [
       { target: null, title: __('Welcome to Open Caption'), text: __('This short tour shows where things are in Setup. Use the buttons or the arrow keys, and press Esc to leave it at any time. You can take it again from Help.') },
-      { target: () => document.querySelector('#panel .addrow') || stepBtn(1)(), title: __('Shows'), text: __('Start here: create a show, import one, or add the sample show to look around.') },
+      ...showSteps,
       { target: stepBtn(2), title: __('Show file'), text: __('Type or paste the words of the show, one line for each caption. The editor checks it as you go.') },
       { target: stepBtn(3), title: __('Images'), text: __('Add the pictures that the show file refers to.') },
       { target: stepBtn(4), title: __('Look'), text: __('Choose the colours, text size and font the audience sees.') },

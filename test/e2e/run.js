@@ -661,6 +661,9 @@ async function main() {
     await guard.evaluate(() => document.getElementById('helpbtn').click()); await sleep(300);
     await guard.click('#helptour'); await guard.waitForSelector('.tour-pop', { timeout: T(5000) }).catch(() => {});
     check('Help has Take the tour, which closes the panel and starts the tour at the first step', await guard.evaluate(() => document.getElementById('help').hidden && !!document.querySelector('.tour-pop') && document.querySelector('.tour-title').textContent === 'Welcome to Open Caption'));
+    await guard.keyboard.press('ArrowRight'); const rs1 = await guard.evaluate(() => [document.querySelector('.tour-title').textContent, !document.querySelector('.tour-ring').hidden]);
+    await guard.keyboard.press('ArrowRight'); const rs2 = await guard.evaluate(() => [document.querySelector('.tour-title').textContent, !document.querySelector('.tour-ring').hidden, document.querySelector('.tour-count').textContent]);
+    check('replayed with shows, the tour is about choosing a show and then adding another, each ringed', rs1.join() === 'Choose a show,true' && rs2[0] === 'Add another show' && rs2[1] && /of 12/.test(rs2[2]), [rs1, rs2]);
     await guard.keyboard.press('Escape'); await sleep(200);
     check('Esc leaves the tour, and replaying it does not change the saved flag', await guard.evaluate(async () => !document.querySelector('.tour-pop') && (await (await fetch('/api/admin/ping')).json()).tourDone === true));
     await click(guard, 'Settings'); await sleep(600);

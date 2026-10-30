@@ -914,4 +914,6 @@ OCI18n.add("pt", {
  "Done": "Concluído",
  "Take a short tour of Setup": "Fazer um breve passeio pela Configuração",
  "Take the tour": "Fazer o passeio",
+ "Pick the show to work on. The More menu beside it renames, duplicates, exports, archives or deletes it.": "Escolha o espetáculo em que vai trabalhar. O menu Mais, ao lado, renomeia, duplica, exporta, arquiva ou elimina o espetáculo.",
+ "Create another show, import one, or add the sample show here.": "Crie outro espetáculo, importe um ou adicione aqui o de exemplo.",
 });
