@@ -117,6 +117,29 @@
   const curShow = () => A.shows.find((s) => s.id === A.cur && !s.archived) || null;
   const unarchived = () => A.shows.filter((s) => !s.archived);
 
+  // ---- the tour (tour.js): offered once, on a first visit with no shows; Help can start it again ----
+  function startTour(first) {
+    if (OCTour.running()) return;
+    const stepBtn = (n) => () => document.querySelector('#steps button:nth-child(' + n + ')');
+    const steps = [
+      { target: null, title: __('Welcome to Open Caption'), text: __('This short tour shows where things are in Setup. Use the buttons or the arrow keys, and press Esc to leave it at any time. You can take it again from Help.') },
+      { target: () => document.querySelector('#panel .addrow') || stepBtn(1)(), title: __('Shows'), text: __('Start here: create a show, import one, or add the sample show to look around.') },
+      { target: stepBtn(2), title: __('Show file'), text: __('Type or paste the words of the show, one line for each caption. The editor checks it as you go.') },
+      { target: stepBtn(3), title: __('Images'), text: __('Add the pictures that the show file refers to.') },
+      { target: stepBtn(4), title: __('Look'), text: __('Choose the colours, text size and font the audience sees.') },
+      { target: stepBtn(5), title: __('Test'), text: __('Rehearse the show on your own screen. Nothing reaches the audience.') },
+      { target: stepBtn(6), title: __('Share'), text: __('Find the address and QR code to give the audience, and check that their phones can connect.') },
+      { target: stepBtn(7), title: __('Report'), text: __('After a show, see how many devices watched, as a graph you can print or save.') },
+      { target: '#settingsbtn', title: __('Settings'), text: __('Passwords, who may connect, the network, the certificate and the venue defaults are here. Troubleshoot, beside it, helps when someone cannot connect.') },
+      { target: 'header a.quiet', title: __('Run'), text: __('When the show is ready, this opens the Run page, where the operator starts the show and presses the spacebar for each caption.') },
+      { target: '#helpbtn', title: __('Help'), text: __('Help explains each step and follows the one you are on. You can take this tour again from there.') }];
+    OCTour.start({
+      steps, labels: { next: __('Next'), back: __('Back'), skip: __('Skip tour'), done: __('Done'), step: __('Step {n} of {total}', { n: '{n}', total: '{total}' }) },
+      onEnd: () => { if (first) api('PUT', '/api/admin/settings/tour', { done: true }); },
+    });
+  }
+  $('helptour').addEventListener('click', async () => { closeHelp(); if (A.step !== 'show') { A.step = 'show'; location.hash = 'show'; } await render(); startTour(false); });
+
   // ---- help drawer (topic follows the current step) ----
   const HELP_TOPIC = { show: 'admin-getting-started', showfile: 'admin-writing-a-show-file', images: 'admin-images', look: 'admin-look-and-feel', test: 'admin-getting-started', golive: 'admin-network', report: 'operator-running-the-show' };
   function openHelp(topic) {
@@ -547,7 +570,8 @@
   async function boot() {
     const ping = await fetch('/api/admin/ping');
     if (!ping.ok) { showLogin(); return; }
-    try { if ((await ping.json()).auto) $('logout').hidden = true; } catch (e) { /* no sign-out to hide */ } // opened on this computer: no password, so nothing to sign out of
+    let tourDone = true; // unless the program says the tour has not been seen
+    try { const pj = await ping.json(); if (pj.auto) $('logout').hidden = true; tourDone = pj.tourDone !== false; } catch (e) { /* no sign-out to hide */ } // opened on this computer: no password, so nothing to sign out of
     $('login').hidden = true; $('app').hidden = false;
     await loadShows();
     try { A.cur = localStorage.getItem('oc.cur'); } catch (e) { /* storage unavailable */ }
@@ -555,7 +579,8 @@
     A.step = A.cur || location.hash.slice(1) === 'report' ? (location.hash.slice(1) || 'show') : 'show';
     if (!STEPS.some((s) => s[0] === A.step)) A.step = 'show';
     openOpStream();
-    render();
+    await render();
+    if (!tourDone && !A.shows.length) startTour(true); // the first visit, with nothing set up yet
     pollTroubleBadge();
     if (!A.troubleTimer) A.troubleTimer = setInterval(() => { if (!$('app').hidden) pollTroubleBadge(); }, 20000);
   }

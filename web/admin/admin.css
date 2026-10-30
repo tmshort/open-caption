@@ -265,3 +265,16 @@ body.helpopen .stepbar { right: min(37.5rem, 100%); } /* the help panel is in fr
 
 /* the header's two show pills: standby (amber) and on air (red) are in header.css; the text says the state too */
 #active { max-width: min(30rem, 40vw); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* the first-run tour (tour.js): the shade blocks the page, the ring's huge shadow dims everything but the control */
+.tour-shade { position: fixed; inset: 0; z-index: 40; }
+.tour-shade.bare { background: #0009; }
+.tour-ring { position: fixed; z-index: 41; border-radius: 8px; box-shadow: 0 0 0 3px var(--accent), 0 0 0 100vmax #0009; pointer-events: none; }
+.tour-pop { position: fixed; z-index: 42; box-sizing: border-box; width: min(24rem, calc(100% - 1rem)); padding: 1rem 1.1rem .9rem; background: var(--panel); color: var(--fg); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 10px 30px #0006; }
+.tour-title { margin: 0 0 .4rem; font-size: 1.15rem; }
+.tour-text { margin: 0 0 .9rem; }
+.tour-foot { display: flex; align-items: center; gap: .5rem; }
+.tour-count { flex: 1; color: var(--dim); font-size: .85rem; }
+.tour-arrow { position: absolute; width: 14px; height: 14px; background: var(--panel); border: 1px solid var(--line); transform: rotate(45deg); }
+.tour-arrow.up { top: -8px; border-right: 0; border-bottom: 0; }
+.tour-arrow.down { bottom: -8px; border-left: 0; border-top: 0; }

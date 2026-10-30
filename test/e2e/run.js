@@ -121,6 +121,27 @@ async function main() {
       const h = document.querySelector('#panel h2'), b = [...document.querySelectorAll('#panel button')].find((x) => x.textContent === 'Import a show…'), f = document.querySelector('#panel input[type=file]'), c = [...document.querySelectorAll('#panel button')].find((x) => x.textContent.includes('sample'));
       return h.textContent === 'Add a show' && !!b && !!f && f.hidden && b.getBoundingClientRect().height === c.getBoundingClientRect().height;
     }));
+    {
+      // the tour of Setup: it starts by itself on the first visit (nothing set up yet), points at each part with a ring and an arrow,
+      // answers the arrow keys, and is not offered again once it has been finished or skipped
+      await admin.waitForSelector('.tour-pop', { timeout: T(5000) }).catch(() => {});
+      const tp = () => admin.evaluate(() => { const p = document.querySelector('.tour-pop'); if (!p) return null; const r = document.querySelector('.tour-ring'), a = p.querySelector('.tour-arrow'), pr = p.getBoundingClientRect(), rr = r.getBoundingClientRect();
+        return { title: p.querySelector('.tour-title').textContent, count: p.querySelector('.tour-count').textContent, next: p.querySelector('.tour-next').textContent, back: !p.querySelector('.tour-back').hidden, skip: !p.querySelector('.tour-skip').hidden,
+          ring: !r.hidden && rr.width > 0, arrow: !a.hidden, inside: pr.left >= 0 && pr.top >= 0 && pr.right <= innerWidth && pr.bottom <= innerHeight, focus: document.activeElement === p.querySelector('.tour-next'), dialog: p.getAttribute('role') === 'dialog' }; });
+      let t = await tp();
+      check('on the first visit, with no shows, a tour starts by itself with a welcome in the middle of the page', !!t && t.title === 'Welcome to Open Caption' && /Step 1 of 11/.test(t.count) && !t.ring && !t.arrow && !t.back && t.dialog && t.focus && t.inside, t);
+      await admin.keyboard.press('ArrowRight'); t = await tp();
+      check('the Right arrow goes to the next step, which rings what it is about and points at it', !!t && t.title === 'Shows' && /Step 2 of 11/.test(t.count) && t.ring && t.arrow && t.back && t.inside, t);
+      await admin.keyboard.press('ArrowLeft'); t = await tp();
+      check('the Left arrow goes back', !!t && t.title === 'Welcome to Open Caption');
+      const seen = [];
+      for (let i = 0; i < 10; i++) { await admin.keyboard.press('ArrowRight'); const x = await tp(); seen.push(x && x.title + (x.ring && x.inside ? '' : ' (not shown)')); }
+      check('it visits all seven steps, Settings, Run and Help, each with a ring and inside the window', seen.join('|') === 'Shows|Show file|Images|Look|Test|Share|Report|Settings|Run|Help', seen);
+      t = await tp();
+      check('the last step says Done and has no Skip', t.next === 'Done' && !t.skip, t);
+      await admin.keyboard.press('Enter'); await sleep(300);
+      check('Done ends the tour and it is remembered, so it is not offered again', !(await tp()) && (await api(admin, 'GET', '/api/admin/ping')).body.tourDone === true);
+    }
     await click(admin, 'sample'); await admin.waitForSelector('.editor textarea'); await sleep(900);
     check('the sample show file has no problems', (await admin.evaluate(() => document.querySelector('.diags').innerText)).includes('No problems') || (await admin.evaluate(() => document.getElementById('panel').innerText)).includes('No problems found'));
     const tabs = await admin.evaluate(() => [...document.querySelectorAll('.langtabs button')].map((x) => x.textContent.trim()));
@@ -629,13 +650,18 @@ async function main() {
     // Setup's help panel is a quarter wider than the Run page's (600 px, not 480) and has Pop out right before Close; Pop out moves the
     // topic being read to a window of its own (the full help page, not the embedded one) and closes the panel
     const hp0 = await guard.evaluate(() => ({ w: Math.round(document.getElementById('help').getBoundingClientRect().width), order: [...document.querySelectorAll('#help .bar button')].map((x) => x.id).join(',') }));
-    check('Setup\'s help panel is 25% wider (600 px, not 480) and has Pop out right before Close', hp0.w === 600 && hp0.order === 'helppop,helpclose', hp0);
+    check('Setup\'s help panel is 25% wider (600 px, not 480) and has Take the tour and Pop out before Close', hp0.w === 600 && hp0.order === 'helptour,helppop,helpclose', hp0);
     const popup = new Promise((res) => b.once('targetcreated', (t) => res(t)));
     await guard.click('#helppop');
     const tgt = await Promise.race([popup, sleep(5000).then(() => null)]);
     let popUrl = ''; for (let i = 0; i < 12 && tgt; i++) { popUrl = tgt.url(); if (/\/help\?/.test(popUrl)) break; await sleep(250); }
     check('Pop out opens the help in a window of its own (not the embedded one) and closes the panel', !!tgt && /\/help\?/.test(popUrl) && !/embed=/.test(popUrl) && await guard.evaluate(() => document.getElementById('help').hidden), popUrl);
     if (tgt) { const pg = await tgt.page().catch(() => null); if (pg) await pg.close(); }
+    await guard.evaluate(() => document.getElementById('helpbtn').click()); await sleep(300);
+    await guard.click('#helptour'); await guard.waitForSelector('.tour-pop', { timeout: T(5000) }).catch(() => {});
+    check('Help has Take the tour, which closes the panel and starts the tour at the first step', await guard.evaluate(() => document.getElementById('help').hidden && !!document.querySelector('.tour-pop') && document.querySelector('.tour-title').textContent === 'Welcome to Open Caption'));
+    await guard.keyboard.press('Escape'); await sleep(200);
+    check('Esc leaves the tour, and replaying it does not change the saved flag', await guard.evaluate(async () => !document.querySelector('.tour-pop') && (await (await fetch('/api/admin/ping')).json()).tourDone === true));
     await click(guard, 'Settings'); await sleep(600);
     await guard.evaluate(() => document.getElementById('settab-sec').click()); await sleep(150);
     const inputs = await guard.$$('#dlg input[type=password]'); await inputs[1].type('new-operator-pw');
@@ -1019,7 +1045,7 @@ async function main() {
     // ------------------------------------------------------------------ this computer
     section('This computer: no password for Setup and the operator page');
     await stopServer(); await sleep(400);
-    fs.writeFileSync(path.join(dataDir, 'config.yaml'), `admin_password: ${ADMIN}\noperator_password: ${OPERATOR}\nmdns:\n  enabled: false\naccess:\n  admin_allow: []\n  local_auto_login: true\n`);
+    fs.writeFileSync(path.join(dataDir, 'config.yaml'), `admin_password: ${ADMIN}\noperator_password: ${OPERATOR}\nsetup:\n  tour_done: yes\nmdns:\n  enabled: false\naccess:\n  admin_allow: []\n  local_auto_login: true\n`);
     await startServer(); await sleep(T(1500));
     const ctx = await b.createBrowserContext();
     const lp = await ctx.newPage(); lp.setDefaultTimeout(T(8000)); lp.on('dialog', (d) => d.accept());
@@ -1055,7 +1081,7 @@ async function main() {
     section('Passwords kept as digests');
     await stopServer(); await sleep(400);
     const digest = 'sha256:' + require('crypto').createHash('sha256').update(OPERATOR).digest('hex');
-    fs.writeFileSync(path.join(dataDir, 'config.yaml'), `admin_password: ${ADMIN}\noperator_password: ${digest}\nviewer_password: ${VIEWER}\nmdns:\n  enabled: false\naccess:\n  admin_allow: []\n  local_auto_login: false\n`);
+    fs.writeFileSync(path.join(dataDir, 'config.yaml'), `admin_password: ${ADMIN}\noperator_password: ${digest}\nviewer_password: ${VIEWER}\nsetup:\n  tour_done: yes\nmdns:\n  enabled: false\naccess:\n  admin_allow: []\n  local_auto_login: false\n`);
     await startServer(); await sleep(T(1500));
     {
       const ctx3 = await b.createBrowserContext(); const hp = await ctx3.newPage(); hp.setDefaultTimeout(T(8000));

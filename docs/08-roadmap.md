@@ -68,6 +68,7 @@ Each milestone is shippable and ends with a demoable result. Tasks reference req
 - [x] A supplied HTTPS certificate is watched and a renewed one used without a restart
 - [x] Standby and on air (REQ-066): a loaded show waits in standby until the operator starts it; Go to standby…, Restart show…
 - [x] Loop countdown timers (REQ-065); announcements for the operator's one-off notice
+- [x] Tour of Setup on the first visit (REQ-072): a dimmed page, a ring and an arrow at each step, Next/Back/Skip, remembered in `setup.tour_done`, replayed from Help → Take the tour
 - [x] Local automatic sign-in on the computer that runs the program (REQ-067)
 - [x] One interface for Setup and the operator page (`web/shared/ui.css`, `header.css`), a connection-lost notice, the show list's More menu, the status strip
 - [x] Markdown headings (`# Act 1`) are section markers, the same as `[section: Act 1]`

@@ -10,6 +10,8 @@ Préparer un spectacle demande six étapes (une septième, **Rapport**, est pour
 6. **Partager** — partagez l'adresse avec le public et ouvrez la page de l'opérateur, d'où le spectacle est lancé. Facultatif : la page de suivi (`/follow`) permet à un second appareil de regarder sans pouvoir rien envoyer.
 7. **Rapport** — après le spectacle : combien d'appareils ont utilisé la page du public, avec un graphique au fil du temps.
 
+La première fois que la configuration est ouverte sans aucun spectacle, une courte **visite** présente chaque étape et les boutons de l'en-tête ; appuyez sur Échap pour la passer. Pour la revoir, ouvrez l'aide et choisissez **Faire la visite**.
+
 ## Attente et passage à l'antenne
 
 Ouvrir la page de l'opérateur charge le spectacle **en attente** : le public voit l'écran d'attente du lieu (un logo et un message, réglés une seule fois sous **Réglages → Écran du public**) et rien du spectacle. L'opérateur appuie sur **Espace** (le bouton indique **DÉMARRER**) pour mettre le spectacle à l'antenne, et **Mettre en attente…** le retire sans perdre sa place. La préparation, la répétition et la modification ne sont jamais devant le public tant que le spectacle est en attente, et un spectacle en attente peut être supprimé.

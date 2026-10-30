@@ -171,6 +171,7 @@ Wer die Einrichtung und die Bedienerseite öffnen darf. Die Publikumsseite ist i
 | `mdns.enabled` | `yes` | Macht diesen Computer im lokalen Netz als `<Name>.local` bekannt |
 | `mdns.name` | `open-caption` | Der Name: nur Buchstaben, Ziffern und Bindestriche, bis zu 63 Zeichen (`.local` wird angehängt). *Einrichtung: Einstellungen → Netzwerk* |
 | `standby.message` | leer | Die Zeile, die das Publikum auf dem Standby-Bildschirm sieht. Leer bedeutet „Captions will begin shortly“ in der Sprache jedes Zuschauers. Eine Zeile, bis zu 200 Zeichen. *Einrichtung: Einstellungen → Publikumsbildschirm* (das Logo ist eine dort gewählte Datei, keine Einstellung) |
+| `setup.tour_done` | `no` | Ob die Einführungstour durch die Einrichtung beendet oder übersprungen wurde. Solange es `no` ist, startet die Tour von selbst, wenn die Einrichtung zum ersten Mal ohne Show geöffnet wird; am Ende setzt die Einrichtung den Wert auf `yes`. Setze ihn auf `no` zurück, um die Tour noch einmal zu sehen. *Einrichtung: Hilfe → Tour starten* zeigt sie jederzeit, ohne den Wert zu ändern |
 
 ### `network`
 

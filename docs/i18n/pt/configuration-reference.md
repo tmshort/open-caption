@@ -171,6 +171,7 @@ Quem pode abrir a configuração e a página do operador. A página do público 
 | `mdns.enabled` | `yes` | Anuncia este computador como `<nome>.local` na rede local |
 | `mdns.name` | `open-caption` | O nome: somente letras, dígitos e hifens, até 63 caracteres (`.local` é acrescentado). *Configuração: Configurações → Rede* |
 | `standby.message` | vazio | A linha que o público vê na tela de espera. Vazio significa «Captions will begin shortly» no idioma de cada espectador. Uma linha, até 200 caracteres. *Configuração: Configurações → Tela do público* (o logotipo é um arquivo escolhido ali, não uma configuração) |
+| `setup.tour_done` | `no` | Indica se o passeio guiado da Configuração já foi concluído ou saltado. Enquanto for `no`, o passeio começa sozinho na primeira vez que a Configuração é aberta sem espetáculos, e a Configuração põe-no a `yes` no fim. Volte a pôr `no` para ver o passeio outra vez. *Configuração: Ajuda → Fazer o passeio* mostra-o quando quiser, sem alterar este valor |
 
 ### `network`
 

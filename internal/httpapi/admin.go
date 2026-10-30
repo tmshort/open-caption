@@ -222,7 +222,7 @@ func (s *Server) adminRoutes(mux *http.ServeMux) {
 		})
 	}
 	mux.HandleFunc("GET /api/admin/ping", s.require(RoleAdmin, func(w http.ResponseWriter, r *http.Request) {
-		writeJSON(w, http.StatusOK, map[string]any{"ok": true, "role": principal(r).Role, "auto": principal(r).Auto})
+		writeJSON(w, http.StatusOK, map[string]any{"ok": true, "role": principal(r).Role, "auto": principal(r).Auto, "tourDone": s.tourDone()})
 	}))
 	mux.HandleFunc("GET /api/admin/shows", adm(s.listShows))
 	mux.HandleFunc("POST /api/admin/shows", adm(s.createShow))
@@ -301,6 +301,7 @@ func (s *Server) adminRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("PUT /api/admin/settings/access", adm(s.setAccess))
 	mux.HandleFunc("PUT /api/admin/settings/defaults", adm(s.setDefaults))
 	mux.HandleFunc("PUT /api/admin/settings/standby", adm(s.setStandby))
+	mux.HandleFunc("PUT /api/admin/settings/tour", adm(s.setTour))
 	mux.HandleFunc("GET /api/admin/settings/certificate", adm(s.certificateInfo))
 	mux.HandleFunc("POST /api/admin/settings/certificate/renew", adm(s.renewCertificate))
 	mux.HandleFunc("POST /api/admin/settings/standby-logo", adm(s.setStandbyLogo))

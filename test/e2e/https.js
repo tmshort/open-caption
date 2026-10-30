@@ -33,7 +33,7 @@ const made = [];
 async function start(certFiles) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'oc-https-'));
   const http = await free(), https = await free();
-  let yaml = `admin_password: ${PW}\noperator_password: ${PW}2\nmdns:\n  enabled: false\naccess:\n  local_auto_login: false\n` +
+  let yaml = `admin_password: ${PW}\noperator_password: ${PW}2\nsetup:\n  tour_done: yes\nmdns:\n  enabled: false\naccess:\n  local_auto_login: false\n` +
     `http:\n  addr: "127.0.0.1:${http}"\nhttps:\n  enabled: true\n  addr: "127.0.0.1:${https}"\n`;
   if (certFiles) yaml += `  cert_file: "${certFiles[0].replace(/\\/g, '/')}"\n  key_file: "${certFiles[1].replace(/\\/g, '/')}"\n`;
   fs.writeFileSync(path.join(dir, 'config.yaml'), yaml);

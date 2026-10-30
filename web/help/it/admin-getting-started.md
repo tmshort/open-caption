@@ -10,6 +10,8 @@ Preparare uno spettacolo richiede sei passi (un settimo, **Rapporto**, è per do
 6. **Condividi** — condividi l'indirizzo con il pubblico e apri la pagina dell'operatore, da cui si avvia lo spettacolo. Facoltativo: la pagina di seguimento (`/follow`) permette a un secondo dispositivo di guardare senza poter inviare nulla.
 7. **Rapporto** — dopo lo spettacolo: quanti dispositivi hanno usato la pagina del pubblico, con un grafico nel tempo.
 
+La prima volta che si apre Configurazione senza spettacoli, un breve **giro** mostra ogni passo e i pulsanti nell'intestazione; premi Esc per saltarlo. Per rivederlo, apri la Guida e scegli **Fai il giro**.
+
 ## Attesa e messa in onda
 
 Aprire la pagina dell'operatore carica lo spettacolo **in attesa**: il pubblico vede la schermata di attesa della sala (un logo e un messaggio, impostati una sola volta in **Impostazioni → Schermo del pubblico**) e nulla dello spettacolo. L'operatore preme **Spazio** (il pulsante dice **AVVIA**) per mettere lo spettacolo in onda, e **Metti in attesa…** lo ritira senza perdere il punto. Preparazione, prova e modifica non sono mai davanti al pubblico mentre lo spettacolo è in attesa, e uno spettacolo in attesa può essere eliminato.

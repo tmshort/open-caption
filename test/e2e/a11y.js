@@ -26,7 +26,7 @@ async function audit(page, label) {
 }
 (async () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'oc-a11y-'));
-  fs.writeFileSync(path.join(dir, 'config.yaml'), `admin_password: ${PW}\noperator_password: ${PW}2\nmdns:\n  enabled: false\naccess:\n  local_auto_login: false\n`);
+  fs.writeFileSync(path.join(dir, 'config.yaml'), `admin_password: ${PW}\noperator_password: ${PW}2\nsetup:\n  tour_done: yes\nmdns:\n  enabled: false\naccess:\n  local_auto_login: false\n`);
   // a finished audience report, so the report page can be audited with its numbers and tables
   fs.mkdirSync(path.join(dir, 'reports'));
   const t0 = new Date(Date.now() - 3600e3).toISOString(), t1 = new Date().toISOString();

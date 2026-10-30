@@ -10,7 +10,7 @@ const js = require('@eslint/js');
 const globals = require('globals');
 
 // What the page scripts share through the window (see the header of each file).
-const shared = { OCI18n: 'writable', OCReport: 'writable', OCClients: 'writable', OCSpeakers: 'writable', __: 'writable' };
+const shared = { OCI18n: 'writable', OCReport: 'writable', OCClients: 'writable', OCTour: 'writable', OCSpeakers: 'writable', __: 'writable' };
 
 export default [
   { ignores: ['test/e2e/node_modules/**', 'bin/**', 'dist/**', 'web/sample/**', 'web/shared/fonts/**'] },

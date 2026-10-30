@@ -10,6 +10,8 @@ Preparar un espectáculo lleva seis pasos (un séptimo, **Informe**, es para des
 6. **Compartir** — comparta la dirección con el público y abra la página del operador, donde se inicia el espectáculo. Opcionalmente, la página de seguimiento (`/follow`) permite que un segundo dispositivo mire sin poder enviar nada.
 7. **Informe** — después del espectáculo: cuántos dispositivos usaron la página del público, con un gráfico a lo largo del tiempo.
 
+La primera vez que se abre Configuración sin ningún espectáculo, una breve **visita** señala cada paso y los botones de la cabecera; pulse Esc para omitirla. Para verla otra vez, abra la Ayuda y elija **Hacer la visita**.
+
 ## En espera y en el aire
 
 Al abrir la página del operador, el espectáculo se carga **en espera**: el público ve la pantalla de espera del local (un logotipo y un mensaje, que se fijan una sola vez en **Ajustes → Pantalla del público**) y nada del espectáculo. El operador pulsa **Espacio** (el botón dice **INICIAR**) para poner el espectáculo en el aire, y **Poner en espera…** lo retira de nuevo sin perder su lugar. La preparación, el ensayo y la edición nunca están delante del público mientras el espectáculo está en espera, y un espectáculo en espera se puede eliminar.

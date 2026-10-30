@@ -10,6 +10,8 @@ Preparar um espetáculo leva seis etapas (uma sétima, **Relatório**, é para d
 6. **Compartilhar** — compartilhe o endereço com o público e abra a página do operador, de onde o espetáculo é iniciado. Opcionalmente, a página de acompanhamento (`/follow`) permite que um segundo dispositivo assista sem poder enviar nada.
 7. **Relatório** — depois do espetáculo: quantos dispositivos usaram a página do público, com um gráfico ao longo do tempo.
 
+Na primeira vez que a Configuração é aberta sem espetáculos, um breve **passeio** mostra cada etapa e os botões do cabeçalho; prima Esc para o saltar. Para o ver outra vez, abra a Ajuda e escolha **Fazer o passeio**.
+
 ## Espera e entrada no ar
 
 Abrir a página do operador carrega o espetáculo **em espera**: o público vê a tela de espera do local (um logotipo e uma mensagem, definidos uma só vez em **Configurações → Tela do público**) e nada do espetáculo. O operador pressiona **Espaço** (o botão diz **INICIAR**) para colocar o espetáculo no ar, e **Colocar em espera…** o retira de novo sem perder o lugar. Preparação, ensaio e edição nunca ficam diante do público enquanto o espetáculo está em espera, e um espetáculo em espera pode ser excluído.

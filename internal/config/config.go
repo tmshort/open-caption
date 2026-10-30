@@ -135,6 +135,12 @@ type Standby struct {
 	Message string `yaml:"message"` // optional; empty means the built-in "captions will begin shortly" in the viewer's language
 }
 
+// Setup holds what Setup remembers about itself.
+type Setup struct {
+	// TourDone is set once the first-run tour of Setup has been finished or skipped, so it is not offered again.
+	TourDone bool `yaml:"tour_done"`
+}
+
 // MaxStandbyMessage is the longest standby message, in characters.
 const MaxStandbyMessage = 200
 
@@ -166,6 +172,7 @@ type Config struct {
 	MDNS           MDNS     `yaml:"mdns"`
 	Network        Network  `yaml:"network"`
 	Standby        Standby  `yaml:"standby"`
+	Setup          Setup    `yaml:"setup"`
 
 	// Path is where the config was loaded from or generated (not serialized).
 	Path string `yaml:"-"`

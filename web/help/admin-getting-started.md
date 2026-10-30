@@ -10,6 +10,8 @@ Setting up a show takes six steps (a seventh, **Report**, is for after the show)
 6. **Share** — share the address with the audience and open the operator page, where the operator starts the show. Optionally, the Follow page (`/follow`) lets a second device watch without being able to send anything.
 7. **Report** — after the show: how many devices used the audience page, with a graph over time.
 
+The first time Setup is opened with no shows, a short **tour** points out each step and the buttons in the header; press Esc to skip it. To see it again, open Help and choose **Take the tour**.
+
 ## Standby and going on air
 
 Opening the operator page loads the show in **standby**: the audience sees the venue's standby screen (a logo and a message, set once under **Settings → Audience screen**) and nothing of the show. The operator presses **Space** (the button says **START**) to put the show on air, and **Go to standby…** takes it off again without losing its place. Setup, rehearsal and editing are never in front of the audience while the show is in standby, and a show in standby can be deleted.

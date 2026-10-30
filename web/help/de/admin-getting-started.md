@@ -10,6 +10,8 @@ Eine Show einzurichten dauert sechs Schritte (ein siebter, **Bericht**, ist für
 6. **Teilen** — teilen Sie die Adresse mit dem Publikum und öffnen Sie die Bedienerseite, von der aus die Show gestartet wird. Optional: Die Zuschauer-Seite (`/follow`) lässt ein zweites Gerät zusehen, ohne etwas senden zu können.
 7. **Bericht** — nach der Show: wie viele Geräte die Publikumsseite genutzt haben, mit einem Diagramm im Zeitverlauf.
 
+Wenn die Einrichtung zum ersten Mal ohne Show geöffnet wird, zeigt eine kurze **Tour** jeden Schritt und die Schaltflächen in der Kopfzeile; mit Esc überspringen Sie sie. Um sie noch einmal zu sehen, öffnen Sie die Hilfe und wählen Sie **Tour starten**.
+
 ## Standby und auf Sendung gehen
 
 Das Öffnen der Bedienerseite lädt die Show im **Standby**: Das Publikum sieht den Standby-Bildschirm des Hauses (ein Logo und eine Meldung, einmal unter **Einstellungen → Publikumsbildschirm** festgelegt) und nichts von der Show. Der Bediener drückt die **Leertaste** (die Schaltfläche heißt **START**), um die Show auf Sendung zu bringen, und **In den Standby …** nimmt sie wieder heraus, ohne ihren Platz zu verlieren. Einrichtung, Probe und Bearbeitung sind nie vor dem Publikum, solange die Show im Standby ist, und eine Show im Standby kann gelöscht werden.

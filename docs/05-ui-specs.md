@@ -12,6 +12,7 @@ Goal: a first-time volunteer can finish without reading documentation.
 
 ### First run
 1. Login form. On the very first run the generated admin/operator passwords are printed to the **console only** (never to a web page, since the login page is reachable from the guest network); the login page says where to find them (console output or `config.yaml`) and how to change them.
+1a. **Tour (REQ-072).** On the first visit with no shows (`setup.tour_done` is `no`), `web/admin/tour.js` dims the page and walks through the seven steps, Settings, Run and Help: a ring round the control, a pop-up with an arrow, step count, Back / Next (Done on the last) and Skip tour; arrow keys move, Esc leaves, Tab stays inside the pop-up. It ends by saving `setup.tour_done` (`PUT /api/admin/settings/tour`); Help's **Take the tour** replays it without changing the flag.
 2. Wizard stepper across the top: **① Shows → ② Show file → ③ Images → ④ Look → ⑤ Test → ⑥ Share → ⑦ Report**. The Report step is for after the show: it does not need a show to be selected, and has no tick.
    Steps are also reachable directly for experienced users. Each step shows a green check when complete.
 

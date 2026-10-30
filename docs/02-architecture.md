@@ -227,6 +227,8 @@ network:
   restrict_listening: false        # also refuse connections made to an address of an interface that is not used (localhost is always served)
 standby:
   message: ""                      # shown while no show is on air; empty = "Captions will begin shortly" in the viewer's language (the logo is set in Setup)
+setup:
+  tour_done: false                 # the first-run tour of Setup has been finished or skipped (Setup sets it; Help → Take the tour replays it)
 defaults:                          # used when a show file does not say otherwise (a show file's [settings] override these)
   language: en
   loop_item_seconds: 10
