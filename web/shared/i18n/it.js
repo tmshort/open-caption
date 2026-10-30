@@ -880,4 +880,6 @@ OCI18n.add("it", {
  "Viewer password set": "Password spettatore impostata",
  "Viewer sign-in is on. To turn it off, click Turn viewer sign-in off.": "L'accesso spettatore è attivo. Per disattivarlo, fai clic su «Disattiva l'accesso spettatore».",
  "Viewer sign-in is off. To turn it on, type a password in the box above and click Set viewer password.": "L'accesso spettatore è disattivato. Per attivarlo, digita una password nella casella sopra e fai clic su «Imposta la password spettatore».",
+ "A browser on the computer that runs the program (opened at localhost) is signed in as admin automatically, with no password. These passwords are for the other computers. You can turn this off under Access.": "Un browser sul computer su cui gira il programma (aperto su localhost) accede automaticamente come amministratore, senza password. Queste password servono per gli altri computer. Puoi disattivarlo in Accesso.",
+ "Signing in without a password on the computer that runs the program is turned off (under Access), so a browser there asks for a password too.": "L'accesso senza password sul computer su cui gira il programma è disattivato (in Accesso), quindi anche lì un browser chiede la password.",
 });

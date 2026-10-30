@@ -880,4 +880,6 @@ OCI18n.add("fr", {
  "Viewer password set": "Mot de passe spectateur défini",
  "Viewer sign-in is on. To turn it off, click Turn viewer sign-in off.": "La connexion spectateur est activée. Pour la désactiver, cliquez sur « Désactiver la connexion spectateur ».",
  "Viewer sign-in is off. To turn it on, type a password in the box above and click Set viewer password.": "La connexion spectateur est désactivée. Pour l'activer, saisissez un mot de passe dans la case ci-dessus et cliquez sur « Définir le mot de passe spectateur ».",
+ "A browser on the computer that runs the program (opened at localhost) is signed in as admin automatically, with no password. These passwords are for the other computers. You can turn this off under Access.": "Un navigateur de l'ordinateur qui fait tourner le programme (ouvert sur localhost) est connecté automatiquement en administrateur, sans mot de passe. Ces mots de passe servent aux autres ordinateurs. Vous pouvez le désactiver sous Accès.",
+ "Signing in without a password on the computer that runs the program is turned off (under Access), so a browser there asks for a password too.": "La connexion sans mot de passe sur l'ordinateur qui fait tourner le programme est désactivée (sous Accès) : un navigateur y demande donc aussi un mot de passe.",
 });

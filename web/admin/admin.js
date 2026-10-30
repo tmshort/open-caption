@@ -145,6 +145,10 @@
       viewerPw.value = ''; viewerOff.hidden = true; viewerState.textContent = viewerText(false);
       toast(__('Viewer sign-in turned off'));
     } }, __('Turn viewer sign-in off'));
+    // Says whether a browser on this computer needs a password at all (access.local_auto_login, set on the Access tab).
+    const autoNote = h('p', { class: 'hint', role: 'status' });
+    const paintAutoNote = () => { autoNote.textContent = (s.access || {}).localAutoLogin === false ? __('Signing in without a password on the computer that runs the program is turned off (under Access), so a browser there asks for a password too.') : __('A browser on the computer that runs the program (opened at localhost) is signed in as admin automatically, with no password. These passwords are for the other computers. You can turn this off under Access.'); };
+    paintAutoNote();
     // Each password has its own box and button, and only that one is sent: the others stay as they are.
     const pwButton = (input, text, done, after) => h('button', { type: 'button', onclick: async () => {
       if (!input.value) { input.focus(); toast(__('Type the new password first.')); return; }
@@ -212,7 +216,7 @@
     const accSave = h('button', { type: 'button', onclick: async () => {
       const x = await api('PUT', '/api/admin/settings/access', { adminAllow: accAdmin.get(), operatorAllow: accOp.get(), viewerAllow: accViewer.get(), localAutoLogin: accAuto.checked });
       if (!x.ok) return fail(x);
-      s.adminRestricted = x.data.adminRestricted; s.operatorRestricted = x.data.operatorRestricted; paintAccWarn();
+      s.adminRestricted = x.data.adminRestricted; s.operatorRestricted = x.data.operatorRestricted; s.access = x.data.access; paintAccWarn(); paintAutoNote();
       toast(accAuto.checked ? __('Access saved') : __('Access saved. A browser on this computer now signs in with the password.'), accAuto.checked ? undefined : 6000);
     } }, __('Save who can open the pages'));
     // The venue defaults (defaults.* and audience.* in config.yaml): what a show uses where its show file says nothing, and the
@@ -364,6 +368,7 @@
         sec('Change passwords',
           s.canChangePasswords
             ? h('div', {}, h('p', { class: 'hint' }, __('Each password has its own box and button: changing one leaves the others as they are. At least 6 characters. People signed in with a changed password are signed out; you stay signed in.')),
+                autoNote,
                 h('div', { class: 'pwline' }, h('label', { class: 'field' }, h('span', {}, __('New admin password')), adminPw), changeAdmin),
                 h('div', { class: 'pwline' }, h('label', { class: 'field' }, h('span', {}, __('New operator password')), opPw), changeOp),
                 h('div', { class: 'pwline' }, h('label', { class: 'field' }, h('span', {}, __('New viewer password (optional)')), viewerPw), changeViewer, viewerOff),

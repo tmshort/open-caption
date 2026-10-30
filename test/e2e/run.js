@@ -1047,6 +1047,7 @@ async function main() {
       await hp.evaluate(() => document.getElementById('settab-sec').click()); await sleep(300);
       const sec = await hp.evaluate(() => ({ reveal: [...document.querySelectorAll('#dlg button')].some((x) => /operator password/.test(x.textContent) && /Show|Hide/.test(x.textContent)) }));
       check('Settings offers no Show button for a digest-held operator password', !sec.reveal, sec);
+      check('the Passwords tab says whether this computer signs in without a password (here it is turned off)', await hp.evaluate(() => /Signing in without a password on the computer that runs the program is turned off/.test(document.getElementById('setpanel-sec').innerText)));
       await hp.evaluate(() => document.getElementById('settab-acc').click()); await sleep(300);
       // Who can open the pages: ticks and addresses, saved at once; a list that shuts this computer out is refused
       const accOp = (act) => hp.evaluate((what) => {
