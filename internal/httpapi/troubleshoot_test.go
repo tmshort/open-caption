@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/tmshort/open-caption/internal/config"
 	"github.com/tmshort/open-caption/internal/logbuf"
 	"github.com/tmshort/open-caption/internal/logx"
 )
@@ -135,4 +136,57 @@ func TestTroubleshootSaysWhetherTheShowIsOnAir(t *testing.T) {
 	if f := findings(m)["onair"]; f == nil || f["params"].(map[string]any)["state"] != "live" {
 		t.Fatalf("a started show is on air: %v", m["checks"])
 	}
+}
+
+// Troubleshoot points out access lists that are likely to surprise: the Follow page left open and pages limited to this computer.
+func TestTroubleshootExplainsAccessLists(t *testing.T) {
+	s, _, c := standbyServer(t)
+	state := func() string {
+		_, m := c.do("GET", "/api/admin/troubleshoot", nil)
+		f := findings(m)["access"]
+		if f == nil {
+			return ""
+		}
+		return f["params"].(map[string]any)["state"].(string)
+	}
+	if got := state(); got != "" && got != "setup-local" && got != "limited" {
+		t.Fatalf("a fresh server: %q", got)
+	}
+	set := func(admin, operator, viewer []string, viewerPw string) {
+		s.accessMu.Lock()
+		s.adminAllow, s.operatorAllow, s.viewerAllow = mustList(t, admin), mustList(t, operator), mustList(t, viewer)
+		s.accessMu.Unlock()
+		s.cfgMu.Lock()
+		s.cfg.Access.AdminAllow, s.cfg.Access.OperatorAllow, s.cfg.Access.ViewerAllow, s.cfg.ViewerPassword = admin, operator, viewer, viewerPw
+		s.cfgMu.Unlock()
+	}
+	set(nil, []string{"192.168.1.0/24"}, nil, "viewerpw")
+	if got := state(); got != "follow-open" {
+		t.Errorf("a viewer password with only the operator page limited leaves Follow open: %q", got)
+	}
+	set(nil, []string{"localhost"}, nil, "")
+	if got := state(); got != "operator-local" {
+		t.Errorf("the operator page limited to this computer: %q", got)
+	}
+	set([]string{"localhost"}, nil, nil, "")
+	if got := state(); got != "setup-local" {
+		t.Errorf("Setup limited to this computer: %q", got)
+	}
+	set(nil, []string{"192.168.1.0/24"}, []string{"192.168.1.0/24"}, "viewerpw")
+	if got := state(); got != "limited" {
+		t.Errorf("lists that admit a network: %q", got)
+	}
+	set(nil, nil, nil, "")
+	if got := state(); got != "" {
+		t.Errorf("no lists, nothing to say: %q", got)
+	}
+}
+
+func mustList(t *testing.T, e []string) config.AllowList {
+	t.Helper()
+	l, err := config.ParseAllowList(e)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return l
 }

@@ -530,6 +530,12 @@
         case 'languages': return { text: __('These languages will not be shown to the audience until their show file matches the main one: {list}.', { list: p.list }), fix: { label: __('Open the Show file step'), run: () => { $('dlg').close('cancel'); go('showfile'); } } };
         default: return { text: __('The show “{name}” is loaded.', { name: p.name }) };
       }
+      case 'access': switch (p.state) {
+        case 'follow-open': return { text: __('Only the Operator page has a list of allowed computers, so the Follow page, which the viewer password opens, can be opened from any computer. Give the Follow page its own list if that is not wanted.'), fix: settings('acc') };
+        case 'operator-local': return { text: __('The Operator page can be opened only on this computer, so a tablet or another computer is turned away. Add its address to the Operator list if it should be allowed.'), fix: settings('acc') };
+        case 'setup-local': return { text: __('Setup can be opened only on this computer, so another computer is turned away. That is the safe default. Add its address to the Setup list if it should be allowed.'), fix: settings('acc') };
+        default: return { text: __('Some pages can be opened only from the computers listed in Settings → Access.'), fix: settings('acc') };
+      }
       case 'onair': return p.state === 'live' ? { text: __('The show “{name}” is on air: the audience is seeing the captions now.', { name: p.name }) }
         : { text: __('The show “{name}” is in standby: the audience sees the standby screen until the operator presses START on the Run page.', { name: p.name }), fix: { label: __('Open the Run page'), run: () => { location.href = '/operator'; } } };
       case 'devices': return { text: __('{n} device(s) are connected right now.', { n: p.n }) };

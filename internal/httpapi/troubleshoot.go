@@ -138,6 +138,20 @@ func (s *Server) troubleshoot(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// 6c. who may open the pages: the lists that turn people away, when they are likely to surprise
+	adm, op, vw := s.allowLists()
+	acc := s.snapshot()
+	switch {
+	case acc.ViewerPassword != "" && op.Restricted() && !vw.Restricted():
+		add("access", "warn", "state", "follow-open")
+	case onlyThisComputer(acc.Access.OperatorAllow):
+		add("access", "info", "state", "operator-local")
+	case onlyThisComputer(acc.Access.AdminAllow):
+		add("access", "info", "state", "setup-local")
+	case adm.Restricted() || op.Restricted() || vw.Restricted():
+		add("access", "ok", "state", "limited")
+	}
+
 	// 7. who is connected
 	add("devices", "info", "n", s.rt.AudienceCount())
 
@@ -166,4 +180,19 @@ func (s *Server) troubleshoot(w http.ResponseWriter, r *http.Request) {
 // means it fell back. A port of 0 asked for any free one.
 func samePort(wanted, actual string) bool {
 	return portOf(wanted) == "0" || portOf(wanted) == portOf(actual)
+}
+
+// onlyThisComputer reports whether an access list admits nothing but this computer (localhost, the default for Setup).
+func onlyThisComputer(list []string) bool {
+	if len(list) == 0 {
+		return false
+	}
+	for _, e := range list {
+		switch strings.ToLower(strings.TrimSpace(e)) {
+		case "localhost", "127.0.0.1", "::1", "[::1]":
+		default:
+			return false
+		}
+	}
+	return true
 }
