@@ -1064,13 +1064,21 @@
       const x = await api('GET', '/api/admin/shows/' + show.id + '/languages');
       if (x.ok) { A.langs = x.data.languages; renderTabs(); }
     }
+    // Put text in place of s..e the way typing would, so the browser's own Undo (Cmd/Ctrl+Z) and Redo take it back: setting the value
+    // or using setRangeText leaves the undo history out. execCommand is deprecated but is still the only way to do this in a
+    // textarea; where it refuses, the text goes in directly (and Undo will not see it).
+    function edit(text, s, e) {
+      ta.focus(); ta.setSelectionRange(s, e);
+      let done = false;
+      try { done = document.execCommand('insertText', false, text); } catch (x) { /* fall back below */ }
+      if (!done) { ta.setRangeText(text, s, e, 'end'); changed(); } // execCommand sends an input event itself, which calls changed()
+    }
     function insert(text) {
       const s = ta.selectionStart, e = ta.selectionEnd, atLineStart = s === 0 || ta.value[s - 1] === '\n';
-      const t = (atLineStart ? '' : '\n') + text;
-      ta.setRangeText(t, s, e, 'end'); ta.focus(); changed();
+      edit((atLineStart ? '' : '\n') + text, s, e);
     }
-    function insertInline(text) { ta.setRangeText(text, ta.selectionStart, ta.selectionEnd, 'end'); ta.focus(); changed(); }
-    function loadText(text) { ta.value = text; changed(); }
+    function insertInline(text) { edit(text, ta.selectionStart, ta.selectionEnd); }
+    function loadText(text) { edit(text, 0, ta.value.length); }
     // Read a file the preparer made elsewhere: UTF-8 (with or without a mark), else Windows-1252, which is
     // what Notepad's old "ANSI" saves.
     async function readFile(f) {
@@ -1104,7 +1112,7 @@
       const lang = ta.value.match(/^\s*\[language[^\]]*\]\s*$/m);
       const pos = lang && lang.index < 400 ? lang.index + lang[0].length + 1 : 0;
       const block = A.lang ? '[settings]\nidle message: Captions will begin shortly\n[/settings]\n\n' : SNIPPETS.settings + '\n';
-      ta.setRangeText(block, pos, pos, 'end'); ta.focus(); changed();
+      edit(block, pos, pos);
     }
     async function pickImage() {
       const names = (A.analysis.assets || []).map((a) => a.name);

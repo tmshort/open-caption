@@ -151,6 +151,11 @@ async function main() {
       const before = await admin.evaluate(() => document.querySelector('.editor textarea').value);
       await admin.evaluate(() => { const ta = document.querySelector('.editor textarea'); ta.focus(); ta.setSelectionRange(0, 0); [...document.querySelectorAll('.tools button')].find((x) => x.textContent === 'Pace').click(); });
       check('the editor has a Pace button that inserts [pace: 8s]', await admin.evaluate(() => document.querySelector('.editor textarea').value.includes('[pace: 8s]\n')));
+      // text put in by a button is one step of the editor's own Undo (Cmd/Ctrl+Z), and Redo brings it back
+      const undo = await admin.evaluate(() => { const ta = document.querySelector('.editor textarea'); ta.focus(); ta.setSelectionRange(0, 0); const v0 = ta.value;
+        [...document.querySelectorAll('.tools button')].find((x) => x.textContent === 'Blank').click(); const v1 = ta.value;
+        document.execCommand('undo'); const v2 = ta.value; document.execCommand('redo'); return { added: v1 !== v0, undone: v2 === v0, redone: ta.value === v1 }; });
+      check('a button such as Blank puts its text in so that Undo takes it out again and Redo puts it back', undo.added && undo.undone && undo.redone, undo);
       await admin.evaluate((v) => { const ta = document.querySelector('.editor textarea'); ta.value = v; ta.dispatchEvent(new Event('input', { bubbles: true })); }, before); // put the sample back as it was
     }
     const showId = (await api(admin, 'GET', '/api/admin/shows')).body.shows[0].id;
