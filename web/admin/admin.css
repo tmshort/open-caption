@@ -259,6 +259,7 @@ body.helpopen .stepbar { right: min(37.5rem, 100%); } /* the help panel is in fr
 .trouble .cstatus { font-weight: 700; min-width: 4.5rem; font-size: .85em; text-transform: uppercase; letter-spacing: .04em; }
 .trouble .ctext { flex: 1 1 18rem; }
 .trouble pre.logview { max-height: 10rem; }
+.trouble .tabpanels + .row { margin-top: 1rem; }
 
 /* the header's "Working on: … · Active: …" pill can hold two show names */
 #working { max-width: min(30rem, 40vw); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

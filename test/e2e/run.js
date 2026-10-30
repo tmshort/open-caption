@@ -613,6 +613,7 @@ async function main() {
       const first = tabs.map((t) => t.textContent).join('|').replace(/ \(\d+\)/, '') === 'Checks|Connection test|Warnings and errors' && sel() === 'true,false,false' && vis() === 'visible,hidden,hidden';
       tabs[2].click(); const third = sel() === 'false,false,true' && vis() === 'hidden,hidden,visible'; tabs[0].click();
       return first && third && sel() === 'true,false,false'; }));
+    check('the buttons below the Troubleshoot tabs have a gap above them, like other components', await guard.evaluate(() => { const t = document.querySelector('dialog[open] .tabpanels').getBoundingClientRect(), r = document.querySelector('dialog[open] .tabpanels + .row').getBoundingClientRect(); return r.top - t.bottom >= 12; }));
     check('Troubleshoot has Copy summary, which puts the version and the checks (no password) on the clipboard or says to copy by hand', await guard.evaluate(async () => {
       let got = null; try { Object.defineProperty(navigator, 'clipboard', { value: { writeText: async (t) => { got = t; } }, configurable: true }); } catch (e) { return true; }
       [...document.querySelectorAll('dialog[open] button')].find((x) => x.textContent === 'Copy summary').click(); await new Promise((r) => setTimeout(r, 600));
