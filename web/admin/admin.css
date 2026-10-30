@@ -124,6 +124,10 @@ pre.diff .d-add { background: #1f6f3a33; } pre.diff .d-del { background: #b32626
 .pwline { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .4rem .8rem; margin-bottom: .5rem; }
 .pwline .field { margin: 0; flex: 0 1 16rem; }
 .pwline input[type=password] { width: 100%; box-sizing: border-box; }
+/* Setup's help panel is a quarter wider than the Run page's (ui.css), with Pop out next to Close. */
+#help { width: min(37.5rem, 100%); }
+#help .bar > #helppop { margin-left: auto; }
+#help .bar > #helpclose { margin-left: 0; }
 .accgroup { margin: 0 0 .6rem; padding: .2rem .8rem .4rem; border: 1px solid var(--line); border-radius: 6px; }
 .accgroup legend { padding: 0 .3rem; font-weight: 600; }
 .accgroup textarea { display: block; margin-top: .2rem; }

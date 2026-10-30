@@ -622,6 +622,17 @@ async function main() {
     await guard.evaluate(() => [...document.querySelectorAll('#dlg button')].find((x) => x.textContent.trim() === 'Help: setting up a trusted certificate').click()); await sleep(500);
     check('the Certificate tab links to the help on setting up a certificate, which opens that guide', await guard.evaluate(() => !document.getElementById('help').hidden && /topic=admin-https-certificate-guide/.test(document.getElementById('help').querySelector('iframe').src)));
     await guard.evaluate(() => document.getElementById('helpbtn').click()); await sleep(300);
+    await guard.evaluate(() => document.getElementById('helpbtn').click()); await sleep(800);
+    // Setup's help panel is a quarter wider than the Run page's (600 px, not 480) and has Pop out right before Close; Pop out moves the
+    // topic being read to a window of its own (the full help page, not the embedded one) and closes the panel
+    const hp0 = await guard.evaluate(() => ({ w: Math.round(document.getElementById('help').getBoundingClientRect().width), order: [...document.querySelectorAll('#help .bar button')].map((x) => x.id).join(',') }));
+    check('Setup\'s help panel is 25% wider (600 px, not 480) and has Pop out right before Close', hp0.w === 600 && hp0.order === 'helppop,helpclose', hp0);
+    const popup = new Promise((res) => b.once('targetcreated', (t) => res(t)));
+    await guard.click('#helppop');
+    const tgt = await Promise.race([popup, sleep(5000).then(() => null)]);
+    let popUrl = ''; for (let i = 0; i < 12 && tgt; i++) { popUrl = tgt.url(); if (/\/help\?/.test(popUrl)) break; await sleep(250); }
+    check('Pop out opens the help in a window of its own (not the embedded one) and closes the panel', !!tgt && /\/help\?/.test(popUrl) && !/embed=/.test(popUrl) && await guard.evaluate(() => document.getElementById('help').hidden), popUrl);
+    if (tgt) { const pg = await tgt.page().catch(() => null); if (pg) await pg.close(); }
     await click(guard, 'Settings'); await sleep(600);
     await guard.evaluate(() => document.getElementById('settab-sec').click()); await sleep(150);
     const inputs = await guard.$$('#dlg input[type=password]'); await inputs[1].type('new-operator-pw');

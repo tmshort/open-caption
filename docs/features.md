@@ -24,7 +24,7 @@ The full list. The [README](../README.md) has the short version; how to use each
 - Setup, the operator page, Help and all the built-in documentation are available in English, Spanish, French, German, Italian and Portuguese.
 - Passwords are kept in `config.yaml` as SHA-256 digests, not plain text (Setup and the first run write them; `open-caption --hash-password` makes one by hand), and a Markdown heading (`# Act 2`) in the show file is a bookmark for the operator.
 - The venue-wide defaults (look, language, pre-show message, loop time, audience limits) can be edited in Setup (Settings → Defaults); they are saved in `config.yaml` and apply at the next start.
-- Built-in help, a recent-log viewer, a support bundle, and a validated `config.yaml` that reports every mistake at once.
+- Built-in help, which can be popped out of Setup into a window of its own, a recent-log viewer, a support bundle, and a validated `config.yaml` that reports every mistake at once.
 - Optional trusted HTTPS: a renewed certificate file is picked up without a restart, or the program can get and renew a Let's Encrypt certificate itself (DNS-01, with Cloudflare, GoDaddy and EasyDNS built in by default; see below).
 - Screen-reader friendly pages, checked automatically with axe-core in both colour schemes.
 

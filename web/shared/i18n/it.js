@@ -883,4 +883,7 @@ OCI18n.add("it", {
  "A browser on the computer that runs the program (opened at localhost) is signed in as admin automatically, with no password. These passwords are for the other computers. You can turn this off under Access.": "Un browser sul computer su cui gira il programma (aperto su localhost) accede automaticamente come amministratore, senza password. Queste password servono per gli altri computer. Puoi disattivarlo in Accesso.",
  "Signing in without a password on the computer that runs the program is turned off (under Access), so a browser there asks for a password too.": "L'accesso senza password sul computer su cui gira il programma è disattivato (in Accesso), quindi anche lì un browser chiede la password.",
  "Help: setting up a trusted certificate": "Aiuto: configurare un certificato attendibile",
+ "Pop out": "Apri in una finestra",
+ "Open the help in its own window": "Apri l'aiuto in una finestra separata",
+ "The browser blocked the new window. Allow pop-ups for this page, then try again.": "Il browser ha bloccato la nuova finestra. Consenti i pop-up per questa pagina e riprova.",
 });

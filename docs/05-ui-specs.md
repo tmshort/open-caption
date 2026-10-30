@@ -209,7 +209,7 @@ volunteers: plain language, short, with examples.
 - a "what the warnings mean" list mirroring the diagnostics
 - a link to download the sample show file
 
-**As built.** Help opens as a side panel (an embedded viewer at `/help`) from a **Help** button, `?`, or `F1`; on Setup the topic follows the current step. On `/operator`, while the panel is open every show-control key is ignored except `Esc`/`?`/`F1`, which close it. The audience page has an optional, low-key **Aa** control (top right) for per-device text size and dark-on-light, stored only on that device.
+**As built.** Help opens as a side panel (an embedded viewer at `/help`) from a **Help** button, `?`, or `F1`; on Setup the topic follows the current step. On `/operator`, while the panel is open every show-control key is ignored except `Esc`/`?`/`F1`, which close it. The audience page has an optional, low-key **Aa** control (top right) for per-device text size and dark-on-light, stored only on that device. On Setup (not the Run page) the panel is a quarter wider (37.5 rem, not 30 rem) and has a **Pop out** button before **Close**: it opens the topic being read in a window of its own (`/help` without `embed`, so the topic list sits beside it and the language picker is there) and closes the panel; if the browser blocks the window the panel stays and a toast says to allow pop-ups.
 
 **Keeping help correct.** The parser's directive/syntax registry is the single list of conventions; a unit test fails if any directive, escape, or diagnostic code has no mention in the help topics, and another parses every fenced example in help to check it produces no errors.
 

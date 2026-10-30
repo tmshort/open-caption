@@ -126,6 +126,20 @@
   function closeHelp() { $('help').hidden = true; $('help').querySelector('iframe').src = 'about:blank'; }
   $('helpbtn').addEventListener('click', () => ($('help').hidden ? openHelp() : closeHelp()));
   $('helpclose').addEventListener('click', closeHelp);
+  // Pop out: the topic being read opens in a window of its own (the full help page, with its topic list beside it) and the
+  // panel closes. If the browser blocks the window, the panel stays.
+  $('helppop').addEventListener('click', () => {
+    const frame = $('help').querySelector('iframe');
+    let q = new URLSearchParams('role=admin&ui=' + OCI18n.lang + '&topic=admin-getting-started');
+    try { // the page in the panel knows which topic is showing (its address ends #topic)
+      const w = frame.contentWindow.location;
+      q = new URLSearchParams(w.search); q.delete('embed');
+      if (w.hash.length > 1) q.set('topic', w.hash.slice(1).split('?')[0]);
+    } catch (e) { /* keep the default */ }
+    const win = window.open('/help?' + q.toString(), 'oc-help', 'popup=yes,width=860,height=900');
+    if (!win) { toast(__('The browser blocked the new window. Allow pop-ups for this page, then try again.'), 6000); return; }
+    closeHelp();
+  });
   window.addEventListener('message', (e) => { if (e.origin === location.origin && e.data && e.data.type === 'help-close') closeHelp(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'F1') { e.preventDefault(); openHelp(); } });
 
