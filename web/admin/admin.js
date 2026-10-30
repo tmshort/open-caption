@@ -205,8 +205,8 @@
         h('label', { class: 'field' }, h('span', {}, __('Other addresses or networks, one per line')), rest), empty) };
     }
     const accAdmin = accessGroup(__('Setup page'), __('Who may open Setup. Keep this computer in the list if you use Setup on it.'), __('Any computer on the network may try to sign in to Setup.'), acc0.adminAllow || []);
-    const accOp = accessGroup(__('Operator page'), __('Who may open the operator page. Computers in the Setup list may always open it.'), __('Any computer on the network may try to sign in to the operator page.'), acc0.operatorAllow || []);
-    const accViewer = accessGroup(__('Follow page'), __('Who may open the Follow page (/follow). Computers in the operator and Setup lists may always open it.'), __('Any computer on the network may try to sign in to the Follow page.'), acc0.viewerAllow || []);
+    const accOp = accessGroup(__('Operator page'), __('Who may open the Operator page. Computers in the Setup list may always open it.'), __('Any computer on the network may try to sign in to the Operator page.'), acc0.operatorAllow || []);
+    const accViewer = accessGroup(__('Follow page'), __('Who may open the Follow page. Computers in the Operator and Setup lists may always open it.'), __('Any computer on the network may try to sign in to the Follow page.'), acc0.viewerAllow || []);
     // One list at a time keeps the tab short enough for the Settings window.
     const accGroups = [accAdmin, accOp, accViewer];
     const accPick = h('select', { 'aria-label': __('List to edit'), onchange: () => accGroups.forEach((g, i) => { g.el.hidden = i !== Number(accPick.value); }) },
