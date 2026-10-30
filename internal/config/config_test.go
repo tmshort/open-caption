@@ -21,8 +21,18 @@ func TestGenerateThenReload(t *testing.T) {
 	if err != nil || !c.Generated {
 		t.Fatalf("%v generated=%v", err, c.Generated)
 	}
-	if len(c.AdminPassword) != 12 || c.AdminPassword == c.OperatorPassword {
-		t.Errorf("passwords: %q %q", c.AdminPassword, c.OperatorPassword)
+	// the file holds digests; the random passwords are shown once, from FirstRun
+	if len(c.FirstRun.Admin) != 12 || c.FirstRun.Admin == c.FirstRun.Operator || !IsHashed(c.AdminPassword) || !IsHashed(c.OperatorPassword) {
+		t.Errorf("passwords: %q %q (%+v)", c.AdminPassword, c.OperatorPassword, c.FirstRun)
+	}
+	if !CheckPassword(c.AdminPassword, c.FirstRun.Admin) || !CheckPassword(c.OperatorPassword, c.FirstRun.Operator) {
+		t.Error("the digests do not match the passwords shown")
+	}
+	if b, _ := os.ReadFile(p); strings.Contains(string(b), c.FirstRun.Admin) || strings.Contains(string(b), c.FirstRun.Operator) {
+		t.Errorf("config.yaml holds a password in the clear:\n%s", b)
+	}
+	if red := c.Redacted(); red.FirstRun != (FirstRunPasswords{}) {
+		t.Error("Redacted keeps the first-run passwords")
 	}
 	if runtime.GOOS != "windows" {
 		if fi, _ := os.Stat(p); fi.Mode().Perm() != 0o600 {

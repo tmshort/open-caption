@@ -264,7 +264,6 @@ func TestChangingSettingsWhileOthersReadThemIsRaceFree(t *testing.T) {
 		c.do("PUT", "/api/admin/settings/passwords", map[string]any{"operator": fmt.Sprintf("operator-pw-%d", i)})
 	})
 	run(func(int) { c.do("GET", "/api/admin/settings", nil) })
-	run(func(int) { c.do("GET", "/api/admin/settings/operator-password", nil) })
 	wg.Wait()
 }
 

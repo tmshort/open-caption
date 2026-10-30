@@ -34,7 +34,7 @@ Siehe „Was die Warnungen bedeuten“ unter [Eine Show-Datei schreiben](admin-w
 
 ## Passwörter
 
-Um eines der beiden Passwörter zu ändern, verwenden Sie **Einstellungen** oben auf der Einrichtungsseite. Das neue Passwort gilt sofort und wird in `config.yaml` gespeichert. Wer mit einem geänderten Passwort angemeldet ist, wird abgemeldet; Sie bleiben angemeldet. Dasselbe Fenster kann das aktuelle Operator-Passwort anzeigen, damit Sie es dem Operator geben können. Ein optionales **Zuschauer-Passwort** lässt ein zweites Gerät, etwa das Tablet der Inspizienz, die Mitlese-Seite (`/follow`) nur zum Ansehen öffnen: Sie zeigt die Zeilen, die Notizen und die Position, und es lässt sich nichts senden. Das Operator- und das Administrator-Passwort öffnen diese Seite ebenfalls.
+Um eines der beiden Passwörter zu ändern, verwenden Sie **Einstellungen** oben auf der Einrichtungsseite. Das neue Passwort gilt sofort und wird in `config.yaml` gespeichert. Wer mit einem geänderten Passwort angemeldet ist, wird abgemeldet; Sie bleiben angemeldet. Passwörter werden als Hashes gespeichert, die Einrichtung kann also keines anzeigen: notieren Sie das Passwort, wenn Sie es festlegen. Ein optionales **Zuschauer-Passwort** lässt ein zweites Gerät, etwa das Tablet der Inspizienz, die Mitlese-Seite (`/follow`) nur zum Ansehen öffnen: Sie zeigt die Zeilen, die Notizen und die Position, und es lässt sich nichts senden. Das Operator- und das Administrator-Passwort öffnen diese Seite ebenfalls.
 
 Wenn Sie sich gar nicht anmelden können, stehen beide Passwörter in `config.yaml` im Datenordner des Programms. Öffnen Sie die Datei mit einem beliebigen Texteditor. Ihr Speicherort wird beim Start des Programms ausgegeben.
 

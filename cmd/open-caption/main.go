@@ -158,8 +158,8 @@ func main() {
 		logx.Infof("a viewer password is set, so the operator page can also be opened for watching only")
 	}
 	if cfg.Generated {
-		fmt.Printf("\nFirst run: created %s\n  admin password:    %s\n  operator password: %s\n(Keep these; they are stored in plain text in that file.)\n\n",
-			cfg.Path, cfg.AdminPassword, cfg.OperatorPassword)
+		fmt.Printf("\nFirst run: created %s\n  admin password:    %s\n  operator password: %s\n(Keep these; the file holds only their digests, so they cannot be shown again. To set new ones, use Setup > Settings > Security.)\n\n",
+			cfg.Path, cfg.FirstRun.Admin, cfg.FirstRun.Operator)
 	}
 
 	api := httpapi.New(cfg, version)
@@ -299,7 +299,7 @@ func usage() {
 Usage: open-caption [options]
 
 To check a show file without starting anything (a lint): open-caption --check-show show.md [translation.es.md ...]
-To keep a password in config.yaml as a digest, not in plain text: printf '%%s' 'the password' | open-caption --hash-password
+To make a digest of a password for config.yaml (Setup and the first run already store digests): printf '%%s' 'the password' | open-caption --hash-password
 
 Run with no options to start with the defaults: the first run writes config.yaml with random passwords and prints
 them, then prints the addresses to open (Setup at /admin, the operator page at /operator, the audience page at /).

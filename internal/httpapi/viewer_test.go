@@ -59,7 +59,7 @@ func TestViewerCanWatchAndNothingElse(t *testing.T) {
 		{"POST", "/api/operator/reset"}, {"POST", "/api/operator/onair"}, {"POST", "/api/operator/offair"}, {"POST", "/api/operator/message"},
 		{"GET", "/api/operator/clients"}, {"GET", "/api/operator/report"}, {"GET", "/api/operator/reports"},
 		{"GET", "/api/admin/ping"}, {"GET", "/api/admin/shows"}, {"GET", "/api/admin/settings"}, {"PUT", "/api/admin/settings/passwords"},
-		{"GET", "/api/admin/settings/operator-password"}, {"POST", "/api/admin/rehearsal/start"},
+		{"POST", "/api/admin/rehearsal/start"},
 	} {
 		if code, _ := v.do(c[0], c[1], map[string]any{"text": "x", "takeover": true}); code != 403 {
 			t.Errorf("%s %s as a viewer: %d, want 403", c[0], c[1], code)
@@ -185,7 +185,7 @@ func TestSetupManagesTheViewerPassword(t *testing.T) {
 	if code, r := admin.do("PUT", "/api/admin/settings/passwords", map[string]any{"viewer": "tablet-pw"}); code != 200 || r["changed"].(map[string]any)["viewer"] != true {
 		t.Fatalf("set viewer: %d %v", code, r)
 	}
-	if b, _ := os.ReadFile(cfgPath); !strings.Contains(string(b), "viewer_password: tablet-pw") || !strings.Contains(string(b), "admin_password: adminpw") {
+	if b, _ := os.ReadFile(cfgPath); !strings.Contains(string(b), "viewer_password: "+config.HashPassword("tablet-pw")) || !strings.Contains(string(b), "admin_password: adminpw") {
 		t.Errorf("config.yaml:\n%s", b)
 	}
 	if _, st := admin.do("GET", "/api/admin/settings", nil); st["viewerPasswordSet"] != true || strings.Contains(toJSON(st), "tablet-pw") {

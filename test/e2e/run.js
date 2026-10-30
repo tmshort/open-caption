@@ -564,12 +564,9 @@ async function main() {
     check('Settings offers the log detail setting', await guard.evaluate(() => !!document.querySelector('#dlg select[aria-label="Log detail"]')));
     check('the Settings window has no Recent log button (it is in the Troubleshoot panel)', await guard.evaluate(() => !document.getElementById('dlgextra') || document.getElementById('dlgextra').hidden));
     check('and its only footer button just closes it', await guard.evaluate(() => document.getElementById('dlgok').textContent.trim() === 'Close' && document.getElementById('dlgcancel').hidden));
-    // the operator password can be shown and hidden again
+    // no password can be shown: they are kept as digests
     await tab('sec');
-    await guard.evaluate(() => [...document.querySelectorAll('#dlg button')].find((x) => x.textContent.includes('Show the current operator password')).click()); await sleep(500);
-    check('showing the operator password turns the button into Hide', await guard.evaluate(() => /Operator password: /.test(document.getElementById('dlg').innerText) && [...document.querySelectorAll('#dlg button')].some((x) => x.textContent.includes('Hide the operator password'))));
-    await guard.evaluate(() => [...document.querySelectorAll('#dlg button')].find((x) => x.textContent.includes('Hide the operator password')).click()); await sleep(300);
-    check('and Hide hides it again', await guard.evaluate(() => !/Operator password: /.test(document.getElementById('dlg').innerText)));
+    check('Settings → Security has no button that shows a password', await guard.evaluate(() => ![...document.querySelectorAll('#dlg button')].some((x) => /Show|Hide/.test(x.textContent) && /password/i.test(x.textContent))));
     await guard.evaluate(() => document.getElementById('dlgok').click()); await sleep(300);
     await step(guard, 'Share'); await sleep(900);
     check('the Share step lists the .local name only as a plain link row, with no on/off box or Rename button of its own', await guard.evaluate(() => !document.querySelector('.urls input[aria-label="Announce this computer by name"]') && ![...document.querySelectorAll('.urls button')].some((b) => /Rename/.test(b.textContent))));
@@ -1031,7 +1028,7 @@ async function main() {
       check('reaching the same computer by its network address asks for the password', await lp2.evaluate(() => !document.getElementById('login').hidden));
       await lp2.close(); await ctx2.close();
     }
-    // A password kept in config.yaml as a digest: it signs in, and Setup says it cannot be shown instead of offering to show it
+    // A password kept in config.yaml as a digest: it signs in, and Setup offers no way to show it
     section('Passwords kept as digests');
     await stopServer(); await sleep(400);
     const digest = 'sha256:' + require('crypto').createHash('sha256').update(OPERATOR).digest('hex');
@@ -1048,8 +1045,8 @@ async function main() {
       await hp.waitForSelector('#settingsbtn', { visible: true }).catch(() => {});
       await hp.evaluate(() => document.getElementById('settingsbtn').click()); await hp.waitForSelector('#settab-sec').catch(() => {});
       await hp.evaluate(() => document.getElementById('settab-sec').click()); await sleep(300);
-      const sec = await hp.evaluate(() => ({ text: document.getElementById('dlg').innerText, reveal: [...document.querySelectorAll('#dlg button')].some((x) => /operator password/.test(x.textContent) && /Show|Hide/.test(x.textContent)) }));
-      check('Settings says a digest-held operator password cannot be shown, and offers no Show button', /stored as a digest, so it cannot be shown/.test(sec.text) && !sec.reveal, sec);
+      const sec = await hp.evaluate(() => ({ reveal: [...document.querySelectorAll('#dlg button')].some((x) => /operator password/.test(x.textContent) && /Show|Hide/.test(x.textContent)) }));
+      check('Settings offers no Show button for a digest-held operator password', !sec.reveal, sec);
       await hp.evaluate(() => document.getElementById('settab-acc').click()); await sleep(300);
       // Who can open the pages: ticks and addresses, saved at once; a list that shuts this computer out is refused
       const accOp = (act) => hp.evaluate((what) => {

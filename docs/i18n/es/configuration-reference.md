@@ -5,7 +5,7 @@
 ## El archivo
 
 - **Dónde está.** `<carpeta de datos>/config.yaml`; la carpeta de datos es `data_dir`, `--data`, o la predeterminada `<su carpeta de configuración de usuario>/open-caption` (en macOS `~/Library/Application Support/open-caption`, en Windows `%AppData%\open-caption`, en Linux `~/.config/open-caption`). Las primeras líneas que imprime el programa dicen qué archivo usa. `--config` indica otro archivo.
-- **Primer arranque.** Si no hay archivo, el programa escribe uno con contraseñas aleatorias de **administrador** y de **operador** y las imprime una sola vez en la consola. El archivo tiene modo 0600 (privado para su cuenta) y las contraseñas están en **texto sin cifrar** (salvo que guarde un resumen, véase «Contraseñas» más abajo), así que manténgalo privado.
+- **Primer arranque.** Si no hay archivo, el programa escribe uno con contraseñas aleatorias de **administrador** y de **operador** y las imprime una sola vez en la consola. El archivo tiene modo 0600 (privado para su cuenta) y solo contiene los **resúmenes** de las contraseñas (véase «Contraseñas» más abajo), así que no se pueden leer en él: anótelas cuando se impriman. Si las pierde, ponga otras nuevas en la configuración, que se abre sin contraseña en el equipo donde corre el programa (`access.local_auto_login`), o con `--hash-password`.
 - **Solo necesita las claves que cambie.** Una clave ausente conserva su valor por defecto (las tablas de abajo). El archivo generado lista todo.
 - **Estricto.** Una clave mal escrita, un valor de tipo equivocado o fuera de rango detiene el programa al arrancar y muestra **todos** los problemas, cada uno con el nombre del ajuste (por ejemplo `audience.max_clients: 0 is not a client count: use 1 to 100000`). No se adivina nada. La única excepción: en un archivo marcado con un `config_version` más nuevo que el que conoce el programa se ignoran las claves desconocidas, con una advertencia.
 - **La configuración edita una parte.** Cambiar las contraseñas, el nombre `.local`, el mensaje de espera o el nivel del registro en la configuración reescribe esas claves en el archivo y conserva sus comentarios y todos los demás ajustes. Todo lo demás se edita a mano y después hay que **reiniciar el programa**. (Un archivo de certificado renovado es lo único que se recoge sin reiniciar; véase `https.cert_file`.)
@@ -36,7 +36,7 @@ Una opción, o su variable de entorno, prevalece sobre el archivo en esa ejecuci
 
 ## Contraseñas
 
-`admin_password` y `operator_password` están en **texto sin cifrar** por defecto, por eso el archivo es privado para su cuenta. Para guardar una contraseña en el archivo como **resumen** (un hash de un solo sentido, de modo que una copia de `config.yaml` no revele la contraseña), escriba el resumen en su lugar:
+`admin_password`, `operator_password` y `viewer_password` se guardan como **resumen** (un hash de un solo sentido, de modo que una copia de `config.yaml` no revele la contraseña): la primera ejecución escribe resúmenes, y la configuración también cuando se pone una contraseña allí. El texto sin cifrar aún se lee (un archivo escrito a mano sigue funcionando) y puede escribir usted mismo un resumen en su lugar:
 
 | Escrito como | Significa |
 |---|---|
@@ -51,7 +51,7 @@ $ printf '%s' 'the password' | open-caption --hash-password
 sha256:5b11618c2e44027877d0cd0921ed166b9f176f50587fc91e7534dd2946db77d6
 ```
 
-(`printf '%s' 'the password' | shasum -a 256` da los mismos dígitos en macOS y Linux; añada `sha256:` delante.) Para entrar se sigue escribiendo la contraseña misma. Un resumen no se puede convertir de nuevo en la contraseña, así que **Ajustes → Seguridad** en la configuración no puede mostrar una contraseña de operador guardada como resumen, solo sustituirla, y el programa tampoco puede volver a imprimirla: guárdela en un lugar seguro. Una contraseña cambiada en la configuración se guarda en la misma forma que la que sustituye (un resumen sigue siendo un resumen, el texto sin cifrar sigue siéndolo); el programa nunca convierte una contraseña que usted no cambió. Un valor que empieza por `sha256:`, `sha512:` o `sha1:` pero no es un resumen de la longitud correcta detiene el programa al arrancar, nombrando el ajuste.
+(`printf '%s' 'the password' | shasum -a 256` da los mismos dígitos en macOS y Linux; añada `sha256:` delante.) Para entrar se sigue escribiendo la contraseña misma. Un resumen no se puede convertir de nuevo en la contraseña, así que **Ajustes → Seguridad** en la configuración no puede mostrar una contraseña, solo sustituirla, y el programa tampoco puede volver a imprimirla: guárdela en un lugar seguro. Una contraseña cambiada en la configuración se guarda como resumen `sha256:` (solo un valor escrito con el prefijo `plain:` sigue siendo texto sin cifrar); el programa nunca convierte una contraseña que usted no cambió. Un valor que empieza por `sha256:`, `sha512:` o `sha1:` pero no es un resumen de la longitud correcta detiene el programa al arrancar, nombrando el ajuste.
 
 ## Comprobar un archivo del espectáculo
 
@@ -86,8 +86,8 @@ Los valores por defecto son los que obtiene sin la clave. «Configuración» ind
 | Clave | Por defecto | Significado |
 |---|---|---|
 | `config_version` | `1` | Lo escribe el programa. Un número mayor que el que conoce el programa significa que el archivo viene de una versión más nueva |
-| `admin_password` | generada | La contraseña de la configuración (`/admin`). Texto sin cifrar o un resumen como `sha256:…` (véase «Contraseñas» más abajo). No puede estar vacía (6 o más caracteres al cambiarla en la configuración). *Configuración: Ajustes → Seguridad* |
-| `operator_password` | generada | La contraseña de la página del operador (`/operator`); la del administrador también sirve ahí. Texto sin cifrar o un resumen, como `admin_password`; un resumen no se puede mostrar en la configuración. No puede estar vacía. *Configuración: Ajustes → Seguridad* |
+| `admin_password` | generada | La contraseña de la configuración (`/admin`). Un resumen como `sha256:…` (véase «Contraseñas» más abajo; el texto sin cifrar aún se lee). No puede estar vacía (6 o más caracteres al cambiarla en la configuración). *Configuración: Ajustes → Seguridad* |
+| `operator_password` | generada | La contraseña de la página del operador (`/operator`); la del administrador también sirve ahí. Un resumen, como `admin_password`; la configuración no puede mostrarlo. No puede estar vacía. *Configuración: Ajustes → Seguridad* |
 | `viewer_password` | *(ninguna)* | Una tercera contraseña opcional que permite a un segundo dispositivo (la tableta de un regidor) **mirar** el espectáculo: abre `/follow`, entra con esta contraseña y ve las líneas, las notas y la posición, pero no puede enviar nada ni tomar el control. Las contraseñas de operador y de administrador también abren `/follow`. Vacía = sin acceso solo de espectador. Texto sin cifrar o un resumen, distinta de las otras dos. *Configuración: Ajustes → Seguridad* |
 | `data_dir` | vacío | La carpeta de datos. Vacío significa la carpeta por defecto de arriba. No puede ser un archivo |
 

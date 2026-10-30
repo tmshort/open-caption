@@ -100,6 +100,9 @@ type Defaults struct {
 	Look            Look    `yaml:"look"`
 }
 
+// FirstRunPasswords are the plain-text passwords generated on the first run, for showing once.
+type FirstRunPasswords struct{ Admin, Operator string }
+
 // Audience limits.
 type Audience struct {
 	MaxClients      int `yaml:"max_clients"`
@@ -168,6 +171,9 @@ type Config struct {
 	Path string `yaml:"-"`
 	// Generated is true if Load created the file this run (not serialized).
 	Generated bool `yaml:"-"`
+	// FirstRun holds the random passwords made when the file was created. The file keeps only their digests, so this is the one
+	// time they can be shown; it is never written and Redacted clears it.
+	FirstRun FirstRunPasswords `yaml:"-"`
 	// notes are warnings found while loading (not serialized).
 	notes []string `yaml:"-"`
 }
@@ -205,11 +211,13 @@ func Load(path string) (Config, error) {
 	b, err := os.ReadFile(path)
 	switch {
 	case errors.Is(err, os.ErrNotExist):
-		cfg.AdminPassword, cfg.OperatorPassword = RandomPassword(), RandomPassword()
+		admin, operator := RandomPassword(), RandomPassword()
+		cfg.AdminPassword, cfg.OperatorPassword = HashPassword(admin), HashPassword(operator)
 		if err := cfg.Save(); err != nil {
 			return cfg, err
 		}
 		cfg.Generated = true
+		cfg.FirstRun = FirstRunPasswords{Admin: admin, Operator: operator}
 		return cfg, nil
 	case err != nil:
 		return cfg, err
@@ -304,8 +312,8 @@ func (c Config) Save() error {
 	if err != nil {
 		return err
 	}
-	header := "# open-caption configuration. Passwords are stored in plain text unless written as a digest\n" +
-		"# (sha256:<hex>, made by open-caption --hash-password); keep this file private.\n" +
+	header := "# open-caption configuration. Passwords are stored as digests (sha256:<hex>, made by Setup or by\n" +
+		"# open-caption --hash-password), not in plain text; keep this file private all the same.\n" +
 		"# access: limits which computers may open the Setup (admin_allow) and operator (operator_allow) pages.\n" +
 		"# The default admin_allow is [localhost]: Setup opens only on this computer. An empty list lets anyone on the\n" +
 		"# network try the password. Entries: localhost, private, an address (192.168.1.50) or a network\n" +
@@ -616,6 +624,7 @@ func checkAddr(a string) error {
 // Redacted returns a copy with passwords masked, for display/support bundles.
 func (c Config) Redacted() Config {
 	c.AdminPassword, c.OperatorPassword = "********", "********"
+	c.FirstRun = FirstRunPasswords{}
 	if c.ViewerPassword != "" {
 		c.ViewerPassword = "********"
 	}

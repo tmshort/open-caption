@@ -633,9 +633,6 @@ func TestChangePasswordsFromSetup(t *testing.T) {
 	if fresh.login("operator", "operatorpw") != 401 || fresh.login("operator", "new-operator-pw") != 200 {
 		t.Error("the new operator password should work, and the old one not")
 	}
-	if _, r := admin.do("GET", "/api/admin/settings/operator-password", nil); r["password"] != "new-operator-pw" {
-		t.Errorf("reveal: %v", r)
-	}
 
 	// Change the admin password: the caller stays signed in, other admin sessions do not.
 	if code, _ := admin.do("PUT", "/api/admin/settings/passwords", map[string]string{"admin": "brand-new-admin"}); code != 200 {
@@ -650,8 +647,11 @@ func TestChangePasswordsFromSetup(t *testing.T) {
 
 	// The file on disk has the new passwords and kept the setting that was not touched.
 	b, _ := os.ReadFile(cfgPath)
-	if !strings.Contains(string(b), "brand-new-admin") || !strings.Contains(string(b), "new-operator-pw") || !strings.Contains(string(b), ":9999") {
+	if !strings.Contains(string(b), config.HashPassword("brand-new-admin")) || !strings.Contains(string(b), config.HashPassword("new-operator-pw")) || !strings.Contains(string(b), ":9999") {
 		t.Errorf("config.yaml:\n%s", b)
+	}
+	if strings.Contains(string(b), "brand-new-admin") || strings.Contains(string(b), "new-operator-pw") {
+		t.Errorf("a new password is kept in the clear:\n%s", b)
 	}
 	// ...and the settings endpoint still never shows them.
 	_, st := admin.do("GET", "/api/admin/settings", nil)
@@ -814,7 +814,7 @@ func TestConcurrentRehearsalStartsDoNotLeakRuntimes(t *testing.T) {
 }
 
 // With the operator password kept as a digest in config.yaml: it signs in, it cannot be shown, and changing a
-// password in Setup writes the new one as a digest too (a plain one stays plain).
+// password in Setup writes the new one as a digest, whether the old one was plain or not.
 func TestPasswordsKeptAsDigests(t *testing.T) {
 	dir := t.TempDir()
 	cfgPath := dir + "/config.yaml"
@@ -835,11 +835,11 @@ func TestPasswordsKeptAsDigests(t *testing.T) {
 		t.Error("the digest itself is not a password")
 	}
 	_, st := admin.do("GET", "/api/admin/settings", nil)
-	if st["operatorPasswordHashed"] != true || strings.Contains(toJSON(st), config.HashPassword("operatorpw")) {
+	if strings.Contains(toJSON(st), config.HashPassword("operatorpw")) {
 		t.Errorf("settings: %v", st)
 	}
-	if code, r := admin.do("GET", "/api/admin/settings/operator-password", nil); code != 409 || r["password"] != nil {
-		t.Errorf("a digest cannot be shown: %d %v", code, r)
+	if code, _ := admin.do("GET", "/api/admin/settings/operator-password", nil); code != 404 && code != 405 {
+		t.Errorf("there is no way to read a password back: %d", code)
 	}
 	if code, _ := admin.do("PUT", "/api/admin/settings/passwords", map[string]string{"operator": "operatorpw"}); code != 200 {
 		t.Errorf("setting the same password again is fine")
@@ -854,8 +854,8 @@ func TestPasswordsKeptAsDigests(t *testing.T) {
 	if strings.Contains(string(b), "brand-new-op") || !strings.Contains(string(b), config.HashPassword("brand-new-op")) {
 		t.Errorf("the operator's digest stays a digest:\n%s", b)
 	}
-	if !strings.Contains(string(b), "admin_password: brand-new-admin") {
-		t.Errorf("the admin's plain password stays plain:\n%s", b)
+	if strings.Contains(string(b), "brand-new-admin") || !strings.Contains(string(b), config.HashPassword("brand-new-admin")) {
+		t.Errorf("the admin's plain password is replaced by a digest:\n%s", b)
 	}
 	if _, _, ok := s.auth.login("operator", "operatorpw"); ok {
 		t.Error("the old operator password must stop working")

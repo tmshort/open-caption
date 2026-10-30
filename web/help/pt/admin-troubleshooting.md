@@ -34,7 +34,7 @@ Veja «O que significam os avisos» em [Escrever um arquivo do espetáculo](admi
 
 ## Senhas
 
-Para mudar qualquer uma das senhas, use **Configurações** no alto da página de Configuração. A nova senha vale na hora e é salva em `config.yaml`. Quem estiver conectado com uma senha que mudou é desconectado; você continua conectado. A mesma janela pode mostrar a senha de operador atual para que você a entregue ao operador. Uma **senha de espectador** opcional permite que um segundo dispositivo, como o tablet de um contrarregra, abra a página de acompanhamento (`/follow`) só para acompanhar: ela mostra as linhas, as notas e a posição, e dela não se pode enviar nada. As senhas de operador e de administrador também abrem essa página.
+Para mudar qualquer uma das senhas, use **Configurações** no alto da página de Configuração. A nova senha vale na hora e é salva em `config.yaml`. Quem estiver conectado com uma senha que mudou é desconectado; você continua conectado. As senhas são guardadas como hashes, então a configuração não pode mostrar nenhuma: anote a senha ao defini-la. Uma **senha de espectador** opcional permite que um segundo dispositivo, como o tablet de um contrarregra, abra a página de acompanhamento (`/follow`) só para acompanhar: ela mostra as linhas, as notas e a posição, e dela não se pode enviar nada. As senhas de operador e de administrador também abrem essa página.
 
 Se você não consegue entrar de jeito nenhum, as duas senhas estão em `config.yaml`, na pasta de dados do programa. Abra o arquivo em qualquer editor de texto. O local dele é mostrado quando o programa inicia.
 

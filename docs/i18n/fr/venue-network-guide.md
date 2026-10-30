@@ -46,7 +46,7 @@ Un petit inconvénient du HTTP simple : les navigateurs n'autorisent « garder l
 
 - La configuration (`/admin`) et la page de l'opérateur (`/operator`) exigent chacune un mot de passe tiré de `config.yaml`. La page du public n'en exige aucun et ne peut rien modifier. Un mot de passe spectateur facultatif ouvre la page de suivi (`/follow`), qui permet seulement de regarder. Limitez les ordinateurs qui peuvent l'ouvrir avec `access.viewer_allow`.
 - N'exposez pas le port sur internet.
-- Les mots de passe opérateur et administrateur sont stockés en clair dans `config.yaml` (ou sous forme d'empreinte, voir la référence de configuration), dans le dossier de données du programme. Gardez ce dossier privé pour les personnes qui conduisent le spectacle.
+- Les mots de passe opérateur et administrateur sont conservés sous forme d'empreintes dans `config.yaml`, dans le dossier de données du programme, donc impossibles à relire : notez-les quand ils s'affichent, ou définissez-en de nouveaux dans la configuration. Gardez ce dossier privé pour les personnes qui conduisent le spectacle.
 
 ## Pare-feu sur l'ordinateur de sous-titrage
 

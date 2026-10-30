@@ -307,17 +307,6 @@ func (s *Server) adminRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("DELETE /api/admin/settings/standby-logo", adm(s.deleteStandbyLogo))
 	mux.HandleFunc("GET /api/admin/log", adm(s.recentLog))
 	mux.HandleFunc("GET /api/admin/troubleshoot", adm(s.troubleshoot))
-	mux.HandleFunc("GET /api/admin/settings/operator-password", adm(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Cache-Control", "no-store")
-		s.pwMu.Lock()
-		defer s.pwMu.Unlock()
-		pw, plain := config.PlainPassword(s.cfg.OperatorPassword)
-		if !plain { // only its digest is kept
-			writeErr(w, http.StatusConflict, "The operator password is stored as a digest, so it cannot be shown. Set a new one to replace it.")
-			return
-		}
-		writeJSON(w, http.StatusOK, map[string]any{"password": pw})
-	}))
 
 	// Rehearsal: the operator API against a private, isolated runtime (docs/02, "Rehearsal").
 	mux.HandleFunc("POST /api/admin/rehearsal/start", adm(s.startRehearsal))
@@ -1440,7 +1429,7 @@ func (s *Server) settings(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{
 		"config": snap.Redacted(), "configPath": s.cfg.Path, "dataDir": s.cfg.DataDir,
 		"httpAddr": l.HTTPAddr, "httpsAddr": l.HTTPSAddr, "version": s.version,
-		"canChangePasswords": s.cfg.Path != "", "operatorPasswordHashed": config.IsHashed(snap.OperatorPassword), "viewerPasswordSet": snap.ViewerPassword != "", "standby": s.standbyView(), "logLevel": logx.Current().String(), "logLevelPinned": s.pinnedLevel, "mdns": s.MDNSStatus(),
+		"canChangePasswords": s.cfg.Path != "", "viewerPasswordSet": snap.ViewerPassword != "", "standby": s.standbyView(), "logLevel": logx.Current().String(), "logLevelPinned": s.pinnedLevel, "mdns": s.MDNSStatus(),
 		"adminAllow": snap.Access.AdminAllow, "operatorAllow": snap.Access.OperatorAllow,
 		"adminRestricted": s.adminRestricted(), "operatorRestricted": s.operatorRestricted(), "access": s.accessView(), "defaults": s.defaultsView(),
 		"network": map[string]any{"interfaces": ns.Interfaces, "restrictListening": ns.RestrictListening}, "networkPinned": s.pinnedNetwork, "interfaces": s.networkInterfaces(r),

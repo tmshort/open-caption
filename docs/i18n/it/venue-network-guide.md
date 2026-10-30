@@ -46,7 +46,7 @@ Un piccolo costo dell'HTTP semplice: i browser permettono «tieni lo schermo acc
 
 - La configurazione (`/admin`) e la pagina dell'operatore (`/operator`) richiedono ciascuna una password da `config.yaml`. La pagina del pubblico non ne richiede e non può cambiare nulla. Una password spettatore facoltativa apre la pagina di seguimento (`/follow`), che permette solo di guardare. Limita quali computer possono aprirla con `access.viewer_allow`.
 - Non esporre la porta a internet.
-- Le password operatore e amministratore sono memorizzate in chiaro in `config.yaml` (o come hash, vedi il riferimento della configurazione), nella cartella dati del programma. Tieni quella cartella privata per le persone che conducono lo spettacolo.
+- Le password operatore e amministratore sono conservate come hash in `config.yaml`, nella cartella dati del programma, e non vi si possono rileggere: annotale quando vengono stampate, oppure impostane di nuove nella configurazione. Tieni quella cartella privata per le persone che conducono lo spettacolo.
 
 ## Firewall sul computer dei sottotitoli
 

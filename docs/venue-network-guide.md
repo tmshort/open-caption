@@ -46,7 +46,7 @@ One small cost of plain HTTP: browsers only allow "keep the screen awake" on sec
 
 - Setup (`/admin`) and the operator page (`/operator`) each need a password from `config.yaml`. The audience page needs none and cannot change anything. An optional viewer password opens the Follow page (`/follow`), which can only watch. Limit which computers may open it with `access.viewer_allow`.
 - Do not expose the port to the internet.
-- The operator/admin passwords are stored in plain text in `config.yaml` in the program's data folder (or as a digest, see the configuration reference). Keep that folder private to the people who run the show.
+- The operator/admin passwords are kept as digests in `config.yaml` in the program's data folder, so they cannot be read back from it; note them when they are printed, or set new ones in Setup. Keep that folder private to the people who run the show.
 
 ## Firewalls on the captioning computer
 

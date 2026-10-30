@@ -5,7 +5,7 @@
 ## Il file
 
 - **Dove si trova.** `<cartella dati>/config.yaml`; la cartella dati è `data_dir`, `--data`, oppure quella predefinita `<la tua cartella di configurazione utente>/open-caption` (su macOS `~/Library/Application Support/open-caption`, su Windows `%AppData%\open-caption`, su Linux `~/.config/open-caption`). Le prime righe che il programma stampa dicono quale file sta usando. `--config` indica un altro file.
-- **Primo avvio.** Se non c'è il file, il programma ne scrive uno con password casuali di **amministratore** e di **operatore** e le stampa una sola volta nella console. Il file ha modalità 0600 (privato per il tuo account) e le password sono in **chiaro** (a meno che tu non conservi un hash, vedi «Password» più avanti), quindi tienilo privato.
+- **Primo avvio.** Se non c'è il file, il programma ne scrive uno con password casuali di **amministratore** e di **operatore** e le stampa una sola volta nella console. Il file ha modalità 0600 (privato per il tuo account) e contiene solo gli **hash** delle password (vedi «Password» più avanti), che quindi non vi si possono rileggere: annotale quando vengono stampate. Se le perdi, impostane di nuove nella configurazione, che si apre senza password sul computer su cui gira il programma (`access.local_auto_login`), oppure con `--hash-password`.
 - **Ti servono solo le chiavi che cambi.** Una chiave mancante mantiene il suo valore predefinito (le tabelle qui sotto). Il file generato elenca tutto.
 - **Rigoroso.** Una chiave scritta male, un valore del tipo sbagliato o fuori intervallo ferma il programma all'avvio elencando **tutti** i problemi, ciascuno con il nome dell'impostazione (per esempio `audience.max_clients: 0 is not a client count: use 1 to 100000`). Non si indovina nulla. L'unica eccezione: in un file marcato con un `config_version` più recente di quello che il programma conosce, le chiavi sconosciute vengono ignorate, con un avviso.
 - **La configurazione ne modifica una parte.** Cambiare le password, il nome `.local`, il messaggio di attesa o il livello del registro nella configurazione riscrive quelle chiavi nel file e conserva i tuoi commenti e tutte le altre impostazioni. Tutto il resto si modifica a mano, poi **riavvia il programma**. (Un file di certificato rinnovato è l'unica cosa recepita senza riavvio; vedi `https.cert_file`.)
@@ -36,7 +36,7 @@ Un'opzione, o la sua variabile d'ambiente, ha la precedenza sul file per quell'e
 
 ## Password
 
-`admin_password` e `operator_password` sono **in chiaro** per impostazione predefinita, per questo il file è privato per il tuo account. Per conservare una password nel file come **hash** (un'impronta a senso unico, così una copia di `config.yaml` non rivela la password), scrivi l'hash al suo posto:
+`admin_password`, `operator_password` e `viewer_password` sono conservate come **hash** (un'impronta a senso unico, così una copia di `config.yaml` non rivela la password): il primo avvio scrive hash, e così fa la configurazione quando vi si imposta una password. Il testo in chiaro viene ancora letto (un file scritto a mano continua a funzionare) e puoi scrivere tu stesso un hash al suo posto:
 
 | Scritto come | Significa |
 |---|---|
@@ -51,7 +51,7 @@ $ printf '%s' 'the password' | open-caption --hash-password
 sha256:5b11618c2e44027877d0cd0921ed166b9f176f50587fc91e7534dd2946db77d6
 ```
 
-(`printf '%s' 'the password' | shasum -a 256` dà le stesse cifre su macOS e Linux; aggiungi `sha256:` davanti.) Per accedere si digita sempre la password stessa. Da un hash non si può ricavare la password: **Impostazioni → Sicurezza** nella configurazione non può quindi mostrare una password operatore conservata come hash, solo sostituirla, e il programma non può stamparla di nuovo: conservala in un posto sicuro. Una password cambiata nella configurazione viene conservata nella stessa forma di quella che sostituisce (un hash resta un hash, il testo in chiaro resta in chiaro); il programma non converte mai una password che non hai cambiato. Un valore che inizia con `sha256:`, `sha512:` o `sha1:` ma non è un hash della lunghezza giusta ferma il programma all'avvio, indicando l'impostazione.
+(`printf '%s' 'the password' | shasum -a 256` dà le stesse cifre su macOS e Linux; aggiungi `sha256:` davanti.) Per accedere si digita sempre la password stessa. Da un hash non si può ricavare la password: **Impostazioni → Sicurezza** nella configurazione non può quindi mostrare una password, solo sostituirla, e il programma non può stamparla di nuovo: conservala in un posto sicuro. Una password cambiata nella configurazione viene conservata come hash `sha256:` (solo un valore scritto con il prefisso `plain:` resta in chiaro); il programma non converte mai una password che non hai cambiato. Un valore che inizia con `sha256:`, `sha512:` o `sha1:` ma non è un hash della lunghezza giusta ferma il programma all'avvio, indicando l'impostazione.
 
 ## Controllare un file dello spettacolo
 
@@ -86,8 +86,8 @@ I valori predefiniti sono quelli che ottieni senza la chiave. «Configurazione»
 | Chiave | Predefinito | Significato |
 |---|---|---|
 | `config_version` | `1` | Scritta dal programma. Un numero maggiore di quello che il programma conosce significa che il file viene da una versione più recente |
-| `admin_password` | generata | La password della configurazione (`/admin`). In chiaro, oppure un hash come `sha256:…` (vedi «Password» più avanti). Non può essere vuota (6 o più caratteri se cambiata nella configurazione). *Configurazione: Impostazioni → Sicurezza* |
-| `operator_password` | generata | La password della pagina dell'operatore (`/operator`); anche quella dell'amministratore vale lì. In chiaro o un hash, come `admin_password`; un hash non può essere mostrato nella configurazione. Non può essere vuota. *Configurazione: Impostazioni → Sicurezza* |
+| `admin_password` | generata | La password della configurazione (`/admin`). Un hash come `sha256:…` (vedi «Password» più avanti; il testo in chiaro viene ancora letto). Non può essere vuota (6 o più caratteri se cambiata nella configurazione). *Configurazione: Impostazioni → Sicurezza* |
+| `operator_password` | generata | La password della pagina dell'operatore (`/operator`); anche quella dell'amministratore vale lì. Un hash, come `admin_password`; la configurazione non può mostrarlo. Non può essere vuota. *Configurazione: Impostazioni → Sicurezza* |
 | `viewer_password` | *(nessuna)* | Una terza password facoltativa che permette a un secondo dispositivo (il tablet di un direttore di scena) di **guardare** lo spettacolo: apre `/follow`, accede con questa password e vede le righe, le note e la posizione, ma non può inviare nulla né prendere il controllo. Anche le password di operatore e di amministratore aprono `/follow`. Vuota = nessun accesso riservato agli spettatori. In chiaro o un hash, diversa dalle altre due. *Configurazione: Impostazioni → Sicurezza* |
 | `data_dir` | vuoto | La cartella dati. Vuoto significa la cartella predefinita qui sopra. Non può essere un file |
 

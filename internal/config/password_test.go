@@ -77,13 +77,16 @@ func TestSamePasswordComparesAcrossForms(t *testing.T) {
 	}
 }
 
-// A new password keeps the form of the one it replaces; plain text that looks like a digest gets the plain: prefix.
-func TestStoredLikeKeepsTheForm(t *testing.T) {
-	if got := StoredLike("old-plain", "newpass1"); got != "newpass1" {
-		t.Errorf("plain stays plain: %q", got)
+// A password set in Setup is stored as a SHA-256 digest, whatever the old one was; only one written with the plain: prefix
+// on purpose stays plain text. A digest-like or prefixed text still checks against itself.
+func TestStoredLikeHashesUnlessPlainWasChosen(t *testing.T) {
+	for _, old := range []string{"old-plain", HashPassword("old")} {
+		if got := StoredLike(old, "newpass1"); got != HashPassword("newpass1") {
+			t.Errorf("a new password replacing %q is stored as a digest: %q", old, got)
+		}
 	}
-	if got := StoredLike(HashPassword("old"), "newpass1"); got != HashPassword("newpass1") {
-		t.Errorf("a digest stays a digest: %q", got)
+	if got := StoredLike(PlainPrefix+"old", "newpass1"); got != PlainPrefix+"newpass1" {
+		t.Errorf("an explicit plain: stays plain: %q", got)
 	}
 	for _, pw := range []string{"sha256:abc", "plain:abc"} {
 		got := StoredLike("old-plain", pw)

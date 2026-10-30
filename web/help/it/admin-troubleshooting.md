@@ -34,7 +34,7 @@ Vedi «Cosa significano gli avvisi» in [Scrivere un file dello spettacolo](admi
 
 ## Password
 
-Per cambiare una delle due password, usa **Impostazioni** in cima alla pagina di Configurazione. La nuova password ha effetto subito e viene salvata in `config.yaml`. Chiunque sia connesso con una password che è cambiata viene disconnesso; tu resti connesso. La stessa finestra può mostrare la password operatore attuale così puoi darla all'operatore. Una **password spettatore** facoltativa permette a un secondo dispositivo, come il tablet di un direttore di scena, di aprire la pagina di visione (`/follow`) solo per guardare: mostra le righe, le note e la posizione, e da lì non si può inviare nulla. Anche le password di operatore e di amministratore aprono quella pagina.
+Per cambiare una delle due password, usa **Impostazioni** in cima alla pagina di Configurazione. La nuova password ha effetto subito e viene salvata in `config.yaml`. Chiunque sia connesso con una password che è cambiata viene disconnesso; tu resti connesso. Le password sono conservate come hash, quindi la configurazione non può mostrarne nessuna: annota la password quando la imposti. Una **password spettatore** facoltativa permette a un secondo dispositivo, come il tablet di un direttore di scena, di aprire la pagina di visione (`/follow`) solo per guardare: mostra le righe, le note e la posizione, e da lì non si può inviare nulla. Anche le password di operatore e di amministratore aprono quella pagina.
 
 Se non riesci proprio ad accedere, entrambe le password sono in `config.yaml`, nella cartella dati del programma. Apri il file con un qualsiasi editor di testo. La sua posizione viene stampata all'avvio del programma.
 

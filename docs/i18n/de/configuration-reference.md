@@ -5,7 +5,7 @@
 ## Die Datei
 
 - **Wo sie liegt.** `<Datenordner>/config.yaml`; der Datenordner ist `data_dir`, `--data` oder standardmäßig `<Ihr Benutzer-Konfigurationsordner>/open-caption` (unter macOS `~/Library/Application Support/open-caption`, unter Windows `%AppData%\open-caption`, unter Linux `~/.config/open-caption`). Die ersten Zeilen, die das Programm ausgibt, nennen die verwendete Datei. `--config` benennt eine andere Datei.
-- **Erster Start.** Gibt es keine Datei, schreibt das Programm eine mit zufälligen **Administrator-** und **Bediener**-Passwörtern und gibt sie einmal in der Konsole aus. Die Datei hat den Modus 0600 (privat für Ihr Konto), und die Passwörter stehen im **Klartext** (außer Sie speichern einen Hash, siehe „Passwörter“ unten); halten Sie sie also privat.
+- **Erster Start.** Gibt es keine Datei, schreibt das Programm eine mit zufälligen **Administrator-** und **Bediener**-Passwörtern und gibt sie einmal in der Konsole aus. Die Datei hat den Modus 0600 (privat für Ihr Konto), und sie enthält nur die **Hashes** der Passwörter (siehe „Passwörter“ unten), die sich darin also nicht nachlesen lassen: notieren Sie sie, wenn sie ausgegeben werden. Gehen sie verloren, legen Sie in der Einrichtung neue fest, die auf dem Computer, auf dem das Programm läuft, ohne Passwort geöffnet wird (`access.local_auto_login`), oder mit `--hash-password`.
 - **Sie brauchen nur die Schlüssel, die Sie ändern.** Ein fehlender Schlüssel behält seinen Standardwert (die Tabellen unten). Die erzeugte Datei listet alles auf.
 - **Streng.** Ein falsch geschriebener Schlüssel, ein Wert der falschen Art oder außerhalb des Bereichs stoppt das Programm beim Start und listet **alle** Probleme auf, jedes mit dem Namen der Einstellung (zum Beispiel `audience.max_clients: 0 is not a client count: use 1 to 100000`). Es wird nichts geraten. Die einzige Ausnahme: In einer Datei mit einer neueren `config_version`, als das Programm kennt, werden unbekannte Schlüssel mit einer Warnung ignoriert.
 - **Die Einrichtung ändert einen Teil.** Wenn Sie in der Einrichtung die Passwörter, den `.local`-Namen, die Standby-Nachricht oder die Protokolldetails ändern, werden genau diese Schlüssel in der Datei neu geschrieben; Ihre Kommentare und alle anderen Einstellungen bleiben erhalten. Alles andere bearbeiten Sie von Hand und **starten dann das Programm neu**. (Eine erneuerte Zertifikatsdatei ist das Einzige, was ohne Neustart übernommen wird; siehe `https.cert_file`.)
@@ -36,7 +36,7 @@ Eine Option oder ihre Umgebungsvariable hat für diesen Lauf Vorrang vor der Dat
 
 ## Passwörter
 
-`admin_password` und `operator_password` stehen standardmäßig im **Klartext**, deshalb ist die Datei privat für Ihr Konto. Um ein Passwort als **Hash** (eine Einwegprüfsumme, sodass eine Kopie von `config.yaml` das Passwort nicht verrät) in der Datei zu halten, schreiben Sie statt des Passworts den Hash hinein:
+`admin_password`, `operator_password` und `viewer_password` werden als **Hash** gespeichert (eine Einwegprüfsumme, sodass eine Kopie von `config.yaml` das Passwort nicht verrät): Der erste Start schreibt Hashes, und die Einrichtung ebenso, wenn dort ein Passwort festgelegt wird. Klartext wird weiterhin gelesen (eine von Hand geschriebene Datei funktioniert weiter), und Sie können selbst einen Hash statt des Passworts hineinschreiben:
 
 | Geschrieben als | Bedeutet |
 |---|---|
@@ -51,7 +51,7 @@ $ printf '%s' 'the password' | open-caption --hash-password
 sha256:5b11618c2e44027877d0cd0921ed166b9f176f50587fc91e7534dd2946db77d6
 ```
 
-(`printf '%s' 'the password' | shasum -a 256` liefert unter macOS und Linux dieselben Ziffern; setzen Sie `sha256:` davor.) Zum Anmelden tippt man weiterhin das Passwort selbst. Aus einem Hash lässt sich das Passwort nicht zurückgewinnen: **Einstellungen → Sicherheit** in der Einrichtung kann ein als Hash gespeichertes Operator-Passwort daher nicht anzeigen, nur ersetzen, und das Programm kann es auch nicht erneut ausgeben: bewahren Sie es sicher auf. Ein in der Einrichtung geändertes Passwort wird in der Form des ersetzten gespeichert (ein Hash bleibt ein Hash, Klartext bleibt Klartext); ein Passwort, das Sie nicht geändert haben, wandelt das Programm nie um. Ein Wert, der mit `sha256:`, `sha512:` oder `sha1:` beginnt, aber kein Hash der richtigen Länge ist, stoppt das Programm beim Start und nennt die Einstellung.
+(`printf '%s' 'the password' | shasum -a 256` liefert unter macOS und Linux dieselben Ziffern; setzen Sie `sha256:` davor.) Zum Anmelden tippt man weiterhin das Passwort selbst. Aus einem Hash lässt sich das Passwort nicht zurückgewinnen: **Einstellungen → Sicherheit** in der Einrichtung kann daher kein Passwort anzeigen, nur ersetzen, und das Programm kann es auch nicht erneut ausgeben: bewahren Sie es sicher auf. Ein in der Einrichtung geändertes Passwort wird als `sha256:`-Hash gespeichert (nur ein mit dem Präfix `plain:` geschriebener Wert bleibt Klartext); ein Passwort, das Sie nicht geändert haben, wandelt das Programm nie um. Ein Wert, der mit `sha256:`, `sha512:` oder `sha1:` beginnt, aber kein Hash der richtigen Länge ist, stoppt das Programm beim Start und nennt die Einstellung.
 
 ## Eine Show-Datei prüfen
 
@@ -86,8 +86,8 @@ Standardwerte sind das, was Sie ohne den Schlüssel erhalten. „Einrichtung“ 
 | Schlüssel | Standard | Bedeutung |
 |---|---|---|
 | `config_version` | `1` | Vom Programm geschrieben. Eine höhere Nummer, als das Programm kennt, bedeutet, dass die Datei von einer neueren Version stammt |
-| `admin_password` | erzeugt | Das Passwort für die Einrichtung (`/admin`). Klartext oder ein Hash wie `sha256:…` (siehe „Passwörter“ unten). Darf nicht leer sein (mindestens 6 Zeichen, wenn es in der Einrichtung geändert wird). *Einrichtung: Einstellungen → Sicherheit* |
-| `operator_password` | erzeugt | Das Passwort für die Bedienerseite (`/operator`); das Administratorpasswort funktioniert dort auch. Klartext oder ein Hash wie bei `admin_password`; ein Hash lässt sich in der Einrichtung nicht anzeigen. Darf nicht leer sein. *Einrichtung: Einstellungen → Sicherheit* |
+| `admin_password` | erzeugt | Das Passwort für die Einrichtung (`/admin`). Ein Hash wie `sha256:…` (siehe „Passwörter“ unten; Klartext wird weiterhin gelesen). Darf nicht leer sein (mindestens 6 Zeichen, wenn es in der Einrichtung geändert wird). *Einrichtung: Einstellungen → Sicherheit* |
+| `operator_password` | erzeugt | Das Passwort für die Bedienerseite (`/operator`); das Administratorpasswort funktioniert dort auch. Ein Hash wie bei `admin_password`; die Einrichtung kann ihn nicht anzeigen. Darf nicht leer sein. *Einrichtung: Einstellungen → Sicherheit* |
 | `viewer_password` | *(keines)* | Ein optionales drittes Passwort, mit dem ein zweites Gerät (das Tablet der Inspizienz) die Show **ansehen** kann: Es öffnet `/follow`, meldet sich mit diesem Passwort an und sieht die Zeilen, die Notizen und die Position, kann aber nichts senden und die Steuerung nicht übernehmen. Das Operator- und das Administrator-Passwort öffnen `/follow` ebenfalls. Leer = keine reine Zuschauer-Anmeldung. Klartext oder ein Hash, verschieden von den beiden anderen. *Einrichtung: Einstellungen → Sicherheit* |
 | `data_dir` | leer | Der Datenordner. Leer bedeutet den oben genannten Standardordner. Darf keine Datei sein |
 

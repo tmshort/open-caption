@@ -117,17 +117,13 @@ func HashPassword(password string) string {
 	return sc.name + ":" + hex.EncodeToString(sc.sum([]byte(password)))
 }
 
-// StoredLike is how to store a new password so that it keeps the form of the one it replaces: hashed where that was
-// hashed (a person who hashed a password does not want a new one written in the clear), else as plain text, with the
-// plain: prefix when the text itself would be mistaken for a digest.
+// StoredLike is how to store a password set in Setup: as a SHA-256 digest, so that nothing readable is kept in the file. The
+// one exception is a password that was written with the plain: prefix on purpose, which stays plain text (with the prefix).
 func StoredLike(old, password string) string {
-	if IsHashed(old) {
-		return HashPassword(password)
-	}
-	if parsePassword(password).scheme != nil || parsePassword(password).bad != "" || strings.HasPrefix(password, PlainPrefix) {
+	if strings.HasPrefix(old, PlainPrefix) {
 		return PlainPrefix + password
 	}
-	return password
+	return HashPassword(password)
 }
 
 // PasswordID identifies a stored password without revealing it (for noticing that a password changed); the same

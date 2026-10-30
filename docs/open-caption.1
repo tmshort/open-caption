@@ -271,7 +271,7 @@ and
 .SH FILES
 .TP
 .IR data-folder /config.yaml
-The settings: passwords (plain text unless written as a digest, so the file is created readable by its owner only), listening ports, HTTPS,
+The settings: passwords (kept as SHA-256 digests, and the file is created readable by its owner only), listening ports, HTTPS,
 who may open Setup, and the defaults for a show.
 Every setting is described in the configuration reference.
 Setup rewrites a few keys (passwords, the
