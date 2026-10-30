@@ -130,7 +130,7 @@
       { target: stepBtn(5), title: __('Test'), text: __('Rehearse the show on your own screen. Nothing reaches the audience.') },
       { target: stepBtn(6), title: __('Share'), text: __('Find the address and QR code to give the audience, and check that their phones can connect.') },
       { target: stepBtn(7), title: __('Report'), text: __('After a show, see how many devices watched, as a graph you can print or save.') },
-      { target: '#settingsbtn', title: __('Settings'), text: __('Passwords, who may connect, the network, the certificate and the venue defaults are here. Troubleshoot, beside it, helps when someone cannot connect.') },
+      { target: () => [$('settingsbtn'), $('troublebtn')], title: __('Settings'), text: __('Passwords, who may connect, the network, the certificate and the venue defaults are here. Troubleshoot, beside it, helps when someone cannot connect.') },
       { target: 'header a.quiet', title: __('Run'), text: __('When the show is ready, this opens the Run page, where the operator starts the show and presses the spacebar for each caption.') },
       { target: '#helpbtn', title: __('Help'), text: __('Help explains each step and follows the one you are on. You can take this tour again from there.') }];
     OCTour.start({

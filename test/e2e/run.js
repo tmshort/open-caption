@@ -134,9 +134,10 @@ async function main() {
       check('the Right arrow goes to the next step, which rings what it is about and points at it', !!t && t.title === 'Shows' && /Step 2 of 11/.test(t.count) && t.ring && t.arrow && t.back && t.inside, t);
       await admin.keyboard.press('ArrowLeft'); t = await tp();
       check('the Left arrow goes back', !!t && t.title === 'Welcome to Open Caption');
-      const seen = [];
-      for (let i = 0; i < 10; i++) { await admin.keyboard.press('ArrowRight'); const x = await tp(); seen.push(x && x.title + (x.ring && x.inside ? '' : ' (not shown)')); }
+      const seen = []; let ringAround = false;
+      for (let i = 0; i < 10; i++) { await admin.keyboard.press('ArrowRight'); const x = await tp(); if (x && x.title === 'Settings') ringAround = await admin.evaluate(() => { const rr = (id) => document.getElementById(id).getBoundingClientRect(), a = rr('settingsbtn'), c = rr('troublebtn'), r = document.querySelector('.tour-ring').getBoundingClientRect(); return r.left <= a.left && r.right >= c.right; }); seen.push(x && x.title + (x.ring && x.inside ? '' : ' (not shown)')); }
       check('it visits all seven steps, Settings, Run and Help, each with a ring and inside the window', seen.join('|') === 'Shows|Show file|Images|Look|Test|Share|Report|Settings|Run|Help', seen);
+      check('the Settings step rings Troubleshoot as well, since it describes both', ringAround);
       t = await tp();
       check('the last step says Done and has no Skip', t.next === 'Done' && !t.skip, t);
       await admin.keyboard.press('Enter'); await sleep(300);

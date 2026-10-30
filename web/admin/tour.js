@@ -4,7 +4,7 @@
 // A guided tour: a dimmed page with a ring round one control and a pop-up beside it with an arrow, Back / Next / Skip.
 // It has no words of its own; admin.js passes the steps and the labels (so they are translated with the rest of Setup).
 //
-//   OCTour.start({ steps: [{ target: '#x' | () => element | null, title, text, before }], labels: { next, back, skip, done, step }, onEnd(finished) })
+//   OCTour.start({ steps: [{ target: '#x' | () => element or [elements] | null, title, text, before }], labels: { next, back, skip, done, step }, onEnd(finished) })
 //
 // A step whose target is missing or hidden is shown in the middle of the page without a ring. Keys: Right arrow / Enter =
 // next, Left arrow = back, Esc = skip. The pop-up is a dialog that holds the keyboard focus until the tour ends.
@@ -30,7 +30,10 @@
     document.body.append(shade, ring, pop);
     let i = 0, target = null;
 
-    const find = (s) => { try { const t = typeof s.target === 'function' ? s.target() : s.target ? document.querySelector(s.target) : null; return t && !t.closest('[hidden]') && t.getClientRects().length ? t : null; } catch (e) { return null; } };
+    // One element, or several that are described together (the ring then goes round all of them); the ones that are not showing are left out.
+    const find = (s) => { try { const t = typeof s.target === 'function' ? s.target() : s.target ? document.querySelector(s.target) : null;
+      const shown = (Array.isArray(t) ? t : [t]).filter((e) => e && !e.closest('[hidden]') && e.getClientRects().length); return shown.length ? shown : null; } catch (e) { return null; } };
+    const box = () => { const rs = target.map((e) => e.getBoundingClientRect()); return { left: Math.min(...rs.map((r) => r.left)), top: Math.min(...rs.map((r) => r.top)), right: Math.max(...rs.map((r) => r.right)), bottom: Math.max(...rs.map((r) => r.bottom)) }; };
 
     function place() {
       const vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight;
@@ -40,7 +43,7 @@
         pop.style.left = Math.max(8, (vw - pw) / 2) + 'px'; pop.style.top = Math.max(8, (vh - ph) / 2) + 'px';
         return;
       }
-      const r = target.getBoundingClientRect(), pad = 4;
+      const b = box(), r = { left: b.left, top: b.top, right: b.right, bottom: b.bottom, width: b.right - b.left, height: b.bottom - b.top }, pad = 4;
       ring.hidden = false; arrow.hidden = false; shade.className = 'tour-shade';
       ring.style.left = r.left - pad + 'px'; ring.style.top = r.top - pad + 'px'; ring.style.width = r.width + 2 * pad + 'px'; ring.style.height = r.height + 2 * pad + 'px';
       const gap = 14, below = r.bottom + pad + gap + ph <= vh - 8, above = r.top - pad - gap - ph >= 8;
@@ -57,7 +60,7 @@
       const s = steps[i];
       if (s.before) await s.before();
       target = find(s);
-      if (target && target.scrollIntoView) target.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      if (target && target[0].scrollIntoView) target[0].scrollIntoView({ block: 'nearest', inline: 'nearest' });
       title.textContent = s.title; text.textContent = s.text;
       count.textContent = L.step.replace('{n}', String(i + 1)).replace('{total}', String(steps.length));
       back.hidden = i === 0;
