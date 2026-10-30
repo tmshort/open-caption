@@ -623,11 +623,12 @@ async function main() {
     await guard.evaluate(() => document.getElementById('settab-sec').click()); await sleep(150);
     check('Settings → Security has a Certificate section that says where HTTPS gets its certificate', await guard.evaluate(() => { const b = document.querySelector('.certbox'); return !!b && /HTTPS/.test(b.textContent) && b.closest('section').querySelector('h3').textContent === 'Certificate'; }));
     const inputs = await guard.$$('#dlg input[type=password]'); await inputs[1].type('new-operator-pw');
-    await guard.evaluate(() => [...document.querySelectorAll('#dlg button')].find((x) => x.textContent.trim() === 'Change passwords').click()); await sleep(700);
+    await guard.evaluate(() => [...document.querySelectorAll('#dlg button')].find((x) => x.textContent.trim() === 'Change operator password').click()); await sleep(700);
     await guard.evaluate(() => document.getElementById('dlgok').click()); await sleep(300);
     const probe = (pw) => guard.evaluate(async (p) => (await fetch('/api/login', { method: 'POST', credentials: 'omit', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ role: 'operator', password: p }) })).status, pw);
     check('the old operator password stops working', (await probe(OPERATOR)) === 401);
     check('the new operator password works', (await probe('new-operator-pw')) === 200);
+    check('changing only the operator password leaves the admin password as it was', await guard.evaluate(async (pw) => (await fetch('/api/login', { method: 'POST', credentials: 'omit', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ role: 'admin', password: pw }) })).status, ADMIN) === 200);
     const forged = await guard.evaluate(async () => (await fetch('/api/admin/shows', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Sec-Fetch-Site': 'cross-site' }, body: '{"name":"x"}' })).status);
     check('a request that claims to be cross-site is refused', forged === 403 || forged === 201 /* browsers forbid setting Sec-Fetch-Site; the Go tests cover it */);
 

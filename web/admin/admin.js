@@ -152,14 +152,18 @@
       shown.textContent = x.ok ? __('Operator password: {password}', { password: x.data.password }) : __('Could not read it');
       if (x.ok) reveal.textContent = __('Hide the operator password');
     });
-    const changePw = h('button', { type: 'button', onclick: async () => {
-      if (!adminPw.value && !opPw.value && !viewerPw.value) { adminPw.focus(); toast(__('Enter a new password in at least one box.')); return; }
-      const res = await api('PUT', '/api/admin/settings/passwords', { admin: adminPw.value, operator: opPw.value, viewer: viewerPw.value });
+    // Each password has its own box and button, and only that one is sent: the others stay as they are.
+    const pwButton = (input, text, done, after) => h('button', { type: 'button', onclick: async () => {
+      if (!input.value) { input.focus(); toast(__('Type the new password first.')); return; }
+      const key = input === adminPw ? 'admin' : input === opPw ? 'operator' : 'viewer';
+      const res = await api('PUT', '/api/admin/settings/passwords', { [key]: input.value });
       if (!res.ok) return fail(res);
-      if (viewerPw.value) { viewerOff.hidden = false; viewerState.textContent = __('Viewer sign-in is on.'); }
-      adminPw.value = opPw.value = viewerPw.value = ''; shown.textContent = ''; reveal.textContent = __('Show the current operator password');
-      toast(__('Passwords changed'));
-    } }, __('Change passwords'));
+      input.value = ''; if (after) after();
+      toast(__(done));
+    } }, __(text));
+    const changeAdmin = pwButton(adminPw, 'Change admin password', 'Admin password changed');
+    const changeOp = pwButton(opPw, 'Change operator password', 'Operator password changed', () => { shown.textContent = ''; reveal.textContent = __('Show the current operator password'); });
+    const changeViewer = pwButton(viewerPw, 'Set viewer password', 'Viewer password set', () => { viewerOff.hidden = false; viewerState.textContent = __('Viewer sign-in is on.'); });
     const row = (k, v) => h('tr', {}, h('td', {}, __(k)), h('td', {}, v ? __(v) : '—'));
     // The standby screen: the venue's own logo and message, shown while no show is on air.
     const sb = s.standby || {};
@@ -360,13 +364,12 @@
       ['sec', 'Security', [
         sec('Change passwords',
           s.canChangePasswords
-            ? h('div', {}, h('p', { class: 'hint' }, __('Leave a box empty to keep that password. At least 6 characters. People signed in with a changed password are signed out; you stay signed in.')),
-                h('label', { class: 'field' }, h('span', {}, __('New admin password')), adminPw),
-                h('label', { class: 'field' }, h('span', {}, __('New operator password')), opPw),
-                h('label', { class: 'field' }, h('span', {}, __('New viewer password (optional)')), viewerPw),
-                h('p', { class: 'hint' }, __('A viewer password opens the Follow page (/follow) for watching only, for example on a stage manager’s tablet: nothing can be sent from it. The operator and admin passwords open it too.'), ' ', viewerState, ' ', viewerOff),
-                h('div', { class: 'row' }, changePw, s.operatorPasswordHashed ? null : reveal),
-                s.operatorPasswordHashed ? h('p', { class: 'hint' }, __('The operator password is stored as a digest, so it cannot be shown. Set a new one to replace it.')) : shown)
+            ? h('div', {}, h('p', { class: 'hint' }, __('Each password has its own box and button: changing one leaves the others as they are. At least 6 characters. People signed in with a changed password are signed out; you stay signed in.')),
+                h('label', { class: 'field' }, h('span', {}, __('New admin password')), adminPw), h('div', { class: 'row pwrow' }, changeAdmin),
+                h('label', { class: 'field' }, h('span', {}, __('New operator password')), opPw), h('div', { class: 'row pwrow' }, changeOp, s.operatorPasswordHashed ? null : reveal),
+                s.operatorPasswordHashed ? h('p', { class: 'hint' }, __('The operator password is stored as a digest, so it cannot be shown. Set a new one to replace it.')) : shown,
+                h('label', { class: 'field' }, h('span', {}, __('New viewer password (optional)')), viewerPw), h('div', { class: 'row pwrow' }, changeViewer, viewerOff),
+                h('p', { class: 'hint' }, __('A viewer password opens the Follow page (/follow) for watching only, for example on a stage manager’s tablet: nothing can be sent from it. The operator and admin passwords open it too.'), ' ', viewerState))
             : h('p', { class: 'hint' }, __('This copy was started without a settings file, so passwords cannot be changed here.'))),
       ]],
       ['cert', 'Certificate', [sec('Certificate', certBox)]],

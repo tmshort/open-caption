@@ -877,4 +877,12 @@ OCI18n.add("it", {
  "Who may open the operator page. Computers in the Setup list may always open it.": "Chi può aprire la pagina dell'operatore. I computer dell'elenco della configurazione possono sempre aprirla.",
  "Who may open the Follow page (/follow). Computers in the operator and Setup lists may always open it.": "Chi può aprire la pagina di seguimento (/follow). I computer degli elenchi dell'operatore e della configurazione possono sempre aprirla.",
  "Any computer on the network may try to sign in to the Follow page.": "Qualsiasi computer della rete può provare ad accedere alla pagina di seguimento.",
+ "Type the new password first.": "Digita prima la nuova password.",
+ "Each password has its own box and button: changing one leaves the others as they are. At least 6 characters. People signed in with a changed password are signed out; you stay signed in.": "Ogni password ha la propria casella e il proprio pulsante: cambiarne una lascia le altre come sono. Almeno 6 caratteri. Chi era connesso con una password cambiata viene disconnesso; tu resti connesso.",
+ "Change admin password": "Cambia la password amministratore",
+ "Change operator password": "Cambia la password operatore",
+ "Set viewer password": "Imposta la password spettatore",
+ "Admin password changed": "Password amministratore cambiata",
+ "Operator password changed": "Password operatore cambiata",
+ "Viewer password set": "Password spettatore impostata",
 });

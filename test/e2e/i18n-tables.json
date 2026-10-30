@@ -92,7 +92,13 @@
  "misc": [
   "TOGETHER",
   "Could not change the name",
-  "Could not read the log."
+  "Could not read the log.",
+  "Change admin password",
+  "Change operator password",
+  "Set viewer password",
+  "Admin password changed",
+  "Operator password changed",
+  "Viewer password set"
  ],
  "settings sections": [
   "About this copy",
