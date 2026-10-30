@@ -607,6 +607,12 @@ async function main() {
     check('on the Share step each address is a link that opens a new window', await guard.evaluate(() => { const l = [...document.querySelectorAll('.urls label a')]; return l.length > 0 && l.every((x) => x.target === '_blank' && /noopener/.test(x.rel) && /^https?:\/\//.test(x.href)); }));
     check('the Share step has only a Troubleshoot link, not the log, support bundle and help links (they are in the Troubleshoot panel)', await guard.evaluate(() => { const t = document.getElementById('panel').innerText; return /Something not working\? Troubleshoot/.test(t) && !/Recent log|Download a support bundle|Troubleshooting help/.test(t); }));
     await click(guard, 'Troubleshoot'); await guard.waitForSelector('dialog[open] ul.checks li'); await sleep(300);
+    check('Troubleshoot is in three tabs (Checks first), and choosing one shows its panel and hides the others', await guard.evaluate(() => {
+      const tabs = [...document.querySelectorAll('dialog[open] [role=tab]')], sel = () => tabs.map((t) => t.getAttribute('aria-selected')).join(),
+        vis = () => [...document.querySelectorAll('dialog[open] [role=tabpanel]')].map((p) => getComputedStyle(p).visibility).join();
+      const first = tabs.map((t) => t.textContent).join('|').replace(/ \(\d+\)/, '') === 'Checks|Connection test|Warnings and errors' && sel() === 'true,false,false' && vis() === 'visible,hidden,hidden';
+      tabs[2].click(); const third = sel() === 'false,false,true' && vis() === 'hidden,hidden,visible'; tabs[0].click();
+      return first && third && sel() === 'true,false,false'; }));
     check('Troubleshoot has Copy summary, which puts the version and the checks (no password) on the clipboard or says to copy by hand', await guard.evaluate(async () => {
       let got = null; try { Object.defineProperty(navigator, 'clipboard', { value: { writeText: async (t) => { got = t; } }, configurable: true }); } catch (e) { return true; }
       [...document.querySelectorAll('dialog[open] button')].find((x) => x.textContent === 'Copy summary').click(); await new Promise((r) => setTimeout(r, 600));
@@ -626,9 +632,9 @@ async function main() {
     await guard.evaluate(() => document.getElementById('dlgok').click()); await sleep(300);
     // Troubleshoot: a header button with the checks, the recent problems, and a count of the new ones
     await click(guard, 'Troubleshoot'); await guard.waitForSelector('dialog[open] ul.checks li'); await sleep(300);
-    const trouble = await guard.evaluate(() => ({ n: document.querySelectorAll('dialog[open] ul.checks li').length, text: document.querySelector('dialog[open] .trouble').innerText, log: document.querySelector('dialog[open] pre.logview').textContent, badge: document.getElementById('troublebadge').hidden }));
+    const trouble = await guard.evaluate(() => ({ n: document.querySelectorAll('dialog[open] ul.checks li').length, text: document.querySelector('dialog[open] .trouble').innerText, all: document.querySelector('dialog[open] .trouble').textContent, log: document.querySelector('dialog[open] pre.logview').textContent, badge: document.getElementById('troublebadge').hidden }));
     check('the Troubleshoot button opens a list of checks with the facts the program knows', trouble.n >= 6 && /Setup can save its settings/.test(trouble.text) && /connected right now/.test(trouble.text) && /network address/.test(trouble.text), trouble);
-    check('it lists the recent warnings and errors, and has the log and the support bundle one click away', /WARN/.test(trouble.log) && /Open the full log/.test(trouble.text) && /Download a support bundle/.test(trouble.text), trouble.log.slice(0, 200));
+    check('it lists the recent warnings and errors, and has the log and the support bundle one click away', /WARN/.test(trouble.log) && /Open the full log/.test(trouble.all) && /Download a support bundle/.test(trouble.text), trouble.log.slice(0, 200));
     check('opening it clears the count on the button', trouble.badge === true);
     await guard.evaluate(() => document.getElementById('dlgok').click()); await sleep(300);
     // (the program's own count is checked in the Go tests; here the page is told that more problems were logged)

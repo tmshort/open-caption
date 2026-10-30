@@ -591,18 +591,32 @@
     const lr = await api('GET', '/api/admin/log?lines=40&level=warn');
     pre.textContent = lr.ok && lr.data.lines.length ? lr.data.lines.join('\n') : __('Nothing at this level yet.');
     pre.scrollTop = pre.scrollHeight;
-    const body = h('div', { class: 'trouble' },
-      h('h3', {}, __('Checks')), list,
-      h('h3', {}, __('Connection test')),
+    const copyBtn = h('button', { onclick: async () => { // what to paste into an email: the version, the time, every check and the connection test if it was run (no passwords are ever in it)
+      const st = await api('GET', '/api/admin/settings');
+      const text = ['Open Caption ' + (st.ok ? st.data.version : ''), new Date().toString(), '', ...summary, ...(reachList.children.length ? ['', __('Connection test'), ...[...reachList.children].map((li) => '[' + li.firstChild.textContent + '] ' + li.lastChild.textContent)] : [])].join('\n');
+      try { await navigator.clipboard.writeText(text); toast(__('Copied')); } catch (e) { toast(__('Select the text and copy it by hand')); }
+    } }, __('Copy summary'));
+    const warnN = lr.ok ? lr.data.lines.length : 0;
+    const tabDefs = [
+      ['chk', __('Checks'), [list]],
+      ['conn', __('Connection test'), [
       h('p', { class: 'hint' }, __('This computer asks for the web server on each address it gives out. That shows the server answers there; a firewall on this computer or on the network can still stop other devices.')),
-      h('div', { class: 'row' }, reachBtn), reachList,
-      h('h3', {}, __('Recent warnings and errors')), pre,
-      h('div', { class: 'row' }, h('button', { onclick: () => { $('dlg').close('cancel'); showLog(); } }, __('Open the full log…')),
-        h('button', { onclick: async () => { // what to paste into an email: the version, the time, every check and the connection test if it was run (no passwords are ever in it)
-          const st = await api('GET', '/api/admin/settings');
-          const text = ['Open Caption ' + (st.ok ? st.data.version : ''), new Date().toString(), '', ...summary, ...(reachList.children.length ? ['', __('Connection test'), ...[...reachList.children].map((li) => '[' + li.firstChild.textContent + '] ' + li.lastChild.textContent)] : [])].join('\n');
-          try { await navigator.clipboard.writeText(text); toast(__('Copied')); } catch (e) { toast(__('Select the text and copy it by hand')); }
-        } }, __('Copy summary')),
+        h('div', { class: 'row' }, reachBtn), reachList]],
+      ['warn', __('Warnings and errors') + (warnN ? ' (' + warnN + ')' : ''), [pre,
+        h('div', { class: 'row' }, h('button', { onclick: () => { $('dlg').close('cancel'); showLog(); } }, __('Open the full log…')))]]];
+    // The first tab is the one to read; the others are there when wanted. The panels share one grid cell, so the window keeps its size.
+    const tabBtns = tabDefs.map(([id, label], i) => h('button', { type: 'button', role: 'tab', id: 'trtab-' + id, 'aria-controls': 'trpanel-' + id, onclick: () => pick(i, false),
+      onkeydown: (e) => { const n = tabDefs.length, k = e.key; const to = k === 'ArrowRight' ? (i + 1) % n : k === 'ArrowLeft' ? (i + n - 1) % n : k === 'Home' ? 0 : k === 'End' ? n - 1 : -1; if (to >= 0) { e.preventDefault(); pick(to, true); } } }, label));
+    const panels = tabDefs.map(([id, , kids]) => h('div', { class: 'tabpanel inactive', role: 'tabpanel', id: 'trpanel-' + id, 'aria-labelledby': 'trtab-' + id }, ...kids));
+    function pick(i, focus) {
+      tabBtns.forEach((b, k) => { b.setAttribute('aria-selected', k === i ? 'true' : 'false'); b.tabIndex = k === i ? 0 : -1; panels[k].classList.toggle('inactive', k !== i); });
+      if (focus) tabBtns[i].focus();
+      if (tabDefs[i][0] === 'warn') pre.scrollTop = pre.scrollHeight;
+    }
+    pick(0, false);
+    const body = h('div', { class: 'trouble' },
+      h('div', { class: 'tabs', role: 'tablist', 'aria-label': __('Troubleshoot sections') }, ...tabBtns), h('div', { class: 'tabpanels' }, ...panels),
+      h('div', { class: 'row' }, copyBtn,
         h('a', { class: 'btn', href: '/api/admin/support-bundle', download: 'support-bundle.zip' }, __('Download a support bundle')),
         h('button', { onclick: () => { $('dlg').close('cancel'); openHelp('admin-troubleshooting'); } }, __('Troubleshooting help'))),
       h('p', { class: 'hint' }, __('The support bundle holds the settings (without passwords), the recent log and basic facts about this computer, for sending to someone who is helping.')));

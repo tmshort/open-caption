@@ -945,4 +945,6 @@ OCI18n.add("fr", {
  "The clock of the computer running the program is {n} minutes behind this browser’s. A wrong clock breaks HTTPS certificates and the times in reports. Set the time on the computer that runs the program.": "L’horloge de l’ordinateur qui exécute le programme retarde de {n} minutes sur celle de ce navigateur. Une horloge fausse perturbe les certificats HTTPS et les heures des rapports. Réglez l’heure de l’ordinateur qui exécute le programme.",
  "This computer is on {n} different networks, and addresses on each are given out: {list}. A device can use only the address on its own network, and the first one ({first}) is the one in the QR code. Untick the networks the audience is not on.": "Cet ordinateur est sur {n} réseaux différents et des adresses de chacun sont données : {list}. Un appareil ne peut utiliser que l’adresse de son propre réseau, et la première ({first}) est celle du code QR. Décochez les réseaux où le public n’est pas.",
  "Copy summary": "Copier le résumé",
+ "Warnings and errors": "Avertissements et erreurs",
+ "Troubleshoot sections": "Sections du dépannage",
 });
