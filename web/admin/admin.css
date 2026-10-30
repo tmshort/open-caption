@@ -115,6 +115,8 @@ pre.diff .d-add { background: #1f6f3a33; } pre.diff .d-del { background: #b32626
 .setsec { margin: 0 0 1.2rem; padding-top: .2rem; }
 .setsec + .setsec { border-top: 1px solid var(--line); padding-top: 1rem; }
 .setsec h3 { margin: 0 0 .5rem; font-size: 1.05rem; }
+.defgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: .3rem .9rem; margin-bottom: .5rem; }
+.defgrid .field { margin: 0; }
 .accgroup { margin: 0 0 .6rem; padding: .2rem .8rem .4rem; border: 1px solid var(--line); border-radius: 6px; }
 .accgroup legend { padding: 0 .3rem; font-weight: 600; }
 .accgroup textarea { display: block; margin-top: .2rem; }

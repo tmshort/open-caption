@@ -19,6 +19,10 @@ If a browser is showing captions on a projector or large monitor, open the audie
 
 Anyone can scroll the captions up to re-read something they missed. New lines then wait behind a **↓ Back to live (3)** button (it counts what arrived) instead of pulling the page away, and the older lines stop fading while someone is reading them. Tapping the button, or scrolling to the bottom, returns to the live captions. A screen showing `?display=projector` is never scrollable.
 
+## Starting values for every show
+
+The look a new show starts with (and the pre-show message, the loop time and the audience limits) can be set once for the whole venue in **Settings → Defaults**. A show's own look, set here, always wins. Changes there apply when the program is restarted.
+
 ## Audience controls
 
 Audience members never need to do anything. A small, faint **Aa** control in the top-right corner of the audience page lets a person make their own text bigger or smaller, switch to dark-on-light, choose the dyslexia-friendly or high-legibility font, or turn **Screen stays on** off (the page keeps a phone's screen awake while the show runs, and someone short of battery may prefer not to), but only on their own device.

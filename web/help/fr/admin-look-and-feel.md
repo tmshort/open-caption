@@ -19,6 +19,10 @@ Si un navigateur affiche les sous-titres sur un projecteur ou un grand moniteur,
 
 Chacun peut faire défiler les sous-titres vers le haut pour relire ce qu'il a manqué. Les nouvelles lignes attendent alors derrière un bouton **↓ Retour au direct (3)** (il compte ce qui est arrivé) au lieu d'entraîner la page, et les anciennes lignes cessent de s'estomper pendant qu'on les lit. Toucher le bouton, ou faire défiler jusqu'en bas, ramène aux sous-titres en direct. Un écran affichant `?display=projector` n'est jamais défilable.
 
+## Valeurs de départ pour tous les spectacles
+
+L'aspect d'un nouveau spectacle (ainsi que le message d'avant-spectacle, la durée des boucles et les limites du public) peut être réglé une fois pour tout le lieu dans **Réglages → Par défaut**. L'aspect propre à un spectacle, réglé ici, l'emporte toujours. Les changements faits là s'appliquent au redémarrage du programme.
+
 ## Commandes du public
 
 Les spectateurs n'ont jamais rien à faire. Un petit contrôle discret **Aa** dans le coin supérieur droit de la page du public permet à chacun d'agrandir ou de réduire son propre texte, de passer en sombre sur clair, de choisir la police adaptée à la dyslexie ou celle de haute lisibilité, ou de désactiver **L'écran reste allumé** (la page garde allumé l'écran du téléphone pendant le spectacle, et quelqu'un qui manque de batterie peut préférer ne pas le faire), mais uniquement sur son propre appareil.

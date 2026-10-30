@@ -218,6 +218,38 @@
       s.adminRestricted = x.data.adminRestricted; s.operatorRestricted = x.data.operatorRestricted; paintAccWarn();
       toast(accAuto.checked ? __('Access saved') : __('Access saved. A browser on this computer now signs in with the password.'), accAuto.checked ? undefined : 6000);
     } }, __('Save who can open the pages'));
+    // The venue defaults (defaults.* and audience.* in config.yaml): what a show uses where its show file says nothing, and the
+    // audience limits. Saved at once and used from the next start.
+    const dv = s.defaults || {};
+    const dctl = {};
+    const dmk = (name, label, input) => { dctl[name] = input; return h('label', { class: 'field' }, h('span', {}, __(label)), input); };
+    const dopt = (v, t) => h('option', { value: v }, __(t));
+    const defFields = [
+      dmk('language', 'Main language of a new show', h('input', { type: 'text', maxlength: '12', size: '8', spellcheck: 'false' })),
+      dmk('loopSeconds', 'Default time for each item in a loop (seconds)', h('input', { type: 'number', min: '1', max: '3600', step: 'any' })),
+      dmk('background', 'Background', h('input', { type: 'color' })), dmk('textColor', 'Text', h('input', { type: 'color' })),
+      dmk('speakerNameColor', 'Speaker name color', h('input', { type: 'color' })),
+      dmk('font', 'Font', h('select', {}, dopt('system', 'Clean (system)'), dopt('serif', 'Serif'), dopt('mono', 'Monospace'), dopt('dyslexic', 'Dyslexia-friendly (OpenDyslexic)'), dopt('hyperlegible', 'High legibility (Atkinson Hyperlegible)'))),
+      dmk('textSizePercent', 'Text size (percent)', h('input', { type: 'number', min: '50', max: '300', step: '10' })),
+      dmk('speakerNames', 'Speaker names', h('select', {}, dopt('label', 'Show (in the speaker name color)'), dopt('color', 'Show, a different color for each character'), dopt('hidden', 'Hide'))),
+      dmk('speakerPosition', 'Speaker name position', h('select', {}, dopt('above', 'Above the line'), dopt('beside', 'Beside the text, on the same line'), dopt('column', 'In a column to the left of the text'))),
+      dmk('scrollbackLines', 'Captions a viewer can scroll back through', h('input', { type: 'number', min: '20', max: '2000', step: '10' })),
+      dmk('maxClients', 'Most devices connected per language', h('input', { type: 'number', min: '1', max: '100000', step: '1' })),
+    ];
+    const dIdle = dmk('idleMessage', 'Pre-show message', h('input', { type: 'text', maxlength: '200' }));
+    const dOpen = h('input', { type: 'checkbox' });
+    for (const k of Object.keys(dctl)) if (dv[k] !== undefined) dctl[k].value = dv[k];
+    dOpen.checked = dv.openBrowser !== false;
+    const defState = h('p', { class: 'hint' });
+    const paintDefState = (restart) => { defState.textContent = restart ? __('Saved. These apply when the program is restarted.') : ''; };
+    paintDefState(!!dv.restartNeeded);
+    const defSave = h('button', { type: 'button', onclick: async () => {
+      const body = { openBrowser: dOpen.checked };
+      for (const k of Object.keys(dctl)) body[k] = dctl[k].type === 'number' ? Number(dctl[k].value) : dctl[k].value;
+      const x = await api('PUT', '/api/admin/settings/defaults', body);
+      if (!x.ok) return fail(x);
+      paintDefState(!!x.data.defaults.restartNeeded); toast(__('Defaults saved. They apply when the program is restarted.'), 6000);
+    } }, __('Save defaults'));
     // Which of this computer's network interfaces are used (network.* in config.yaml): a setting of this computer, not of a
     // show, so it lives here and not on the Share step. Each tick is saved as soon as it is clicked.
     const net0 = s.network || {};
@@ -310,6 +342,12 @@
           h('div', { class: 'row' }, sbImg, sbNone), h('div', { class: 'row' }, sbChoose, sbFile, sbRemove, h('span', { class: 'hint' }, __('PNG, JPEG, GIF or WebP, up to 2 MB'))),
           h('label', { class: 'field' }, h('span', {}, __('Message (optional; empty uses “Captions will begin shortly” in each viewer’s language)')), sbMsg), h('div', { class: 'row' }, sbSave)),
         ]],
+      ['def', 'Defaults', [
+        sec('Venue defaults',
+          h('p', { class: 'hint' }, __('What a show uses where its show file says nothing. A show’s own settings always win. Changes are saved now and apply when the program is restarted.')),
+          h('div', { class: 'defgrid' }, ...defFields, dIdle),
+          h('label', { class: 'row' }, dOpen, __('Open Setup in a browser when the program starts')),
+          defState, h('div', { class: 'row' }, defSave))]],
       ['net', 'Network', [networkSec, nameSec]],
       ['acc', 'Access', [
           accWarn,

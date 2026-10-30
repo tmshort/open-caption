@@ -133,24 +133,24 @@ Ce qu'un spectacle utilise quand son propre fichier ne le dit pas. Le bloc `[set
 
 | Clé | Par défaut | Signification |
 |---|---|---|
-| `defaults.language` | `en` | La langue principale d'un spectacle dont le fichier n'en nomme pas : deux ou trois lettres, avec une région facultative (`en`, `es`, `pt-br`) |
-| `defaults.loop_item_seconds` | `10` | Combien de temps reste chaque élément d'une boucle d'avant-spectacle ou d'entracte, en secondes (1 à 3600), sauf si l'élément en dit autrement |
-| `defaults.idle_message` | `Captions will begin shortly` | Ce que lit le public avant l'envoi de la première ligne quand un spectacle n'a pas de message d'avant-spectacle (jusqu'à 200 caractères) |
-| `defaults.open_browser` | `yes` | Ouvre la configuration dans un navigateur au démarrage du programme (ce n'est pas un réglage de spectacle ; `--no-browser` le désactive pour une exécution) |
-| `defaults.look.background` | `#000000` | Le fond des sous-titres : `#rgb`, `#rrggbb`, ou `black`, `white`, `yellow`, `red`, `green`, `blue`, `cyan`, `magenta`, `orange`, `gray` |
-| `defaults.look.text_color` | `#ffffff` | La couleur du texte des sous-titres (mêmes formes) |
-| `defaults.look.speaker_name_color` | `#ffffff` | La couleur des noms de personnages (mêmes formes) |
-| `defaults.look.font` | `system` | `system`, `serif`, `mono`, `dyslexic` ou `hyperlegible` |
-| `defaults.look.text_size_percent` | `100` | Taille du texte des sous-titres, de 50 à 300 |
-| `defaults.look.speaker_names` | `label` | `label` (noms d'une seule couleur), `color` (une couleur différente pour chaque personnage) ou `hidden` |
-| `defaults.look.speaker_position` | `above` | `above` (le nom au-dessus de la ligne), `beside` (sur la même ligne, avant le texte) ou `column` (dans une colonne à gauche du texte) |
+| `defaults.language` | `en` | La langue principale d'un spectacle dont le fichier n'en nomme pas : deux ou trois lettres, avec une région facultative (`en`, `es`, `pt-br`) *Configuration : Réglages → Par défaut* |
+| `defaults.loop_item_seconds` | `10` | Combien de temps reste chaque élément d'une boucle d'avant-spectacle ou d'entracte, en secondes (1 à 3600), sauf si l'élément en dit autrement *Configuration : Réglages → Par défaut* |
+| `defaults.idle_message` | `Captions will begin shortly` | Ce que lit le public avant l'envoi de la première ligne quand un spectacle n'a pas de message d'avant-spectacle (jusqu'à 200 caractères) *Configuration : Réglages → Par défaut* |
+| `defaults.open_browser` | `yes` | Ouvre la configuration dans un navigateur au démarrage du programme (ce n'est pas un réglage de spectacle ; `--no-browser` le désactive pour une exécution) *Configuration : Réglages → Par défaut* |
+| `defaults.look.background` | `#000000` | Le fond des sous-titres : `#rgb`, `#rrggbb`, ou `black`, `white`, `yellow`, `red`, `green`, `blue`, `cyan`, `magenta`, `orange`, `gray` *Configuration : Réglages → Par défaut* |
+| `defaults.look.text_color` | `#ffffff` | La couleur du texte des sous-titres (mêmes formes) *Configuration : Réglages → Par défaut* |
+| `defaults.look.speaker_name_color` | `#ffffff` | La couleur des noms de personnages (mêmes formes) *Configuration : Réglages → Par défaut* |
+| `defaults.look.font` | `system` | `system`, `serif`, `mono`, `dyslexic` ou `hyperlegible` *Configuration : Réglages → Par défaut* |
+| `defaults.look.text_size_percent` | `100` | Taille du texte des sous-titres, de 50 à 300 *Configuration : Réglages → Par défaut* |
+| `defaults.look.speaker_names` | `label` | `label` (noms d'une seule couleur), `color` (une couleur différente pour chaque personnage) ou `hidden` *Configuration : Réglages → Par défaut* |
+| `defaults.look.speaker_position` | `above` | `above` (le nom au-dessus de la ligne), `beside` (sur la même ligne, avant le texte) ou `column` (dans une colonne à gauche du texte) *Configuration : Réglages → Par défaut* |
 
 ### `audience`
 
 | Clé | Par défaut | Signification |
 |---|---|---|
-| `audience.max_clients` | `500` | Le maximum d'appareils du public connectés **par langue** (1 à 100000) ; les suivants sont refusés jusqu'à ce que certains partent |
-| `audience.scrollback_lines` | `200` | Combien de lignes précédentes un appareil peut remonter (20 à 2000) |
+| `audience.max_clients` | `500` | Le maximum d'appareils du public connectés **par langue** (1 à 100000) ; les suivants sont refusés jusqu'à ce que certains partent *Configuration : Réglages → Par défaut* |
+| `audience.scrollback_lines` | `200` | Combien de lignes précédentes un appareil peut remonter (20 à 2000) *Configuration : Réglages → Par défaut* |
 
 ### `access`
 

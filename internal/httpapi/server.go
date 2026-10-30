@@ -54,6 +54,9 @@ type Server struct {
 	// cfgMu makes the settings that Setup changes while the program runs (the passwords, the standby message and
 	// network.*) safe to read as a whole: they are written, and copied (snapshot), under it.
 	cfgMu sync.RWMutex
+	// savedDefaults are the venue defaults and audience limits as last saved in Setup, which the running program uses only
+	// after its next start; nil until Setup saves them (then the running ones are the saved ones).
+	savedDefaults *savedDefaults
 
 	rmu        sync.Mutex
 	rehearsals map[string]*Runtime // admin session token -> isolated rehearsal

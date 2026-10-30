@@ -19,6 +19,10 @@ Se um navegador estiver mostrando as legendas num projetor ou monitor grande, ab
 
 Qualquer pessoa pode rolar as legendas para cima para reler algo que perdeu. As linhas novas esperam então atrás de um botão **↓ Voltar ao vivo (3)** (que conta o que chegou) em vez de arrastar a página, e as linhas mais antigas param de esmaecer enquanto alguém as lê. Tocar no botão, ou rolar até o fim, volta às legendas ao vivo. Uma tela com `?display=projector` nunca rola.
 
+## Valores iniciais para todos os espetáculos
+
+O visual com que um novo espetáculo começa (e a mensagem antes do espetáculo, o tempo dos ciclos e os limites do público) pode ser definido uma vez para todo o local em **Configurações → Padrões**. O visual próprio de um espetáculo, definido aqui, sempre prevalece. As mudanças lá valem após reiniciar o programa.
+
 ## Controles do público
 
 Os espectadores nunca precisam fazer nada. Um pequeno controle discreto **Aa** no canto superior direito da página do público permite que cada pessoa aumente ou diminua o próprio texto, mude para escuro sobre claro, escolha a fonte amigável para dislexia ou a de alta legibilidade, ou desligue **A tela fica acesa** (a página mantém acesa a tela do telefone durante o espetáculo, e quem está com pouca bateria pode preferir não), mas somente no próprio dispositivo.

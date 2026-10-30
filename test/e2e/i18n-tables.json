@@ -48,7 +48,10 @@
   "Speaker names",
   "Pre-show message",
   "Default time for each item in a loop (seconds)",
-  "Captions a viewer can scroll back through"
+  "Captions a viewer can scroll back through",
+  "Main language of a new show",
+  "Text size (percent)",
+  "Most devices connected per language"
  ],
  "contrast": [
   "excellent",
@@ -94,12 +97,14 @@
  "settings sections": [
   "About this copy",
   "Standby screen",
+  "Defaults",
   "Network",
   "Access",
   "Network interfaces",
   "Name on the network",
   "Log detail",
   "Who can open the pages",
+  "Venue defaults",
   "Change passwords"
  ],
  "certificate panel": [

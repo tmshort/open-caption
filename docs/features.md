@@ -23,6 +23,7 @@ The full list. The [README](../README.md) has the short version; how to use each
 - A show is one plain-text Markdown file (plus images): title, colours, fonts and options live in it, layered over `config.yaml` defaults. The editor lists every character name (most used first, misspellings marked) and keeps earlier versions, which can be named and compared; and shows can be exported, imported, duplicated and archived.
 - Setup, the operator page, Help and all the built-in documentation are available in English, Spanish, French, German, Italian and Portuguese.
 - Passwords may be kept in `config.yaml` as a SHA-256 digest instead of plain text (`open-caption --hash-password` makes one), and a Markdown heading (`# Act 2`) in the show file is a bookmark for the operator.
+- The venue-wide defaults (look, language, pre-show message, loop time, audience limits) can be edited in Setup (Settings → Defaults); they are saved in `config.yaml` and apply at the next start.
 - Built-in help, a recent-log viewer, a support bundle, and a validated `config.yaml` that reports every mistake at once.
 - Optional trusted HTTPS: a renewed certificate file is picked up without a restart, or the program can get and renew a Let's Encrypt certificate itself (DNS-01, with Cloudflare, GoDaddy and EasyDNS built in by default; see below).
 - Screen-reader friendly pages, checked automatically with axe-core in both colour schemes.

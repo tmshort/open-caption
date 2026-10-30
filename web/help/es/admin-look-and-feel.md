@@ -19,6 +19,10 @@ Si un navegador muestra los subtítulos en un proyector o un monitor grande, abr
 
 Cualquiera puede desplazar los subtítulos hacia arriba para releer algo que se perdió. Las líneas nuevas esperan entonces tras un botón **↓ Volver al directo (3)** (que cuenta lo que llegó) en lugar de arrastrar la página, y las líneas más antiguas dejan de atenuarse mientras alguien las lee. Pulsar el botón, o desplazarse hasta el final, vuelve a los subtítulos en directo. Una pantalla con `?display=projector` nunca se puede desplazar.
 
+## Valores iniciales para todos los espectáculos
+
+El aspecto con el que empieza un espectáculo nuevo (y el mensaje previo, el tiempo de los bucles y los límites del público) se puede fijar una vez para todo el local en **Ajustes → Predeterminados**. El aspecto propio de un espectáculo, fijado aquí, siempre manda. Los cambios allí se aplican al reiniciar el programa.
+
 ## Controles del público
 
 Los miembros del público nunca necesitan hacer nada. Un pequeño control tenue **Aa** en la esquina superior derecha de la página del público permite a cada persona hacer su propio texto más grande o más pequeño, pasar a oscuro sobre claro, elegir la fuente apta para dislexia o la de alta legibilidad, o desactivar **La pantalla sigue encendida** (la página mantiene encendida la pantalla del teléfono mientras dura el espectáculo, y quien tenga poca batería puede preferir no hacerlo), pero solo en su propio dispositivo.

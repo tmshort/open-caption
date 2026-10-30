@@ -8,7 +8,7 @@
 - **First run.** If there is no file, the program writes one with random **admin** and **operator** passwords and prints them once in the console. The file is mode 0600 (private to your account) and the passwords are **plain text** unless you store a digest instead (see "Passwords" below), so keep it private.
 - **You only need the keys you change.** A missing key keeps its default (the table below). The generated file lists everything.
 - **Strict.** A misspelled key, a value of the wrong kind, or a value out of range stops the program at start-up with **all** the problems listed, each naming the setting (for example `audience.max_clients: 0 is not a client count: use 1 to 100000`). Nothing is guessed. The one exception: a file marked with a newer `config_version` than the program knows has its unknown keys ignored, with a warning.
-- **Setup edits some of it.** Changing the passwords, who may open the pages (`access.*`), the `.local` name, the standby message or the log detail in Setup rewrites those keys in the file and keeps your comments and every other setting. Everything else you edit by hand, then **restart the program**. (A renewed certificate file is the one thing picked up without a restart; see `https.cert_file`.)
+- **Setup edits some of it.** Changing the passwords, who may open the pages (`access.*`), the venue defaults and audience limits (`defaults.*`, `audience.*`; these apply at the next start), the `.local` name, the standby message or the log detail in Setup rewrites those keys in the file and keeps your comments and every other setting. Everything else you edit by hand, then **restart the program**. (A renewed certificate file is the one thing picked up without a restart; see `https.cert_file`.)
 - **Booleans** are `yes`/`no`/`true`/`false`. **Lists** are written `[a, b]` or one `- item` per line.
 
 ## Command line and environment
@@ -133,24 +133,24 @@ What a show uses when its own show file does not say. A show file's `[settings]`
 
 | Key | Default | Meaning |
 |---|---|---|
-| `defaults.language` | `en` | The main language of a show whose file does not name one: two or three letters, optionally with a region (`en`, `es`, `pt-br`) |
-| `defaults.loop_item_seconds` | `10` | How long each item of a pre-show or intermission loop stays, in seconds (1 to 3600), unless the item says otherwise |
-| `defaults.idle_message` | `Captions will begin shortly` | What the audience reads before the first line is sent when a show has no pre-show message (up to 200 characters) |
-| `defaults.open_browser` | `yes` | Open Setup in a browser when the program starts (not a show setting; `--no-browser` turns it off for one run) |
-| `defaults.look.background` | `#000000` | The caption background: `#rgb`, `#rrggbb`, or `black`, `white`, `yellow`, `red`, `green`, `blue`, `cyan`, `magenta`, `orange`, `gray` |
-| `defaults.look.text_color` | `#ffffff` | The caption text colour (same forms) |
-| `defaults.look.speaker_name_color` | `#ffffff` | The colour of speaker names (same forms) |
-| `defaults.look.font` | `system` | `system`, `serif`, `mono`, `dyslexic` or `hyperlegible` |
-| `defaults.look.text_size_percent` | `100` | Caption text size, 50 to 300 |
-| `defaults.look.speaker_names` | `label` | `label` (names in one colour), `color` (a different colour for each character) or `hidden` |
-| `defaults.look.speaker_position` | `above` | `above` (the name over the line), `beside` (on the same line, before the text) or `column` (in a column to the left of the text) |
+| `defaults.language` | `en` | The main language of a show whose file does not name one: two or three letters, optionally with a region (`en`, `es`, `pt-br`) *Setup: Settings → Defaults* |
+| `defaults.loop_item_seconds` | `10` | How long each item of a pre-show or intermission loop stays, in seconds (1 to 3600), unless the item says otherwise *Setup: Settings → Defaults* |
+| `defaults.idle_message` | `Captions will begin shortly` | What the audience reads before the first line is sent when a show has no pre-show message (up to 200 characters) *Setup: Settings → Defaults* |
+| `defaults.open_browser` | `yes` | Open Setup in a browser when the program starts (not a show setting; `--no-browser` turns it off for one run) *Setup: Settings → Defaults* |
+| `defaults.look.background` | `#000000` | The caption background: `#rgb`, `#rrggbb`, or `black`, `white`, `yellow`, `red`, `green`, `blue`, `cyan`, `magenta`, `orange`, `gray` *Setup: Settings → Defaults* |
+| `defaults.look.text_color` | `#ffffff` | The caption text colour (same forms) *Setup: Settings → Defaults* |
+| `defaults.look.speaker_name_color` | `#ffffff` | The colour of speaker names (same forms) *Setup: Settings → Defaults* |
+| `defaults.look.font` | `system` | `system`, `serif`, `mono`, `dyslexic` or `hyperlegible` *Setup: Settings → Defaults* |
+| `defaults.look.text_size_percent` | `100` | Caption text size, 50 to 300 *Setup: Settings → Defaults* |
+| `defaults.look.speaker_names` | `label` | `label` (names in one colour), `color` (a different colour for each character) or `hidden` *Setup: Settings → Defaults* |
+| `defaults.look.speaker_position` | `above` | `above` (the name over the line), `beside` (on the same line, before the text) or `column` (in a column to the left of the text) *Setup: Settings → Defaults* |
 
 ### `audience`
 
 | Key | Default | Meaning |
 |---|---|---|
-| `audience.max_clients` | `500` | The most audience devices connected **per language** (1 to 100000); more are turned away until some leave |
-| `audience.scrollback_lines` | `200` | How many earlier lines a device can scroll back through (20 to 2000) |
+| `audience.max_clients` | `500` | The most audience devices connected **per language** (1 to 100000); more are turned away until some leave *Setup: Settings → Defaults* |
+| `audience.scrollback_lines` | `200` | How many earlier lines a device can scroll back through (20 to 2000) *Setup: Settings → Defaults* |
 
 ### `access`
 

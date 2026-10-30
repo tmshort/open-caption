@@ -382,6 +382,8 @@ func SetValues(path string, kv map[string]any) error {
 					n.Tag, n.Value = "!!bool", strconv.FormatBool(v)
 				case int:
 					n.Tag, n.Value = "!!int", strconv.Itoa(v)
+				case float64:
+					n.Tag, n.Value = "!!float", strconv.FormatFloat(v, 'f', -1, 64)
 				case []string: // a list of text values; an empty list is written as []
 					n.Kind, n.Tag, n.Value = yaml.SequenceNode, "!!seq", ""
 					if len(v) == 0 {

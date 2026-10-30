@@ -19,6 +19,10 @@ Wenn ein Browser Untertitel auf einem Projektor oder großen Monitor zeigt, öff
 
 Jeder kann die Untertitel nach oben scrollen, um etwas noch einmal zu lesen, das er verpasst hat. Neue Zeilen warten dann hinter einer Schaltfläche **↓ Zurück zu Live (3)** (sie zählt, was hereingekommen ist), statt die Seite wegzuziehen, und die älteren Zeilen blenden nicht mehr aus, solange jemand sie liest. Ein Tipp auf die Schaltfläche oder das Scrollen nach unten führt zu den Live-Untertiteln zurück. Ein Bildschirm mit `?display=projector` ist nie scrollbar.
 
+## Startwerte für alle Shows
+
+Das Aussehen, mit dem eine neue Show beginnt (sowie die Meldung vor der Show, die Schleifenzeit und die Publikumsgrenzen), lässt sich einmal für das ganze Haus unter **Einstellungen → Standardwerte** festlegen. Das eigene Aussehen einer Show, das Sie hier einstellen, hat immer Vorrang. Änderungen dort gelten nach einem Neustart des Programms.
+
 ## Bedienelemente für das Publikum
 
 Zuschauer müssen nie etwas tun. Ein kleines, blasses Steuerelement **Aa** in der oberen rechten Ecke der Publikumsseite lässt jede Person ihren eigenen Text größer oder kleiner machen, auf dunkel auf hell umschalten, die legasthenie-freundliche oder die gut lesbare Schrift wählen oder **Bildschirm bleibt an** ausschalten (die Seite hält den Bildschirm eines Telefons während der Show wach, und wer wenig Akku hat, möchte das vielleicht nicht), aber nur auf dem eigenen Gerät.

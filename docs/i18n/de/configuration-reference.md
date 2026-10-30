@@ -133,24 +133,24 @@ Was eine Show verwendet, wenn ihre eigene Show-Datei es nicht sagt. Der `[settin
 
 | Schlüssel | Standard | Bedeutung |
 |---|---|---|
-| `defaults.language` | `en` | Die Hauptsprache einer Show, deren Datei keine nennt: zwei oder drei Buchstaben, optional mit Region (`en`, `es`, `pt-br`) |
-| `defaults.loop_item_seconds` | `10` | Wie lange jedes Element einer Schleife vor der Show oder in der Pause stehen bleibt, in Sekunden (1 bis 3600), sofern das Element nichts anderes sagt |
-| `defaults.idle_message` | `Captions will begin shortly` | Was das Publikum liest, bevor die erste Zeile gesendet wird, wenn eine Show keine Nachricht vor der Show hat (bis zu 200 Zeichen) |
-| `defaults.open_browser` | `yes` | Öffnet die Einrichtung beim Programmstart in einem Browser (keine Show-Einstellung; `--no-browser` schaltet es für einen Lauf aus) |
-| `defaults.look.background` | `#000000` | Der Untertitelhintergrund: `#rgb`, `#rrggbb` oder `black`, `white`, `yellow`, `red`, `green`, `blue`, `cyan`, `magenta`, `orange`, `gray` |
-| `defaults.look.text_color` | `#ffffff` | Die Textfarbe der Untertitel (gleiche Formen) |
-| `defaults.look.speaker_name_color` | `#ffffff` | Die Farbe der Sprechernamen (gleiche Formen) |
-| `defaults.look.font` | `system` | `system`, `serif`, `mono`, `dyslexic` oder `hyperlegible` |
-| `defaults.look.text_size_percent` | `100` | Textgröße der Untertitel, 50 bis 300 |
-| `defaults.look.speaker_names` | `label` | `label` (Namen in einer Farbe), `color` (eine andere Farbe für jede Figur) oder `hidden` |
-| `defaults.look.speaker_position` | `above` | `above` (der Name über der Zeile), `beside` (in derselben Zeile, vor dem Text) oder `column` (in einer Spalte links vom Text) |
+| `defaults.language` | `en` | Die Hauptsprache einer Show, deren Datei keine nennt: zwei oder drei Buchstaben, optional mit Region (`en`, `es`, `pt-br`) *Einrichtung: Einstellungen → Standardwerte* |
+| `defaults.loop_item_seconds` | `10` | Wie lange jedes Element einer Schleife vor der Show oder in der Pause stehen bleibt, in Sekunden (1 bis 3600), sofern das Element nichts anderes sagt *Einrichtung: Einstellungen → Standardwerte* |
+| `defaults.idle_message` | `Captions will begin shortly` | Was das Publikum liest, bevor die erste Zeile gesendet wird, wenn eine Show keine Nachricht vor der Show hat (bis zu 200 Zeichen) *Einrichtung: Einstellungen → Standardwerte* |
+| `defaults.open_browser` | `yes` | Öffnet die Einrichtung beim Programmstart in einem Browser (keine Show-Einstellung; `--no-browser` schaltet es für einen Lauf aus) *Einrichtung: Einstellungen → Standardwerte* |
+| `defaults.look.background` | `#000000` | Der Untertitelhintergrund: `#rgb`, `#rrggbb` oder `black`, `white`, `yellow`, `red`, `green`, `blue`, `cyan`, `magenta`, `orange`, `gray` *Einrichtung: Einstellungen → Standardwerte* |
+| `defaults.look.text_color` | `#ffffff` | Die Textfarbe der Untertitel (gleiche Formen) *Einrichtung: Einstellungen → Standardwerte* |
+| `defaults.look.speaker_name_color` | `#ffffff` | Die Farbe der Sprechernamen (gleiche Formen) *Einrichtung: Einstellungen → Standardwerte* |
+| `defaults.look.font` | `system` | `system`, `serif`, `mono`, `dyslexic` oder `hyperlegible` *Einrichtung: Einstellungen → Standardwerte* |
+| `defaults.look.text_size_percent` | `100` | Textgröße der Untertitel, 50 bis 300 *Einrichtung: Einstellungen → Standardwerte* |
+| `defaults.look.speaker_names` | `label` | `label` (Namen in einer Farbe), `color` (eine andere Farbe für jede Figur) oder `hidden` *Einrichtung: Einstellungen → Standardwerte* |
+| `defaults.look.speaker_position` | `above` | `above` (der Name über der Zeile), `beside` (in derselben Zeile, vor dem Text) oder `column` (in einer Spalte links vom Text) *Einrichtung: Einstellungen → Standardwerte* |
 
 ### `audience`
 
 | Schlüssel | Standard | Bedeutung |
 |---|---|---|
-| `audience.max_clients` | `500` | Die meisten verbundenen Publikumsgeräte **pro Sprache** (1 bis 100000); weitere werden abgewiesen, bis einige gehen |
-| `audience.scrollback_lines` | `200` | Wie viele frühere Zeilen ein Gerät zurückscrollen kann (20 bis 2000) |
+| `audience.max_clients` | `500` | Die meisten verbundenen Publikumsgeräte **pro Sprache** (1 bis 100000); weitere werden abgewiesen, bis einige gehen *Einrichtung: Einstellungen → Standardwerte* |
+| `audience.scrollback_lines` | `200` | Wie viele frühere Zeilen ein Gerät zurückscrollen kann (20 bis 2000) *Einrichtung: Einstellungen → Standardwerte* |
 
 ### `access`
 

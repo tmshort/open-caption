@@ -19,6 +19,10 @@ Se un browser mostra i sottotitoli su un proiettore o un grande monitor, apri l'
 
 Chiunque può far scorrere i sottotitoli verso l'alto per rileggere qualcosa che si è perso. Le nuove righe aspettano allora dietro un pulsante **↓ Torna in diretta (3)** (che conta ciò che è arrivato) invece di trascinare via la pagina, e le righe più vecchie smettono di sfumare mentre qualcuno le legge. Toccare il pulsante, o scorrere fino in fondo, riporta ai sottotitoli in diretta. Uno schermo con `?display=projector` non è mai scorrevole.
 
+## Valori iniziali per tutti gli spettacoli
+
+L'aspetto con cui parte un nuovo spettacolo (insieme al messaggio prima dello spettacolo, al tempo dei cicli e ai limiti del pubblico) si può impostare una volta per tutto il locale in **Impostazioni → Predefiniti**. L'aspetto proprio di uno spettacolo, impostato qui, prevale sempre. Le modifiche lì si applicano al riavvio del programma.
+
 ## Controlli per il pubblico
 
 Gli spettatori non devono mai fare nulla. Un piccolo controllo tenue **Aa** nell'angolo in alto a destra della pagina del pubblico permette a ognuno di ingrandire o rimpicciolire il proprio testo, passare a scuro su chiaro, scegliere il carattere adatto alla dislessia o quello ad alta leggibilità, oppure disattivare **Lo schermo resta acceso** (la pagina tiene acceso lo schermo del telefono durante lo spettacolo, e chi ha poca batteria può preferire di no), ma solo sul proprio dispositivo.

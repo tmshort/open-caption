@@ -133,24 +133,24 @@ O que um espetáculo usa quando o seu próprio arquivo não diz. O bloco `[setti
 
 | Chave | Padrão | Significado |
 |---|---|---|
-| `defaults.language` | `en` | O idioma principal de um espetáculo cujo arquivo não indica nenhum: duas ou três letras, com região opcional (`en`, `es`, `pt-br`) |
-| `defaults.loop_item_seconds` | `10` | Quanto tempo cada item de um laço pré-espetáculo ou de intervalo fica, em segundos (1 a 3600), a menos que o item diga outra coisa |
-| `defaults.idle_message` | `Captions will begin shortly` | O que o público lê antes de a primeira linha ser enviada quando um espetáculo não tem mensagem pré-espetáculo (até 200 caracteres) |
-| `defaults.open_browser` | `yes` | Abre a configuração em um navegador quando o programa inicia (não é uma configuração do espetáculo; `--no-browser` a desliga por uma execução) |
-| `defaults.look.background` | `#000000` | O fundo das legendas: `#rgb`, `#rrggbb` ou `black`, `white`, `yellow`, `red`, `green`, `blue`, `cyan`, `magenta`, `orange`, `gray` |
-| `defaults.look.text_color` | `#ffffff` | A cor do texto das legendas (mesmas formas) |
-| `defaults.look.speaker_name_color` | `#ffffff` | A cor dos nomes dos personagens (mesmas formas) |
-| `defaults.look.font` | `system` | `system`, `serif`, `mono`, `dyslexic` ou `hyperlegible` |
-| `defaults.look.text_size_percent` | `100` | Tamanho do texto das legendas, de 50 a 300 |
-| `defaults.look.speaker_names` | `label` | `label` (nomes em uma só cor), `color` (uma cor diferente para cada personagem) ou `hidden` |
-| `defaults.look.speaker_position` | `above` | `above` (o nome acima da linha), `beside` (na mesma linha, antes do texto) ou `column` (em uma coluna à esquerda do texto) |
+| `defaults.language` | `en` | O idioma principal de um espetáculo cujo arquivo não indica nenhum: duas ou três letras, com região opcional (`en`, `es`, `pt-br`) *Configuração: Configurações → Padrões* |
+| `defaults.loop_item_seconds` | `10` | Quanto tempo cada item de um laço pré-espetáculo ou de intervalo fica, em segundos (1 a 3600), a menos que o item diga outra coisa *Configuração: Configurações → Padrões* |
+| `defaults.idle_message` | `Captions will begin shortly` | O que o público lê antes de a primeira linha ser enviada quando um espetáculo não tem mensagem pré-espetáculo (até 200 caracteres) *Configuração: Configurações → Padrões* |
+| `defaults.open_browser` | `yes` | Abre a configuração em um navegador quando o programa inicia (não é uma configuração do espetáculo; `--no-browser` a desliga por uma execução) *Configuração: Configurações → Padrões* |
+| `defaults.look.background` | `#000000` | O fundo das legendas: `#rgb`, `#rrggbb` ou `black`, `white`, `yellow`, `red`, `green`, `blue`, `cyan`, `magenta`, `orange`, `gray` *Configuração: Configurações → Padrões* |
+| `defaults.look.text_color` | `#ffffff` | A cor do texto das legendas (mesmas formas) *Configuração: Configurações → Padrões* |
+| `defaults.look.speaker_name_color` | `#ffffff` | A cor dos nomes dos personagens (mesmas formas) *Configuração: Configurações → Padrões* |
+| `defaults.look.font` | `system` | `system`, `serif`, `mono`, `dyslexic` ou `hyperlegible` *Configuração: Configurações → Padrões* |
+| `defaults.look.text_size_percent` | `100` | Tamanho do texto das legendas, de 50 a 300 *Configuração: Configurações → Padrões* |
+| `defaults.look.speaker_names` | `label` | `label` (nomes em uma só cor), `color` (uma cor diferente para cada personagem) ou `hidden` *Configuração: Configurações → Padrões* |
+| `defaults.look.speaker_position` | `above` | `above` (o nome acima da linha), `beside` (na mesma linha, antes do texto) ou `column` (em uma coluna à esquerda do texto) *Configuração: Configurações → Padrões* |
 
 ### `audience`
 
 | Chave | Padrão | Significado |
 |---|---|---|
-| `audience.max_clients` | `500` | O máximo de dispositivos do público conectados **por idioma** (1 a 100000); os demais são recusados até que alguns saiam |
-| `audience.scrollback_lines` | `200` | Quantas linhas anteriores um dispositivo pode rolar para trás (20 a 2000) |
+| `audience.max_clients` | `500` | O máximo de dispositivos do público conectados **por idioma** (1 a 100000); os demais são recusados até que alguns saiam *Configuração: Configurações → Padrões* |
+| `audience.scrollback_lines` | `200` | Quantas linhas anteriores um dispositivo pode rolar para trás (20 a 2000) *Configuração: Configurações → Padrões* |
 
 ### `access`
 

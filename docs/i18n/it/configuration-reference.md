@@ -133,24 +133,24 @@ Ciò che uno spettacolo usa quando il suo file non lo dice. Il blocco `[settings
 
 | Chiave | Predefinito | Significato |
 |---|---|---|
-| `defaults.language` | `en` | La lingua principale di uno spettacolo il cui file non ne indica una: due o tre lettere, con regione facoltativa (`en`, `es`, `pt-br`) |
-| `defaults.loop_item_seconds` | `10` | Quanto resta ogni elemento di un ciclo pre-spettacolo o d'intervallo, in secondi (da 1 a 3600), salvo che l'elemento dica altro |
-| `defaults.idle_message` | `Captions will begin shortly` | Ciò che il pubblico legge prima che venga inviata la prima riga quando uno spettacolo non ha un messaggio pre-spettacolo (fino a 200 caratteri) |
-| `defaults.open_browser` | `yes` | Apre la configurazione in un browser all'avvio del programma (non è un'impostazione dello spettacolo; `--no-browser` la disattiva per un'esecuzione) |
-| `defaults.look.background` | `#000000` | Lo sfondo dei sottotitoli: `#rgb`, `#rrggbb` oppure `black`, `white`, `yellow`, `red`, `green`, `blue`, `cyan`, `magenta`, `orange`, `gray` |
-| `defaults.look.text_color` | `#ffffff` | Il colore del testo dei sottotitoli (stesse forme) |
-| `defaults.look.speaker_name_color` | `#ffffff` | Il colore dei nomi dei personaggi (stesse forme) |
-| `defaults.look.font` | `system` | `system`, `serif`, `mono`, `dyslexic` o `hyperlegible` |
-| `defaults.look.text_size_percent` | `100` | Dimensione del testo dei sottotitoli, da 50 a 300 |
-| `defaults.look.speaker_names` | `label` | `label` (nomi di un solo colore), `color` (un colore diverso per ogni personaggio) o `hidden` |
-| `defaults.look.speaker_position` | `above` | `above` (il nome sopra la riga), `beside` (sulla stessa riga, prima del testo) o `column` (in una colonna a sinistra del testo) |
+| `defaults.language` | `en` | La lingua principale di uno spettacolo il cui file non ne indica una: due o tre lettere, con regione facoltativa (`en`, `es`, `pt-br`) *Configurazione: Impostazioni → Predefiniti* |
+| `defaults.loop_item_seconds` | `10` | Quanto resta ogni elemento di un ciclo pre-spettacolo o d'intervallo, in secondi (da 1 a 3600), salvo che l'elemento dica altro *Configurazione: Impostazioni → Predefiniti* |
+| `defaults.idle_message` | `Captions will begin shortly` | Ciò che il pubblico legge prima che venga inviata la prima riga quando uno spettacolo non ha un messaggio pre-spettacolo (fino a 200 caratteri) *Configurazione: Impostazioni → Predefiniti* |
+| `defaults.open_browser` | `yes` | Apre la configurazione in un browser all'avvio del programma (non è un'impostazione dello spettacolo; `--no-browser` la disattiva per un'esecuzione) *Configurazione: Impostazioni → Predefiniti* |
+| `defaults.look.background` | `#000000` | Lo sfondo dei sottotitoli: `#rgb`, `#rrggbb` oppure `black`, `white`, `yellow`, `red`, `green`, `blue`, `cyan`, `magenta`, `orange`, `gray` *Configurazione: Impostazioni → Predefiniti* |
+| `defaults.look.text_color` | `#ffffff` | Il colore del testo dei sottotitoli (stesse forme) *Configurazione: Impostazioni → Predefiniti* |
+| `defaults.look.speaker_name_color` | `#ffffff` | Il colore dei nomi dei personaggi (stesse forme) *Configurazione: Impostazioni → Predefiniti* |
+| `defaults.look.font` | `system` | `system`, `serif`, `mono`, `dyslexic` o `hyperlegible` *Configurazione: Impostazioni → Predefiniti* |
+| `defaults.look.text_size_percent` | `100` | Dimensione del testo dei sottotitoli, da 50 a 300 *Configurazione: Impostazioni → Predefiniti* |
+| `defaults.look.speaker_names` | `label` | `label` (nomi di un solo colore), `color` (un colore diverso per ogni personaggio) o `hidden` *Configurazione: Impostazioni → Predefiniti* |
+| `defaults.look.speaker_position` | `above` | `above` (il nome sopra la riga), `beside` (sulla stessa riga, prima del testo) o `column` (in una colonna a sinistra del testo) *Configurazione: Impostazioni → Predefiniti* |
 
 ### `audience`
 
 | Chiave | Predefinito | Significato |
 |---|---|---|
-| `audience.max_clients` | `500` | Il massimo di dispositivi del pubblico connessi **per lingua** (da 1 a 100000); gli altri vengono respinti finché qualcuno non se ne va |
-| `audience.scrollback_lines` | `200` | Quante righe precedenti un dispositivo può scorrere all'indietro (da 20 a 2000) |
+| `audience.max_clients` | `500` | Il massimo di dispositivi del pubblico connessi **per lingua** (da 1 a 100000); gli altri vengono respinti finché qualcuno non se ne va *Configurazione: Impostazioni → Predefiniti* |
+| `audience.scrollback_lines` | `200` | Quante righe precedenti un dispositivo può scorrere all'indietro (da 20 a 2000) *Configurazione: Impostazioni → Predefiniti* |
 
 ### `access`
 

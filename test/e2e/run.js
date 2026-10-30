@@ -537,11 +537,11 @@ async function main() {
     const guard = await open(); await guard.goto(B + '/admin'); await guard.waitForSelector('#pw'); await guard.type('#pw', ADMIN); await guard.keyboard.press('Enter'); await guard.waitForSelector('#steps button');
     await click(guard, 'Settings'); await sleep(600);
     const tab = async (id) => { await guard.evaluate((i) => document.getElementById('settab-' + i).click(), id); await sleep(150); };
-    check('Settings has six tabs, with Close in view', await guard.evaluate(() => { const t = [...document.querySelectorAll('#dlg [role=tab]')].map((x) => x.textContent); const c = document.getElementById('dlgok').getBoundingClientRect(); return t.join('|') === 'Audience screen|Network|Access|Security|Certificate|About' && c.bottom <= innerHeight && c.top >= 0; }));
+    check('Settings has seven tabs, with Close in view', await guard.evaluate(() => { const t = [...document.querySelectorAll('#dlg [role=tab]')].map((x) => x.textContent); const c = document.getElementById('dlgok').getBoundingClientRect(); return t.join('|') === 'Audience screen|Defaults|Network|Access|Security|Certificate|About' && c.bottom <= innerHeight && c.top >= 0; }));
     await tab('abt');
     {
       const sizes = [];
-      for (const id of ['aud', 'net', 'acc', 'sec', 'abt']) { await tab(id); sizes.push(await guard.evaluate(() => { const b = document.getElementById('dlgbody'); return { dlg: Math.round(document.getElementById('dlg').getBoundingClientRect().height), scrolls: b.scrollHeight > b.clientHeight + 1 }; })); }
+      for (const id of ['aud', 'def', 'net', 'acc', 'sec', 'abt']) { await tab(id); sizes.push(await guard.evaluate(() => { const b = document.getElementById('dlgbody'); return { dlg: Math.round(document.getElementById('dlg').getBoundingClientRect().height), scrolls: b.scrollHeight > b.clientHeight + 1 }; })); }
       check('the Settings window is as tall as its tallest tab, so no tab scrolls and it never changes size', sizes.every((z) => !z.scrolls) && sizes.every((z) => z.dlg === sizes[0].dlg), sizes);
     }
     await guard.focus('#settab-abt'); await guard.keyboard.press('ArrowLeft'); await sleep(150);
@@ -1067,6 +1067,20 @@ async function main() {
       await accOp('badlist'); await sleep(700);
       const refused = await hp.evaluate(() => document.getElementById('toast').textContent);
       check('a Setup list that would shut this computer out is refused, with the reason, and nothing is saved', /stop the computer you are using/.test(refused) && JSON.stringify((await accNow()).adminAllow) === '[]', refused);
+      // Venue defaults: saved at once, used from the next start
+      await hp.evaluate(() => document.getElementById('settab-def').click()); await sleep(300);
+      const defSave = (size) => hp.evaluate((n) => {
+        const f = [...document.querySelectorAll('#dlg .defgrid label')].find((x) => x.querySelector('span').textContent === 'Text size (percent)').querySelector('input');
+        f.value = String(n); [...document.querySelectorAll('#dlg button')].find((x) => x.textContent.trim() === 'Save defaults').click();
+      }, size);
+      const defNow = () => hp.evaluate(async () => (await (await fetch('/api/admin/settings')).json()).defaults);
+      await defSave(120); await sleep(700);
+      const d1 = await defNow();
+      check('Settings → Defaults saves the venue defaults and says they apply after a restart', d1.textSizePercent === 120 && d1.restartNeeded === true && /apply when the program is restarted/.test(await hp.evaluate(() => document.getElementById('setpanel-def').innerText)), d1);
+      await defSave(100); await sleep(700);
+      check('saving the running value again clears the restart note', (await defNow()).restartNeeded === false);
+      await defSave(400); await sleep(700);
+      check('a text size outside 50 to 300 is refused and not saved', (await defNow()).textSizePercent === 100);
       await hp.close(); await ctx3.close();
       // The viewer password opens the Run page for watching only
       const ctx4 = await b.createBrowserContext(); const vp = await ctx4.newPage(); vp.setDefaultTimeout(T(8000));
