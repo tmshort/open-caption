@@ -678,7 +678,7 @@
     document.body.classList.toggle('hasbar', !bar.hidden);
     if (bar.hidden) return;
     const item = (text, cls) => h('span', { class: cls || '' }, text);
-    const items = [item(__('Step {n} of {total}', { n: i + 1, total: STEPS.length })), item(__('{n} of {total} steps done', { n: STEPS.slice(0, -1).filter((x) => done(x[0])).length, total: STEPS.length - 1 }))];
+    const items = [item(__('Step {n} of {total}', { n: i + 1, total: STEPS.length })), item(__('Steps done: {n}', { n: STEPS.slice(0, -1).filter((x) => done(x[0])).length }))];
     const an = A.mainAnalysis;
     if (A.step === 'showfile') {
       items.push(item(A.dirty ? __('Unsaved changes') : __('All changes saved'), A.dirty ? 'status-warn' : 'status-ok'));

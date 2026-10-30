@@ -887,7 +887,6 @@ OCI18n.add("it", {
  "Open the help in its own window": "Apri l'aiuto in una finestra separata",
  "The browser blocked the new window. Allow pop-ups for this page, then try again.": "Il browser ha bloccato la nuova finestra. Consenti i pop-up per questa pagina e riprova.",
  "Step {n} of {total}": "Passo {n} di {total}",
- "{n} of {total} steps done": "{n} passi su {total} completati",
  "{n} missing images": "Mancano {n} immagini",
  "All images found": "Tutte le immagini trovate",
  "Look saved": "Aspetto salvato",
@@ -896,4 +895,5 @@ OCI18n.add("it", {
  "No rehearsal yet": "Ancora nessuna prova",
  "← Back: {step}": "← Indietro: {step}",
  "Previous and next step": "Passo precedente e successivo",
+ "Steps done: {n}": "Passi completati: {n}",
 });
