@@ -65,7 +65,7 @@ The first four guides are also in Spanish, French, German, Italian and Portugues
 
 ## Security
 
-Anyone who can reach the server can open the Setup and operator sign-in pages, and over plain `http://` passwords cross the WiFi unencrypted; it is meant for a private network. Limit who can sign in with `access.admin_allow` / `access.operator_allow` in `config.yaml` ([docs/usage-guide.md](docs/usage-guide.md#security)). **HTTPS** (off by default, `https.enabled`) encrypts the sign-in, with a certificate the program makes itself, your own files, or a trusted Let's Encrypt certificate it gets and renews by itself: [docs/https-certificate-guide.md](docs/https-certificate-guide.md). Plain `http://` stays the simplest address for the audience.
+Anyone who can reach the server can open the Setup and operator sign-in pages, and over plain `http://` passwords cross the WiFi unencrypted; it is meant for a private network. Limit who can sign in with `access.admin_allow` / `access.operator_allow` in `config.yaml` or in Setup (Settings → Access) ([docs/usage-guide.md](docs/usage-guide.md#security)). **HTTPS** (off by default, `https.enabled`) encrypts the sign-in, with a certificate the program makes itself, your own files, or a trusted Let's Encrypt certificate it gets and renews by itself: [docs/https-certificate-guide.md](docs/https-certificate-guide.md). Plain `http://` stays the simplest address for the audience.
 
 <!-- source-only:start -->
 ## Contributing

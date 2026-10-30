@@ -158,10 +158,10 @@ Quem pode abrir a configuração e a página do operador. A página do público 
 
 | Chave | Padrão | Significado |
 |---|---|---|
-| `access.admin_allow` | `[localhost]` | Computadores autorizados a abrir a configuração; por padrão, apenas o computador que executa o programa. Uma lista vazia (`[]`) significa que **qualquer computador da rede pode tentar a senha**; o programa avisa sobre isso. Entradas: `localhost`, `private` (as redes domésticas e de escritório usuais), um endereço (`192.168.1.50`) ou uma rede (`192.168.1.0/24`). Exemplo: `[localhost]` |
-| `access.operator_allow` | `[]` | O mesmo, para a página do operador |
-| `access.viewer_allow` | `[]` | Onde funciona a **senha só de espectador** (`viewer_password`), por exemplo apenas o tablet do contrarregra. Não limita as senhas de operador e de administrador, que abrem `/follow` como `/operator` e seguem `operator_allow` e `admin_allow`. Vazia = em qualquer lugar de onde a página do operador seja alcançável |
-| `access.local_auto_login` | `yes` | Um navegador no computador que executa o programa (aberto em `localhost`, `127.0.0.1` ou `[::1]`) entra como administrador sem senha. Os outros computadores sempre usam senha. Desligue em um computador em que outras pessoas possam entrar |
+| `access.admin_allow` | `[localhost]` | Computadores autorizados a abrir a configuração; por padrão, apenas o computador que executa o programa. Uma lista vazia (`[]`) significa que **qualquer computador da rede pode tentar a senha**; o programa avisa sobre isso. Entradas: `localhost`, `private` (as redes domésticas e de escritório usuais), um endereço (`192.168.1.50`) ou uma rede (`192.168.1.0/24`). Exemplo: `[localhost]` *Configuração: Configurações → Acesso* |
+| `access.operator_allow` | `[]` | O mesmo, para a página do operador *Configuração: Configurações → Acesso* |
+| `access.viewer_allow` | `[]` | Onde funciona a **senha só de espectador** (`viewer_password`), por exemplo apenas o tablet do contrarregra. Não limita as senhas de operador e de administrador, que abrem `/follow` como `/operator` e seguem `operator_allow` e `admin_allow`. Vazia = em qualquer lugar de onde a página do operador seja alcançável *Configuração: Configurações → Acesso* |
+| `access.local_auto_login` | `yes` | Um navegador no computador que executa o programa (aberto em `localhost`, `127.0.0.1` ou `[::1]`) entra como administrador sem senha. Os outros computadores sempre usam senha. Desligue em um computador em que outras pessoas possam entrar *Configuração: Configurações → Acesso* |
 
 ### `log`, `mdns`, `standby`
 

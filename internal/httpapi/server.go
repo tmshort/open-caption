@@ -29,6 +29,8 @@ type Server struct {
 	dev     bool
 	store   *show.Store
 
+	// accessMu guards the three lists below, which Setup can change while the program runs (access.go).
+	accessMu                  sync.RWMutex
 	adminAllow, operatorAllow config.AllowList // which computers may open Setup / the operator page
 	viewerAllow               config.AllowList // where the viewer-only password works (access.viewer_allow)
 	mdns                      *mdnsManager     // the local network name (open-caption.local)

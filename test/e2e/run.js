@@ -537,17 +537,17 @@ async function main() {
     const guard = await open(); await guard.goto(B + '/admin'); await guard.waitForSelector('#pw'); await guard.type('#pw', ADMIN); await guard.keyboard.press('Enter'); await guard.waitForSelector('#steps button');
     await click(guard, 'Settings'); await sleep(600);
     const tab = async (id) => { await guard.evaluate((i) => document.getElementById('settab-' + i).click(), id); await sleep(150); };
-    check('Settings has five tabs, with Close in view', await guard.evaluate(() => { const t = [...document.querySelectorAll('#dlg [role=tab]')].map((x) => x.textContent); const c = document.getElementById('dlgok').getBoundingClientRect(); return t.join('|') === 'Audience screen|Network|Security|Certificate|About' && c.bottom <= innerHeight && c.top >= 0; }));
+    check('Settings has six tabs, with Close in view', await guard.evaluate(() => { const t = [...document.querySelectorAll('#dlg [role=tab]')].map((x) => x.textContent); const c = document.getElementById('dlgok').getBoundingClientRect(); return t.join('|') === 'Audience screen|Network|Access|Security|Certificate|About' && c.bottom <= innerHeight && c.top >= 0; }));
     await tab('abt');
     {
       const sizes = [];
-      for (const id of ['aud', 'net', 'sec', 'abt']) { await tab(id); sizes.push(await guard.evaluate(() => { const b = document.getElementById('dlgbody'); return { dlg: Math.round(document.getElementById('dlg').getBoundingClientRect().height), scrolls: b.scrollHeight > b.clientHeight + 1 }; })); }
+      for (const id of ['aud', 'net', 'acc', 'sec', 'abt']) { await tab(id); sizes.push(await guard.evaluate(() => { const b = document.getElementById('dlgbody'); return { dlg: Math.round(document.getElementById('dlg').getBoundingClientRect().height), scrolls: b.scrollHeight > b.clientHeight + 1 }; })); }
       check('the Settings window is as tall as its tallest tab, so no tab scrolls and it never changes size', sizes.every((z) => !z.scrolls) && sizes.every((z) => z.dlg === sizes[0].dlg), sizes);
     }
     await guard.focus('#settab-abt'); await guard.keyboard.press('ArrowLeft'); await sleep(150);
     check('the arrow keys move between the tabs (and the selected tab says so)', await guard.evaluate(() => document.activeElement.id === 'settab-cert' && document.activeElement.getAttribute('aria-selected') === 'true' && document.getElementById('setpanel-cert').classList.contains('inactive') === false && document.getElementById('setpanel-abt').classList.contains('inactive')));
-    await tab('abt');
-    check('Settings tells you Setup is open to the whole network', (await guard.evaluate(() => document.getElementById('dlg').innerText)).includes('any computer on the network'));
+    await tab('acc');
+    check('Settings → Access says an empty list lets any computer on the network try', (await guard.evaluate(() => document.getElementById('dlg').innerText)).includes('Leave a list empty to let any computer on the network try'));
     await tab('aud');
     check('the Audience screen tab has no network name (it is in the Network tab)', await guard.evaluate(() => !/Name on the network/.test(document.getElementById('setpanel-aud').innerText) && !document.querySelector('#setpanel-aud input[aria-label="Announce this computer by name"]')));
     check('Settings has a Standby screen section with a message and a logo', await guard.evaluate(() => { const d = document.getElementById('dlg').innerText; return /Standby screen/.test(d) && !!document.querySelector('#dlg input[aria-label="Standby message"]') && !!document.querySelector('#dlg input[type=file]'); }));
@@ -1049,6 +1049,24 @@ async function main() {
       await hp.evaluate(() => document.getElementById('settab-sec').click()); await sleep(300);
       const sec = await hp.evaluate(() => ({ text: document.getElementById('dlg').innerText, reveal: [...document.querySelectorAll('#dlg button')].some((x) => /operator password/.test(x.textContent) && /Show|Hide/.test(x.textContent)) }));
       check('Settings says a digest-held operator password cannot be shown, and offers no Show button', /stored as a digest, so it cannot be shown/.test(sec.text) && !sec.reveal, sec);
+      await hp.evaluate(() => document.getElementById('settab-acc').click()); await sleep(300);
+      // Who can open the pages: ticks and addresses, saved at once; a list that shuts this computer out is refused
+      const accOp = (act) => hp.evaluate((what) => {
+        const g = [...document.querySelectorAll('#dlg fieldset.accgroup')].find((x) => x.querySelector('legend').textContent === 'Operator page');
+        if (what === 'tick') { const bx = g.querySelectorAll('input[type=checkbox]')[1]; bx.checked = true; bx.dispatchEvent(new Event('change')); }
+        if (what === 'untick') { const bx = g.querySelectorAll('input[type=checkbox]')[1]; bx.checked = false; bx.dispatchEvent(new Event('change')); }
+        if (what === 'badlist') { const ta = document.querySelectorAll('#dlg fieldset.accgroup textarea')[0]; ta.value = '192.168.1.50'; ta.dispatchEvent(new Event('input')); }
+        [...document.querySelectorAll('#dlg button')].find((x) => x.textContent.trim() === 'Save who can open the pages').click();
+      }, act);
+      const accNow = () => hp.evaluate(async () => (await (await fetch('/api/admin/settings')).json()).access);
+      check('Settings → Security has a Who can open the pages section with a list for Setup, the operator page and the viewer password', await hp.evaluate(() => [...document.querySelectorAll('#dlg fieldset.accgroup legend')].map((x) => x.textContent).join('|') === 'Setup page|Operator page|Viewer-only password'));
+      await accOp('tick'); await sleep(700);
+      check('ticking Home and office networks for the operator page is saved', JSON.stringify((await accNow()).operatorAllow) === '["private"]');
+      await accOp('untick'); await sleep(700);
+      check('unticking it empties the list again', JSON.stringify((await accNow()).operatorAllow) === '[]');
+      await accOp('badlist'); await sleep(700);
+      const refused = await hp.evaluate(() => document.getElementById('toast').textContent);
+      check('a Setup list that would shut this computer out is refused, with the reason, and nothing is saved', /stop the computer you are using/.test(refused) && JSON.stringify((await accNow()).adminAllow) === '[]', refused);
       await hp.close(); await ctx3.close();
       // The viewer password opens the Run page for watching only
       const ctx4 = await b.createBrowserContext(); const vp = await ctx4.newPage(); vp.setDefaultTimeout(T(8000));

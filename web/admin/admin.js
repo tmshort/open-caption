@@ -183,6 +183,41 @@
     } }, ...[['error', 'Errors only'], ['warn', 'Problems (warnings and errors)'], ['info', 'Normal (events, sign-ins)'], ['debug', 'Debug (every request)']].map(([v, t]) => h('option', { value: v }, __(t))));
     logSelect.value = s.logLevel;
     const sec = (title, ...kids) => h('section', { class: 'setsec' }, h('h3', {}, __(title)), ...kids);
+    // Who may open the pages (access.* in config.yaml): ticks for the usual choices and one address or network per line for the
+    // rest. Empty means any computer on the network.
+    const acc0 = s.access || {};
+    function accessGroup(title, hint, emptyText, list) {
+      const lower = (e) => e.toLowerCase();
+      const lo = h('input', { type: 'checkbox' }), pr = h('input', { type: 'checkbox' });
+      lo.checked = list.some((e) => lower(e) === 'localhost'); pr.checked = list.some((e) => lower(e) === 'private');
+      const rest = h('textarea', { rows: '2', cols: '34', spellcheck: 'false', placeholder: '192.168.1.50\n192.168.1.0/24' });
+      rest.value = list.filter((e) => lower(e) !== 'localhost' && lower(e) !== 'private').join('\n');
+      const get = () => [].concat(lo.checked ? ['localhost'] : [], pr.checked ? ['private'] : [], rest.value.split(/[\n,]+/).map((x) => x.trim()).filter(Boolean));
+      const empty = h('p', { class: 'hint' });
+      const note = () => { empty.textContent = get().length ? '' : emptyText; };
+      lo.onchange = pr.onchange = rest.oninput = note; note();
+      return { get, el: h('fieldset', { class: 'accgroup' }, h('legend', {}, title), h('p', { class: 'hint' }, hint),
+        h('div', { class: 'row' }, h('label', { class: 'row' }, lo, __('This computer (localhost)')), h('label', { class: 'row' }, pr, __('Home and office networks (private)'))),
+        h('label', { class: 'field' }, h('span', {}, __('Other addresses or networks, one per line')), rest), empty) };
+    }
+    const accAdmin = accessGroup(__('Setup page'), __('Who may open Setup. Keep this computer in the list if you use Setup on it.'), __('Any computer on the network may try to sign in to Setup.'), acc0.adminAllow || []);
+    const accOp = accessGroup(__('Operator page'), __('Who may open the operator page and the Follow page. Computers in the Setup list may always open them.'), __('Any computer on the network may try to sign in to the operator page.'), acc0.operatorAllow || []);
+    const accViewer = accessGroup(__('Viewer-only password'), __('Where the viewer password works. It does not limit the operator and admin passwords.'), __('The viewer password works from any computer on the network.'), acc0.viewerAllow || []);
+    // One list at a time keeps the tab short enough for the Settings window.
+    const accGroups = [accAdmin, accOp, accViewer];
+    const accPick = h('select', { 'aria-label': __('List to edit'), onchange: () => accGroups.forEach((g, i) => { g.el.hidden = i !== Number(accPick.value); }) },
+      ...[__('Setup page'), __('Operator page'), __('Viewer-only password')].map((t, i) => h('option', { value: String(i) }, t)));
+    accGroups.forEach((g, i) => { g.el.hidden = i !== 0; });
+    const accAuto = h('input', { type: 'checkbox' }); accAuto.checked = acc0.localAutoLogin !== false;
+    const accWarn = h('p', { class: 'check warn' }, __('Anyone on this WiFi can try to sign in to Setup, and passwords travel unencrypted over plain http. To limit it, choose which computers may open Setup, in “Who can open the pages” below (for example just this computer).'));
+    const paintAccWarn = () => { accWarn.hidden = !!s.adminRestricted || !!s.httpsAddr; };
+    paintAccWarn();
+    const accSave = h('button', { type: 'button', onclick: async () => {
+      const x = await api('PUT', '/api/admin/settings/access', { adminAllow: accAdmin.get(), operatorAllow: accOp.get(), viewerAllow: accViewer.get(), localAutoLogin: accAuto.checked });
+      if (!x.ok) return fail(x);
+      s.adminRestricted = x.data.adminRestricted; s.operatorRestricted = x.data.operatorRestricted; paintAccWarn();
+      toast(accAuto.checked ? __('Access saved') : __('Access saved. A browser on this computer now signs in with the password.'), accAuto.checked ? undefined : 6000);
+    } }, __('Save who can open the pages'));
     // Which of this computer's network interfaces are used (network.* in config.yaml): a setting of this computer, not of a
     // show, so it lives here and not on the Share step. Each tick is saved as soon as it is clicked.
     const net0 = s.network || {};
@@ -276,8 +311,15 @@
           h('label', { class: 'field' }, h('span', {}, __('Message (optional; empty uses “Captions will begin shortly” in each viewer’s language)')), sbMsg), h('div', { class: 'row' }, sbSave)),
         ]],
       ['net', 'Network', [networkSec, nameSec]],
+      ['acc', 'Access', [
+          accWarn,
+        sec('Who can open the pages',
+          h('p', { class: 'hint' }, __('Leave a list empty to let any computer on the network try. The audience page is always open to everyone.')),
+          h('label', { class: 'field' }, h('span', {}, __('List to edit')), accPick), accAdmin.el, accOp.el, accViewer.el,
+          h('label', { class: 'row' }, accAuto, __('A browser on this computer is signed in without a password')),
+          h('p', { class: 'hint' }, __('Turn this off on a computer that other people can use. A change that would shut this computer out of Setup is refused.')),
+          h('div', { class: 'row' }, accSave))]],
       ['sec', 'Security', [
-          !s.adminRestricted && !s.httpsAddr ? h('p', { class: 'check warn' }, __('Anyone on this WiFi can try to sign in to Setup, and passwords travel unencrypted over plain http. To limit it, set access: admin_allow in the settings file (for example [localhost]); see the usage guide.')) : null,
         sec('Change passwords',
           s.canChangePasswords
             ? h('div', {}, h('p', { class: 'hint' }, __('Leave a box empty to keep that password. At least 6 characters. People signed in with a changed password are signed out; you stay signed in.')),
@@ -294,8 +336,6 @@
         sec('About this copy',
           h('table', { class: 'cheat' },
             row('Program', 'open-caption ' + s.version), row('Settings file', s.configPath), row('Shows and data', s.dataDir),
-            row('Setup page can be opened from', s.adminRestricted ? s.adminAllow.join(', ') : 'any computer on the network'),
-            row('Operator page can be opened from', s.operatorRestricted ? s.operatorAllow.join(', ') : 'any computer on the network'),
             row('Web port (HTTP)', (s.httpAddr || '').replace(/^.*:/, '')), row('Web port (HTTPS)', (s.httpsAddr || '').replace(/^.*:/, ''))),
           h('p', { class: 'hint' }, __('These are fixed in the settings file. To change them, edit that file and start the program again.'))),
         sec('Log detail',

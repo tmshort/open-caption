@@ -11,9 +11,6 @@
   "Program",
   "Settings file",
   "Shows and data",
-  "Setup page can be opened from",
-  "Operator page can be opened from",
-  "any computer on the network",
   "Web port (HTTP)",
   "Web port (HTTPS)"
  ],
@@ -98,9 +95,11 @@
   "About this copy",
   "Standby screen",
   "Network",
+  "Access",
   "Network interfaces",
   "Name on the network",
   "Log detail",
+  "Who can open the pages",
   "Change passwords"
  ],
  "certificate panel": [

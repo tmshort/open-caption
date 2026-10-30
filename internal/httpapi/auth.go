@@ -328,22 +328,24 @@ func clientAddr(r *http.Request) netip.Addr {
 // address may always use the operator pages too.
 func (s *Server) allowedFor(role string, r *http.Request) bool {
 	ip := clientAddr(r)
+	adminAllow, operatorAllow, _ := s.allowLists()
 	if !ip.IsValid() {
-		return !s.adminAllow.Restricted() && !s.operatorAllow.Restricted()
+		return !adminAllow.Restricted() && !operatorAllow.Restricted()
 	}
 	if role == RoleAdmin {
-		return s.adminAllow.Allows(ip)
+		return adminAllow.Allows(ip)
 	}
-	return s.operatorAllow.Allows(ip) || s.adminAllow.Allows(ip)
+	return operatorAllow.Allows(ip) || adminAllow.Allows(ip)
 }
 
 // viewerAllowedHere reports whether a viewer-role session may be used from this computer (access.viewer_allow; empty = anywhere).
 func (s *Server) viewerAllowedHere(r *http.Request) bool {
 	ip := clientAddr(r)
+	_, _, viewerAllow := s.allowLists()
 	if !ip.IsValid() {
-		return !s.viewerAllow.Restricted()
+		return !viewerAllow.Restricted()
 	}
-	return s.viewerAllow.Allows(ip)
+	return viewerAllow.Allows(ip)
 }
 
 const notFromHere = "That page is not available from this computer. It can only be opened from the computers listed under access in config.yaml."
@@ -406,7 +408,7 @@ var proxyHeaders = []string{"X-Forwarded-For", "X-Forwarded-Host", "X-Forwarded-
 //   - nothing may have relayed it (a reverse proxy on this computer makes every visitor look local);
 //   - a browser that says the request was started by another website or another port is refused.
 func (s *Server) localTrusted(r *http.Request) bool {
-	if !s.cfg.Access.LocalAutoLogin {
+	if !s.localAutoLogin() {
 		return false
 	}
 	if ip := clientAddr(r); !ip.IsValid() || !ip.IsLoopback() {
@@ -458,6 +460,9 @@ func (s *Server) require(role string, h http.HandlerFunc) http.HandlerFunc {
 		if c, err := r.Cookie(cookieName); err == nil {
 			sess, ok = s.auth.lookup(c.Value)
 			token = c.Value
+		}
+		if ok && sess.auto && !s.localAutoLogin() { // local_auto_login was turned off in Setup: that sign-in is over
+			ok = false
 		}
 		if (!ok || roleRank(sess.role) < roleRank(role)) && s.localTrusted(r) {
 			if t, issued := s.auth.issue(RoleAdmin, true); issued {

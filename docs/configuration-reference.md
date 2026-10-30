@@ -8,7 +8,7 @@
 - **First run.** If there is no file, the program writes one with random **admin** and **operator** passwords and prints them once in the console. The file is mode 0600 (private to your account) and the passwords are **plain text** unless you store a digest instead (see "Passwords" below), so keep it private.
 - **You only need the keys you change.** A missing key keeps its default (the table below). The generated file lists everything.
 - **Strict.** A misspelled key, a value of the wrong kind, or a value out of range stops the program at start-up with **all** the problems listed, each naming the setting (for example `audience.max_clients: 0 is not a client count: use 1 to 100000`). Nothing is guessed. The one exception: a file marked with a newer `config_version` than the program knows has its unknown keys ignored, with a warning.
-- **Setup edits some of it.** Changing the passwords, the `.local` name, the standby message or the log detail in Setup rewrites those keys in the file and keeps your comments and every other setting. Everything else you edit by hand, then **restart the program**. (A renewed certificate file is the one thing picked up without a restart; see `https.cert_file`.)
+- **Setup edits some of it.** Changing the passwords, who may open the pages (`access.*`), the `.local` name, the standby message or the log detail in Setup rewrites those keys in the file and keeps your comments and every other setting. Everything else you edit by hand, then **restart the program**. (A renewed certificate file is the one thing picked up without a restart; see `https.cert_file`.)
 - **Booleans** are `yes`/`no`/`true`/`false`. **Lists** are written `[a, b]` or one `- item` per line.
 
 ## Command line and environment
@@ -158,10 +158,10 @@ Who may open Setup and the operator page. The audience page is always open to ev
 
 | Key | Default | Meaning |
 |---|---|---|
-| `access.admin_allow` | `[localhost]` | Computers allowed to open Setup: by default only the computer that runs the program. An empty list (`[]`) means **any computer on the network may try the password**, and the program warns about it. Entries: `localhost`, `private` (the usual home and office networks), an address (`192.168.1.50`) or a network (`192.168.1.0/24`). Example: `[localhost, 192.168.1.50]` |
-| `access.operator_allow` | `[]` | The same, for the operator page |
-| `access.viewer_allow` | `[]` | Where the **viewer-only password** (`viewer_password`) works, for example just the stage manager's tablet. It does not limit the operator and admin passwords, which open `/follow` like `/operator` and follow `operator_allow` and `admin_allow`. Empty = anywhere the operator page can be reached |
-| `access.local_auto_login` | `yes` | A browser on the computer that runs the program (opened at `localhost`, `127.0.0.1` or `[::1]`) is signed in as admin with no password. Other computers always use a password. Turn it off on a computer other people can log in to |
+| `access.admin_allow` | `[localhost]` | Computers allowed to open Setup: by default only the computer that runs the program. An empty list (`[]`) means **any computer on the network may try the password**, and the program warns about it. Entries: `localhost`, `private` (the usual home and office networks), an address (`192.168.1.50`) or a network (`192.168.1.0/24`). Example: `[localhost, 192.168.1.50]` *Setup: Settings → Access* |
+| `access.operator_allow` | `[]` | The same, for the operator page *Setup: Settings → Access* |
+| `access.viewer_allow` | `[]` | Where the **viewer-only password** (`viewer_password`) works, for example just the stage manager's tablet. It does not limit the operator and admin passwords, which open `/follow` like `/operator` and follow `operator_allow` and `admin_allow`. Empty = anywhere the operator page can be reached *Setup: Settings → Access* |
+| `access.local_auto_login` | `yes` | A browser on the computer that runs the program (opened at `localhost`, `127.0.0.1` or `[::1]`) is signed in as admin with no password. Other computers always use a password. Turn it off on a computer other people can log in to *Setup: Settings → Access* |
 
 ### `log`, `mdns`, `standby`
 

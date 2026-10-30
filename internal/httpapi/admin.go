@@ -298,6 +298,7 @@ func (s *Server) adminRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("PUT /api/admin/settings/log-level", adm(s.setLogLevel))
 	mux.HandleFunc("PUT /api/admin/settings/mdns", adm(s.setMDNS))
 	mux.HandleFunc("PUT /api/admin/settings/network", adm(s.setNetwork))
+	mux.HandleFunc("PUT /api/admin/settings/access", adm(s.setAccess))
 	mux.HandleFunc("PUT /api/admin/settings/standby", adm(s.setStandby))
 	mux.HandleFunc("GET /api/admin/settings/certificate", adm(s.certificateInfo))
 	mux.HandleFunc("POST /api/admin/settings/certificate/renew", adm(s.renewCertificate))
@@ -1439,8 +1440,8 @@ func (s *Server) settings(w http.ResponseWriter, r *http.Request) {
 		"config": snap.Redacted(), "configPath": s.cfg.Path, "dataDir": s.cfg.DataDir,
 		"httpAddr": l.HTTPAddr, "httpsAddr": l.HTTPSAddr, "version": s.version,
 		"canChangePasswords": s.cfg.Path != "", "operatorPasswordHashed": config.IsHashed(snap.OperatorPassword), "viewerPasswordSet": snap.ViewerPassword != "", "standby": s.standbyView(), "logLevel": logx.Current().String(), "logLevelPinned": s.pinnedLevel, "mdns": s.MDNSStatus(),
-		"adminAllow": s.cfg.Access.AdminAllow, "operatorAllow": s.cfg.Access.OperatorAllow,
-		"adminRestricted": s.adminAllow.Restricted(), "operatorRestricted": s.operatorAllow.Restricted(),
+		"adminAllow": snap.Access.AdminAllow, "operatorAllow": snap.Access.OperatorAllow,
+		"adminRestricted": s.adminRestricted(), "operatorRestricted": s.operatorRestricted(), "access": s.accessView(),
 		"network": map[string]any{"interfaces": ns.Interfaces, "restrictListening": ns.RestrictListening}, "networkPinned": s.pinnedNetwork, "interfaces": s.networkInterfaces(r),
 	})
 }
