@@ -737,7 +737,7 @@ OCI18n.add("it", {
  "More actions for {name}": "Altre azioni per {name}",
  "Certificate": "Certificato",
  "HTTPS is off, so devices use plain http. Turn it on in the settings file (https: enabled: yes).": "HTTPS è disattivato, quindi i dispositivi usano http semplice. Attivalo nel file delle impostazioni (https: enabled: yes).",
- "HTTPS uses a certificate this program made itself, so browsers show a warning until it is accepted. For a trusted one, set up automatic certificates (docs/https-certificate-guide.md).": "HTTPS usa un certificato creato da questo programma, quindi i browser mostrano un avviso finché non viene accettato. Per uno attendibile, configura i certificati automatici (docs/https-certificate-guide.md).",
+ "HTTPS uses a certificate this program made itself, so browsers show a warning until it is accepted. For a trusted one, set up automatic certificates (see the help linked below).": "HTTPS usa un certificato creato da questo programma, quindi i browser mostrano un avviso finché non viene accettato. Per uno attendibile, configura i certificati automatici (vedi la guida collegata qui sotto).",
  "HTTPS uses the certificate files named in the settings file. When they are replaced (for example after a renewal) the new ones are used within about 30 seconds, with no restart.": "HTTPS usa i file del certificato indicati nel file delle impostazioni. Quando vengono sostituiti (per esempio dopo un rinnovo), i nuovi sono usati entro circa 30 secondi, senza riavvio.",
  "Automatic certificate from {directory}, using the DNS provider {provider}.": "Certificato automatico da {directory}, con il provider DNS {provider}.",
  "Waiting for the first certificate": "In attesa del primo certificato",
@@ -882,4 +882,5 @@ OCI18n.add("it", {
  "Viewer sign-in is off. To turn it on, type a password in the box above and click Set viewer password.": "L'accesso spettatore è disattivato. Per attivarlo, digita una password nella casella sopra e fai clic su «Imposta la password spettatore».",
  "A browser on the computer that runs the program (opened at localhost) is signed in as admin automatically, with no password. These passwords are for the other computers. You can turn this off under Access.": "Un browser sul computer su cui gira il programma (aperto su localhost) accede automaticamente come amministratore, senza password. Queste password servono per gli altri computer. Puoi disattivarlo in Accesso.",
  "Signing in without a password on the computer that runs the program is turned off (under Access), so a browser there asks for a password too.": "L'accesso senza password sul computer su cui gira il programma è disattivato (in Accesso), quindi anche lì un browser chiede la password.",
+ "Help: setting up a trusted certificate": "Aiuto: configurare un certificato attendibile",
 });

@@ -737,7 +737,7 @@ OCI18n.add("de", {
  "More actions for {name}": "Weitere Aktionen für {name}",
  "Certificate": "Zertifikat",
  "HTTPS is off, so devices use plain http. Turn it on in the settings file (https: enabled: yes).": "HTTPS ist aus, die Geräte nutzen also einfaches http. Schalten Sie es in der Einstellungsdatei ein (https: enabled: yes).",
- "HTTPS uses a certificate this program made itself, so browsers show a warning until it is accepted. For a trusted one, set up automatic certificates (docs/https-certificate-guide.md).": "HTTPS verwendet ein Zertifikat, das dieses Programm selbst erstellt hat, daher zeigen Browser eine Warnung, bis es akzeptiert wird. Für ein vertrauenswürdiges richten Sie automatische Zertifikate ein (docs/https-certificate-guide.md).",
+ "HTTPS uses a certificate this program made itself, so browsers show a warning until it is accepted. For a trusted one, set up automatic certificates (see the help linked below).": "HTTPS verwendet ein Zertifikat, das dieses Programm selbst erstellt hat, daher zeigen Browser eine Warnung, bis es akzeptiert wird. Für ein vertrauenswürdiges richten Sie automatische Zertifikate ein (siehe die unten verlinkte Hilfe).",
  "HTTPS uses the certificate files named in the settings file. When they are replaced (for example after a renewal) the new ones are used within about 30 seconds, with no restart.": "HTTPS verwendet die in der Einstellungsdatei genannten Zertifikatsdateien. Werden sie ersetzt (zum Beispiel nach einer Erneuerung), gelten die neuen innerhalb von etwa 30 Sekunden, ohne Neustart.",
  "Automatic certificate from {directory}, using the DNS provider {provider}.": "Automatisches Zertifikat von {directory}, mit dem DNS-Anbieter {provider}.",
  "Waiting for the first certificate": "Warten auf das erste Zertifikat",
@@ -882,4 +882,5 @@ OCI18n.add("de", {
  "Viewer sign-in is off. To turn it on, type a password in the box above and click Set viewer password.": "Die Zuschauer-Anmeldung ist aus. Zum Einschalten geben Sie oben ein Passwort ein und klicken auf „Zuschauer-Passwort festlegen“.",
  "A browser on the computer that runs the program (opened at localhost) is signed in as admin automatically, with no password. These passwords are for the other computers. You can turn this off under Access.": "Ein Browser auf dem Computer, auf dem das Programm läuft (geöffnet unter localhost), wird automatisch als Administrator angemeldet, ohne Passwort. Diese Passwörter gelten für die anderen Computer. Unter Zugriff können Sie das ausschalten.",
  "Signing in without a password on the computer that runs the program is turned off (under Access), so a browser there asks for a password too.": "Die Anmeldung ohne Passwort auf dem Computer, auf dem das Programm läuft, ist ausgeschaltet (unter Zugriff); ein Browser dort fragt also ebenfalls nach einem Passwort.",
+ "Help: setting up a trusted certificate": "Hilfe: ein vertrauenswürdiges Zertifikat einrichten",
 });

@@ -619,6 +619,11 @@ async function main() {
     await click(guard, 'Settings'); await sleep(600);
     await guard.evaluate(() => document.getElementById('settab-sec').click()); await sleep(150);
     check('Settings → Passwords has a Certificate section that says where HTTPS gets its certificate', await guard.evaluate(() => { const b = document.querySelector('.certbox'); return !!b && /HTTPS/.test(b.textContent) && b.closest('section').querySelector('h3').textContent === 'Certificate'; }));
+    await guard.evaluate(() => [...document.querySelectorAll('#dlg button')].find((x) => x.textContent.trim() === 'Help: setting up a trusted certificate').click()); await sleep(500);
+    check('the Certificate tab links to the help on setting up a certificate, which opens that guide', await guard.evaluate(() => !document.getElementById('help').hidden && /topic=admin-https-certificate-guide/.test(document.getElementById('help').querySelector('iframe').src)));
+    await guard.evaluate(() => document.getElementById('helpbtn').click()); await sleep(300);
+    await click(guard, 'Settings'); await sleep(600);
+    await guard.evaluate(() => document.getElementById('settab-sec').click()); await sleep(150);
     const inputs = await guard.$$('#dlg input[type=password]'); await inputs[1].type('new-operator-pw');
     await guard.evaluate(() => [...document.querySelectorAll('#dlg button')].find((x) => x.textContent.trim() === 'Change operator password').click()); await sleep(700);
     await guard.evaluate(() => document.getElementById('dlgok').click()); await sleep(300);

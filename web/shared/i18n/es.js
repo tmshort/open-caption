@@ -737,7 +737,7 @@ OCI18n.add("es", {
  "More actions for {name}": "Más acciones para {name}",
  "Certificate": "Certificado",
  "HTTPS is off, so devices use plain http. Turn it on in the settings file (https: enabled: yes).": "HTTPS está desactivado, así que los dispositivos usan http sin cifrar. Actívelo en el archivo de configuración (https: enabled: yes).",
- "HTTPS uses a certificate this program made itself, so browsers show a warning until it is accepted. For a trusted one, set up automatic certificates (docs/https-certificate-guide.md).": "HTTPS usa un certificado que creó este programa, así que los navegadores muestran una advertencia hasta que se acepte. Para uno de confianza, configure los certificados automáticos (docs/https-certificate-guide.md).",
+ "HTTPS uses a certificate this program made itself, so browsers show a warning until it is accepted. For a trusted one, set up automatic certificates (see the help linked below).": "HTTPS usa un certificado que creó este programa, así que los navegadores muestran una advertencia hasta que se acepte. Para uno de confianza, configure los certificados automáticos (véase la ayuda enlazada abajo).",
  "HTTPS uses the certificate files named in the settings file. When they are replaced (for example after a renewal) the new ones are used within about 30 seconds, with no restart.": "HTTPS usa los archivos de certificado indicados en el archivo de configuración. Cuando se sustituyen (por ejemplo tras una renovación), los nuevos se usan en unos 30 segundos, sin reiniciar.",
  "Automatic certificate from {directory}, using the DNS provider {provider}.": "Certificado automático de {directory}, con el proveedor de DNS {provider}.",
  "Waiting for the first certificate": "Esperando el primer certificado",
@@ -882,4 +882,5 @@ OCI18n.add("es", {
  "Viewer sign-in is off. To turn it on, type a password in the box above and click Set viewer password.": "El acceso de espectador está desactivado. Para activarlo, escriba una contraseña en la casilla de arriba y pulse «Establecer la contraseña de espectador».",
  "A browser on the computer that runs the program (opened at localhost) is signed in as admin automatically, with no password. These passwords are for the other computers. You can turn this off under Access.": "Un navegador del equipo donde corre el programa (abierto en localhost) inicia sesión como administrador automáticamente, sin contraseña. Estas contraseñas son para los demás equipos. Puede desactivarlo en Acceso.",
  "Signing in without a password on the computer that runs the program is turned off (under Access), so a browser there asks for a password too.": "Iniciar sesión sin contraseña en el equipo donde corre el programa está desactivado (en Acceso), así que un navegador allí también pide contraseña.",
+ "Help: setting up a trusted certificate": "Ayuda: configurar un certificado de confianza",
 });

@@ -737,7 +737,7 @@ OCI18n.add("pt", {
  "More actions for {name}": "Mais ações para {name}",
  "Certificate": "Certificado",
  "HTTPS is off, so devices use plain http. Turn it on in the settings file (https: enabled: yes).": "O HTTPS está desligado, então os dispositivos usam http simples. Ligue-o no arquivo de configurações (https: enabled: yes).",
- "HTTPS uses a certificate this program made itself, so browsers show a warning until it is accepted. For a trusted one, set up automatic certificates (docs/https-certificate-guide.md).": "O HTTPS usa um certificado que este programa criou, então os navegadores mostram um aviso até que ele seja aceito. Para um confiável, configure os certificados automáticos (docs/https-certificate-guide.md).",
+ "HTTPS uses a certificate this program made itself, so browsers show a warning until it is accepted. For a trusted one, set up automatic certificates (see the help linked below).": "O HTTPS usa um certificado que este programa criou, então os navegadores mostram um aviso até que ele seja aceito. Para um confiável, configure os certificados automáticos (veja a ajuda indicada abaixo).",
  "HTTPS uses the certificate files named in the settings file. When they are replaced (for example after a renewal) the new ones are used within about 30 seconds, with no restart.": "O HTTPS usa os arquivos de certificado indicados no arquivo de configurações. Quando são substituídos (por exemplo após uma renovação), os novos são usados em cerca de 30 segundos, sem reiniciar.",
  "Automatic certificate from {directory}, using the DNS provider {provider}.": "Certificado automático de {directory}, com o provedor de DNS {provider}.",
  "Waiting for the first certificate": "Aguardando o primeiro certificado",
@@ -882,4 +882,5 @@ OCI18n.add("pt", {
  "Viewer sign-in is off. To turn it on, type a password in the box above and click Set viewer password.": "O acesso de espectador está desativado. Para ativar, digite uma senha na caixa acima e clique em «Definir a senha de espectador».",
  "A browser on the computer that runs the program (opened at localhost) is signed in as admin automatically, with no password. These passwords are for the other computers. You can turn this off under Access.": "Um navegador no computador em que o programa roda (aberto em localhost) entra automaticamente como administrador, sem senha. Estas senhas são para os outros computadores. Você pode desativar isso em Acesso.",
  "Signing in without a password on the computer that runs the program is turned off (under Access), so a browser there asks for a password too.": "Entrar sem senha no computador em que o programa roda está desativado (em Acesso), então um navegador ali também pede senha.",
+ "Help: setting up a trusted certificate": "Ajuda: configurar um certificado confiável",
 });
