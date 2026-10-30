@@ -365,10 +365,10 @@
         sec('Change passwords',
           s.canChangePasswords
             ? h('div', {}, h('p', { class: 'hint' }, __('Each password has its own box and button: changing one leaves the others as they are. At least 6 characters. People signed in with a changed password are signed out; you stay signed in.')),
-                h('label', { class: 'field' }, h('span', {}, __('New admin password')), adminPw), h('div', { class: 'row pwrow' }, changeAdmin),
-                h('label', { class: 'field' }, h('span', {}, __('New operator password')), opPw), h('div', { class: 'row pwrow' }, changeOp, s.operatorPasswordHashed ? null : reveal),
+                h('div', { class: 'pwline' }, h('label', { class: 'field' }, h('span', {}, __('New admin password')), adminPw), changeAdmin),
+                h('div', { class: 'pwline' }, h('label', { class: 'field' }, h('span', {}, __('New operator password')), opPw), changeOp, s.operatorPasswordHashed ? null : reveal),
                 s.operatorPasswordHashed ? h('p', { class: 'hint' }, __('The operator password is stored as a digest, so it cannot be shown. Set a new one to replace it.')) : shown,
-                h('label', { class: 'field' }, h('span', {}, __('New viewer password (optional)')), viewerPw), h('div', { class: 'row pwrow' }, changeViewer, viewerOff),
+                h('div', { class: 'pwline' }, h('label', { class: 'field' }, h('span', {}, __('New viewer password (optional)')), viewerPw), changeViewer, viewerOff),
                 h('p', { class: 'hint' }, __('A viewer password opens the Follow page (/follow) for watching only, for example on a stage manager’s tablet: nothing can be sent from it. The operator and admin passwords open it too.'), ' ', viewerState))
             : h('p', { class: 'hint' }, __('This copy was started without a settings file, so passwords cannot be changed here.'))),
       ]],
