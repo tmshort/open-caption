@@ -220,7 +220,7 @@
     const dctl = {};
     const dmk = (name, label, input) => { dctl[name] = input; return h('label', { class: 'field' }, h('span', {}, __(label)), input); };
     const dopt = (v, t) => h('option', { value: v }, __(t));
-    const defFields = [
+    const defFieldList = [
       dmk('language', 'Main language of a new show', h('input', { type: 'text', maxlength: '12', size: '8', spellcheck: 'false' })),
       dmk('loopSeconds', 'Default time for each item in a loop (seconds)', h('input', { type: 'number', min: '1', max: '3600', step: 'any' })),
       dmk('background', 'Background', h('input', { type: 'color' })), dmk('textColor', 'Text', h('input', { type: 'color' })),
@@ -236,6 +236,11 @@
     const dOpen = h('input', { type: 'checkbox' });
     for (const k of Object.keys(dctl)) if (dv[k] !== undefined) dctl[k].value = dv[k];
     dOpen.checked = dv.openBrowser !== false;
+    // Two groups on a grid of twelve columns (u4 = four of them) so the boxes line up: the show defaults, and the look.
+    const cell = (name, cls) => { const l = defFieldList.find((x) => x.contains(dctl[name])); l.classList.add(cls); return l; };
+    dIdle.classList.add('u8');
+    const defShow = [cell('language', 'u4'), cell('loopSeconds', 'u4'), cell('scrollbackLines', 'u4'), dIdle, cell('maxClients', 'u4')];
+    const defLook = [cell('background', 'u4'), cell('textColor', 'u4'), cell('speakerNameColor', 'u4'), cell('font', 'u3'), cell('textSizePercent', 'u2'), cell('speakerNames', 'u4'), cell('speakerPosition', 'u3')];
     const defState = h('p', { class: 'hint' });
     const paintDefState = (restart) => { defState.textContent = restart ? __('Saved. These apply when the program is restarted.') : ''; };
     paintDefState(!!dv.restartNeeded);
@@ -341,7 +346,8 @@
       ['def', 'Defaults', [
         sec('Venue defaults',
           h('p', { class: 'hint' }, __('What a show uses where its show file says nothing. A show’s own settings always win. Changes are saved now and apply when the program is restarted.')),
-          h('div', { class: 'defgrid' }, ...defFields, dIdle),
+          h('div', { class: 'defgrid' }, ...defShow)),
+        sec('Look', h('div', { class: 'defgrid' }, ...defLook),
           h('label', { class: 'row' }, dOpen, __('Open Setup in a browser when the program starts')),
           defState, h('div', { class: 'row' }, defSave))]],
       ['net', 'Network', [networkSec, nameSec]],
