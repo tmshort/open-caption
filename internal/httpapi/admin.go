@@ -308,6 +308,7 @@ func (s *Server) adminRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("DELETE /api/admin/settings/standby-logo", adm(s.deleteStandbyLogo))
 	mux.HandleFunc("GET /api/admin/log", adm(s.recentLog))
 	mux.HandleFunc("GET /api/admin/troubleshoot", adm(s.troubleshoot))
+	mux.HandleFunc("POST /api/admin/troubleshoot/reach", adm(s.reachTest))
 
 	// Rehearsal: the operator API against a private, isolated runtime (docs/02, "Rehearsal").
 	mux.HandleFunc("POST /api/admin/rehearsal/start", adm(s.startRehearsal))

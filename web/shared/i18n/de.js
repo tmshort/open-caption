@@ -916,4 +916,13 @@ OCI18n.add("de", {
  "Take the tour": "Tour starten",
  "Pick the show to work on. The More menu beside it renames, duplicates, exports, archives or deletes it.": "Wähle die Show, an der du arbeitest. Das Menü „Mehr“ daneben benennt sie um, dupliziert, exportiert, archiviert oder löscht sie.",
  "Create another show, import one, or add the sample show here.": "Lege hier eine weitere Show an, importiere eine oder füge die Beispielshow hinzu.",
+ "Testing…": "Teste …",
+ "Test connection": "Verbindung testen",
+ "the connection was refused": "die Verbindung wurde abgelehnt",
+ "no answer within 3 seconds": "keine Antwort innerhalb von 3 Sekunden",
+ "There is no address to test.": "Es gibt keine Adresse zum Testen.",
+ "{url} answered in {ms} ms.": "{url} hat in {ms} ms geantwortet.",
+ "{url} did not answer: {reason}.": "{url} hat nicht geantwortet: {reason}.",
+ "Connection test": "Verbindungstest",
+ "This computer asks for the web server on each address it gives out. That shows the server answers there; a firewall on this computer or on the network can still stop other devices.": "Dieser Computer fragt unter jeder Adresse, die er herausgibt, den Webserver ab. Das zeigt, dass der Server dort antwortet; eine Firewall auf diesem Computer oder im Netzwerk kann andere Geräte trotzdem aussperren.",
 });

@@ -546,12 +546,27 @@
       const d = describeCheck(c);
       return h('li', { class: 'check-' + c.status }, h('span', { class: 'cstatus' }, __(STATUS_WORD[c.status] || 'Note')), h('span', { class: 'ctext' }, d.text), d.fix ? h('button', { onclick: d.fix.run }, d.fix.label) : null);
     }));
+    // The connection test: this computer asks for its own web server on every address it gives out.
+    const reachList = h('ul', { class: 'checks', 'aria-live': 'polite' });
+    const reachBtn = h('button', { onclick: async () => {
+      reachBtn.disabled = true; reachBtn.textContent = __('Testing…'); reachList.replaceChildren();
+      const x = await api('POST', '/api/admin/troubleshoot/reach');
+      reachBtn.disabled = false; reachBtn.textContent = __('Test connection');
+      if (!x.ok) return;
+      const why = (e) => (e === 'refused' ? __('the connection was refused') : e === 'timeout' ? __('no answer within 3 seconds') : e);
+      if (!x.data.results.length) { reachList.append(h('li', { class: 'check-info' }, h('span', { class: 'cstatus' }, __('Note')), h('span', { class: 'ctext' }, __('There is no address to test.')))); return; }
+      x.data.results.forEach((r) => reachList.append(h('li', { class: r.ok ? 'check-ok' : 'check-bad' }, h('span', { class: 'cstatus' }, r.ok ? __('OK') : __('Problem')),
+        h('span', { class: 'ctext' }, r.ok ? __('{url} answered in {ms} ms.', { url: r.url, ms: r.ms }) : __('{url} did not answer: {reason}.', { url: r.url, reason: why(r.error) })))));
+    } }, __('Test connection'));
     const pre = h('pre', { class: 'logview', tabindex: '0', 'aria-label': __('Recent warnings and errors') });
     const lr = await api('GET', '/api/admin/log?lines=40&level=warn');
     pre.textContent = lr.ok && lr.data.lines.length ? lr.data.lines.join('\n') : __('Nothing at this level yet.');
     pre.scrollTop = pre.scrollHeight;
     const body = h('div', { class: 'trouble' },
       h('h3', {}, __('Checks')), list,
+      h('h3', {}, __('Connection test')),
+      h('p', { class: 'hint' }, __('This computer asks for the web server on each address it gives out. That shows the server answers there; a firewall on this computer or on the network can still stop other devices.')),
+      h('div', { class: 'row' }, reachBtn), reachList,
       h('h3', {}, __('Recent warnings and errors')), pre,
       h('div', { class: 'row' }, h('button', { onclick: () => { $('dlg').close('cancel'); showLog(); } }, __('Open the full log…')),
         h('a', { class: 'btn', href: '/api/admin/support-bundle', download: 'support-bundle.zip' }, __('Download a support bundle')),
