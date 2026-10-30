@@ -503,6 +503,7 @@
     switch (c.id) {
       case 'address': return c.status === 'ok' ? { text: __('This computer has a network address that devices can use: {ip}.', { ip: p.ip }) }
         : { text: __('This computer has no network address. Check that it is connected to the venue’s network, by cable or WiFi.'), fix: settings('net') };
+      case 'networks': return { text: __('This computer is on {n} different networks, and addresses on each are given out: {list}. A device can use only the address on its own network, and the first one ({first}) is the one in the QR code. Untick the networks the audience is not on.', { n: p.n, list: p.list, first: p.first }), fix: settings('net') };
       case 'port': return c.status === 'ok' ? { text: __('The web server is listening on {addr}.', { addr: p.addr }) }
         : { text: __('The program wanted {wanted} but it was in use by another program, so it is using {actual}. Every address must include that port number (the Share step shows them). To use the usual port, close the other program and restart this one.', { wanted: p.wanted, actual: p.actual }) };
       case 'port-https': return c.status === 'ok' ? { text: __('The HTTPS server is listening on {addr}.', { addr: p.addr }) }

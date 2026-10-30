@@ -15,6 +15,7 @@ import (
 	"github.com/tmshort/open-caption/internal/config"
 	"github.com/tmshort/open-caption/internal/logbuf"
 	"github.com/tmshort/open-caption/internal/logx"
+	"github.com/tmshort/open-caption/internal/netinfo"
 )
 
 func findings(m map[string]any) map[string]map[string]any {
@@ -295,5 +296,19 @@ func TestTroubleshootNotesAClockThatIsOff(t *testing.T) {
 	_, m := c.do("GET", "/api/admin/troubleshoot", nil)
 	if findings(m)["clock"] != nil {
 		t.Error("without the browser's time there is nothing to compare")
+	}
+}
+
+// With several networks offered, Troubleshoot says which addresses are given out (a check until a choice has been made).
+func TestTroubleshootNotesSeveralNetworks(t *testing.T) {
+	_, _, c := standbyServer(t)
+	_, m := c.do("GET", "/api/admin/troubleshoot", nil)
+	f := findings(m)["networks"]
+	if n := len(netinfo.LocalIPs()); n > 1 {
+		if f == nil || f["params"].(map[string]any)["n"] != float64(n) {
+			t.Errorf("%d networks are offered but Troubleshoot says %v", n, f)
+		}
+	} else if f != nil {
+		t.Errorf("one network or none needs no remark: %v", f)
 	}
 }

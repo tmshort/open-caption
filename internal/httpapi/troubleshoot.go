@@ -53,6 +53,23 @@ func (s *Server) troubleshoot(w http.ResponseWriter, r *http.Request) {
 		add("address", "ok", "ip", ips[0].String())
 	}
 
+	// 1b. one address for each network: more than one means devices on only some of them can use the addresses given out
+	if ips := netinfo.LocalIPs(); len(ips) > 1 {
+		kinds := map[string]string{}
+		for _, a := range netinfo.AllAddresses() {
+			kinds[a.IP.String()] = a.Kind
+		}
+		var list []string
+		for _, ip := range ips {
+			list = append(list, ip.String()+" ("+kinds[ip.String()]+")")
+		}
+		status := "info"
+		if len(s.networkSettings().Interfaces) == 0 {
+			status = "warn" // no choice made yet: every interface is offered, including ones the audience is not on
+		}
+		add("networks", status, "n", len(ips), "list", strings.Join(list, ", "), "first", ips[0].String())
+	}
+
 	// 2. the port the program really got
 	s.lmu.Lock()
 	l := s.listeners
