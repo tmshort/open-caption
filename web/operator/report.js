@@ -40,7 +40,7 @@
     if (!r.ok) { timer = setTimeout(load, 3000); return; }
     $('none').hidden = true; $('report').hidden = false;
     $('report').replaceChildren(OCReport.build(r.data));
-    $('csv').href = '/api/operator/report.csv' + (current === 'current' ? '' : '?id=' + encodeURIComponent(current));
+    $('csv').dataset.url = '/api/operator/report.csv' + (current === 'current' ? '' : '?id=' + encodeURIComponent(current));
     document.title = __('Audience report') + ' — ' + (r.data.report.show || r.data.report.showId);
     if (r.data.report.running) timer = setTimeout(load, 5000); // the numbers move while the show is on
   }
@@ -55,6 +55,9 @@
   $('which').addEventListener('change', (e) => { current = e.target.value; load(); });
   $('refresh').addEventListener('click', async () => { await loadList(); load(); });
   $('print').addEventListener('click', () => window.print());
+  // CSV is a file: a link made on the spot and clicked, so the server names it and the page stays where it is
+  $('csv').addEventListener('click', () => { const a = document.createElement('a'); a.href = $('csv').dataset.url; a.download = ''; document.body.append(a); a.click(); a.remove(); });
+  $('back').addEventListener('click', () => { location.href = $('back').dataset.url; });
 
   async function start() { await loadList(); await load(); }
   start();

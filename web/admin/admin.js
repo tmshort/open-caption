@@ -1397,7 +1397,8 @@
   async function stepReport(p) {
     let current = A.reportId || 'current';
     const sel = h('select', { 'aria-label': __('Report') });
-    const csv = h('a', { class: 'btn', href: '/api/operator/report.csv', download: '' }, __('Download CSV'));
+    // A button, like Refresh and Print: the file is a link made on the spot and clicked, so the server names it
+    const csv = h('button', { type: 'button', 'data-url': '/api/operator/report.csv', onclick: () => { const a = h('a', { href: csv.dataset.url, download: '' }); document.body.append(a); a.click(); a.remove(); } }, __('Download CSV'));
     const del = h('button', { class: 'danger', onclick: async () => {
       const r0 = (sel.selectedOptions[0] || {}).textContent || '';
       if (!await confirmBox(__('Delete this report?'), __('“{name}” will be permanently deleted. Download the CSV first if you may want it back.', { name: r0 }), __('Delete'), true)) return;
@@ -1425,7 +1426,7 @@
       if (!r.ok) return;
       none.hidden = true;
       body.replaceChildren(OCReport.build(r.data));
-      csv.href = '/api/operator/report.csv' + (current === 'current' ? '' : '?id=' + encodeURIComponent(current));
+      csv.dataset.url = '/api/operator/report.csv' + (current === 'current' ? '' : '?id=' + encodeURIComponent(current));
       if (r.data.report.running) A.reportTimer = setTimeout(() => { if (A.step === 'report') load(); }, 5000);
     }
     sel.addEventListener('change', () => { current = A.reportId = sel.value; del.hidden = current === 'current'; load(); });
