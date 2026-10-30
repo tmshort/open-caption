@@ -324,28 +324,26 @@ func clientAddr(r *http.Request) netip.Addr {
 	return a.Unmap()
 }
 
-// allowedFor reports whether this computer may use the Setup (RoleAdmin) or operator pages. An admin
-// address may always use the operator pages too.
+// allowedFor reports whether this computer may use the Setup page (RoleAdmin), the operator page (RoleOperator) or the Follow
+// page (RoleViewer). The pages form a hierarchy: a computer allowed for a higher page may use the lower ones too, so the
+// operator page is open to the operator list and the Setup list, and the Follow page to the viewer list as well. An empty
+// list lets any computer in.
 func (s *Server) allowedFor(role string, r *http.Request) bool {
 	ip := clientAddr(r)
-	adminAllow, operatorAllow, _ := s.allowLists()
-	if !ip.IsValid() {
-		return !adminAllow.Restricted() && !operatorAllow.Restricted()
+	adminAllow, operatorAllow, viewerAllow := s.allowLists()
+	lists := []config.AllowList{adminAllow}
+	switch role {
+	case RoleOperator:
+		lists = append(lists, operatorAllow)
+	case RoleViewer:
+		lists = append(lists, operatorAllow, viewerAllow)
 	}
-	if role == RoleAdmin {
-		return adminAllow.Allows(ip)
+	for _, l := range lists {
+		if ip.IsValid() && l.Allows(ip) || !ip.IsValid() && !l.Restricted() {
+			return true
+		}
 	}
-	return operatorAllow.Allows(ip) || adminAllow.Allows(ip)
-}
-
-// viewerAllowedHere reports whether a viewer-role session may be used from this computer (access.viewer_allow; empty = anywhere).
-func (s *Server) viewerAllowedHere(r *http.Request) bool {
-	ip := clientAddr(r)
-	_, _, viewerAllow := s.allowLists()
-	if !ip.IsValid() {
-		return !viewerAllow.Restricted()
-	}
-	return viewerAllow.Allows(ip)
+	return false
 }
 
 const notFromHere = "That page is not available from this computer. It can only be opened from the computers listed under access in config.yaml."
@@ -476,10 +474,6 @@ func (s *Server) require(role string, h http.HandlerFunc) http.HandlerFunc {
 			writeErr(w, http.StatusUnauthorized, "login required")
 			return
 		}
-		if sess.role == RoleViewer && !s.viewerAllowedHere(r) { // a viewer session is only good on the computers viewer_allow names
-			writeErr(w, http.StatusForbidden, "not available from this computer")
-			return
-		}
 		if roleRank(sess.role) < roleRank(role) {
 			writeErr(w, http.StatusForbidden, "not allowed")
 			return
@@ -534,10 +528,12 @@ func (s *Server) authRoutes(mux *http.ServeMux) {
 			writeErr(w, http.StatusUnauthorized, "wrong password")
 			return
 		}
-		if role == RoleViewer && !s.viewerAllowedHere(r) {
+		// The Follow form also takes the operator and admin passwords; those need a computer allowed for the operator page,
+		// not one that is only on the viewer list.
+		if level := map[bool]string{true: RoleViewer, false: RoleOperator}[role == RoleViewer]; !s.allowedFor(level, r) {
 			s.auth.revoke(token)
-			logx.Warnf("sign-in as viewer refused from %s: not on access.viewer_allow", clientIP(r))
-			writeErr(w, http.StatusForbidden, "signing in as a viewer is not available from this computer")
+			logx.Warnf("sign-in as %s refused from %s: not on the access list", role, clientIP(r))
+			writeErr(w, http.StatusForbidden, "signing in is not available from this computer")
 			return
 		}
 		http.SetCookie(w, &http.Cookie{Name: cookieName, Value: token, Path: "/", HttpOnly: true,

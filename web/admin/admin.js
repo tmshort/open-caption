@@ -201,12 +201,12 @@
         h('label', { class: 'field' }, h('span', {}, __('Other addresses or networks, one per line')), rest), empty) };
     }
     const accAdmin = accessGroup(__('Setup page'), __('Who may open Setup. Keep this computer in the list if you use Setup on it.'), __('Any computer on the network may try to sign in to Setup.'), acc0.adminAllow || []);
-    const accOp = accessGroup(__('Operator page'), __('Who may open the operator page and the Follow page. Computers in the Setup list may always open them.'), __('Any computer on the network may try to sign in to the operator page.'), acc0.operatorAllow || []);
-    const accViewer = accessGroup(__('Viewer-only password'), __('Where the viewer password works. It does not limit the operator and admin passwords.'), __('The viewer password works from any computer on the network.'), acc0.viewerAllow || []);
+    const accOp = accessGroup(__('Operator page'), __('Who may open the operator page. Computers in the Setup list may always open it.'), __('Any computer on the network may try to sign in to the operator page.'), acc0.operatorAllow || []);
+    const accViewer = accessGroup(__('Follow page'), __('Who may open the Follow page (/follow). Computers in the operator and Setup lists may always open it.'), __('Any computer on the network may try to sign in to the Follow page.'), acc0.viewerAllow || []);
     // One list at a time keeps the tab short enough for the Settings window.
     const accGroups = [accAdmin, accOp, accViewer];
     const accPick = h('select', { 'aria-label': __('List to edit'), onchange: () => accGroups.forEach((g, i) => { g.el.hidden = i !== Number(accPick.value); }) },
-      ...[__('Setup page'), __('Operator page'), __('Viewer-only password')].map((t, i) => h('option', { value: String(i) }, t)));
+      ...[__('Setup page'), __('Operator page'), __('Follow page')].map((t, i) => h('option', { value: String(i) }, t)));
     accGroups.forEach((g, i) => { g.el.hidden = i !== 0; });
     const accAuto = h('input', { type: 'checkbox' }); accAuto.checked = acc0.localAutoLogin !== false;
     const accWarn = h('p', { class: 'check warn' }, __('Anyone on this WiFi can try to sign in to Setup, and passwords travel unencrypted over plain http. To limit it, choose which computers may open Setup, in “Who can open the pages” below (for example just this computer).'));

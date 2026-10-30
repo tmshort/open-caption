@@ -44,7 +44,7 @@ Ein kleiner Nachteil von einfachem HTTP: Browser erlauben „Bildschirm anlassen
 
 ## Sicherheit
 
-- Die Einrichtung (`/admin`) und die Operator-Seite (`/operator`) brauchen jeweils ein Passwort aus `config.yaml`. Die Publikumsseite braucht keines und kann nichts ändern. Ein optionales Zuschauer-Passwort öffnet die Zuschauer-Seite (`/follow`), mit der man nur zusehen kann. Mit `access.viewer_allow` begrenzen Sie, wo dieses Passwort funktioniert.
+- Die Einrichtung (`/admin`) und die Operator-Seite (`/operator`) brauchen jeweils ein Passwort aus `config.yaml`. Die Publikumsseite braucht keines und kann nichts ändern. Ein optionales Zuschauer-Passwort öffnet die Zuschauer-Seite (`/follow`), mit der man nur zusehen kann. Mit `access.viewer_allow` begrenzen Sie, welche Computer sie öffnen dürfen.
 - Setzen Sie den Port nicht dem Internet aus.
 - Die Operator- und Administrator-Passwörter stehen im Klartext in `config.yaml` (oder als Hash, siehe die Konfigurationsreferenz) im Datenordner des Programms. Halten Sie diesen Ordner für die Leute, die die Show fahren, privat.
 

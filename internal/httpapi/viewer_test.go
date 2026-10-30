@@ -129,11 +129,11 @@ func TestFollowTakesEveryPasswordAndTheViewerPasswordOnlyThat(t *testing.T) {
 	}
 	resp.Body.Close()
 	closed, cts := viewerServer(t, func(c *config.Config) {
-		c.Access.AdminAllow, c.Access.OperatorAllow = []string{"192.0.2.0/24"}, []string{"192.0.2.0/24"}
+		c.Access.AdminAllow, c.Access.OperatorAllow, c.Access.ViewerAllow = []string{"192.0.2.0/24"}, []string{"192.0.2.0/24"}, []string{"192.0.2.0/24"}
 	})
 	_ = closed
 	if resp, err := newClient(t, cts.URL).hc.Get(cts.URL + "/follow"); err != nil || resp.StatusCode != 403 {
-		t.Errorf("/follow follows operator_allow: %v %v", resp, err)
+		t.Errorf("/follow follows the three lists: %v %v", resp, err)
 	}
 }
 
@@ -240,43 +240,63 @@ func postFrom(s *Server, path, remote, body string, cookie *http.Cookie) *httpte
 	return w
 }
 
-// access.viewer_allow limits where the viewer-only password works. The operator and admin passwords are not limited by it
-// (they follow operator_allow and admin_allow), and an empty list means anywhere.
-func TestViewerAllowLimitsOnlyTheViewerPassword(t *testing.T) {
-	s, _ := viewerServer(t, func(c *config.Config) { c.Access.ViewerAllow = []string{"192.0.2.0/24"} })
+// The Follow page has an access list like the other two pages: access.viewer_allow says which computers may open it, and
+// computers allowed for the operator page or Setup may open it too (the pages are a hierarchy). An empty list means anywhere.
+// The operator and admin passwords, which the Follow form also takes, need a computer allowed for the operator page.
+func TestViewerAllowIsTheFollowPagesAccessList(t *testing.T) {
+	s, _ := viewerServer(t, func(c *config.Config) {
+		c.Access.ViewerAllow = []string{"192.0.2.0/24"}
+		c.Access.OperatorAllow = []string{"203.0.113.0/24"}
+		c.Access.AdminAllow = []string{"203.0.113.0/24"}
+	})
 	login := func(remote, pw string) *httptest.ResponseRecorder {
 		return postFrom(s, "/api/login", remote, `{"role":"viewer","password":"`+pw+`"}`, nil)
 	}
 	if w := login("192.0.2.9:5000", "viewerpw"); w.Code != 200 {
-		t.Fatalf("a listed computer signs in as a viewer: %d %s", w.Code, w.Body)
+		t.Fatalf("a computer on the Follow list signs in as a viewer: %d %s", w.Code, w.Body)
+	}
+	if w := login("203.0.113.5:5000", "viewerpw"); w.Code != 200 {
+		t.Errorf("a computer allowed for the operator page may open the Follow page too: %d %s", w.Code, w.Body)
 	}
 	if w := login("198.51.100.4:5000", "viewerpw"); w.Code != 403 || len(w.Result().Cookies()) != 0 {
-		t.Errorf("an unlisted computer is refused the viewer password: %d %s", w.Code, w.Body)
+		t.Errorf("a computer on no list is refused: %d %s", w.Code, w.Body)
+	}
+	for _, pw := range []string{"operatorpw", "adminpw"} {
+		if w := login("192.0.2.9:5000", pw); w.Code != 403 || len(w.Result().Cookies()) != 0 {
+			t.Errorf("the %s password is not taken from a computer that is only on the Follow list: %d %s", pw, w.Code, w.Body)
+		}
+	}
+	for pw, want := range map[string]string{"operatorpw": RoleOperator, "adminpw": RoleAdmin} {
+		if w := login("203.0.113.5:5000", pw); w.Code != 200 || !strings.Contains(w.Body.String(), want) {
+			t.Errorf("the %s password from an operator computer: %d %s", want, w.Code, w.Body)
+		}
 	}
 	s.auth.mu.Lock()
 	n := len(s.auth.sessions)
 	s.auth.mu.Unlock()
-	if n != 1 {
-		t.Errorf("a refused viewer sign-in leaves no session behind: %d sessions", n)
+	if n != 4 { // the two viewers and the operator and admin from the operator computer; the refusals left none behind
+		t.Errorf("sessions after the refusals: %d", n)
 	}
-	for pw, want := range map[string]string{"operatorpw": RoleOperator, "adminpw": RoleAdmin} {
-		w := login("198.51.100.4:5000", pw)
-		if w.Code != 200 || !strings.Contains(w.Body.String(), want) {
-			t.Errorf("the %s password is not limited by viewer_allow: %d %s", want, w.Code, w.Body)
-		}
-	}
-	// a viewer cookie is only good on the listed computers
+	// the page itself, and a viewer cookie, follow the same lists
 	ck := login("192.0.2.9:5000", "viewerpw").Result().Cookies()[0]
-	get := func(remote string) int {
-		r := httptest.NewRequest("GET", "http://localhost/api/operator/state", nil)
+	get := func(remote, path string, withCookie bool) int {
+		r := httptest.NewRequest("GET", "http://localhost"+path, nil)
 		r.RemoteAddr, r.Host = remote, "localhost"
-		r.AddCookie(ck)
+		if withCookie {
+			r.AddCookie(ck)
+		}
 		w := httptest.NewRecorder()
 		s.Handler().ServeHTTP(w, r)
 		return w.Code
 	}
-	if get("192.0.2.9:5000") != 200 || get("198.51.100.4:5000") != 403 {
+	if get("192.0.2.9:5000", "/follow", false) != 200 || get("203.0.113.5:5000", "/follow", false) != 200 || get("198.51.100.4:5000", "/follow", false) != 403 {
+		t.Error("the /follow page does not follow the lists")
+	}
+	if get("192.0.2.9:5000", "/api/operator/state", true) != 200 || get("198.51.100.4:5000", "/api/operator/state", true) != 403 {
 		t.Error("a viewer session works from a listed computer and not from another")
+	}
+	if get("192.0.2.9:5000", "/operator", false) != 403 {
+		t.Error("the Follow list does not open the operator page")
 	}
 	// empty = anywhere
 	open, _ := viewerServer(t, nil)

@@ -44,7 +44,7 @@ Un pequeño inconveniente del HTTP sencillo: los navegadores solo permiten «man
 
 ## Seguridad
 
-- Configuración (`/admin`) y la página del operador (`/operator`) necesitan cada una una contraseña de `config.yaml`. La página del público no necesita ninguna y no puede cambiar nada. Una contraseña de espectador opcional abre la página de seguimiento (`/follow`), que solo permite mirar. Limite dónde funciona esa contraseña con `access.viewer_allow`.
+- Configuración (`/admin`) y la página del operador (`/operator`) necesitan cada una una contraseña de `config.yaml`. La página del público no necesita ninguna y no puede cambiar nada. Una contraseña de espectador opcional abre la página de seguimiento (`/follow`), que solo permite mirar. Limite qué equipos pueden abrirla con `access.viewer_allow`.
 - No exponga el puerto a internet.
 - Las contraseñas de operador y de administrador se guardan en texto sin cifrar en `config.yaml` (o como resumen, véase la referencia de configuración), en la carpeta de datos del programa. Mantenga esa carpeta privada para quienes llevan el espectáculo.
 

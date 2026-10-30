@@ -160,7 +160,7 @@ Who may open Setup and the operator page. The audience page is always open to ev
 |---|---|---|
 | `access.admin_allow` | `[localhost]` | Computers allowed to open Setup: by default only the computer that runs the program. An empty list (`[]`) means **any computer on the network may try the password**, and the program warns about it. Entries: `localhost`, `private` (the usual home and office networks), an address (`192.168.1.50`) or a network (`192.168.1.0/24`). Example: `[localhost, 192.168.1.50]` *Setup: Settings → Access* |
 | `access.operator_allow` | `[]` | The same, for the operator page *Setup: Settings → Access* |
-| `access.viewer_allow` | `[]` | Where the **viewer-only password** (`viewer_password`) works, for example just the stage manager's tablet. It does not limit the operator and admin passwords, which open `/follow` like `/operator` and follow `operator_allow` and `admin_allow`. Empty = anywhere the operator page can be reached *Setup: Settings → Access* |
+| `access.viewer_allow` | `[]` | The same, for the Follow page (`/follow`), for example just the stage manager's tablet. Computers allowed for the operator page or Setup may open it too. The operator and admin passwords, which `/follow` also takes, are accepted only from a computer allowed for the operator page. Empty = any computer *Setup: Settings → Access* |
 | `access.local_auto_login` | `yes` | A browser on the computer that runs the program (opened at `localhost`, `127.0.0.1` or `[::1]`) is signed in as admin with no password. Other computers always use a password. Turn it off on a computer other people can log in to *Setup: Settings → Access* |
 
 ### `log`, `mdns`, `standby`

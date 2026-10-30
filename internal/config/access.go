@@ -14,8 +14,8 @@ import (
 type Access struct {
 	AdminAllow    []string `yaml:"admin_allow"`
 	OperatorAllow []string `yaml:"operator_allow"`
-	// ViewerAllow limits where the viewer-only password (viewer_password) works. It does not limit the operator and admin
-	// passwords, which open /follow like /operator and are limited by operator_allow and admin_allow. Empty means anywhere.
+	// ViewerAllow is the access list of the Follow page (/follow), like AdminAllow for Setup and OperatorAllow for the operator
+	// page: the computers on it, and the computers allowed for the operator page or Setup, may open it. Empty means anywhere.
 	ViewerAllow []string `yaml:"viewer_allow"`
 	// LocalAutoLogin signs in, as admin and without a password, anyone using Setup or the operator page on the
 	// computer that runs the program (a browser opened at localhost, 127.0.0.1 or [::1]). Other computers
