@@ -147,6 +147,34 @@ func (s *Server) troubleshoot(w http.ResponseWriter, r *http.Request) {
 		add("show", "ok", "state", "loaded", "name", s.rt.ShowName())
 	}
 
+	// 6a. the show file itself: errors stop a line being shown as written, a missing image shows nothing
+	if id := s.rt.ShowID(); id != "" {
+		if text, err := s.store.ReadShowFile(id, ""); err == nil {
+			a, _ := analyze(text, mustAssets(s.store, id), false)
+			errs, warns := 0, 0
+			for _, d := range a.Diagnostics {
+				switch d.Severity {
+				case "error":
+					errs++
+				case "warning":
+					warns++
+				}
+			}
+			var names []string
+			for _, m := range a.Missing {
+				names = append(names, m.Name)
+			}
+			switch {
+			case errs > 0:
+				add("showfile", "bad", "state", "errors", "id", id, "n", errs)
+			case len(names) > 0:
+				add("showfile", "warn", "state", "missing", "id", id, "n", len(names), "list", strings.Join(names, ", "))
+			case warns > 0:
+				add("showfile", "info", "state", "warnings", "id", id, "n", warns)
+			}
+		}
+	}
+
 	// 6b. what the audience sees: the standby screen until the operator starts the show, then the captions
 	if s.rt.ShowID() != "" {
 		if s.rt.OperatorPayload().Op.Live {

@@ -530,6 +530,12 @@
         case 'languages': return { text: __('These languages will not be shown to the audience until their show file matches the main one: {list}.', { list: p.list }), fix: { label: __('Open the Show file step'), run: () => { $('dlg').close('cancel'); go('showfile'); } } };
         default: return { text: __('The show “{name}” is loaded.', { name: p.name }) };
       }
+      case 'showfile': {
+        const open = { label: __('Open the Show file step'), run: () => { $('dlg').close('cancel'); if (p.id && curShowById(p.id)) setCur(p.id); go('showfile'); } };
+        if (p.state === 'errors') return { text: __('The show file of the loaded show has {n} error(s). Open the Show file step to see them.', { n: p.n }), fix: open };
+        if (p.state === 'missing') return { text: __('The loaded show uses {n} image(s) that were not uploaded: {list}. The audience sees nothing in their place.', { n: p.n, list: p.list }), fix: { label: __('Open the Images step'), run: () => { $('dlg').close('cancel'); if (p.id && curShowById(p.id)) setCur(p.id); go('images'); } } };
+        return { text: __('The show file of the loaded show has {n} warning(s). Open the Show file step to see them.', { n: p.n }), fix: open };
+      }
       case 'data': switch (p.state) {
         case 'unwritable': return { text: __('The data folder {path} cannot be written to ({error}). Shows, reports and the live position cannot be saved.', { path: p.path, error: p.error }) };
         case 'low': return { text: __('Only {mb} MB are free on the disk that holds the data folder. Saved reports, earlier versions and images need room; free some space.', { mb: p.mb }) };

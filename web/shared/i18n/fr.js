@@ -937,4 +937,8 @@ OCI18n.add("fr", {
  "Only {mb} MB are free on the disk that holds the data folder. Saved reports, earlier versions and images need room; free some space.": "Il ne reste que {mb} Mo libres sur le disque du dossier de données. Les rapports enregistrés, les versions précédentes et les images ont besoin de place ; libérez de l’espace.",
  "The data folder can be written to, and {mb} MB are free on its disk.": "Le dossier de données est accessible en écriture et {mb} Mo sont libres sur son disque.",
  "The data folder can be written to.": "Le dossier de données est accessible en écriture.",
+ "The show file of the loaded show has {n} error(s). Open the Show file step to see them.": "Le fichier du spectacle chargé contient {n} erreur(s). Ouvrez l’étape Fichier du spectacle pour les voir.",
+ "The loaded show uses {n} image(s) that were not uploaded: {list}. The audience sees nothing in their place.": "Le spectacle chargé utilise {n} image(s) qui n’ont pas été téléversées : {list}. Le public ne voit rien à leur place.",
+ "The show file of the loaded show has {n} warning(s). Open the Show file step to see them.": "Le fichier du spectacle chargé contient {n} avertissement(s). Ouvrez l’étape Fichier du spectacle pour les voir.",
+ "Open the Images step": "Ouvrir l’étape Images",
 });

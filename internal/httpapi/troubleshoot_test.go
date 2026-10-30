@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/tmshort/open-caption/internal/config"
@@ -240,5 +241,31 @@ func TestTroubleshootChecksTheDataFolder(t *testing.T) {
 	}
 	if free, ok := freeBytes(t.TempDir()); !ok || free == 0 {
 		t.Errorf("the free space of a temporary folder should be known and not zero: %d %v", free, ok)
+	}
+}
+
+// Troubleshoot says when the loaded show's file has errors or uses an image that was not uploaded.
+func TestTroubleshootChecksTheLoadedShowFile(t *testing.T) {
+	_, _, c := standbyServer(t)
+	_, sh := c.do("POST", "/api/admin/shows", map[string]any{"name": "Checked"})
+	id, _ := sh["id"].(string)
+	state := func(text string) string {
+		c.do("PUT", "/api/admin/shows/"+id+"/showfile", map[string]any{"text": text})
+		c.do("POST", "/api/admin/shows/"+id+"/activate", map[string]any{})
+		_, m := c.do("GET", "/api/admin/troubleshoot", nil)
+		f := findings(m)["showfile"]
+		if f == nil {
+			return ""
+		}
+		return f["status"].(string) + ":" + f["params"].(map[string]any)["state"].(string)
+	}
+	if got := state("One\nTwo\n"); got != "" {
+		t.Errorf("a clean show file needs no remark: %q", got)
+	}
+	if got := state("One\n[image: nothere.png]\n"); got != "warn:missing" {
+		t.Errorf("an image that was not uploaded: %q", got)
+	}
+	if got := state("One\n[loop: 10s]\nunclosed\n"); !strings.HasPrefix(got, "bad:") {
+		t.Errorf("an error in the show file: %q", got)
 	}
 }
