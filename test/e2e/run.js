@@ -163,7 +163,9 @@ async function main() {
     await admin.evaluate(() => { const r = document.querySelector('input[type=range]'); r.value = '300'; r.dispatchEvent(new Event('input', { bubbles: true })); });
     check('and 300 is what the slider holds at its far end', await admin.evaluate(() => document.querySelector('input[type=range]').value === '300'));
     await admin.evaluate(() => { const r = document.querySelector('input[type=range]'); r.value = '100'; r.dispatchEvent(new Event('input', { bubbles: true })); });
+    check('the bar on the Look step says there are unsaved changes once the look is changed', await admin.evaluate(() => /Unsaved changes/.test(document.querySelector('#stepbar .stepstatus').textContent)));
     await click(admin, 'Save look'); await sleep(700);
+    check('and says the look is saved after Save look', await admin.evaluate(() => { const t = document.querySelector('#stepbar .stepstatus').textContent; return /Look saved/.test(t) && !/Unsaved changes/.test(t); }));
     const look = (await api(admin, 'GET', '/api/admin/shows/' + showId2)).body;
     check('the look is saved with the show', look.lookSaved === true && look.theme.font === 'dyslexic' && look.theme.speakers === 'color' && look.theme.speakerPosition === 'beside', look.theme);
     check('the Look step is ticked', await admin.evaluate(() => [...document.querySelectorAll('#steps button')].find((x) => x.textContent.includes('Look')).classList.contains('done')));

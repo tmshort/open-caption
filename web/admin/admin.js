@@ -688,7 +688,8 @@
       const miss = (an.missing || []).length;
       items.push(item(miss ? __('{n} missing images', { n: miss }) : __('All images found'), miss ? 'status-warn' : 'status-ok'));
     } else if (A.step === 'look') {
-      items.push(item(lookSaved() ? __('Look saved') : __('Look not saved yet'), lookSaved() ? 'status-ok' : ''));
+      if (A.lookDirty) items.push(item(__('Unsaved changes'), 'status-warn'));
+      else items.push(item(lookSaved() ? __('Look saved') : __('Look not saved yet'), lookSaved() ? 'status-ok' : ''));
     } else if (A.step === 'test') {
       items.push(item(A.rehearsing ? __('Rehearsal running') : __('No rehearsal yet'), A.rehearsing ? 'status-ok' : ''));
     } else if (A.step === 'golive' && A.activeId && A.activeId === A.cur) {
@@ -1268,14 +1269,17 @@
     L('scalePct').append(sizeLabel);
     const fieldOrder = [L('bg'), L('fg'), wide(h('div', { class: 'contrastrow' }, ratio)), L('accent'), L('font'), wide(L('scalePct')), wide(L('speakers')), wide(L('speakerPosition')), wide(L('idleMessage')), ...idleLabels.map(wide), L('loopSeconds'), L('scrollbackLines')];
     write(); paint();
-    Object.values(ctl).forEach((i) => i.addEventListener('input', () => { read(); paint(); }));
-    const presets = h('div', { class: 'presets' }, ...PRESETS.map(([n, bg, fg, ac]) => h('button', { class: 'swatch', ref: (b) => { b.style.background = bg; b.style.color = fg; b.style.borderColor = ac; }, title: __('Use these colors'), onclick: () => { Object.assign(t, { bg, fg, accent: ac }); write(); paint(); } }, __(n))));
+    // what is on screen against what was last saved, for the bar along the bottom
+    read(); let savedSnap = JSON.stringify(t); A.lookDirty = false;
+    const lookChanged = () => { A.lookDirty = JSON.stringify(t) !== savedSnap; paintBar(); };
+    Object.values(ctl).forEach((i) => i.addEventListener('input', () => { read(); paint(); lookChanged(); }));
+    const presets = h('div', { class: 'presets' }, ...PRESETS.map(([n, bg, fg, ac]) => h('button', { class: 'swatch', ref: (b) => { b.style.background = bg; b.style.color = fg; b.style.borderColor = ac; }, title: __('Use these colors'), onclick: () => { Object.assign(t, { bg, fg, accent: ac }); write(); paint(); read(); lookChanged(); } }, __(n))));
     p.append(h('h2', {}, __('Look')), h('p', { class: 'hint' }, __('Large, high-contrast text is the default and is best for accessibility. Saving writes these choices into the [settings] block of the show file (which you can also edit by hand in the Show file step), and applies them to connected devices straight away.')),
       h('div', { class: 'look-grid' },
         h('div', { class: 'card' }, presets, h('div', { class: 'fields' }, ...fieldOrder),
           h('div', { class: 'row end savelook' }, h('button', { class: 'primary', onclick: async () => {
             if (A.text !== A.saved && A.loadedLang === '') { toast(__('You have unsaved changes in the Show file step. Save them first: saving the look rewrites the settings in the saved show file.')); return; }
-            read(); const s = await api('PUT', '/api/admin/shows/' + show.id, { theme: t }); if (!s.ok) return fail(s); A.analysis = null; A.text = A.saved = ''; markLookSaved(); toast(__('Look saved in the show file'));
+            read(); const s = await api('PUT', '/api/admin/shows/' + show.id, { theme: t }); if (!s.ok) return fail(s); A.analysis = null; A.text = A.saved = ''; savedSnap = JSON.stringify(t); A.lookDirty = false; markLookSaved(); toast(__('Look saved in the show file'));
           } }, __('Save look')))),
         h('div', { class: 'previews' }, h('div', {}, h('div', { class: 'hint' }, __('Phone')), phone), h('div', {}, h('div', { class: 'hint' }, __('Projector')), proj))));
   }
