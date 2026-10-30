@@ -8,6 +8,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/tmshort/open-caption/internal/config"
 	"github.com/tmshort/open-caption/internal/logx"
 	"github.com/tmshort/open-caption/internal/netinfo"
 )
@@ -150,6 +151,14 @@ func (s *Server) troubleshoot(w http.ResponseWriter, r *http.Request) {
 		add("access", "info", "state", "setup-local")
 	case adm.Restricted() || op.Restricted() || vw.Restricted():
 		add("access", "ok", "state", "limited")
+	}
+
+	// 6d. the passwords: only what is worth a person's attention (never a value)
+	switch {
+	case config.SamePassword(acc.AdminPassword, acc.OperatorPassword):
+		add("passwords", "warn", "state", "same")
+	case !config.IsHashed(acc.AdminPassword) || !config.IsHashed(acc.OperatorPassword):
+		add("passwords", "info", "state", "plain")
 	}
 
 	// 7. who is connected

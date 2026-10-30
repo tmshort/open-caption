@@ -530,6 +530,9 @@
         case 'languages': return { text: __('These languages will not be shown to the audience until their show file matches the main one: {list}.', { list: p.list }), fix: { label: __('Open the Show file step'), run: () => { $('dlg').close('cancel'); go('showfile'); } } };
         default: return { text: __('The show “{name}” is loaded.', { name: p.name }) };
       }
+      case 'passwords': return p.state === 'same'
+        ? { text: __('The Setup and operator passwords are the same, so anyone who can run the show can also change the settings. Give Setup its own password.'), fix: settings('sec') }
+        : { text: __('A password is kept in config.yaml as plain text. Changing it in Setup stores a scrambled copy instead.'), fix: settings('sec') };
       case 'access': switch (p.state) {
         case 'follow-open': return { text: __('Only the Operator page has a list of allowed computers, so the Follow page, which the viewer password opens, can be opened from any computer. Give the Follow page its own list if that is not wanted.'), fix: settings('acc') };
         case 'operator-local': return { text: __('The Operator page can be opened only on this computer, so a tablet or another computer is turned away. Add its address to the Operator list if it should be allowed.'), fix: settings('acc') };

@@ -190,3 +190,33 @@ func mustList(t *testing.T, e []string) config.AllowList {
 	}
 	return l
 }
+
+// Troubleshoot warns when the Setup and operator passwords are the same, and notes a password kept as plain text.
+func TestTroubleshootNotesWeakPasswordSetups(t *testing.T) {
+	s, _, c := standbyServer(t)
+	state := func() string {
+		_, m := c.do("GET", "/api/admin/troubleshoot", nil)
+		f := findings(m)["passwords"]
+		if f == nil {
+			return ""
+		}
+		return f["status"].(string) + ":" + f["params"].(map[string]any)["state"].(string)
+	}
+	set := func(admin, operator string) {
+		s.cfgMu.Lock()
+		s.cfg.AdminPassword, s.cfg.OperatorPassword = admin, operator
+		s.cfgMu.Unlock()
+	}
+	set(config.HashPassword("one"), config.HashPassword("two"))
+	if got := state(); got != "" {
+		t.Errorf("two digests that differ need no remark: %q", got)
+	}
+	set(config.HashPassword("same"), "same")
+	if got := state(); got != "warn:same" {
+		t.Errorf("the same password for both: %q", got)
+	}
+	set(config.HashPassword("one"), "plain-two")
+	if got := state(); got != "info:plain" {
+		t.Errorf("a plain-text password: %q", got)
+	}
+}
