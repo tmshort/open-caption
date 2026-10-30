@@ -137,11 +137,12 @@
     const adminPw = h('input', { type: 'password', autocomplete: 'new-password', 'aria-label': __('New admin password'), minlength: '6' });
     const opPw = h('input', { type: 'password', autocomplete: 'new-password', 'aria-label': __('New operator password'), minlength: '6' });
     const viewerPw = h('input', { type: 'password', autocomplete: 'new-password', 'aria-label': __('New viewer password'), minlength: '6' });
-    const viewerState = h('span', { class: 'hint', role: 'status' }, s.viewerPasswordSet ? __('Viewer sign-in is on.') : __('Viewer sign-in is off.'));
+    const viewerText = (on) => on ? __('Viewer sign-in is on. To turn it off, click Turn viewer sign-in off.') : __('Viewer sign-in is off. To turn it on, type a password in the box above and click Set viewer password.');
+    const viewerState = h('p', { class: 'hint', role: 'status' }, viewerText(s.viewerPasswordSet));
     const viewerOff = h('button', { type: 'button', class: 'quiet', hidden: !s.viewerPasswordSet, onclick: async () => {
       const res = await api('PUT', '/api/admin/settings/passwords', { removeViewer: true });
       if (!res.ok) return fail(res);
-      viewerPw.value = ''; viewerOff.hidden = true; viewerState.textContent = __('Viewer sign-in is off.');
+      viewerPw.value = ''; viewerOff.hidden = true; viewerState.textContent = viewerText(false);
       toast(__('Viewer sign-in turned off'));
     } }, __('Turn viewer sign-in off'));
     // Each password has its own box and button, and only that one is sent: the others stay as they are.
@@ -155,7 +156,7 @@
     } }, __(text));
     const changeAdmin = pwButton(adminPw, 'Change admin password', 'Admin password changed');
     const changeOp = pwButton(opPw, 'Change operator password', 'Operator password changed');
-    const changeViewer = pwButton(viewerPw, 'Set viewer password', 'Viewer password set', () => { viewerOff.hidden = false; viewerState.textContent = __('Viewer sign-in is on.'); });
+    const changeViewer = pwButton(viewerPw, 'Set viewer password', 'Viewer password set', () => { viewerOff.hidden = false; viewerState.textContent = viewerText(true); });
     const row = (k, v) => h('tr', {}, h('td', {}, __(k)), h('td', {}, v ? __(v) : '—'));
     // The standby screen: the venue's own logo and message, shown while no show is on air.
     const sb = s.standby || {};
@@ -366,7 +367,7 @@
                 h('div', { class: 'pwline' }, h('label', { class: 'field' }, h('span', {}, __('New admin password')), adminPw), changeAdmin),
                 h('div', { class: 'pwline' }, h('label', { class: 'field' }, h('span', {}, __('New operator password')), opPw), changeOp),
                 h('div', { class: 'pwline' }, h('label', { class: 'field' }, h('span', {}, __('New viewer password (optional)')), viewerPw), changeViewer, viewerOff),
-                h('p', { class: 'hint' }, __('A viewer password opens the Follow page (/follow) for watching only, for example on a stage manager’s tablet: nothing can be sent from it. The operator and admin passwords open it too.'), ' ', viewerState))
+                h('p', { class: 'hint' }, __('A viewer password opens the Follow page (/follow) for watching only, for example on a stage manager’s tablet: nothing can be sent from it. The operator and admin passwords open it too.')), viewerState)
             : h('p', { class: 'hint' }, __('This copy was started without a settings file, so passwords cannot be changed here.'))),
       ]],
       ['cert', 'Certificate', [sec('Certificate', certBox)]],

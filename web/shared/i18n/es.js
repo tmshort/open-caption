@@ -88,8 +88,6 @@ OCI18n.add("es", {
  "You are following this show (view only)": "Está siguiendo este espectáculo (solo lectura)",
  "This screen is view only": "Esta pantalla es solo de lectura",
  "New viewer password": "Nueva contraseña de espectador",
- "Viewer sign-in is on.": "El acceso de espectador está activado.",
- "Viewer sign-in is off.": "El acceso de espectador está desactivado.",
  "Viewer sign-in turned off": "Acceso de espectador desactivado",
  "Turn viewer sign-in off": "Desactivar el acceso de espectador",
  "New viewer password (optional)": "Nueva contraseña de espectador (opcional)",
@@ -880,4 +878,6 @@ OCI18n.add("es", {
  "Admin password changed": "Contraseña de administrador cambiada",
  "Operator password changed": "Contraseña de operador cambiada",
  "Viewer password set": "Contraseña de espectador establecida",
+ "Viewer sign-in is on. To turn it off, click Turn viewer sign-in off.": "El acceso de espectador está activado. Para desactivarlo, pulse «Desactivar el acceso de espectador».",
+ "Viewer sign-in is off. To turn it on, type a password in the box above and click Set viewer password.": "El acceso de espectador está desactivado. Para activarlo, escriba una contraseña en la casilla de arriba y pulse «Establecer la contraseña de espectador».",
 });

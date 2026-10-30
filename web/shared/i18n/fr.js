@@ -88,8 +88,6 @@ OCI18n.add("fr", {
  "You are following this show (view only)": "Vous suivez ce spectacle (lecture seule)",
  "This screen is view only": "Cet écran est en lecture seule",
  "New viewer password": "Nouveau mot de passe spectateur",
- "Viewer sign-in is on.": "La connexion spectateur est activée.",
- "Viewer sign-in is off.": "La connexion spectateur est désactivée.",
  "Viewer sign-in turned off": "Connexion spectateur désactivée",
  "Turn viewer sign-in off": "Désactiver la connexion spectateur",
  "New viewer password (optional)": "Nouveau mot de passe spectateur (facultatif)",
@@ -880,4 +878,6 @@ OCI18n.add("fr", {
  "Admin password changed": "Mot de passe administrateur modifié",
  "Operator password changed": "Mot de passe opérateur modifié",
  "Viewer password set": "Mot de passe spectateur défini",
+ "Viewer sign-in is on. To turn it off, click Turn viewer sign-in off.": "La connexion spectateur est activée. Pour la désactiver, cliquez sur « Désactiver la connexion spectateur ».",
+ "Viewer sign-in is off. To turn it on, type a password in the box above and click Set viewer password.": "La connexion spectateur est désactivée. Pour l'activer, saisissez un mot de passe dans la case ci-dessus et cliquez sur « Définir le mot de passe spectateur ».",
 });
