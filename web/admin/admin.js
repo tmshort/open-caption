@@ -569,8 +569,10 @@
     if (!r.ok) return fail(r);
     A.problemsTotal = r.data.problems || 0;
     setSeenProblems(A.problemsTotal); paintTroubleBadge(A.problemsTotal);
+    const summary = []; // the checks as plain lines, for Copy summary
     const list = h('ul', { class: 'checks' }, ...r.data.checks.map((c) => {
       const d = describeCheck(c);
+      summary.push('[' + __(STATUS_WORD[c.status] || 'Note') + '] ' + d.text);
       return h('li', { class: 'check-' + c.status }, h('span', { class: 'cstatus' }, __(STATUS_WORD[c.status] || 'Note')), h('span', { class: 'ctext' }, d.text), d.fix ? h('button', { onclick: d.fix.run }, d.fix.label) : null);
     }));
     // The connection test: this computer asks for its own web server on every address it gives out.
@@ -596,6 +598,11 @@
       h('div', { class: 'row' }, reachBtn), reachList,
       h('h3', {}, __('Recent warnings and errors')), pre,
       h('div', { class: 'row' }, h('button', { onclick: () => { $('dlg').close('cancel'); showLog(); } }, __('Open the full log…')),
+        h('button', { onclick: async () => { // what to paste into an email: the version, the time, every check and the connection test if it was run (no passwords are ever in it)
+          const st = await api('GET', '/api/admin/settings');
+          const text = ['Open Caption ' + (st.ok ? st.data.version : ''), new Date().toString(), '', ...summary, ...(reachList.children.length ? ['', __('Connection test'), ...[...reachList.children].map((li) => '[' + li.firstChild.textContent + '] ' + li.lastChild.textContent)] : [])].join('\n');
+          try { await navigator.clipboard.writeText(text); toast(__('Copied')); } catch (e) { toast(__('Select the text and copy it by hand')); }
+        } }, __('Copy summary')),
         h('a', { class: 'btn', href: '/api/admin/support-bundle', download: 'support-bundle.zip' }, __('Download a support bundle')),
         h('button', { onclick: () => { $('dlg').close('cancel'); openHelp('admin-troubleshooting'); } }, __('Troubleshooting help'))),
       h('p', { class: 'hint' }, __('The support bundle holds the settings (without passwords), the recent log and basic facts about this computer, for sending to someone who is helping.')));
