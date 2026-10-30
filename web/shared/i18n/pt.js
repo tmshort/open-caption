@@ -906,7 +906,7 @@ OCI18n.add("pt", {
  "Find the address and QR code to give the audience, and check that their phones can connect.": "Aqui estão o endereço e o código QR para dar ao público, e pode verificar se os telemóveis deles se ligam.",
  "After a show, see how many devices watched, as a graph you can print or save.": "Depois de um espetáculo, veja quantos dispositivos o viram, num gráfico que pode imprimir ou guardar.",
  "Passwords, who may connect, the network, the certificate and the venue defaults are here. Troubleshoot, beside it, helps when someone cannot connect.": "Aqui estão as palavras-passe, quem se pode ligar, a rede, o certificado e os valores predefinidos do local. Resolução de problemas, ao lado, ajuda quando alguém não consegue ligar-se.",
- "When the show is ready, this opens the Run page, where the operator starts the show and presses the spacebar for each caption.": "Quando o espetáculo está pronto, isto abre a página Execução, onde o operador inicia o espetáculo e prime a barra de espaço para cada legenda.",
+ "When the show is ready, this opens the Run page, where the operator starts the show and presses the spacebar for each caption.": "Quando o espetáculo está pronto, isto abre a página Conduzir, onde o operador inicia o espetáculo e prime a barra de espaço para cada legenda.",
  "Help explains each step and follows the one you are on. You can take this tour again from there.": "A Ajuda explica cada passo e acompanha aquele em que está. Pode repetir este passeio a partir dela.",
  "Next": "Seguinte",
  "Back": "Anterior",
