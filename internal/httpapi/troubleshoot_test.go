@@ -7,8 +7,10 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/tmshort/open-caption/internal/config"
 	"github.com/tmshort/open-caption/internal/logbuf"
@@ -267,5 +269,31 @@ func TestTroubleshootChecksTheLoadedShowFile(t *testing.T) {
 	}
 	if got := state("One\n[loop: 10s]\nunclosed\n"); !strings.HasPrefix(got, "bad:") {
 		t.Errorf("an error in the show file: %q", got)
+	}
+}
+
+// Troubleshoot compares the program's clock with the browser's and says so when they are far apart.
+func TestTroubleshootNotesAClockThatIsOff(t *testing.T) {
+	_, _, c := standbyServer(t)
+	minutes := func(browser time.Time) any {
+		_, m := c.do("GET", "/api/admin/troubleshoot?now="+strconv.FormatInt(browser.UnixMilli(), 10), nil)
+		f := findings(m)["clock"]
+		if f == nil {
+			return nil
+		}
+		return f["params"].(map[string]any)["minutes"]
+	}
+	if got := minutes(time.Now().Add(-time.Minute)); got != nil {
+		t.Errorf("a minute apart is no remark: %v", got)
+	}
+	if got, _ := minutes(time.Now().Add(-2 * time.Hour)).(float64); got < 119 || got > 121 {
+		t.Errorf("a browser two hours behind means the program is two hours ahead: %v", got)
+	}
+	if got, _ := minutes(time.Now().Add(30 * time.Minute)).(float64); got > -29 || got < -31 {
+		t.Errorf("a browser half an hour ahead: %v", got)
+	}
+	_, m := c.do("GET", "/api/admin/troubleshoot", nil)
+	if findings(m)["clock"] != nil {
+		t.Error("without the browser's time there is nothing to compare")
 	}
 }

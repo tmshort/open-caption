@@ -6,7 +6,9 @@ package httpapi
 import (
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/tmshort/open-caption/internal/config"
 	"github.com/tmshort/open-caption/internal/logx"
@@ -147,6 +149,14 @@ func (s *Server) troubleshoot(w http.ResponseWriter, r *http.Request) {
 		add("show", "ok", "state", "loaded", "name", s.rt.ShowName())
 	}
 
+	// 5c. the clock: a certificate is valid for a period and the report is stamped with the time, so a clock that is far off
+	// (a computer that has lost power, a wrong time zone setting) causes confusing trouble. The browser says what time it thinks it is.
+	if ms, err := strconv.ParseInt(r.URL.Query().Get("now"), 10, 64); err == nil && ms > 0 {
+		if d := time.Since(time.UnixMilli(ms)); d > clockSlack || d < -clockSlack {
+			add("clock", "warn", "minutes", int(d.Round(time.Minute)/time.Minute)) // positive: the program's clock is ahead of the browser's
+		}
+	}
+
 	// 6a. the show file itself: errors stop a line being shown as written, a missing image shows nothing
 	if id := s.rt.ShowID(); id != "" {
 		if text, err := s.store.ReadShowFile(id, ""); err == nil {
@@ -228,6 +238,9 @@ func (s *Server) troubleshoot(w http.ResponseWriter, r *http.Request) {
 	}
 	writeJSON(w, http.StatusOK, map[string]any{"checks": cs, "problems": problems, "level": logx.Current().String()})
 }
+
+// clockSlack is how far the program's clock may differ from the browser's before Troubleshoot says so.
+const clockSlack = 5 * time.Minute
 
 // lowDiskBytes is the free space below which Troubleshoot warns: saved reports, versions and uploaded images need room.
 const lowDiskBytes = 500 << 20

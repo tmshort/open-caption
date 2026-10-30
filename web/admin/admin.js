@@ -530,6 +530,9 @@
         case 'languages': return { text: __('These languages will not be shown to the audience until their show file matches the main one: {list}.', { list: p.list }), fix: { label: __('Open the Show file step'), run: () => { $('dlg').close('cancel'); go('showfile'); } } };
         default: return { text: __('The show “{name}” is loaded.', { name: p.name }) };
       }
+      case 'clock': return p.minutes > 0
+        ? { text: __('The clock of the computer running the program is {n} minutes ahead of this browser’s. A wrong clock breaks HTTPS certificates and the times in reports. Set the time on the computer that runs the program.', { n: p.minutes }) }
+        : { text: __('The clock of the computer running the program is {n} minutes behind this browser’s. A wrong clock breaks HTTPS certificates and the times in reports. Set the time on the computer that runs the program.', { n: -p.minutes }) };
       case 'showfile': {
         const open = { label: __('Open the Show file step'), run: () => { $('dlg').close('cancel'); if (p.id && curShowById(p.id)) setCur(p.id); go('showfile'); } };
         if (p.state === 'errors') return { text: __('The show file of the loaded show has {n} error(s). Open the Show file step to see them.', { n: p.n }), fix: open };
@@ -561,7 +564,7 @@
   }
   const STATUS_WORD = { ok: 'OK', info: 'Note', warn: 'Check', bad: 'Problem' };
   async function showTroubleshoot() {
-    const r = await api('GET', '/api/admin/troubleshoot');
+    const r = await api('GET', '/api/admin/troubleshoot?now=' + Date.now());
     if (!r.ok) return fail(r);
     A.problemsTotal = r.data.problems || 0;
     setSeenProblems(A.problemsTotal); paintTroubleBadge(A.problemsTotal);
