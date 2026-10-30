@@ -925,4 +925,6 @@ OCI18n.add("es", {
  "{url} did not answer: {reason}.": "{url} no respondió: {reason}.",
  "Connection test": "Prueba de conexión",
  "This computer asks for the web server on each address it gives out. That shows the server answers there; a firewall on this computer or on the network can still stop other devices.": "Este ordenador pide el servidor web en cada dirección que ofrece. Eso demuestra que el servidor responde allí; un cortafuegos de este ordenador o de la red aún puede bloquear a otros dispositivos.",
+ "The show “{name}” is on air: the audience is seeing the captions now.": "El espectáculo «{name}» está en el aire: el público está viendo los subtítulos ahora.",
+ "The show “{name}” is in standby: the audience sees the standby screen until the operator presses START on the Run page.": "El espectáculo «{name}» está en espera: el público ve la pantalla de espera hasta que el operador pulse INICIAR en la página Dirigir.",
 });

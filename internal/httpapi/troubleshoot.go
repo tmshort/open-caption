@@ -129,6 +129,15 @@ func (s *Server) troubleshoot(w http.ResponseWriter, r *http.Request) {
 		add("show", "ok", "state", "loaded", "name", s.rt.ShowName())
 	}
 
+	// 6b. what the audience sees: the standby screen until the operator starts the show, then the captions
+	if s.rt.ShowID() != "" {
+		if s.rt.OperatorPayload().Op.Live {
+			add("onair", "info", "state", "live", "name", s.rt.ShowName())
+		} else {
+			add("onair", "info", "state", "standby", "name", s.rt.ShowName())
+		}
+	}
+
 	// 7. who is connected
 	add("devices", "info", "n", s.rt.AudienceCount())
 

@@ -114,3 +114,25 @@ func TestPortCheckComparesPortsNotAddressSpelling(t *testing.T) {
 		t.Errorf("an HTTPS port was reported while HTTPS is off: %q", got)
 	}
 }
+
+// With a show loaded, Troubleshoot says whether the audience sees the standby screen or the captions.
+func TestTroubleshootSaysWhetherTheShowIsOnAir(t *testing.T) {
+	_, _, c := standbyServer(t)
+	_, m := c.do("GET", "/api/admin/troubleshoot", nil)
+	if findings(m)["onair"] != nil {
+		t.Fatalf("with no show loaded there is nothing to say: %v", m["checks"])
+	}
+	_, sh := c.do("POST", "/api/admin/shows", map[string]any{"name": "Tiny"})
+	id, _ := sh["id"].(string)
+	c.do("PUT", "/api/admin/shows/"+id+"/showfile", map[string]any{"text": "One\nTwo\n"})
+	c.do("POST", "/api/admin/shows/"+id+"/activate", map[string]any{})
+	_, m = c.do("GET", "/api/admin/troubleshoot", nil)
+	if f := findings(m)["onair"]; f == nil || f["params"].(map[string]any)["state"] != "standby" {
+		t.Fatalf("a loaded show waits in standby: %v", m["checks"])
+	}
+	c.do("POST", "/api/admin/shows/"+id+"/activate", map[string]any{"start": true})
+	_, m = c.do("GET", "/api/admin/troubleshoot", nil)
+	if f := findings(m)["onair"]; f == nil || f["params"].(map[string]any)["state"] != "live" {
+		t.Fatalf("a started show is on air: %v", m["checks"])
+	}
+}

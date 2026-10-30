@@ -925,4 +925,6 @@ OCI18n.add("fr", {
  "{url} did not answer: {reason}.": "{url} n’a pas répondu : {reason}.",
  "Connection test": "Test de connexion",
  "This computer asks for the web server on each address it gives out. That shows the server answers there; a firewall on this computer or on the network can still stop other devices.": "Cet ordinateur interroge le serveur web à chaque adresse qu’il donne. Cela montre que le serveur répond à cet endroit ; un pare-feu de cet ordinateur ou du réseau peut quand même bloquer les autres appareils.",
+ "The show “{name}” is on air: the audience is seeing the captions now.": "Le spectacle « {name} » est à l’antenne : le public voit les sous-titres en ce moment.",
+ "The show “{name}” is in standby: the audience sees the standby screen until the operator presses START on the Run page.": "Le spectacle « {name} » est en attente : le public voit l’écran d’attente jusqu’à ce que l’opérateur appuie sur DÉMARRER dans la page Conduire.",
 });

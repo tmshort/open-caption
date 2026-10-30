@@ -530,6 +530,8 @@
         case 'languages': return { text: __('These languages will not be shown to the audience until their show file matches the main one: {list}.', { list: p.list }), fix: { label: __('Open the Show file step'), run: () => { $('dlg').close('cancel'); go('showfile'); } } };
         default: return { text: __('The show “{name}” is loaded.', { name: p.name }) };
       }
+      case 'onair': return p.state === 'live' ? { text: __('The show “{name}” is on air: the audience is seeing the captions now.', { name: p.name }) }
+        : { text: __('The show “{name}” is in standby: the audience sees the standby screen until the operator presses START on the Run page.', { name: p.name }), fix: { label: __('Open the Run page'), run: () => { location.href = '/operator'; } } };
       case 'devices': return { text: __('{n} device(s) are connected right now.', { n: p.n }) };
       case 'problems': return c.status === 'ok' ? { text: __('No warnings or errors in the recent log.') } : { text: __('{n} warning(s) or error(s) in the recent log, listed below.', { n: p.n }) };
       case 'debug': return { text: __('Debug logging is on: the log is bigger and includes every request. Turn it back to normal in Settings → About when you are done.'), fix: settings('abt') };
