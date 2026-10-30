@@ -872,7 +872,7 @@ OCI18n.add("de", {
  "Main language of a new show": "Hauptsprache einer neuen Show",
  "Text size (percent)": "Textgröße (Prozent)",
  "Most devices connected per language": "Höchstzahl verbundener Geräte pro Sprache",
- "Home and office networks (private)": "Heim- und Büronetzwerke (private)",
+ "Local network (private addresses)": "Lokales Netzwerk (private Adressen)",
  "Follow page": "Zuschauer-Seite",
  "Who may open the operator page. Computers in the Setup list may always open it.": "Wer die Operator-Seite öffnen darf. Computer aus der Liste der Einrichtung dürfen sie immer öffnen.",
  "Who may open the Follow page (/follow). Computers in the operator and Setup lists may always open it.": "Wer die Zuschauer-Seite (/follow) öffnen darf. Computer aus den Listen des Operators und der Einrichtung dürfen sie immer öffnen.",

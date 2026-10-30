@@ -1061,7 +1061,7 @@ async function main() {
       const accNow = () => hp.evaluate(async () => (await (await fetch('/api/admin/settings')).json()).access);
       check('Settings → Security has a Who can open the pages section with a list for Setup, the operator page and the Follow page', await hp.evaluate(() => [...document.querySelectorAll('#dlg fieldset.accgroup legend')].map((x) => x.textContent).join('|') === 'Setup page|Operator page|Follow page'));
       await accOp('tick'); await sleep(700);
-      check('ticking Home and office networks for the operator page is saved', JSON.stringify((await accNow()).operatorAllow) === '["private"]');
+      check('ticking Local network for the operator page is saved', JSON.stringify((await accNow()).operatorAllow) === '["private"]');
       await accOp('untick'); await sleep(700);
       check('unticking it empties the list again', JSON.stringify((await accNow()).operatorAllow) === '[]');
       await accOp('badlist'); await sleep(700);

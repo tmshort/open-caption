@@ -197,7 +197,7 @@
       const note = () => { empty.textContent = get().length ? '' : emptyText; };
       lo.onchange = pr.onchange = rest.oninput = note; note();
       return { get, el: h('fieldset', { class: 'accgroup' }, h('legend', {}, title), h('p', { class: 'hint' }, hint),
-        h('div', { class: 'row' }, h('label', { class: 'row' }, lo, __('This computer (localhost)')), h('label', { class: 'row' }, pr, __('Home and office networks (private)'))),
+        h('div', { class: 'row' }, h('label', { class: 'row' }, lo, __('This computer (localhost)')), h('label', { class: 'row' }, pr, __('Local network (private addresses)'))),
         h('label', { class: 'field' }, h('span', {}, __('Other addresses or networks, one per line')), rest), empty) };
     }
     const accAdmin = accessGroup(__('Setup page'), __('Who may open Setup. Keep this computer in the list if you use Setup on it.'), __('Any computer on the network may try to sign in to Setup.'), acc0.adminAllow || []);
