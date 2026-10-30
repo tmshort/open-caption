@@ -947,4 +947,5 @@ OCI18n.add("it", {
  "Copy summary": "Copia riepilogo",
  "Warnings and errors": "Avvisi ed errori",
  "Troubleshoot sections": "Sezioni di Risoluzione problemi",
+ "Passwords are never written to the log. The support bundle below has this log and more, for sending to someone who is helping.": "Le password non vengono mai scritte nel registro. Il pacchetto di supporto qui sotto contiene questo registro e altro, da inviare a chi sta aiutando.",
 });

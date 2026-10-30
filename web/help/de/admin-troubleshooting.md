@@ -40,7 +40,7 @@ Wenn Sie sich gar nicht anmelden können, stehen beide Passwörter in `config.ya
 
 ## Das Protokoll ansehen
 
-**Fehlersuche → Das ganze Protokoll öffnen…** zeigt, was das Programm zuletzt protokolliert hat. Wählen Sie *Nur Probleme*, um Warnungen und Fehler zu sehen, etwa abgelehnte Anmeldungen oder einen im Netzwerk bereits verwendeten Namen. Dasselbe Fenster legt fest, wie viele Details protokolliert werden (**Protokoll-Detailgrad**); *Debug* fügt jede Anfrage hinzu, was hilft, wenn etwas Merkwürdiges passiert. Passwörter werden nie ins Protokoll geschrieben.
+**Fehlersuche → Warnungen und Fehler** zeigt, was das Programm zuletzt protokolliert hat; es öffnet sich mit *Nur Probleme* (Warnungen und Fehler, etwa abgelehnte Anmeldungen oder ein im Netzwerk bereits verwendeter Name), und das Stufenmenü erweitert es auf *Alles*. **Einstellungen → Info** legt fest, wie viele Details protokolliert werden (**Protokoll-Detailgrad**); *Debug* fügt jede Anfrage hinzu, was hilft, wenn etwas Merkwürdiges passiert. Passwörter werden nie ins Protokoll geschrieben.
 
 ## Hilfe holen
 

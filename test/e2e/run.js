@@ -625,17 +625,21 @@ async function main() {
     await guard.evaluate(() => [...document.querySelectorAll('dialog[open] button')].find((x) => x.textContent === 'Test connection').click());
     await guard.waitForFunction(() => document.querySelectorAll('dialog[open] ul.checks')[1] && document.querySelectorAll('dialog[open] ul.checks')[1].children.length > 0, { timeout: T(10000) }).catch(() => {});
     check('Test connection lists each address with its answer (or says there is none to test), and an address of this computer answers', await guard.evaluate(() => { const li = [...document.querySelectorAll('dialog[open] ul.checks')[1].children]; return li.length > 0 && (li.some((x) => x.className === 'check-ok') || /no address/.test(li[0].textContent)) && !li.some((x) => x.className === 'check-bad'); }));
-    await guard.evaluate(() => [...document.querySelectorAll('dialog[open] button')].find((x) => x.textContent.includes('Open the full log')).click()); await guard.waitForFunction(() => { const p = document.querySelector('pre.logview'); return p && p.textContent.includes('signed in'); }, { timeout: 8000 }).catch(() => {});
-    check('the recent log can be read in Setup', await guard.evaluate(() => /INFO .*signed in/.test(document.querySelector('pre.logview').textContent)));
+    // the Warnings and errors tab is the log viewer: it opens on problems only and fills the tab
+    await guard.evaluate(() => document.getElementById('trtab-warn').click()); await sleep(300);
+    check('the Warnings and errors tab opens the log on problems only and fills the tab', await guard.evaluate(() => { const pre = document.querySelector('dialog[open] pre.logview'), sel = document.querySelector('dialog[open] select[aria-label="Show"]'), p = document.querySelector('dialog[open] #trpanel-warn').getBoundingClientRect(), r = pre.getBoundingClientRect();
+      return sel.value === 'warn' && !/INFO/.test(pre.textContent) && r.height > 160 && r.bottom <= p.bottom + 1 && p.height > 250; }));
+    await guard.select('dialog select[aria-label="Show"]', 'info'); await guard.waitForFunction(() => { const p = document.querySelector('dialog[open] pre.logview'); return p && p.textContent.includes('signed in'); }, { timeout: 8000 }).catch(() => {});
+    check('the recent log can be read in Setup', await guard.evaluate(() => /INFO .*signed in/.test(document.querySelector('dialog[open] pre.logview').textContent)));
     await guard.select('dialog select[aria-label="Show"]', 'warn'); await sleep(600);
     check('and narrowed to problems', await guard.evaluate(() => { const t = document.querySelector('pre.logview').textContent; return /WARN/.test(t) && !/INFO/.test(t); }));
-    check('it never contains a password', !(await guard.evaluate(() => document.querySelector('pre.logview').textContent)).includes(ADMIN));
+    check('it never contains a password', !(await guard.evaluate(() => document.querySelector('dialog[open] pre.logview').textContent)).includes(ADMIN));
     await guard.evaluate(() => document.getElementById('dlgok').click()); await sleep(300);
     // Troubleshoot: a header button with the checks, the recent problems, and a count of the new ones
     await click(guard, 'Troubleshoot'); await guard.waitForSelector('dialog[open] ul.checks li'); await sleep(300);
     const trouble = await guard.evaluate(() => ({ n: document.querySelectorAll('dialog[open] ul.checks li').length, text: document.querySelector('dialog[open] .trouble').innerText, all: document.querySelector('dialog[open] .trouble').textContent, log: document.querySelector('dialog[open] pre.logview').textContent, badge: document.getElementById('troublebadge').hidden }));
     check('the Troubleshoot button opens a list of checks with the facts the program knows', trouble.n >= 6 && /Setup can save its settings/.test(trouble.text) && /connected right now/.test(trouble.text) && /network address/.test(trouble.text), trouble);
-    check('it lists the recent warnings and errors, and has the log and the support bundle one click away', /WARN/.test(trouble.log) && /Open the full log/.test(trouble.all) && /Download a support bundle/.test(trouble.text), trouble.log.slice(0, 200));
+    check('it lists the recent warnings and errors, and has the support bundle one click away', /WARN/.test(trouble.log) && /Download a support bundle/.test(trouble.text), trouble.log.slice(0, 200));
     check('opening it clears the count on the button', trouble.badge === true);
     await guard.evaluate(() => document.getElementById('dlgok').click()); await sleep(300);
     // (the program's own count is checked in the Go tests; here the page is told that more problems were logged)

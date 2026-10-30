@@ -40,7 +40,7 @@ Si vous ne pouvez pas du tout vous connecter, les deux mots de passe se trouvent
 
 ## Consulter le journal
 
-**Dépannage → Ouvrir le journal complet…** montre ce que le programme a enregistré récemment. Choisissez *Problèmes seulement* pour voir les avertissements et les erreurs, comme des connexions refusées ou un nom déjà utilisé sur le réseau. La même fenêtre règle la quantité de détails enregistrés (**Niveau de détail du journal**) ; *Débogage* ajoute chaque requête, ce qui aide quand quelque chose d'étrange se produit. Les mots de passe ne sont jamais écrits dans le journal.
+**Dépannage → Avertissements et erreurs** montre ce que le programme a enregistré récemment ; il s'ouvre sur *Problèmes seulement* (avertissements et erreurs, comme des connexions refusées ou un nom déjà utilisé sur le réseau), et le menu de niveau l'élargit à *Tout*. **Réglages → À propos** règle la quantité de détails enregistrés (**Niveau de détail du journal**) ; *Débogage* ajoute chaque requête, ce qui aide quand quelque chose d'étrange se produit. Les mots de passe ne sont jamais écrits dans le journal.
 
 ## Demander de l'aide
 

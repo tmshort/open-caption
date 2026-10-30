@@ -258,7 +258,8 @@ body.helpopen .stepbar { right: min(37.5rem, 100%); } /* the help panel is in fr
 .trouble .checks li.check-bad { border-left-color: var(--bad); }
 .trouble .cstatus { font-weight: 700; min-width: 4.5rem; font-size: .85em; text-transform: uppercase; letter-spacing: .04em; }
 .trouble .ctext { flex: 1 1 18rem; }
-.trouble pre.logview { max-height: 10rem; }
+.logpanel { display: flex; flex-direction: column; height: 100%; min-height: 0; }
+.trouble pre.logview { flex: 1 1 0; height: 0; min-height: 8rem; max-height: none; margin: .4rem 0; } /* fills the tab; its lines scroll inside, so they never make the window taller */
 .trouble .tabpanels + .row { margin-top: 1rem; }
 
 /* the header's "Working on: … · Active: …" pill can hold two show names */

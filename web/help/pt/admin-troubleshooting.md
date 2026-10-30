@@ -40,7 +40,7 @@ Se você não consegue entrar de jeito nenhum, as duas senhas estão em `config.
 
 ## Olhar o registro
 
-**Solução de problemas → Abrir o registro completo…** mostra o que o programa registrou há pouco. Escolha *Somente problemas* para ver avisos e erros, como entradas recusadas ou um nome já usado na rede. A mesma janela define quanto detalhe é registrado (**Nível de detalhe do registro**); *Depuração* acrescenta cada requisição, o que ajuda quando algo estranho acontece. As senhas nunca são escritas no registro.
+**Solução de problemas → Avisos e erros** mostra o que o programa registrou há pouco; abre em *Somente problemas* (avisos e erros, como entradas recusadas ou um nome já usado na rede), e o menu de nível amplia para *Tudo*. **Configurações → Sobre** define quanto detalhe é registrado (**Nível de detalhe do registro**); *Depuração* acrescenta cada requisição, o que ajuda quando algo estranho acontece. As senhas nunca são escritas no registro.
 
 ## Pedir ajuda
 

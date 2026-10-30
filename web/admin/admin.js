@@ -79,12 +79,14 @@
     const btns = defs.map(([id, label], i) => h('button', { type: 'button', role: 'tab', id: prefix + 'tab-' + id, 'aria-controls': prefix + 'panel-' + id, onclick: () => pick(i, false),
       onkeydown: (e) => { const n = defs.length, k = e.key; const to = k === 'ArrowRight' ? (i + 1) % n : k === 'ArrowLeft' ? (i + n - 1) % n : k === 'Home' ? 0 : k === 'End' ? n - 1 : -1; if (to >= 0) { e.preventDefault(); pick(to, true); } } }, label));
     const panels = defs.map(([id, , kids]) => h('div', { class: 'tabpanel inactive', role: 'tabpanel', id: prefix + 'panel-' + id, 'aria-labelledby': prefix + 'tab-' + id }, ...kids));
+    let current = -1;
     function pick(i, focus) {
+      current = i;
       btns.forEach((b, k) => { b.setAttribute('aria-selected', k === i ? 'true' : 'false'); b.tabIndex = k === i ? 0 : -1; panels[k].classList.toggle('inactive', k !== i); });
       if (focus) btns[i].focus();
       if (onPick) onPick(i, defs[i][0]);
     }
-    return { tabs: h('div', { class: 'tabs', role: 'tablist', 'aria-label': ariaLabel }, ...btns), panels: h('div', { class: 'tabpanels' }, ...panels), pick };
+    return { tabs: h('div', { class: 'tabs', role: 'tablist', 'aria-label': ariaLabel }, ...btns), panels: h('div', { class: 'tabpanels' }, ...panels), pick, selected: () => (current >= 0 ? defs[current][0] : '') };
   }
 
   // A reusable dialog. body: node; resolves true on OK, false on cancel.
@@ -459,32 +461,32 @@
     await ask(__('Settings'), body, __('Close'), { noCancel: true, wide: true, tabbed: true });
     if (netChanged && A.step === 'golive') render(); // the Share step lists the addresses that are offered
   }
-  // The program's recent log (the last 1000 lines it keeps in memory), so a problem can be looked at without
-  // opening the log file or the support bundle.
-  async function showLog() {
+  // The program's recent log (the last 1000 lines it keeps in memory), so a problem can be looked at without opening the log
+  // file or the support bundle. Returns the panel's node, load() (which answers how many lines it shows) and start()/stop() for
+  // the refresh every few seconds, which runs only while `visible()` says the panel is on screen.
+  function logPanel(firstLevel, visible) {
     const pre = h('pre', { class: 'logview', tabindex: '0', 'aria-label': __('Recent log') });
     const level = h('select', { 'aria-label': __('Show') }, ...[['debug', 'Everything'], ['info', 'Normal and up'], ['warn', 'Problems only (warnings and errors)'], ['error', 'Errors only']].map(([v, t]) => h('option', { value: v }, __(t))));
-    level.value = 'info';
+    level.value = firstLevel;
     const auto = h('input', { type: 'checkbox', checked: '' });
     const count = h('span', { class: 'hint' });
-    let lastLines = [];
+    let lastLines = [], timer = 0;
     async function load() {
       const r = await api('GET', '/api/admin/log?lines=400&level=' + level.value);
-      if (!r.ok) { pre.textContent = __((r.data && r.data.error) || 'Could not read the log.'); return; }
+      if (!r.ok) { pre.textContent = __((r.data && r.data.error) || 'Could not read the log.'); return 0; }
       lastLines = r.data.lines;
       const atEnd = pre.scrollHeight - pre.scrollTop - pre.clientHeight < 40;
       pre.textContent = lastLines.length ? lastLines.join('\n') : __('Nothing at this level yet.');
       count.textContent = __('{n} line(s); the program logs at "{level}" and above', { n: lastLines.length, level: r.data.level });
       if (atEnd) pre.scrollTop = pre.scrollHeight;
+      return lastLines.length;
     }
     level.addEventListener('change', load);
     const copy = h('button', { onclick: async () => { try { await navigator.clipboard.writeText(lastLines.join('\n')); toast(__('Copied')); } catch (e) { toast(__('Select the text and copy it by hand')); } } }, __('Copy'));
-    const body = h('div', {}, h('div', { class: 'row' }, h('label', { class: 'row' }, __('Show: '), level), h('label', { class: 'row' }, auto, __(' Update every few seconds')), h('button', { onclick: load }, __('Refresh')), copy),
-      pre, count, h('p', { class: 'hint' }, __('Passwords are never written to the log. Setup → Share has a support bundle with this log and more, for sending to someone who is helping.')));
-    await load(); pre.scrollTop = pre.scrollHeight;
-    const timer = setInterval(() => { if (auto.checked) load(); }, 3000);
-    await ask(__('Recent log'), body, __('Close'), { noCancel: true, wide: true });
-    clearInterval(timer);
+    const node = h('div', { class: 'logpanel' }, h('div', { class: 'row' }, h('label', { class: 'row' }, __('Show: '), level), h('label', { class: 'row' }, auto, __(' Update every few seconds')), h('button', { onclick: load }, __('Refresh')), copy),
+      pre, count, h('p', { class: 'hint' }, __('Passwords are never written to the log. The support bundle below has this log and more, for sending to someone who is helping.')));
+    return { node, load, scrollEnd: () => { pre.scrollTop = pre.scrollHeight; },
+      start: () => { timer = setInterval(() => { if (auto.checked && visible()) load(); }, 3000); }, stop: () => clearInterval(timer) };
   }
   $('settingsbtn').addEventListener('click', () => openSettings());
 
@@ -594,24 +596,22 @@
       x.data.results.forEach((r) => reachList.append(h('li', { class: r.ok ? 'check-ok' : 'check-bad' }, h('span', { class: 'cstatus' }, r.ok ? __('OK') : __('Problem')),
         h('span', { class: 'ctext' }, r.ok ? __('{url} answered in {ms} ms.', { url: r.url, ms: r.ms }) : __('{url} did not answer: {reason}.', { url: r.url, reason: why(r.error) })))));
     } }, __('Test connection'));
-    const pre = h('pre', { class: 'logview', tabindex: '0', 'aria-label': __('Recent warnings and errors') });
-    const lr = await api('GET', '/api/admin/log?lines=40&level=warn');
-    pre.textContent = lr.ok && lr.data.lines.length ? lr.data.lines.join('\n') : __('Nothing at this level yet.');
-    pre.scrollTop = pre.scrollHeight;
+    let tabs = null; // the tab set, once it exists: the log refreshes only while its tab is showing
+    const log = logPanel('warn', () => !!tabs && tabs.selected() === 'warn');
+    const warnN = await log.load();
     const copyBtn = h('button', { onclick: async () => { // what to paste into an email: the version, the time, every check and the connection test if it was run (no passwords are ever in it)
       const st = await api('GET', '/api/admin/settings');
       const text = ['Open Caption ' + (st.ok ? st.data.version : ''), new Date().toString(), '', ...summary, ...(reachList.children.length ? ['', __('Connection test'), ...[...reachList.children].map((li) => '[' + li.firstChild.textContent + '] ' + li.lastChild.textContent)] : [])].join('\n');
       try { await navigator.clipboard.writeText(text); toast(__('Copied')); } catch (e) { toast(__('Select the text and copy it by hand')); }
     } }, __('Copy summary'));
-    const warnN = lr.ok ? lr.data.lines.length : 0;
     const tabDefs = [
       ['chk', __('Checks'), [list]],
       ['conn', __('Connection test'), [
       h('p', { class: 'hint' }, __('This computer asks for the web server on each address it gives out. That shows the server answers there; a firewall on this computer or on the network can still stop other devices.')),
         h('div', { class: 'row' }, reachBtn), reachList]],
-      ['warn', __('Warnings and errors') + (warnN ? ' (' + warnN + ')' : ''), [pre,
-        h('div', { class: 'row' }, h('button', { onclick: () => { $('dlg').close('cancel'); showLog(); } }, __('Open the full log…')))]]];
-    const ts = tabSet('tr', __('Troubleshoot sections'), tabDefs, (i, id) => { if (id === 'warn') pre.scrollTop = pre.scrollHeight; });
+      ['warn', __('Warnings and errors') + (warnN ? ' (' + warnN + ')' : ''), [log.node]]];
+    const ts = tabSet('tr', __('Troubleshoot sections'), tabDefs, (i, id) => { if (id === 'warn') log.scrollEnd(); });
+    tabs = ts;
     ts.pick(0, false);
     const body = h('div', { class: 'trouble' },
       ts.tabs, ts.panels,
@@ -619,7 +619,9 @@
         h('a', { class: 'btn', href: '/api/admin/support-bundle', download: 'support-bundle.zip' }, __('Download a support bundle')),
         h('button', { onclick: () => { $('dlg').close('cancel'); openHelp('admin-troubleshooting'); } }, __('Troubleshooting help'))),
       h('p', { class: 'hint' }, __('The support bundle holds the settings (without passwords), the recent log and basic facts about this computer, for sending to someone who is helping.')));
+    log.start();
     await ask(__('Troubleshoot'), body, __('Close'), { noCancel: true, wide: true });
+    log.stop();
   }
   $('troublebtn').addEventListener('click', showTroubleshoot);
 
