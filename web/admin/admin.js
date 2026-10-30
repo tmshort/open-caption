@@ -120,10 +120,10 @@
   // ---- help drawer (topic follows the current step) ----
   const HELP_TOPIC = { show: 'admin-getting-started', showfile: 'admin-writing-a-show-file', images: 'admin-images', look: 'admin-look-and-feel', test: 'admin-getting-started', golive: 'admin-network', report: 'operator-running-the-show' };
   function openHelp(topic) {
-    $('help').hidden = false;
+    $('help').hidden = false; document.body.classList.add('helpopen');
     $('help').querySelector('iframe').src = '/help?role=admin&embed=1&ui=' + OCI18n.lang + '&topic=' + (topic || HELP_TOPIC[A.step] || 'admin-getting-started');
   }
-  function closeHelp() { $('help').hidden = true; $('help').querySelector('iframe').src = 'about:blank'; }
+  function closeHelp() { $('help').hidden = true; document.body.classList.remove('helpopen'); $('help').querySelector('iframe').src = 'about:blank'; }
   $('helpbtn').addEventListener('click', () => ($('help').hidden ? openHelp() : closeHelp()));
   $('helpclose').addEventListener('click', closeHelp);
   // Pop out: the topic being read opens in a window of its own (the full help page, with its topic list beside it) and the
@@ -621,7 +621,7 @@
   }
 
   function refreshNav() {
-    nextStep(); // its highlight follows the same ticks, so it changes the moment a step is completed (a rehearsal started, the look saved)
+    paintBar(); // its highlight follows the same ticks, so it changes the moment a step is completed (a rehearsal started, the look saved)
     const nav = $('steps'); nav.replaceChildren();
     STEPS.forEach(([id, rawLabel], i) => { const label = __(rawLabel);
       nav.append(h('button', { class: (A.step === id ? 'on ' : '') + (done(id) ? 'done' : ''), onclick: () => go(id), disabled: id !== 'show' && id !== 'report' && !A.cur, // the report of the last show does not depend on the show being worked on
@@ -663,19 +663,41 @@
     const panel = $('panel'); panel.replaceChildren();
     panel.classList.toggle('wide', A.step === 'showfile'); // the editor uses the whole width of the window
     document.title = __('Setup') + ' — ' + __((STEPS.find((x) => x[0] === A.step) || ['', ''])[1]);
-    nextStep();
+    paintBar();
     try { await ({ show: stepShow, showfile: stepShowFile, images: stepImages, look: stepLook, test: stepTest, golive: stepGoLive, report: stepReport })[A.step](panel); } catch (e) { if (e.message !== 'login' && e.message !== 'network') console.error(e); }
   }
   // A button whose request failed for lack of a connection has already told the person (see api()).
   window.addEventListener('unhandledrejection', (ev) => { if (ev.reason && ev.reason.message === 'network') ev.preventDefault(); });
 
-  // Under every step but the last: a button for the next one, so a newcomer is always shown the way on.
-  function nextStep() {
-    const box = $('nextstep'), i = STEPS.findIndex((x) => x[0] === A.step), nx = STEPS[i + 1];
-    box.replaceChildren();
-    box.hidden = !nx || !A.cur;
-    if (box.hidden) return;
-    box.append(h('button', { class: done(A.step) ? 'primary' : '', onclick: () => { go(nx[0]); window.scrollTo(0, 0); } }, __('Next: {step} →', { step: __(nx[1]) })));
+  // The bar along the bottom of Setup, which mirrors the header: Back and Next (so the way on is always in reach, however long
+  // the step is) with a quiet status in the middle. It is hidden until a show is chosen.
+  function paintBar() {
+    const bar = $('stepbar'), i = STEPS.findIndex((x) => x[0] === A.step), nx = STEPS[i + 1], pv = STEPS[i - 1];
+    bar.replaceChildren();
+    bar.hidden = !A.cur;
+    document.body.classList.toggle('hasbar', !bar.hidden);
+    if (bar.hidden) return;
+    const item = (text, cls) => h('span', { class: cls || '' }, text);
+    const items = [item(__('Step {n} of {total}', { n: i + 1, total: STEPS.length })), item(__('{n} of {total} steps done', { n: STEPS.slice(0, -1).filter((x) => done(x[0])).length, total: STEPS.length - 1 }))];
+    const an = A.mainAnalysis;
+    if (A.step === 'showfile') {
+      items.push(item(A.dirty ? __('Unsaved changes') : __('All changes saved'), A.dirty ? 'status-warn' : 'status-ok'));
+      const probs = A.analysis ? A.analysis.diagnostics.filter((d) => d.line > 0).length : 0;
+      if (A.analysis) items.push(item(probs ? __('Problems and notes ({n})', { n: probs }) : __('No problems found ✓'), probs ? 'status-warn' : 'status-ok'));
+    } else if (A.step === 'images' && an && (an.assets || []).length) {
+      const miss = (an.missing || []).length;
+      items.push(item(miss ? __('{n} missing images', { n: miss }) : __('All images found'), miss ? 'status-warn' : 'status-ok'));
+    } else if (A.step === 'look') {
+      items.push(item(lookSaved() ? __('Look saved') : __('Look not saved yet'), lookSaved() ? 'status-ok' : ''));
+    } else if (A.step === 'test') {
+      items.push(item(A.rehearsing ? __('Rehearsal running') : __('No rehearsal yet'), A.rehearsing ? 'status-ok' : ''));
+    } else if (A.step === 'golive' && A.activeId && A.activeId === A.cur) {
+      items.push(h('span', { class: 'badge ' + (A.live ? 'live' : 'standby') }, A.live ? __('ON AIR') : __('STANDBY')));
+    }
+    bar.append(
+      pv ? h('button', { id: 'stepback', onclick: () => { go(pv[0]); window.scrollTo(0, 0); } }, __('← Back: {step}', { step: __(pv[1]) })) : h('span', { class: 'stepgap' }),
+      h('div', { class: 'stepstatus' }, ...items),
+      nx ? h('button', { id: 'stepnext', class: done(A.step) ? 'primary' : '', onclick: () => { go(nx[0]); window.scrollTo(0, 0); } }, __('Next: {step} →', { step: __(nx[1]) })) : h('span', { class: 'stepgap' }));
   }
 
   // ---- step 1: show ----
@@ -869,12 +891,14 @@
       status.textContent = dirty ? __('Unsaved changes') : __('All changes saved');
       status.className = dirty ? 'status-warn' : 'status-ok';
       saveBtn.disabled = !dirty;
+      A.dirty = dirty; paintBar();
     }
     function showAnalysis() {
       const a = A.analysis;
       const shown = a.diagnostics.filter((d) => d.line > 0);
       const summary = a.diagnostics.find((d) => d.line === 0);
       diagTitle.textContent = shown.length ? __('Problems and notes ({n})', { n: shown.length }) : __('No problems found ✓');
+      paintBar();
       diagList.replaceChildren(...shown.map((d) => h('li', { class: d.severity, onclick: () => jump(d.line) }, h('span', { class: 'ln' }, __('Line {n}', { n: d.line })), __(d.message))),
         ...(summary ? [h('li', { class: 'info' }, __(summary.message))] : []));
       cueList.replaceChildren(...a.cues.map((c) => h('li', { class: c.kind === 'section' || c.kind === 'note' ? 'op' : '', title: __('Line {n}', { n: c.line }) },

@@ -172,7 +172,7 @@ async function main() {
     section('Rehearsal never reaches the audience');
     await step(admin, 'Test'); await sleep(500); await click(admin, 'Start rehearsal');
     await admin.waitForSelector('.reh iframe'); await sleep(1500);
-    check('the Next button turns blue as soon as a rehearsal is running', await admin.evaluate(() => { const b = document.querySelector('#nextstep button'); return !!b && b.classList.contains('primary'); }));
+    check('the Next button turns blue as soon as a rehearsal is running', await admin.evaluate(() => { const b = document.getElementById('stepnext'); return !!b && b.classList.contains('primary'); }));
     const rehearsalAudience = await open();
     try {
       await rehearsalAudience.goto(B + '/?rehearsal=1');
@@ -975,9 +975,13 @@ async function main() {
     const before2 = await cursor();
     check('the operator status strip shows how far through the show it is', /^(Item \d+ of \d+|\d+ items)$/.test(await op.evaluate(() => document.getElementById('progress').textContent)));
     await guard.evaluate(() => { location.hash = 'images'; }); await sleep(900);
-    check('Setup offers the next step under the current one', await guard.evaluate(() => { const b = document.querySelector('#nextstep button'); return !!b && b.offsetWidth > 0 && /^Next: /.test(b.textContent); }));
+    check('Setup has a bar along the bottom of the window with Back and Next for the neighbouring steps and the step in the middle', await guard.evaluate(() => { const bar = document.getElementById('stepbar'), n = document.getElementById('stepnext'), p = document.getElementById('stepback'), r = bar.getBoundingClientRect(); return !bar.hidden && getComputedStyle(bar).position === 'fixed' && Math.abs(r.bottom - innerHeight) <= 1 && r.left === 0 && Math.round(r.right) === innerWidth && /^Next: /.test(n.textContent) && /^← Back: /.test(p.textContent) && /Step 3 of 7/.test(bar.querySelector('.stepstatus').textContent) && n.getBoundingClientRect().left > p.getBoundingClientRect().right; }));
+    await guard.evaluate(() => document.getElementById('stepback').click()); await sleep(600);
+    check('Back goes to the step before, and the bar then says so', await guard.evaluate(() => location.hash === '#showfile' && /Step 2 of 7/.test(document.querySelector('#stepbar .stepstatus').textContent) && /^Next: Images/.test(document.getElementById('stepnext').textContent) && /^← Back: Shows/.test(document.getElementById('stepback').textContent)));
+    check('on the Show file step the bar also shows whether the changes are saved and the problem count', await guard.evaluate(() => { const t = document.querySelector('#stepbar .stepstatus').textContent; return /All changes saved|Unsaved changes/.test(t) && /No problems found|Problems and notes/.test(t); }));
+    await guard.evaluate(() => { location.hash = 'images'; }); await sleep(900);
     const guardView = guard.viewport(); await guard.setViewport({ width: 1600, height: 900 }); await sleep(300);
-    check('the Next button sits under the right edge of the content, however wide the window', await guard.evaluate(() => { const b = document.querySelector('#nextstep button').getBoundingClientRect(), m = document.getElementById('panel'), r = m.getBoundingClientRect(); return Math.abs(b.right - (r.right - parseFloat(getComputedStyle(m).paddingRight))) <= 2; }));
+    check('the bar still spans the whole window, with Next at its right end, however wide the window', await guard.evaluate(() => { const bar = document.getElementById('stepbar').getBoundingClientRect(), b = document.getElementById('stepnext').getBoundingClientRect(); return Math.round(bar.width) === innerWidth && Math.abs(bar.right - 16 - b.right) <= 2; }));
     await guard.setViewport(guardView); await sleep(300);
     check('the operator page has a title with the show and its state', /^Run — .+ \((ON AIR|STANDBY)\)$/.test(await op.title()), await op.title());
     await stopServer(); await sleep(T(3500));

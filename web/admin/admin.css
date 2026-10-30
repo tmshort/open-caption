@@ -214,10 +214,17 @@ a.quiet { background: none; border: none; color: var(--dim); text-decoration: no
 .urlgroup:first-child .urlhead { margin-top: 0; }
 .localonly { margin-top: .6rem; }
 /* the way on: the next step of Setup, below the step's own content */
-.nextstep { max-width: 70rem; margin: 0 auto; padding: 0 1rem 2rem; display: flex; justify-content: flex-end; } /* the width and padding of main, so the button sits under the content's right edge */
-.nextstep button { margin-left: auto; }
-main.wide + .nextstep { max-width: none; } /* the Show file step uses the whole window */
-.nextstep[hidden] { display: none; }
+.stepbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; display: flex; align-items: center; gap: .8rem; padding: .5rem 1rem calc(.5rem + env(safe-area-inset-bottom)); background: var(--panel); border-top: 1px solid var(--line); }
+.stepbar[hidden] { display: none; }
+.stepbar button { flex: none; }
+.stepbar .stepstatus { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: .1rem 1.2rem; color: var(--dim); font-size: .9rem; }
+.stepbar .stepstatus .status-ok { color: var(--ok); } .stepbar .stepstatus .status-warn { color: var(--warn); }
+.stepbar .stepgap { flex: none; width: 1px; }
+body.hasbar { --toast-bottom: 4.6rem; }
+body.hasbar main { padding-bottom: 5rem; } /* room under the bar */
+html { scroll-padding-bottom: 4.5rem; } /* a control that gets focus is scrolled clear of the bar */
+body.helpopen .stepbar { right: min(37.5rem, 100%); } /* the help panel is in front of the page: the bar stops at its edge */
+@media (max-width: 40rem) { .stepbar { flex-wrap: wrap; } .stepbar .stepstatus { order: 3; flex-basis: 100%; } }
 .urls input[type=radio] { margin: 4px 8px 4px 6px; } /* room around the small radio so each is a comfortable touch target */
 .radiogap { margin-right: 8px; margin-left: 6px; }
 /* the "More ▾" menu on a show card */
@@ -232,7 +239,7 @@ main.wide + .nextstep { max-width: none; } /* the Show file step uses the whole 
 .moremenu .sep { height: 1px; margin: .3rem .2rem; background: var(--line); }
 
 /* Printing the Report step prints the report alone (the Print button adds the class for the moment of printing). */
-@media print { body.printreport header, body.printreport nav#steps, body.printreport #nextstep, body.printreport #connbar, body.printreport #help { display: none !important; } }
+@media print { body.printreport header, body.printreport nav#steps, body.printreport #stepbar, body.printreport #connbar, body.printreport #help { display: none !important; } }
 
 /* Characters (the editor's list of speaker names) */
 .chars { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .15rem; }
