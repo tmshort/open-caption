@@ -933,4 +933,8 @@ OCI18n.add("de", {
  "Some pages can be opened only from the computers listed in Settings → Access.": "Einige Seiten lassen sich nur von den Computern öffnen, die unter Einstellungen → Zugriff aufgeführt sind.",
  "The Setup and operator passwords are the same, so anyone who can run the show can also change the settings. Give Setup its own password.": "Die Passwörter für Setup und Operator sind gleich, sodass jeder, der die Show fahren kann, auch die Einstellungen ändern kann. Geben Sie Setup ein eigenes Passwort.",
  "A password is kept in config.yaml as plain text. Changing it in Setup stores a scrambled copy instead.": "Ein Passwort steht in config.yaml als Klartext. Wenn Sie es in Setup ändern, wird stattdessen eine verschlüsselte Kopie gespeichert.",
+ "The data folder {path} cannot be written to ({error}). Shows, reports and the live position cannot be saved.": "In den Datenordner {path} kann nicht geschrieben werden ({error}). Shows, Berichte und die aktuelle Position können nicht gespeichert werden.",
+ "Only {mb} MB are free on the disk that holds the data folder. Saved reports, earlier versions and images need room; free some space.": "Auf dem Datenträger des Datenordners sind nur noch {mb} MB frei. Gespeicherte Berichte, frühere Versionen und Bilder brauchen Platz; schaffen Sie Speicherplatz.",
+ "The data folder can be written to, and {mb} MB are free on its disk.": "In den Datenordner kann geschrieben werden, und auf seinem Datenträger sind {mb} MB frei.",
+ "The data folder can be written to.": "In den Datenordner kann geschrieben werden.",
 });

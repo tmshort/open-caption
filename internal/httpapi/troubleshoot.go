@@ -121,6 +121,23 @@ func (s *Server) troubleshoot(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// 5b. the data folder holds the shows, reports and live state: it must be writable and have room
+	if dir := s.cfg.DataDir; dir != "" {
+		if f, err := os.CreateTemp(dir, ".write-test-*"); err != nil {
+			add("data", "bad", "state", "unwritable", "path", dir, "error", err.Error())
+		} else {
+			f.Close()
+			os.Remove(f.Name())
+			if free, ok := freeBytes(dir); ok && free < lowDiskBytes {
+				add("data", "warn", "state", "low", "mb", free>>20)
+			} else if ok {
+				add("data", "ok", "state", "ok", "mb", free>>20)
+			} else {
+				add("data", "ok", "state", "writable")
+			}
+		}
+	}
+
 	// 6. the show
 	if id := s.rt.ShowID(); id == "" {
 		add("show", "info", "state", "none")
@@ -183,6 +200,9 @@ func (s *Server) troubleshoot(w http.ResponseWriter, r *http.Request) {
 	}
 	writeJSON(w, http.StatusOK, map[string]any{"checks": cs, "problems": problems, "level": logx.Current().String()})
 }
+
+// lowDiskBytes is the free space below which Troubleshoot warns: saved reports, versions and uploaded images need room.
+const lowDiskBytes = 500 << 20
 
 // samePort reports whether two listen addresses have the same port. The address asked for (":80") and the one the
 // system reports ("[::]:80") are written differently when the program got what it asked for; only a different port

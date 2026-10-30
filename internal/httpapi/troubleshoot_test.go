@@ -220,3 +220,25 @@ func TestTroubleshootNotesWeakPasswordSetups(t *testing.T) {
 		t.Errorf("a plain-text password: %q", got)
 	}
 }
+
+// Troubleshoot checks that the data folder can be written to and has room.
+func TestTroubleshootChecksTheDataFolder(t *testing.T) {
+	s, _, c := standbyServer(t)
+	get := func() map[string]any {
+		_, m := c.do("GET", "/api/admin/troubleshoot", nil)
+		return findings(m)["data"]
+	}
+	if f := get(); f == nil || f["status"] != "ok" {
+		t.Fatalf("a writable data folder is fine: %v", f)
+	}
+	dir := filepath.Join(t.TempDir(), "gone")
+	s.cfgMu.Lock()
+	s.cfg.DataDir = dir
+	s.cfgMu.Unlock()
+	if f := get(); f == nil || f["status"] != "bad" || f["params"].(map[string]any)["state"] != "unwritable" {
+		t.Errorf("a folder that cannot be written to is a problem: %v", f)
+	}
+	if free, ok := freeBytes(t.TempDir()); !ok || free == 0 {
+		t.Errorf("the free space of a temporary folder should be known and not zero: %d %v", free, ok)
+	}
+}

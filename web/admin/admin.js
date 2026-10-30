@@ -530,6 +530,12 @@
         case 'languages': return { text: __('These languages will not be shown to the audience until their show file matches the main one: {list}.', { list: p.list }), fix: { label: __('Open the Show file step'), run: () => { $('dlg').close('cancel'); go('showfile'); } } };
         default: return { text: __('The show “{name}” is loaded.', { name: p.name }) };
       }
+      case 'data': switch (p.state) {
+        case 'unwritable': return { text: __('The data folder {path} cannot be written to ({error}). Shows, reports and the live position cannot be saved.', { path: p.path, error: p.error }) };
+        case 'low': return { text: __('Only {mb} MB are free on the disk that holds the data folder. Saved reports, earlier versions and images need room; free some space.', { mb: p.mb }) };
+        case 'ok': return { text: __('The data folder can be written to, and {mb} MB are free on its disk.', { mb: p.mb }) };
+        default: return { text: __('The data folder can be written to.') };
+      }
       case 'passwords': return p.state === 'same'
         ? { text: __('The Setup and operator passwords are the same, so anyone who can run the show can also change the settings. Give Setup its own password.'), fix: settings('sec') }
         : { text: __('A password is kept in config.yaml as plain text. Changing it in Setup stores a scrambled copy instead.'), fix: settings('sec') };
