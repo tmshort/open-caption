@@ -72,6 +72,21 @@
   function toast(msg, ms) { const t = $('toast'); t.textContent = __(msg); t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), ms || 3000); }
   function fail(r, fallback) { toast(__((r.data && r.data.error) || fallback || whyFailed(r))); }
 
+  // A set of tabs with their panels (Settings, Troubleshoot): defs are [id, label (already translated), [nodes]]. The panels share one
+  // grid cell, the unselected ones only invisible, so the window is as tall as the tallest panel and never changes size when
+  // you switch. Arrow keys, Home and End move between the tabs. onPick(i, id) runs after each choice.
+  function tabSet(prefix, ariaLabel, defs, onPick) {
+    const btns = defs.map(([id, label], i) => h('button', { type: 'button', role: 'tab', id: prefix + 'tab-' + id, 'aria-controls': prefix + 'panel-' + id, onclick: () => pick(i, false),
+      onkeydown: (e) => { const n = defs.length, k = e.key; const to = k === 'ArrowRight' ? (i + 1) % n : k === 'ArrowLeft' ? (i + n - 1) % n : k === 'Home' ? 0 : k === 'End' ? n - 1 : -1; if (to >= 0) { e.preventDefault(); pick(to, true); } } }, label));
+    const panels = defs.map(([id, , kids]) => h('div', { class: 'tabpanel inactive', role: 'tabpanel', id: prefix + 'panel-' + id, 'aria-labelledby': prefix + 'tab-' + id }, ...kids));
+    function pick(i, focus) {
+      btns.forEach((b, k) => { b.setAttribute('aria-selected', k === i ? 'true' : 'false'); b.tabIndex = k === i ? 0 : -1; panels[k].classList.toggle('inactive', k !== i); });
+      if (focus) btns[i].focus();
+      if (onPick) onPick(i, defs[i][0]);
+    }
+    return { tabs: h('div', { class: 'tabs', role: 'tablist', 'aria-label': ariaLabel }, ...btns), panels: h('div', { class: 'tabpanels' }, ...panels), pick };
+  }
+
   // A reusable dialog. body: node; resolves true on OK, false on cancel.
   function ask(title, body, okLabel, opts) {
     return new Promise((resolve) => {
@@ -430,20 +445,12 @@
           s.logLevelPinned ? h('p', { class: 'check warn' }, __('This copy was started with --log-level {level}, which overrides the settings file every time it starts. A change made here applies now but lasts only until the program restarts.', { level: s.logLevelPinned })) : null,
           h('p', { class: 'hint' }, s.canChangePasswords ? __('How much the program records (in the support bundle and in the log file, if one is kept). Info records sign-ins and events; Debug adds every request, for tracking down a problem. Applies at once and is kept in the settings file.') : __('How much the program records (in the support bundle and in the log file, if one is kept). Info records sign-ins and events; Debug adds every request, for tracking down a problem. Applies at once.'))),
       ]]];
-    const tabs = h('div', { class: 'tabs', role: 'tablist', 'aria-label': __('Settings sections') });
-    const panels = tabDefs.map(([id, label, kids]) => h('div', { class: 'tabpanel inactive', role: 'tabpanel', id: 'setpanel-' + id, 'aria-labelledby': 'settab-' + id }, ...kids));
-    const tabBtns = tabDefs.map(([id, label], i) => h('button', { type: 'button', role: 'tab', id: 'settab-' + id, 'aria-controls': 'setpanel-' + id, onclick: () => pick(i, false),
-      onkeydown: (e) => { const n = tabDefs.length, k = e.key; const to = k === 'ArrowRight' ? (i + 1) % n : k === 'ArrowLeft' ? (i + n - 1) % n : k === 'Home' ? 0 : k === 'End' ? n - 1 : -1; if (to >= 0) { e.preventDefault(); pick(to, true); } } }, __(label)));
-    function pick(i, focus) {
-      tabBtns.forEach((b, k) => { b.setAttribute('aria-selected', k === i ? 'true' : 'false'); b.tabIndex = k === i ? 0 : -1; panels[k].classList.toggle('inactive', k !== i); });
-      if (focus) tabBtns[i].focus();
+    const ts = tabSet('set', __('Settings sections'), tabDefs.map(([id, label, kids]) => [id, __(label), kids]), (i, id) => {
       $('dlgbody').scrollTop = 0;
-      try { localStorage.setItem('oc.settings.tab', tabDefs[i][0]); } catch (e) { /* storage unavailable */ }
-    }
-    tabs.append(...tabBtns);
-    // All the panels share one grid cell (the unselected ones are only invisible), so the window is as tall as the tallest tab and
-    // never changes size when you switch: the About tab fits without scrolling wherever the screen allows.
-    const body = h('div', { class: 'settingsbody' }, tabs, h('div', { class: 'tabpanels' }, ...panels));
+      try { localStorage.setItem('oc.settings.tab', id); } catch (e) { /* storage unavailable */ }
+    });
+    const pick = ts.pick;
+    const body = h('div', { class: 'settingsbody' }, ts.tabs, ts.panels);
     let first = 0;
     try { const last = localStorage.getItem('oc.settings.tab'); const k = tabDefs.findIndex((t) => t[0] === last); if (k >= 0) first = k; } catch (e) { /* storage unavailable */ }
     if (openTab) { const k = tabDefs.findIndex((t) => t[0] === openTab); if (k >= 0) first = k; }
@@ -604,18 +611,10 @@
         h('div', { class: 'row' }, reachBtn), reachList]],
       ['warn', __('Warnings and errors') + (warnN ? ' (' + warnN + ')' : ''), [pre,
         h('div', { class: 'row' }, h('button', { onclick: () => { $('dlg').close('cancel'); showLog(); } }, __('Open the full log…')))]]];
-    // The first tab is the one to read; the others are there when wanted. The panels share one grid cell, so the window keeps its size.
-    const tabBtns = tabDefs.map(([id, label], i) => h('button', { type: 'button', role: 'tab', id: 'trtab-' + id, 'aria-controls': 'trpanel-' + id, onclick: () => pick(i, false),
-      onkeydown: (e) => { const n = tabDefs.length, k = e.key; const to = k === 'ArrowRight' ? (i + 1) % n : k === 'ArrowLeft' ? (i + n - 1) % n : k === 'Home' ? 0 : k === 'End' ? n - 1 : -1; if (to >= 0) { e.preventDefault(); pick(to, true); } } }, label));
-    const panels = tabDefs.map(([id, , kids]) => h('div', { class: 'tabpanel inactive', role: 'tabpanel', id: 'trpanel-' + id, 'aria-labelledby': 'trtab-' + id }, ...kids));
-    function pick(i, focus) {
-      tabBtns.forEach((b, k) => { b.setAttribute('aria-selected', k === i ? 'true' : 'false'); b.tabIndex = k === i ? 0 : -1; panels[k].classList.toggle('inactive', k !== i); });
-      if (focus) tabBtns[i].focus();
-      if (tabDefs[i][0] === 'warn') pre.scrollTop = pre.scrollHeight;
-    }
-    pick(0, false);
+    const ts = tabSet('tr', __('Troubleshoot sections'), tabDefs, (i, id) => { if (id === 'warn') pre.scrollTop = pre.scrollHeight; });
+    ts.pick(0, false);
     const body = h('div', { class: 'trouble' },
-      h('div', { class: 'tabs', role: 'tablist', 'aria-label': __('Troubleshoot sections') }, ...tabBtns), h('div', { class: 'tabpanels' }, ...panels),
+      ts.tabs, ts.panels,
       h('div', { class: 'row' }, copyBtn,
         h('a', { class: 'btn', href: '/api/admin/support-bundle', download: 'support-bundle.zip' }, __('Download a support bundle')),
         h('button', { onclick: () => { $('dlg').close('cancel'); openHelp('admin-troubleshooting'); } }, __('Troubleshooting help'))),
