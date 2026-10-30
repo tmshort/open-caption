@@ -677,7 +677,7 @@ OCI18n.add("it", {
  "Run": "Conduci",
  "(for a projector or shared screen: big text, no buttons; open it on the computer the projector is plugged into)": "(per un proiettore o uno schermo condiviso: testo grande, senza pulsanti; aprila sul computer a cui è collegato il proiettore)",
  "Audience screen": "Schermo del pubblico",
- "Security": "Sicurezza",
+ "Passwords": "Password",
  "Settings sections": "Sezioni delle impostazioni",
  "About": "Informazioni",
  "Choose a logo…": "Scegli un logo…",

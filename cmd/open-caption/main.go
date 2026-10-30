@@ -158,7 +158,7 @@ func main() {
 		logx.Infof("a viewer password is set, so the operator page can also be opened for watching only")
 	}
 	if cfg.Generated {
-		fmt.Printf("\nFirst run: created %s\n  admin password:    %s\n  operator password: %s\n(Keep these; the file holds only their digests, so they cannot be shown again. To set new ones, use Setup > Settings > Security.)\n\n",
+		fmt.Printf("\nFirst run: created %s\n  admin password:    %s\n  operator password: %s\n(Keep these; the file holds only their digests, so they cannot be shown again. To set new ones, use Setup > Settings > Passwords.)\n\n",
 			cfg.Path, cfg.FirstRun.Admin, cfg.FirstRun.Operator)
 	}
 

@@ -359,7 +359,7 @@
           h('label', { class: 'row' }, accAuto, __('A browser on this computer is signed in without a password')),
           h('p', { class: 'hint' }, __('Turn this off on a computer that other people can use. A change that would shut this computer out of Setup is refused.')),
           h('div', { class: 'row' }, accSave))]],
-      ['sec', 'Security', [
+      ['sec', 'Passwords', [
         sec('Change passwords',
           s.canChangePasswords
             ? h('div', {}, h('p', { class: 'hint' }, __('Each password has its own box and button: changing one leaves the others as they are. At least 6 characters. People signed in with a changed password are signed out; you stay signed in.')),

@@ -51,7 +51,7 @@ $ printf '%s' 'the password' | open-caption --hash-password
 sha256:5b11618c2e44027877d0cd0921ed166b9f176f50587fc91e7534dd2946db77d6
 ```
 
-(`printf '%s' 'the password' | shasum -a 256` gives the same digits on macOS and Linux; add `sha256:` in front.) People still type the password itself to sign in. A digest cannot be turned back into the password, so **Settings → Security** in Setup cannot show a password, only replace it, and the program cannot print it again: keep the password somewhere safe. A password changed in Setup is stored as a `sha256:` digest (only a value you wrote with the `plain:` prefix stays plain text); the program never converts a password you did not change. A value that begins `sha256:`, `sha512:` or `sha1:` but is not a digest of the right length stops the program at start-up, naming the setting.
+(`printf '%s' 'the password' | shasum -a 256` gives the same digits on macOS and Linux; add `sha256:` in front.) People still type the password itself to sign in. A digest cannot be turned back into the password, so **Settings → Passwords** in Setup cannot show a password, only replace it, and the program cannot print it again: keep the password somewhere safe. A password changed in Setup is stored as a `sha256:` digest (only a value you wrote with the `plain:` prefix stays plain text); the program never converts a password you did not change. A value that begins `sha256:`, `sha512:` or `sha1:` but is not a digest of the right length stops the program at start-up, naming the setting.
 
 ## Checking a show file
 
@@ -86,9 +86,9 @@ Defaults are what you get without the key. "Setup" says where Setup can change i
 | Key | Default | Meaning |
 |---|---|---|
 | `config_version` | `1` | Written by the program. A newer number than the program knows means the file came from a newer version |
-| `admin_password` | generated | The password for Setup (`/admin`). A digest such as `sha256:…` (see "Passwords" below; plain text is still read). Must not be empty (6 or more characters when changed in Setup). *Setup: Settings → Security* |
-| `operator_password` | generated | The password for the operator page (`/operator`); the admin password works there too. A digest, like `admin_password`; Setup cannot show it. Must not be empty. *Setup: Settings → Security* |
-| `viewer_password` | *(none)* | An optional third password that lets a second device (a stage manager's tablet) **watch** the show: it opens `/follow` and signs in with this password, and sees the lines, notes and position, but can send nothing and take no control. The operator and admin passwords open `/follow` too. Empty = no viewer-only sign-in. Plain text or a digest, different from the other two. *Setup: Settings → Security* |
+| `admin_password` | generated | The password for Setup (`/admin`). A digest such as `sha256:…` (see "Passwords" below; plain text is still read). Must not be empty (6 or more characters when changed in Setup). *Setup: Settings → Passwords* |
+| `operator_password` | generated | The password for the operator page (`/operator`); the admin password works there too. A digest, like `admin_password`; Setup cannot show it. Must not be empty. *Setup: Settings → Passwords* |
+| `viewer_password` | *(none)* | An optional third password that lets a second device (a stage manager's tablet) **watch** the show: it opens `/follow` and signs in with this password, and sees the lines, notes and position, but can send nothing and take no control. The operator and admin passwords open `/follow` too. Empty = no viewer-only sign-in. Plain text or a digest, different from the other two. *Setup: Settings → Passwords* |
 | `data_dir` | empty | The data folder. Empty means the default folder above. Must not be a file |
 
 ### `http`

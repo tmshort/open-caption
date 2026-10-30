@@ -51,7 +51,7 @@ $ printf '%s' 'the password' | open-caption --hash-password
 sha256:5b11618c2e44027877d0cd0921ed166b9f176f50587fc91e7534dd2946db77d6
 ```
 
-(`printf '%s' 'the password' | shasum -a 256` dà le stesse cifre su macOS e Linux; aggiungi `sha256:` davanti.) Per accedere si digita sempre la password stessa. Da un hash non si può ricavare la password: **Impostazioni → Sicurezza** nella configurazione non può quindi mostrare una password, solo sostituirla, e il programma non può stamparla di nuovo: conservala in un posto sicuro. Una password cambiata nella configurazione viene conservata come hash `sha256:` (solo un valore scritto con il prefisso `plain:` resta in chiaro); il programma non converte mai una password che non hai cambiato. Un valore che inizia con `sha256:`, `sha512:` o `sha1:` ma non è un hash della lunghezza giusta ferma il programma all'avvio, indicando l'impostazione.
+(`printf '%s' 'the password' | shasum -a 256` dà le stesse cifre su macOS e Linux; aggiungi `sha256:` davanti.) Per accedere si digita sempre la password stessa. Da un hash non si può ricavare la password: **Impostazioni → Password** nella configurazione non può quindi mostrare una password, solo sostituirla, e il programma non può stamparla di nuovo: conservala in un posto sicuro. Una password cambiata nella configurazione viene conservata come hash `sha256:` (solo un valore scritto con il prefisso `plain:` resta in chiaro); il programma non converte mai una password che non hai cambiato. Un valore che inizia con `sha256:`, `sha512:` o `sha1:` ma non è un hash della lunghezza giusta ferma il programma all'avvio, indicando l'impostazione.
 
 ## Controllare un file dello spettacolo
 
@@ -86,9 +86,9 @@ I valori predefiniti sono quelli che ottieni senza la chiave. «Configurazione»
 | Chiave | Predefinito | Significato |
 |---|---|---|
 | `config_version` | `1` | Scritta dal programma. Un numero maggiore di quello che il programma conosce significa che il file viene da una versione più recente |
-| `admin_password` | generata | La password della configurazione (`/admin`). Un hash come `sha256:…` (vedi «Password» più avanti; il testo in chiaro viene ancora letto). Non può essere vuota (6 o più caratteri se cambiata nella configurazione). *Configurazione: Impostazioni → Sicurezza* |
-| `operator_password` | generata | La password della pagina dell'operatore (`/operator`); anche quella dell'amministratore vale lì. Un hash, come `admin_password`; la configurazione non può mostrarlo. Non può essere vuota. *Configurazione: Impostazioni → Sicurezza* |
-| `viewer_password` | *(nessuna)* | Una terza password facoltativa che permette a un secondo dispositivo (il tablet di un direttore di scena) di **guardare** lo spettacolo: apre `/follow`, accede con questa password e vede le righe, le note e la posizione, ma non può inviare nulla né prendere il controllo. Anche le password di operatore e di amministratore aprono `/follow`. Vuota = nessun accesso riservato agli spettatori. In chiaro o un hash, diversa dalle altre due. *Configurazione: Impostazioni → Sicurezza* |
+| `admin_password` | generata | La password della configurazione (`/admin`). Un hash come `sha256:…` (vedi «Password» più avanti; il testo in chiaro viene ancora letto). Non può essere vuota (6 o più caratteri se cambiata nella configurazione). *Configurazione: Impostazioni → Password* |
+| `operator_password` | generata | La password della pagina dell'operatore (`/operator`); anche quella dell'amministratore vale lì. Un hash, come `admin_password`; la configurazione non può mostrarlo. Non può essere vuota. *Configurazione: Impostazioni → Password* |
+| `viewer_password` | *(nessuna)* | Una terza password facoltativa che permette a un secondo dispositivo (il tablet di un direttore di scena) di **guardare** lo spettacolo: apre `/follow`, accede con questa password e vede le righe, le note e la posizione, ma non può inviare nulla né prendere il controllo. Anche le password di operatore e di amministratore aprono `/follow`. Vuota = nessun accesso riservato agli spettatori. In chiaro o un hash, diversa dalle altre due. *Configurazione: Impostazioni → Password* |
 | `data_dir` | vuoto | La cartella dati. Vuoto significa la cartella predefinita qui sopra. Non può essere un file |
 
 ### `http`

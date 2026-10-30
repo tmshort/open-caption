@@ -51,7 +51,7 @@ $ printf '%s' 'the password' | open-caption --hash-password
 sha256:5b11618c2e44027877d0cd0921ed166b9f176f50587fc91e7534dd2946db77d6
 ```
 
-(`printf '%s' 'the password' | shasum -a 256` da los mismos dígitos en macOS y Linux; añada `sha256:` delante.) Para entrar se sigue escribiendo la contraseña misma. Un resumen no se puede convertir de nuevo en la contraseña, así que **Ajustes → Seguridad** en la configuración no puede mostrar una contraseña, solo sustituirla, y el programa tampoco puede volver a imprimirla: guárdela en un lugar seguro. Una contraseña cambiada en la configuración se guarda como resumen `sha256:` (solo un valor escrito con el prefijo `plain:` sigue siendo texto sin cifrar); el programa nunca convierte una contraseña que usted no cambió. Un valor que empieza por `sha256:`, `sha512:` o `sha1:` pero no es un resumen de la longitud correcta detiene el programa al arrancar, nombrando el ajuste.
+(`printf '%s' 'the password' | shasum -a 256` da los mismos dígitos en macOS y Linux; añada `sha256:` delante.) Para entrar se sigue escribiendo la contraseña misma. Un resumen no se puede convertir de nuevo en la contraseña, así que **Ajustes → Contraseñas** en la configuración no puede mostrar una contraseña, solo sustituirla, y el programa tampoco puede volver a imprimirla: guárdela en un lugar seguro. Una contraseña cambiada en la configuración se guarda como resumen `sha256:` (solo un valor escrito con el prefijo `plain:` sigue siendo texto sin cifrar); el programa nunca convierte una contraseña que usted no cambió. Un valor que empieza por `sha256:`, `sha512:` o `sha1:` pero no es un resumen de la longitud correcta detiene el programa al arrancar, nombrando el ajuste.
 
 ## Comprobar un archivo del espectáculo
 
@@ -86,9 +86,9 @@ Los valores por defecto son los que obtiene sin la clave. «Configuración» ind
 | Clave | Por defecto | Significado |
 |---|---|---|
 | `config_version` | `1` | Lo escribe el programa. Un número mayor que el que conoce el programa significa que el archivo viene de una versión más nueva |
-| `admin_password` | generada | La contraseña de la configuración (`/admin`). Un resumen como `sha256:…` (véase «Contraseñas» más abajo; el texto sin cifrar aún se lee). No puede estar vacía (6 o más caracteres al cambiarla en la configuración). *Configuración: Ajustes → Seguridad* |
-| `operator_password` | generada | La contraseña de la página del operador (`/operator`); la del administrador también sirve ahí. Un resumen, como `admin_password`; la configuración no puede mostrarlo. No puede estar vacía. *Configuración: Ajustes → Seguridad* |
-| `viewer_password` | *(ninguna)* | Una tercera contraseña opcional que permite a un segundo dispositivo (la tableta de un regidor) **mirar** el espectáculo: abre `/follow`, entra con esta contraseña y ve las líneas, las notas y la posición, pero no puede enviar nada ni tomar el control. Las contraseñas de operador y de administrador también abren `/follow`. Vacía = sin acceso solo de espectador. Texto sin cifrar o un resumen, distinta de las otras dos. *Configuración: Ajustes → Seguridad* |
+| `admin_password` | generada | La contraseña de la configuración (`/admin`). Un resumen como `sha256:…` (véase «Contraseñas» más abajo; el texto sin cifrar aún se lee). No puede estar vacía (6 o más caracteres al cambiarla en la configuración). *Configuración: Ajustes → Contraseñas* |
+| `operator_password` | generada | La contraseña de la página del operador (`/operator`); la del administrador también sirve ahí. Un resumen, como `admin_password`; la configuración no puede mostrarlo. No puede estar vacía. *Configuración: Ajustes → Contraseñas* |
+| `viewer_password` | *(ninguna)* | Una tercera contraseña opcional que permite a un segundo dispositivo (la tableta de un regidor) **mirar** el espectáculo: abre `/follow`, entra con esta contraseña y ve las líneas, las notas y la posición, pero no puede enviar nada ni tomar el control. Las contraseñas de operador y de administrador también abren `/follow`. Vacía = sin acceso solo de espectador. Texto sin cifrar o un resumen, distinta de las otras dos. *Configuración: Ajustes → Contraseñas* |
 | `data_dir` | vacío | La carpeta de datos. Vacío significa la carpeta por defecto de arriba. No puede ser un archivo |
 
 ### `http`

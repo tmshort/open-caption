@@ -122,7 +122,8 @@ pre.diff .d-add { background: #1f6f3a33; } pre.diff .d-del { background: #b32626
 .defgrid .u2 { grid-column: span 2; } .defgrid .u3 { grid-column: span 3; } .defgrid .u4 { grid-column: span 4; } .defgrid .u8 { grid-column: span 8; }
 @media (max-width: 36rem) { .defgrid > * { grid-column: 1 / -1; } }
 .pwline { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .4rem .8rem; margin-bottom: .5rem; }
-.pwline .field { margin: 0; flex: 1 1 14rem; max-width: 22rem; }
+.pwline .field { margin: 0; flex: 0 1 16rem; }
+.pwline input[type=password] { width: 100%; box-sizing: border-box; }
 .accgroup { margin: 0 0 .6rem; padding: .2rem .8rem .4rem; border: 1px solid var(--line); border-radius: 6px; }
 .accgroup legend { padding: 0 .3rem; font-weight: 600; }
 .accgroup textarea { display: block; margin-top: .2rem; }

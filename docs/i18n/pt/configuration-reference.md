@@ -51,7 +51,7 @@ $ printf '%s' 'the password' | open-caption --hash-password
 sha256:5b11618c2e44027877d0cd0921ed166b9f176f50587fc91e7534dd2946db77d6
 ```
 
-(`printf '%s' 'the password' | shasum -a 256` dá os mesmos dígitos no macOS e no Linux; acrescente `sha256:` na frente.) Para entrar, continua-se a digitar a própria senha. De um hash não se volta à senha: por isso **Configurações → Segurança** na configuração não pode mostrar uma senha, só substituí-la, e o programa também não pode imprimi-la de novo: guarde-a em lugar seguro. Uma senha mudada na configuração é guardada como hash `sha256:` (só um valor escrito com o prefixo `plain:` continua texto simples); o programa nunca converte uma senha que você não mudou. Um valor que começa com `sha256:`, `sha512:` ou `sha1:` mas não é um hash do tamanho certo interrompe o programa ao iniciar, citando a configuração.
+(`printf '%s' 'the password' | shasum -a 256` dá os mesmos dígitos no macOS e no Linux; acrescente `sha256:` na frente.) Para entrar, continua-se a digitar a própria senha. De um hash não se volta à senha: por isso **Configurações → Senhas** na configuração não pode mostrar uma senha, só substituí-la, e o programa também não pode imprimi-la de novo: guarde-a em lugar seguro. Uma senha mudada na configuração é guardada como hash `sha256:` (só um valor escrito com o prefixo `plain:` continua texto simples); o programa nunca converte uma senha que você não mudou. Um valor que começa com `sha256:`, `sha512:` ou `sha1:` mas não é um hash do tamanho certo interrompe o programa ao iniciar, citando a configuração.
 
 ## Conferir um arquivo do espetáculo
 
@@ -86,9 +86,9 @@ Os valores padrão são os que você obtém sem a chave. «Configuração» diz 
 | Chave | Padrão | Significado |
 |---|---|---|
 | `config_version` | `1` | Escrita pelo programa. Um número maior do que o programa conhece significa que o arquivo veio de uma versão mais nova |
-| `admin_password` | gerada | A senha da configuração (`/admin`). Um hash como `sha256:…` (veja «Senhas» mais abaixo; o texto simples ainda é lido). Não pode ficar vazia (6 ou mais caracteres ao mudar na configuração). *Configuração: Configurações → Segurança* |
-| `operator_password` | gerada | A senha da página do operador (`/operator`); a do administrador também vale ali. Um hash, como `admin_password`; a configuração não pode mostrá-lo. Não pode ficar vazia. *Configuração: Configurações → Segurança* |
-| `viewer_password` | *(nenhuma)* | Uma terceira senha opcional que permite a um segundo dispositivo (o tablet de um contrarregra) **acompanhar** o espetáculo: abre `/follow`, entra com esta senha e vê as linhas, as notas e a posição, mas não pode enviar nada nem assumir o controle. As senhas de operador e de administrador também abrem `/follow`. Vazia = sem acesso só de espectador. Texto simples ou um hash, diferente das outras duas. *Configuração: Configurações → Segurança* |
+| `admin_password` | gerada | A senha da configuração (`/admin`). Um hash como `sha256:…` (veja «Senhas» mais abaixo; o texto simples ainda é lido). Não pode ficar vazia (6 ou mais caracteres ao mudar na configuração). *Configuração: Configurações → Senhas* |
+| `operator_password` | gerada | A senha da página do operador (`/operator`); a do administrador também vale ali. Um hash, como `admin_password`; a configuração não pode mostrá-lo. Não pode ficar vazia. *Configuração: Configurações → Senhas* |
+| `viewer_password` | *(nenhuma)* | Uma terceira senha opcional que permite a um segundo dispositivo (o tablet de um contrarregra) **acompanhar** o espetáculo: abre `/follow`, entra com esta senha e vê as linhas, as notas e a posição, mas não pode enviar nada nem assumir o controle. As senhas de operador e de administrador também abrem `/follow`. Vazia = sem acesso só de espectador. Texto simples ou um hash, diferente das outras duas. *Configuração: Configurações → Senhas* |
 | `data_dir` | vazio | A pasta de dados. Vazio significa a pasta padrão acima. Não pode ser um arquivo |
 
 ### `http`

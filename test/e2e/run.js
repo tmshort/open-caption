@@ -537,7 +537,7 @@ async function main() {
     const guard = await open(); await guard.goto(B + '/admin'); await guard.waitForSelector('#pw'); await guard.type('#pw', ADMIN); await guard.keyboard.press('Enter'); await guard.waitForSelector('#steps button');
     await click(guard, 'Settings'); await sleep(600);
     const tab = async (id) => { await guard.evaluate((i) => document.getElementById('settab-' + i).click(), id); await sleep(150); };
-    check('Settings has seven tabs, with Close in view', await guard.evaluate(() => { const t = [...document.querySelectorAll('#dlg [role=tab]')].map((x) => x.textContent); const c = document.getElementById('dlgok').getBoundingClientRect(); return t.join('|') === 'Audience screen|Defaults|Network|Access|Security|Certificate|About' && c.bottom <= innerHeight && c.top >= 0; }));
+    check('Settings has seven tabs, with Close in view', await guard.evaluate(() => { const t = [...document.querySelectorAll('#dlg [role=tab]')].map((x) => x.textContent); const c = document.getElementById('dlgok').getBoundingClientRect(); return t.join('|') === 'Audience screen|Defaults|Network|Access|Passwords|Certificate|About' && c.bottom <= innerHeight && c.top >= 0; }));
     await tab('abt');
     {
       const sizes = [];
@@ -566,7 +566,7 @@ async function main() {
     check('and its only footer button just closes it', await guard.evaluate(() => document.getElementById('dlgok').textContent.trim() === 'Close' && document.getElementById('dlgcancel').hidden));
     // no password can be shown: they are kept as digests
     await tab('sec');
-    check('Settings → Security has no button that shows a password', await guard.evaluate(() => ![...document.querySelectorAll('#dlg button')].some((x) => /Show|Hide/.test(x.textContent) && /password/i.test(x.textContent))));
+    check('Settings → Passwords has no button that shows a password', await guard.evaluate(() => ![...document.querySelectorAll('#dlg button')].some((x) => /Show|Hide/.test(x.textContent) && /password/i.test(x.textContent))));
     await guard.evaluate(() => document.getElementById('dlgok').click()); await sleep(300);
     await step(guard, 'Share'); await sleep(900);
     check('the Share step lists the .local name only as a plain link row, with no on/off box or Rename button of its own', await guard.evaluate(() => !document.querySelector('.urls input[aria-label="Announce this computer by name"]') && ![...document.querySelectorAll('.urls button')].some((b) => /Rename/.test(b.textContent))));
@@ -618,7 +618,7 @@ async function main() {
     }
     await click(guard, 'Settings'); await sleep(600);
     await guard.evaluate(() => document.getElementById('settab-sec').click()); await sleep(150);
-    check('Settings → Security has a Certificate section that says where HTTPS gets its certificate', await guard.evaluate(() => { const b = document.querySelector('.certbox'); return !!b && /HTTPS/.test(b.textContent) && b.closest('section').querySelector('h3').textContent === 'Certificate'; }));
+    check('Settings → Passwords has a Certificate section that says where HTTPS gets its certificate', await guard.evaluate(() => { const b = document.querySelector('.certbox'); return !!b && /HTTPS/.test(b.textContent) && b.closest('section').querySelector('h3').textContent === 'Certificate'; }));
     const inputs = await guard.$$('#dlg input[type=password]'); await inputs[1].type('new-operator-pw');
     await guard.evaluate(() => [...document.querySelectorAll('#dlg button')].find((x) => x.textContent.trim() === 'Change operator password').click()); await sleep(700);
     await guard.evaluate(() => document.getElementById('dlgok').click()); await sleep(300);
@@ -1057,7 +1057,7 @@ async function main() {
         [...document.querySelectorAll('#dlg button')].find((x) => x.textContent.trim() === 'Save who can open the pages').click();
       }, act);
       const accNow = () => hp.evaluate(async () => (await (await fetch('/api/admin/settings')).json()).access);
-      check('Settings → Security has a Who can open the pages section with a list for Setup, the operator page and the Follow page', await hp.evaluate(() => [...document.querySelectorAll('#dlg fieldset.accgroup legend')].map((x) => x.textContent).join('|') === 'Setup page|Operator page|Follow page'));
+      check('Settings → Passwords has a Who can open the pages section with a list for Setup, the operator page and the Follow page', await hp.evaluate(() => [...document.querySelectorAll('#dlg fieldset.accgroup legend')].map((x) => x.textContent).join('|') === 'Setup page|Operator page|Follow page'));
       await accOp('tick'); await sleep(700);
       check('ticking Local network for the operator page is saved', JSON.stringify((await accNow()).operatorAllow) === '["private"]');
       await accOp('untick'); await sleep(700);
