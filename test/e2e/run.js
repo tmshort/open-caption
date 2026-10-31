@@ -713,21 +713,43 @@ async function main() {
     // Setup's help panel is a quarter wider than the Run page's (600 px, not 480) and has Pop out right before Close; Pop out moves the
     // topic being read to a window of its own (the full help page, not the embedded one) and closes the panel
     const hp0 = await guard.evaluate(() => ({ w: Math.round(document.getElementById('help').getBoundingClientRect().width), order: [...document.querySelectorAll('#help .bar button')].map((x) => x.id).join(',') }));
-    check('Setup\'s help panel is 25% wider (600 px, not 480) and has Take the tour and Pop out before Close', hp0.w === 600 && hp0.order === 'helptour,helppop,helpclose', hp0);
+    check('Setup\'s help panel is 25% wider (600 px, not 480) and has Tour this step and Pop out before Close', hp0.w === 600 && hp0.order === 'helptour,helppop,helpclose', hp0);
     const popup = new Promise((res) => b.once('targetcreated', (t) => res(t)));
     await guard.click('#helppop');
     const tgt = await Promise.race([popup, sleep(5000).then(() => null)]);
     let popUrl = ''; for (let i = 0; i < 12 && tgt; i++) { popUrl = tgt.url(); if (/\/help\?/.test(popUrl)) break; await sleep(250); }
     check('Pop out opens the help in a window of its own (not the embedded one) and closes the panel', !!tgt && /\/help\?/.test(popUrl) && !/embed=/.test(popUrl) && await guard.evaluate(() => document.getElementById('help').hidden), popUrl);
     if (tgt) { const pg = await tgt.page().catch(() => null); if (pg) await pg.close(); }
+    await step(guard, 'Shows'); await sleep(700);
     await guard.evaluate(() => document.getElementById('helpbtn').click()); await sleep(300);
     await guard.click('#helptour'); await guard.waitForSelector('.tour-pop', { timeout: T(5000) }).catch(() => {});
-    check('Help has Take the tour, which closes the panel and starts the tour at the first step', await guard.evaluate(() => document.getElementById('help').hidden && !!document.querySelector('.tour-pop') && document.querySelector('.tour-title').textContent === 'Welcome to Open Caption'));
+    check('on Shows, Help\'s Tour this step closes the panel and starts the tour of Setup at the first step', await guard.evaluate(() => document.getElementById('help').hidden && !!document.querySelector('.tour-pop') && document.querySelector('.tour-title').textContent === 'Welcome to Open Caption'));
     await guard.keyboard.press('ArrowRight'); const rs1 = await guard.evaluate(() => [document.querySelector('.tour-title').textContent, !document.querySelector('.tour-ring').hidden]);
     await guard.keyboard.press('ArrowRight'); const rs2 = await guard.evaluate(() => [document.querySelector('.tour-title').textContent, !document.querySelector('.tour-ring').hidden, document.querySelector('.tour-count').textContent]);
     check('replayed with shows, the tour is about choosing a show and then adding another, each ringed', rs1.join() === 'Choose a show,true' && rs2[0] === 'Add another show' && rs2[1] && /of 12/.test(rs2[2]), [rs1, rs2]);
     await guard.keyboard.press('Escape'); await sleep(200);
     check('Esc leaves the tour, and replaying it does not change the saved flag', await guard.evaluate(async () => !document.querySelector('.tour-pop') && (await (await fetch('/api/admin/ping')).json()).tourDone === true));
+    {
+      // every other step has a tour of its own, started by the same Help button: each stop is ringed, inside the window, and the tour covers what is on the page
+      const EXPECT = { 'Show file': ['Language', 'File', 'Insert', 'The editor', 'Problems, steps and syntax', 'Save'], Images: ['Upload'], Look: ['Presets', 'Colors, text and messages', 'Previews', 'Save look'], Test: ['Rehearsal'],
+        Share: ['The address', 'The QR code', 'Ready?', 'The Run page'], Report: ['Which report', 'The tools'] };
+      const got = {};
+      for (const name of Object.keys(EXPECT)) {
+        await step(guard, name); await sleep(900);
+        await guard.evaluate(() => document.getElementById('helpbtn').click()); await sleep(250);
+        await guard.click('#helptour'); await guard.waitForSelector('.tour-pop', { timeout: T(5000) }).catch(() => {});
+        const titles = [];
+        for (let i = 0; i < 12; i++) {
+          const st = await guard.evaluate(() => { const p = document.querySelector('.tour-pop'); if (!p) return null; const r = document.querySelector('.tour-ring'), pr = p.getBoundingClientRect(); return { t: p.querySelector('.tour-title').textContent, ring: !r.hidden && r.getBoundingClientRect().width > 0, inside: pr.left >= 0 && pr.top >= 0 && pr.right <= innerWidth && pr.bottom <= innerHeight, last: p.querySelector('.tour-next').textContent === 'Done' }; });
+          if (!st) break;
+          titles.push(st.t + (st.ring && st.inside ? '' : ' (not shown)'));
+          await guard.keyboard.press(st.last ? 'Enter' : 'ArrowRight'); await sleep(120);
+        }
+        got[name] = titles;
+      }
+      check('each step has its own tour: every stop is ringed and inside the window, and it covers what the step shows', Object.keys(EXPECT).every((n) => EXPECT[n].every((t) => got[n].includes(t)) && got[n].every((t) => !/not shown/.test(t))), got);
+      await step(guard, 'Shows'); await sleep(500);
+    }
     await click(guard, 'Settings'); await sleep(600);
     await guard.evaluate(() => document.getElementById('settab-sec').click()); await sleep(150);
     const inputs = await guard.$$('#dlg input[type=password]'); await inputs[1].type('new-operator-pw');

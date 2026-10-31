@@ -10,7 +10,7 @@ Préparer un spectacle demande six étapes (une septième, **Rapport**, est pour
 6. **Partager** — partagez l'adresse avec le public et ouvrez la page de l'opérateur, d'où le spectacle est lancé. Facultatif : la page de suivi (`/follow`) permet à un second appareil de regarder sans pouvoir rien envoyer.
 7. **Rapport** — après le spectacle : combien d'appareils ont utilisé la page du public, avec un graphique au fil du temps.
 
-La première fois que la configuration est ouverte sans aucun spectacle, une courte **visite** présente chaque étape et les boutons de l'en-tête ; appuyez sur Échap pour la passer. Pour la revoir, ouvrez l'aide et choisissez **Faire la visite**.
+La première fois que la configuration est ouverte sans aucun spectacle, une courte **visite** présente chaque étape et les boutons de l'en-tête ; appuyez sur Échap pour la passer. Pour la revoir, ouvrez l'aide et choisissez **Visite de cette étape** à l'étape Spectacles. À toute autre étape, le même bouton propose une courte visite de ce qui s'y trouve.
 
 ## Attente et passage à l'antenne
 

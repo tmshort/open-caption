@@ -171,7 +171,7 @@ Who may open Setup and the operator page. The audience page is always open to ev
 | `mdns.enabled` | `yes` | Announce this computer as `<name>.local` on the local network |
 | `mdns.name` | `open-caption` | The name: letters, digits and hyphens only, up to 63 characters (`.local` is added). *Setup: Settings → Network* |
 | `standby.message` | empty | The line the audience sees on the standby screen. Empty means "Captions will begin shortly" in each viewer's language. One line, up to 200 characters. *Setup: Settings → Audience screen* (the logo is a file chosen there, not a setting) |
-| `setup.tour_done` | `no` | Whether the first-run tour of Setup has been finished or skipped. While it is `no`, the tour starts by itself the first time Setup is opened with no shows, and Setup sets it to `yes` when the tour ends. Set it back to `no` to see the tour again. *Setup: Help → Take the tour* shows it whenever you like, without changing this |
+| `setup.tour_done` | `no` | Whether the first-run tour of Setup has been finished or skipped. While it is `no`, the tour starts by itself the first time Setup is opened with no shows, and Setup sets it to `yes` when the tour ends. Set it back to `no` to see the tour again. *Setup: Help → Tour this step* (on the Shows step) shows it whenever you like, and on every other step gives a short tour of that step; neither changes this |
 
 ### `network`
 

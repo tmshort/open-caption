@@ -10,7 +10,7 @@ Setting up a show takes six steps (a seventh, **Report**, is for after the show)
 6. **Share** — share the address with the audience and open the operator page, where the operator starts the show. Optionally, the Follow page (`/follow`) lets a second device watch without being able to send anything.
 7. **Report** — after the show: how many devices used the audience page, with a graph over time.
 
-The first time Setup is opened with no shows, a short **tour** points out each step and the buttons in the header; press Esc to skip it. To see it again, open Help and choose **Take the tour**.
+The first time Setup is opened with no shows, a short **tour** points out each step and the buttons in the header; press Esc to skip it. To see it again, go to the Shows step, open Help and choose **Tour this step**. On every other step the same button gives a short tour of what is on that step.
 
 ## Standby and going on air
 

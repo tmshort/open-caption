@@ -4,7 +4,7 @@
 // A guided tour: a dimmed page with a ring round one control and a pop-up beside it with an arrow, Back / Next / Skip.
 // It has no words of its own; admin.js passes the steps and the labels (so they are translated with the rest of Setup).
 //
-//   OCTour.start({ steps: [{ target: '#x' | () => element or [elements] | null, title, text, before }], labels: { next, back, skip, done, step }, onEnd(finished) })
+//   OCTour.start({ steps: [{ target: '#x' | () => element or [elements] | null, title, text, before, optional }], labels: { next, back, skip, done, step }, onEnd(finished) })
 //
 // A step whose target is missing or hidden is shown in the middle of the page without a ring. Keys: Right arrow / Enter =
 // next, Left arrow = back, Esc = skip. The pop-up is a dialog that holds the keyboard focus until the tour ends.
@@ -16,7 +16,7 @@
 
   function start(opts) {
     if (live) live.end(false);
-    const steps = opts.steps, L = opts.labels;
+    const L = opts.labels;
     const before = document.activeElement;
     const ring = el('div', 'tour-ring'), pop = el('div', 'tour-pop'), arrow = el('div', 'tour-arrow');
     const shade = el('div', 'tour-shade');
@@ -34,6 +34,10 @@
     const find = (s) => { try { const t = typeof s.target === 'function' ? s.target() : s.target ? document.querySelector(s.target) : null;
       const shown = (Array.isArray(t) ? t : [t]).filter((e) => e && !e.closest('[hidden]') && e.getClientRects().length); return shown.length ? shown : null; } catch (e) { return null; } };
     const box = () => { const rs = target.map((e) => e.getBoundingClientRect()); return { left: Math.min(...rs.map((r) => r.left)), top: Math.min(...rs.map((r) => r.top)), right: Math.max(...rs.map((r) => r.right)), bottom: Math.max(...rs.map((r) => r.bottom)) }; };
+
+    // A step marked optional is left out when what it points at is not on the page (no pictures uploaded yet, no rehearsal running).
+    const steps = opts.steps.filter((s) => !(s.optional && !find(s)));
+    if (!steps.length) { end(false); return; }
 
     function place() {
       const vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight;

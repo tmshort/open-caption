@@ -10,7 +10,7 @@ Preparare uno spettacolo richiede sei passi (un settimo, **Rapporto**, è per do
 6. **Condividi** — condividi l'indirizzo con il pubblico e apri la pagina dell'operatore, da cui si avvia lo spettacolo. Facoltativo: la pagina di seguimento (`/follow`) permette a un secondo dispositivo di guardare senza poter inviare nulla.
 7. **Rapporto** — dopo lo spettacolo: quanti dispositivi hanno usato la pagina del pubblico, con un grafico nel tempo.
 
-La prima volta che si apre Configurazione senza spettacoli, un breve **giro** mostra ogni passo e i pulsanti nell'intestazione; premi Esc per saltarlo. Per rivederlo, apri la Guida e scegli **Fai il giro**.
+La prima volta che si apre Configurazione senza spettacoli, un breve **giro** mostra ogni passo e i pulsanti nell'intestazione; premi Esc per saltarlo. Per rivederlo, apri la Guida e scegli **Giro di questo passo** nel passo Spettacoli. In ogni altro passo lo stesso pulsante offre un breve giro di ciò che c'è.
 
 ## Attesa e messa in onda
 

@@ -171,7 +171,7 @@ Chi può aprire la configurazione e la pagina dell'operatore. La pagina del pubb
 | `mdns.enabled` | `yes` | Annuncia questo computer come `<nome>.local` sulla rete locale |
 | `mdns.name` | `open-caption` | Il nome: solo lettere, cifre e trattini, fino a 63 caratteri (viene aggiunto `.local`). *Configurazione: Impostazioni → Rete* |
 | `standby.message` | vuoto | La riga che il pubblico vede sulla schermata di attesa. Vuoto significa «Captions will begin shortly» nella lingua di ogni spettatore. Una riga, fino a 200 caratteri. *Configurazione: Impostazioni → Schermo del pubblico* (il logo è un file scelto lì, non un'impostazione) |
-| `setup.tour_done` | `no` | Indica se il giro guidato di Configurazione è stato completato o saltato. Finché è `no`, il giro parte da solo la prima volta che si apre Configurazione senza spettacoli, e Configurazione lo imposta a `yes` alla fine. Rimettilo a `no` per rivedere il giro. *Configurazione: Guida → Fai il giro* lo mostra quando vuoi, senza cambiare questo valore |
+| `setup.tour_done` | `no` | Indica se il giro guidato di Configurazione è stato completato o saltato. Finché è `no`, il giro parte da solo la prima volta che si apre Configurazione senza spettacoli, e Configurazione lo imposta a `yes` alla fine. Rimettilo a `no` per rivedere il giro. *Configurazione: Guida → Giro di questo passo* (nel passo Spettacoli) lo mostra quando vuoi, e in ogni altro passo offre un breve giro di quel passo; nessuno dei due cambia questo valore |
 
 ### `network`
 

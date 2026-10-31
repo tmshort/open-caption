@@ -171,7 +171,7 @@ Quién puede abrir la configuración y la página del operador. La página del p
 | `mdns.enabled` | `yes` | Anuncia este equipo como `<nombre>.local` en la red local |
 | `mdns.name` | `open-caption` | El nombre: solo letras, dígitos y guiones, hasta 63 caracteres (se añade `.local`). *Configuración: Ajustes → Red* |
 | `standby.message` | vacío | La línea que ve el público en la pantalla de espera. Vacío significa «Captions will begin shortly» en el idioma de cada espectador. Una línea, hasta 200 caracteres. *Configuración: Ajustes → Pantalla del público* (el logotipo es un archivo que se elige allí, no un ajuste) |
-| `setup.tour_done` | `no` | Si la visita guiada de Configuración ya se terminó u omitió. Mientras sea `no`, la visita empieza sola la primera vez que se abre Configuración sin ningún espectáculo, y Configuración lo pone en `yes` al terminar. Vuelve a ponerlo en `no` para ver la visita otra vez. *Configuración: Ayuda → Hacer la visita* la muestra cuando quieras, sin cambiar este valor |
+| `setup.tour_done` | `no` | Si la visita guiada de Configuración ya se terminó u omitió. Mientras sea `no`, la visita empieza sola la primera vez que se abre Configuración sin ningún espectáculo, y Configuración lo pone en `yes` al terminar. Vuelve a ponerlo en `no` para ver la visita otra vez. *Configuración: Ayuda → Recorrer este paso* (en el paso Espectáculos) la muestra cuando quieras, y en cualquier otro paso da una breve visita de ese paso; ninguna cambia este valor |
 
 ### `network`
 

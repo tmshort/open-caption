@@ -171,7 +171,7 @@ Qui peut ouvrir la configuration et la page de l'opérateur. La page du public e
 | `mdns.enabled` | `yes` | Annonce cet ordinateur sous le nom `<nom>.local` sur le réseau local |
 | `mdns.name` | `open-caption` | Le nom : lettres, chiffres et traits d'union seulement, jusqu'à 63 caractères (`.local` est ajouté). *Configuration : Réglages → Réseau* |
 | `standby.message` | vide | La ligne que voit le public sur l'écran d'attente. Vide signifie « Captions will begin shortly » dans la langue de chaque spectateur. Une ligne, jusqu'à 200 caractères. *Configuration : Réglages → Écran du public* (le logo est un fichier choisi là, pas un réglage) |
-| `setup.tour_done` | `no` | Indique si la visite guidée de la configuration a été terminée ou passée. Tant que c’est `no`, la visite démarre toute seule la première fois que la configuration est ouverte sans aucun spectacle, et la configuration le met à `yes` à la fin. Remettez `no` pour revoir la visite. *Configuration : Aide → Faire la visite* l’affiche quand vous voulez, sans changer cette valeur |
+| `setup.tour_done` | `no` | Indique si la visite guidée de la configuration a été terminée ou passée. Tant que c’est `no`, la visite démarre toute seule la première fois que la configuration est ouverte sans aucun spectacle, et la configuration le met à `yes` à la fin. Remettez `no` pour revoir la visite. *Configuration : Aide → Visite de cette étape* (à l’étape Spectacles) l’affiche quand vous voulez, et à toute autre étape propose une courte visite de cette étape ; ni l’une ni l’autre ne change cette valeur |
 
 ### `network`
 

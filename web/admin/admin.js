@@ -134,33 +134,75 @@
   const curShow = () => A.shows.find((s) => s.id === A.cur && !s.archived) || null;
   const unarchived = () => A.shows.filter((s) => !s.archived);
 
-  // ---- the tour (tour.js): offered once, on a first visit with no shows; Help can start it again ----
-  function startTour(first) {
-    if (OCTour.running()) return;
+  // ---- the tours (tour.js) ----
+  // The first visit, with no shows, starts the overview by itself (once; setup.tour_done). Help's "Tour this step" starts the tour of the step
+  // you are on: on Shows that is the overview, on every other step a few stops on what is there. A stop marked optional is left out
+  // when what it points at is not on the page.
+  const one = (sel, n) => () => document.querySelectorAll(sel)[n || 0] || null;
+  function overviewSteps() {
     const stepBtn = (n) => () => document.querySelector('#steps button:nth-child(' + n + ')');
     // With no shows the first step is about making one; with shows (the tour replayed) it is about choosing one, then adding another.
     const showSteps = unarchived().length ? [
       { target: () => document.querySelector('#panel .card.show') || stepBtn(1)(), title: __('Choose a show'), text: __('Pick the show to work on. The More menu beside it renames, duplicates, exports, archives or deletes it.') },
       { target: () => document.querySelector('#panel .addrow') || stepBtn(1)(), title: __('Add another show'), text: __('Create another show, import one, or add the sample show here.') }] : [
       { target: () => document.querySelector('#panel .addrow') || stepBtn(1)(), title: __('Shows'), text: __('Start here: create a show, import one, or add the sample show to look around.') }];
-    const steps = [
+    return [
       { target: null, title: __('Welcome to Open Caption'), text: __('This short tour shows where things are in Setup. Use the buttons or the arrow keys, and press Esc to leave it at any time. You can take it again from Help.') },
       ...showSteps,
       { target: stepBtn(2), title: __('Show file'), text: __('Type or paste the words of the show, one line for each caption. The editor checks it as you go.') },
       { target: stepBtn(3), title: __('Images'), text: __('Add the pictures that the show file refers to.') },
-      { target: stepBtn(4), title: __('Look'), text: __('Choose the colours, text size and font the audience sees.') },
+      { target: stepBtn(4), title: __('Look'), text: __('Choose the colors, text size and font the audience sees.') },
       { target: stepBtn(5), title: __('Test'), text: __('Rehearse the show on your own screen. Nothing reaches the audience.') },
       { target: stepBtn(6), title: __('Share'), text: __('Find the address and QR code to give the audience, and check that their phones can connect.') },
       { target: stepBtn(7), title: __('Report'), text: __('After a show, see how many devices watched, as a graph you can print or save.') },
       { target: () => [$('settingsbtn'), $('troublebtn')], title: __('Settings'), text: __('Passwords, who may connect, the network, the certificate and the venue defaults are here. Troubleshoot, beside it, helps when someone cannot connect.') },
       { target: 'header a.quiet', title: __('Run'), text: __('When the show is ready, this opens the Run page, where the operator starts the show and presses the spacebar for each caption.') },
-      { target: '#helpbtn', title: __('Help'), text: __('Help explains each step and follows the one you are on. You can take this tour again from there.') }];
+      { target: '#helpbtn', title: __('Help'), text: __('Help explains each step, and its Tour this step button gives a short tour of the step you are on.') }];
+  }
+  function stepTour() {
+    const q = (sel) => () => document.querySelector(sel);
+    switch (A.step) {
+      case 'showfile': return [
+        { target: one('#panel .tools .moremenu', 0), title: __('Language'), text: __('This menu shows the language you are editing. Choose another language, or add one: each language is its own show file with the same lines.') },
+        { target: one('#panel .tools .moremenu', 1), title: __('File'), text: __('Upload a show file from your computer, download this one to edit elsewhere, look at earlier versions of it, or list the characters.') },
+        { target: () => [...document.querySelectorAll('#panel .tools > button')], title: __('Insert'), text: __('Each button puts a command into the editor at the cursor. Point at one to see what it does. Undo (Cmd or Ctrl Z) takes it back.') },
+        { target: q('#panel .editor'), title: __('The editor'), text: __('Type or paste the show here, one line for each caption. The numbers beside it are line numbers.') },
+        { target: q('#panel .side'), title: __('Problems, steps and syntax'), text: __('Problems lists what to fix; click one to jump to its line. Operator steps shows what the operator will step through. The cheat sheet lists the syntax.') },
+        { target: q('#panel .tools .savebar'), title: __('Save'), text: __('Nothing is kept until you press Save (or Ctrl or Cmd S). Each save keeps the version it replaced, under File, Earlier versions.') }];
+      case 'images': return [
+        { target: q('#panel .dropzone'), title: __('Upload'), text: __('Drop pictures here, or press Upload images. PNG, JPG, GIF or WebP; keep each under about 1 MB.') },
+        { target: q('#panel .grid'), optional: true, title: __('Your pictures'), text: __('Each picture shows which lines of the show file use it. Use its name in an [image: name] line.') }];
+      case 'look': return [
+        { target: q('#panel .looktools .presets'), title: __('Presets'), text: __('Start from a ready-made combination of colors, then adjust it.') },
+        { target: q('#panel .looktabs'), title: __('Colors, text and messages'), text: __('The tabs hold the colors, the font and size, how speaker names look, and the pre-show messages.') },
+        { target: q('#panel .previews'), title: __('Previews'), text: __('What the audience sees on a phone and on a projector, changing as you adjust.') },
+        { target: q('#panel .looktools > button.primary'), title: __('Save look'), text: __('Saves your choices into the show file and applies them to connected devices straight away.') }];
+      case 'test': return [
+        { target: q('#panel > .row button'), title: __('Rehearsal'), text: __('Start a private rehearsal: you press the keys like the operator and see the audience screen beside it. Nothing reaches real devices.') },
+        { target: q('#panel .reh iframe'), optional: true, title: __('The operator panel'), text: __('Click inside it, then press Space to send each line. Back undoes it.') },
+        { target: q('#panel .phoneframe'), optional: true, title: __('The audience screen'), text: __('This is what an audience device shows.') }];
+      case 'golive': return [
+        { target: () => { const b = document.querySelector('#panel .urlbig'); return b ? [b, b.nextElementSibling] : null; }, title: __('The address'), text: __('Give the audience this address. Copy address copies it, and the other button makes a QR sign to print for the lobby.') },
+        { target: q('#panel .qr'), title: __('The QR code'), text: __('Phones scan this to open the address.') },
+        { target: q('#panel .urls'), optional: true, title: __('Other addresses'), text: __('Choose which address the big address and the QR code use. The projector link is for a shared screen.') },
+        { target: q('#panel .readylist'), title: __('Ready?'), text: __('Checks the show file, its images and its languages before you go on.') },
+        { target: q('#panel .startbox .big'), title: __('The Run page'), text: __('Opens the Run page with the show loaded in standby. The audience keeps seeing the standby screen until the operator presses START.') }];
+      case 'report': return [
+        { target: q('#panel .rtools label'), title: __('Which report'), text: __('Choose the run to look at: the one in progress or an earlier one.') },
+        { target: q('#panel .rtools'), title: __('The tools'), text: __('Refresh it, print it, save it as a CSV file, delete it, or open it on a page of its own.') },
+        { target: q('#panel .oc-report'), optional: true, title: __('The report'), text: __('Devices connected over time, with the loops marked, and a list of the devices.') }];
+      default: return overviewSteps();
+    }
+  }
+  function startTour(first) {
+    if (OCTour.running()) return;
     OCTour.start({
-      steps, labels: { next: __('Next'), back: __('Back'), skip: __('Skip tour'), done: __('Done'), step: __('Step {n} of {total}', { n: '{n}', total: '{total}' }) },
+      steps: first ? overviewSteps() : stepTour(),
+      labels: { next: __('Next'), back: __('Back'), skip: __('Skip tour'), done: __('Done'), step: __('Step {n} of {total}', { n: '{n}', total: '{total}' }) },
       onEnd: () => { if (first) api('PUT', '/api/admin/settings/tour', { done: true }); },
     });
   }
-  $('helptour').addEventListener('click', async () => { closeHelp(); if (A.step !== 'show') { A.step = 'show'; location.hash = 'show'; } await render(); startTour(false); });
+  $('helptour').addEventListener('click', () => { closeHelp(); startTour(false); }); // the tour of the step you are on (Shows: the overview)
 
   // ---- help drawer (topic follows the current step) ----
   const HELP_TOPIC = { show: 'admin-getting-started', showfile: 'admin-writing-a-show-file', images: 'admin-images', look: 'admin-look-and-feel', test: 'admin-getting-started', golive: 'admin-network', report: 'operator-running-the-show' };

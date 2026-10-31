@@ -10,7 +10,7 @@ Preparar um espetáculo leva seis etapas (uma sétima, **Relatório**, é para d
 6. **Compartilhar** — compartilhe o endereço com o público e abra a página do operador, de onde o espetáculo é iniciado. Opcionalmente, a página de acompanhamento (`/follow`) permite que um segundo dispositivo assista sem poder enviar nada.
 7. **Relatório** — depois do espetáculo: quantos dispositivos usaram a página do público, com um gráfico ao longo do tempo.
 
-Na primeira vez que a Configuração é aberta sem espetáculos, um breve **passeio** mostra cada etapa e os botões do cabeçalho; prima Esc para o saltar. Para o ver outra vez, abra a Ajuda e escolha **Fazer o passeio**.
+Na primeira vez que a Configuração é aberta sem espetáculos, um breve **passeio** mostra cada etapa e os botões do cabeçalho; prima Esc para o saltar. Para o ver outra vez, abra a Ajuda e escolha **Passeio por esta etapa** na etapa Espetáculos. Em qualquer outra etapa, o mesmo botão dá um breve passeio pelo que há nela.
 
 ## Espera e entrada no ar
 
