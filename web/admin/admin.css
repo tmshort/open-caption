@@ -42,6 +42,8 @@ select.uilang { min-height: 28px; }
 .side-inner .diags, .side-inner .cues { max-height: none; }
 .side-inner h3 { margin: 0 0 .4rem; }
 .editor.drop { outline: 3px dashed var(--accent); }
+.showlist { overflow: auto; padding: 2px; margin: -2px; }
+.addbar { margin-bottom: 1rem; }
 .sronly, #panel > h2 { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; } /* heard by a screen reader, not shown: the highlighted step already says where you are (every step's own title) */
 .tools { display: flex; gap: .3rem; flex-wrap: wrap; align-items: center; margin: .6rem 0; }
 .moremenu.left .menu { right: auto; left: 0; }

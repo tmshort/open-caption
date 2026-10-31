@@ -801,6 +801,14 @@ async function main() {
     await arch.keyboard.press('Escape'); await sleep(250);
     await arch.click('.card.show button.more'); await sleep(150);
     await arch.click('.card.show .name'); await sleep(150);
+    {
+      // the add-a-show bar is at the top and the shows scroll in the space below it (in a short window the list scrolls inside, the page does not)
+      await arch.setViewport({ width: 1300, height: 480 }); await sleep(400);
+      const sl = await arch.evaluate(() => { const add = document.querySelector('.addbar').getBoundingClientRect(), first = document.querySelector('.showlist .card.show').getBoundingClientRect(), l = document.querySelector('.showlist'), b = document.getElementById('stepbar').getBoundingClientRect();
+        return { barAbove: add.bottom <= first.top, scrolls: l.scrollHeight > l.clientHeight, inView: l.getBoundingClientRect().bottom <= b.top, pageFixed: document.documentElement.scrollHeight <= innerHeight + 1, n: document.querySelectorAll('.showlist .card.show').length }; });
+      await arch.setViewport({ width: 1300, height: 950 }); await sleep(300);
+      check('on the Shows step the add bar is above the list and a long list scrolls inside, not the page', sl.barAbove && sl.scrolls && sl.inView && sl.pageFixed, sl);
+    }
     check('a click elsewhere closes the menu', await arch.evaluate(() => document.querySelector('.card.show .menu').hidden));
     check('the menu lists Rename, Duplicate, Export, Archive and Delete, Delete last and in red', await arch.evaluate(() => { const c = document.querySelector('.card.show'), it = [...c.querySelectorAll('.menu .item')].map((e) => e.textContent.trim()), d = c.querySelector('.menu .item.danger'); return it.length === 5 && /^Rename/.test(it[0]) && /^Delete/.test(it[4]) && !!d && getComputedStyle(d).color !== getComputedStyle(document.body).color; }));
     // Export is fetched and saved by the page, so a failure can be explained (a plain link leaves the browser's own "download failed").

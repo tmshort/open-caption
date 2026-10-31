@@ -800,13 +800,16 @@
     await loadShows();
     p.append(h('h2', {}, A.shows.length ? __('Choose a show') : __('Add a show')));
     const current = unarchived(), archived = A.shows.filter((s) => s.archived);
+    const list = h('div', { class: 'showlist' });
     if (!A.shows.length) {
       p.append(h('div', { class: 'card empty' },
         h('p', { class: 'big' }, __('Welcome! Start by creating a show, importing one, or look around with the sample.')),
         h('div', { class: 'row addrow' }, ...newShowForm(), h('button', { onclick: makeSample }, __('Create a sample show')), ...importButton())));
     } else {
-      if (!current.length) p.append(h('div', { class: 'card empty' }, h('p', { class: 'big' }, __('All your shows are archived. Create a new show below, or restore one from the archive.'))));
-      current.forEach((s) => p.append(h('div', { class: 'card show' },
+      // Creating a show is a bar at the top, and the shows scroll in the space below it, so adding one is never under the fold.
+      p.append(h('div', { class: 'card row addrow addbar' }, ...newShowForm(), h('button', { onclick: makeSample }, __('Create a sample show')), ...importButton()));
+      if (!current.length) list.append(h('div', { class: 'card empty' }, h('p', { class: 'big' }, __('All your shows are archived. Create a new show below, or restore one from the archive.'))));
+      current.forEach((s) => list.append(h('div', { class: 'card show' },
         h('div', { class: 'name' }, s.name, ' ', s.live ? h('span', { class: 'badge live' }, __('ON AIR')) : s.active ? h('span', { class: 'badge standby' }, __('ACTIVE') + ' · ' + __('STANDBY')) : null,
           h('div', { class: 'hint' }, __('Updated {when}', { when: new Date(s.updated).toLocaleString(OCI18n.lang) }))),
         h('button', { class: A.cur === s.id ? '' : 'primary', onclick: () => { setCur(s.id); go('showfile'); } }, A.cur === s.id ? __('Continue with this show') : __('Work on this show')),
@@ -817,10 +820,9 @@
           { label: __('Archive'), run: () => archiveShow(s, true), why: s.live ? __('The show on air cannot be archived. Activate another show first.') : '', disabled: s.live, hint: __('Put this show away; you can restore it later') },
           { sep: true },
           { label: __('Delete…'), run: () => deleteShow(s), danger: true, why: s.live ? __('This show is on air. Restart it from the Run page, or activate another show first.') : '' }])))); 
-      p.append(h('h3', {}, __('Add another show')), h('div', { class: 'card row addrow' }, ...newShowForm(), h('button', { onclick: makeSample }, __('Create a sample show')), ...importButton()));
     }
     if (archived.length) {
-      p.append(h('details', { class: 'archive', open: A.showArchive ? '' : null, ontoggle: (e) => { A.showArchive = e.target.open; } },
+      (A.shows.length ? list : p).append(h('details', { class: 'archive', open: A.showArchive ? '' : null, ontoggle: (e) => { A.showArchive = e.target.open; } },
         h('summary', {}, __('Archived shows ({n})', { n: archived.length })),
         h('p', { class: 'hint' }, __('Archived shows are kept in full but stay out of the way and cannot go on air. Restore one to use it again, or delete it for good.')),
         ...archived.map((s) => h('div', { class: 'card show' },
@@ -831,6 +833,7 @@
             { sep: true },
             { label: __('Delete…'), run: () => deleteShow(s), danger: true, why: s.live ? __('This show is on air. Restart it from the Run page, or activate another show first.') : '' }])))));
     }
+    if (A.shows.length) { p.append(list); fitPanel(); requestAnimationFrame(fitPanel); }
   }
   // A "More ▾" button with a menu of the less common actions of one thing (a show). items: { label, run | href+download, danger,
   // disabled, why (shown under a disabled item), hint } or { sep: true }. Keyboard: Enter/Space/Down opens, arrows move, Home/End,
@@ -1256,20 +1259,22 @@
       tools,
       h('div', { class: 'editor-grid' }, editor, h('div', { class: 'side' }, h('div', { class: 'side-inner' }, side.tabs, side.panels))));
     lines(); setStatus(); showAnalysis();
-    fitEditor(); requestAnimationFrame(fitEditor); // after the layout has settled (fonts, the bar)
+    fitPanel(); requestAnimationFrame(fitPanel); // after the layout has settled (fonts, the bar)
     window.onbeforeunload = () => (ta.value !== A.saved ? __('You have unsaved changes.') : undefined);
   }
 
   // The editor takes the rest of the window: from where it starts down to the room kept under the bottom bar, so the whole of it is in
   // view and the page itself does not scroll (the tabs beside it follow its height). Never shorter than 22 rem; below that the page scrolls.
-  function fitEditor() {
+  // The list of shows on the Shows step does the same, but only as a limit (a short list stays short and a long one scrolls inside).
+  function fitPanel() {
+    const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16, pad = parseFloat(getComputedStyle($('panel')).paddingBottom) || 0;
+    const room = (el) => window.innerHeight - (el.getBoundingClientRect().top + window.scrollY) - pad;
     const ed = document.querySelector('#panel .editor');
-    if (!ed) return;
-    const top = ed.getBoundingClientRect().top + window.scrollY, pad = parseFloat(getComputedStyle($('panel')).paddingBottom) || 0;
-    const min = 22 * (parseFloat(getComputedStyle(document.documentElement).fontSize) || 16);
-    ed.style.height = Math.max(min, Math.floor(window.innerHeight - top - pad)) + 'px';
+    if (ed) ed.style.height = Math.max(22 * rem, Math.floor(room(ed))) + 'px';
+    const sl = document.querySelector('#panel .showlist');
+    if (sl) sl.style.maxHeight = Math.max(10 * rem, Math.floor(room(sl))) + 'px';
   }
-  window.addEventListener('resize', fitEditor);
+  window.addEventListener('resize', fitPanel);
 
   function cheatSheet() {
     const rows = [
