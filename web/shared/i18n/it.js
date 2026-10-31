@@ -966,4 +966,7 @@ OCI18n.add("it", {
  "Lines that repeat on a timer, such as a welcome message: [loop] … [/loop]": "Righe che si ripetono con un timer, come un messaggio di benvenuto: [loop] … [/loop]",
  "Put one of this show’s images on the whole screen: [image: file]": "Mette una delle immagini di questo spettacolo su tutto lo schermo: [image: file]",
  "Language being edited: {name}": "Lingua in modifica: {name}",
+ "Look sections": "Sezioni dell’aspetto",
+ "Colors": "Colori",
+ "Messages": "Messaggi",
 });

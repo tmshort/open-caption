@@ -755,7 +755,7 @@
     refreshNav();
     warmAnalysis();
     const panel = $('panel'); panel.replaceChildren();
-    panel.classList.toggle('wide', A.step === 'showfile'); // the editor uses the whole width of the window
+    panel.classList.toggle('wide', A.step === 'showfile' || A.step === 'look'); // the editor uses the whole width of the window
     document.title = __('Setup') + ' — ' + __((STEPS.find((x) => x[0] === A.step) || ['', ''])[1]);
     paintBar();
     try { await ({ show: stepShow, showfile: stepShowFile, images: stepImages, look: stepLook, test: stepTest, golive: stepGoLive, report: stepReport })[A.step](panel); } catch (e) { if (e.message !== 'login' && e.message !== 'network') console.error(e); }
@@ -1393,24 +1393,30 @@
         if (t.speakers === 'color' && window.OCSpeakers) f.querySelectorAll('.spk').forEach((e) => { e.style.color = OCSpeakers.forName(e.textContent, ['Margaret', 'Edwin'], t.bg); });
       }
     }
-    // Two columns of controls: the colors with their contrast just under them, then the text options, then the
-    // pre-show message in every language together (full width), then the loop and scrollback numbers.
+    // The controls are three tabs (colors, text, messages) on the left, and the previews stay in view on the right, so a change shows at
+    // once and nothing needs scrolling. The presets and Save look are a toolbar above both.
     const L = (k) => ctl[k].closest('label'), wide = (e) => { e.classList.add('wide'); return e; };
     L('scalePct').append(sizeLabel);
-    const fieldOrder = [L('bg'), L('fg'), wide(h('div', { class: 'contrastrow' }, ratio)), L('accent'), L('font'), wide(L('scalePct')), wide(L('speakers')), wide(L('speakerPosition')), wide(L('idleMessage')), ...idleLabels.map(wide), L('loopSeconds'), L('scrollbackLines')];
+    const fields = (...kids) => h('div', { class: 'fields' }, ...kids);
     write(); paint();
     // what is on screen against what was last saved, for the bar along the bottom
     read(); let savedSnap = JSON.stringify(t); A.lookDirty = false;
     const lookChanged = () => { A.lookDirty = JSON.stringify(t) !== savedSnap; paintBar(); };
     Object.values(ctl).forEach((i) => i.addEventListener('input', () => { read(); paint(); lookChanged(); }));
     const presets = h('div', { class: 'presets' }, ...PRESETS.map(([n, bg, fg, ac]) => h('button', { class: 'swatch', ref: (b) => { b.style.background = bg; b.style.color = fg; b.style.borderColor = ac; }, title: __('Use these colors'), onclick: () => { Object.assign(t, { bg, fg, accent: ac }); write(); paint(); read(); lookChanged(); } }, __(n))));
-    p.append(h('h2', {}, __('Look')), h('p', { class: 'hint' }, __('Large, high-contrast text is the default and is best for accessibility. Saving writes these choices into the [settings] block of the show file (which you can also edit by hand in the Show file step), and applies them to connected devices straight away.')),
-      h('div', { class: 'look-grid' },
-        h('div', { class: 'card' }, presets, h('div', { class: 'fields' }, ...fieldOrder),
-          h('div', { class: 'row end savelook' }, h('button', { class: 'primary', onclick: async () => {
+    const saveLook = h('button', { class: 'primary', onclick: async () => {
             if (A.text !== A.saved && A.loadedLang === '') { toast(__('You have unsaved changes in the Show file step. Save them first: saving the look rewrites the settings in the saved show file.')); return; }
             read(); const s = await api('PUT', '/api/admin/shows/' + show.id, { theme: t }); if (!s.ok) return fail(s); A.analysis = null; A.text = A.saved = ''; savedSnap = JSON.stringify(t); A.lookDirty = false; markLookSaved(); toast(__('Look saved in the show file'));
-          } }, __('Save look')))),
+          } }, __('Save look'));
+    const lk = tabSet('lk', __('Look sections'), [
+      ['col', __('Colors'), [fields(L('bg'), L('fg'), wide(h('div', { class: 'contrastrow' }, ratio)), L('accent'))]],
+      ['txt', __('Text'), [fields(L('font'), wide(L('scalePct')), wide(L('speakers')), wide(L('speakerPosition')))]],
+      ['msg', __('Messages'), [fields(wide(L('idleMessage')), ...idleLabels.map(wide), L('loopSeconds'), L('scrollbackLines'))]]]);
+    lk.pick(0, false);
+    p.append(h('h2', {}, __('Look')), h('p', { class: 'hint' }, __('Large, high-contrast text is the default and is best for accessibility. Saving writes these choices into the [settings] block of the show file (which you can also edit by hand in the Show file step), and applies them to connected devices straight away.')),
+      h('div', { class: 'looktools' }, presets, saveLook),
+      h('div', { class: 'look-grid' },
+        h('div', { class: 'card looktabs' }, lk.tabs, lk.panels),
         h('div', { class: 'previews' }, h('div', {}, h('div', { class: 'hint' }, __('Phone')), phone), h('div', {}, h('div', { class: 'hint' }, __('Projector')), proj))));
   }
 

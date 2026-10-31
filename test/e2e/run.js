@@ -192,6 +192,11 @@ async function main() {
     section('Setup: look');
     await step(admin, 'Show'); await sleep(700); await click(admin, 'Work on this show'); await sleep(700);
     await step(admin, 'Look'); await sleep(900);
+    check('Look has three tabs (Colors, Text, Messages) with the previews beside them and the presets and Save look in a toolbar above', await admin.evaluate(() => {
+      const tabs = [...document.querySelectorAll('.looktabs [role=tab]')].map((t) => t.textContent).join('|'), card = document.querySelector('.looktabs').getBoundingClientRect(), ph = document.querySelector('.preview.phone').getBoundingClientRect(), pj = document.querySelector('.preview.proj').getBoundingClientRect(),
+        tb = document.querySelector('.looktools').getBoundingClientRect(), save = [...document.querySelectorAll('.looktools button')].find((b) => b.textContent === 'Save look');
+      document.getElementById('lktab-msg').click(); const msg = getComputedStyle(document.getElementById('lkpanel-msg')).visibility === 'visible' && !!document.getElementById('lkpanel-msg').querySelector('input[type=number]'); document.getElementById('lktab-col').click();
+      return tabs === 'Colors|Text|Messages' && ph.left >= card.right && Math.abs(ph.top - pj.top) < 30 && pj.left >= ph.right && tb.bottom <= card.top + 1 && !!save && msg; }));
     await admin.evaluate(() => { const f = [...document.querySelectorAll('select')].find((s) => [...s.options].some((o) => o.value === 'dyslexic')); f.value = 'dyslexic'; f.dispatchEvent(new Event('input', { bubbles: true })); });
     await admin.evaluate(() => { const sp = [...document.querySelectorAll('select')].find((s) => [...s.options].some((o) => o.value === 'color')); sp.value = 'color'; sp.dispatchEvent(new Event('input', { bubbles: true })); });
     await admin.evaluate(() => { const sp = [...document.querySelectorAll('select')].find((s) => [...s.options].some((o) => o.value === 'beside')); sp.value = 'beside'; sp.dispatchEvent(new Event('input', { bubbles: true })); });
