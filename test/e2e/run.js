@@ -192,6 +192,14 @@ async function main() {
     section('Setup: look');
     await step(admin, 'Show'); await sleep(700); await click(admin, 'Work on this show'); await sleep(700);
     await step(admin, 'Look'); await sleep(900);
+    {
+      // no step shows its own title (the highlighted step says where you are), and the Look step fits a 1366x768 window without scrolling
+      await admin.setViewport({ width: 1366, height: 768 }); await sleep(300);
+      const lk = await admin.evaluate(() => { const h = document.querySelector('#panel > h2'), b = document.getElementById('stepbar').getBoundingClientRect(), g = document.querySelector('.look-grid').getBoundingClientRect();
+        return { titleHidden: !!h && h.getBoundingClientRect().width <= 2 && h.textContent === 'Look', fits: g.bottom <= b.top && document.documentElement.scrollHeight <= innerHeight + 1, gb: Math.round(g.bottom), bar: Math.round(b.top), sh: document.documentElement.scrollHeight }; });
+      await admin.setViewport({ width: 1300, height: 950 }); await sleep(300);
+      check('the Look step has no visible title and fits a 1366x768 window without scrolling (previews, tabs and Save look all in view)', lk.titleHidden && lk.fits, lk);
+    }
     check('Look has three tabs (Colors, Text, Messages) with the previews beside them and the presets and Save look in a toolbar above', await admin.evaluate(() => {
       const tabs = [...document.querySelectorAll('.looktabs [role=tab]')].map((t) => t.textContent).join('|'), card = document.querySelector('.looktabs').getBoundingClientRect(), ph = document.querySelector('.preview.phone').getBoundingClientRect(), pj = document.querySelector('.preview.proj').getBoundingClientRect(),
         tb = document.querySelector('.looktools').getBoundingClientRect(), save = [...document.querySelectorAll('.looktools button')].find((b) => b.textContent === 'Save look');
@@ -792,7 +800,7 @@ async function main() {
     check('with the mouse, More shows Rename… on screen and clicking it opens its dialog', rp.w > 50 && await arch.evaluate(() => document.getElementById('dlg').hasAttribute('open') && document.querySelector('.card.show .menu').hidden));
     await arch.keyboard.press('Escape'); await sleep(250);
     await arch.click('.card.show button.more'); await sleep(150);
-    await arch.click('#panel h2'); await sleep(150);
+    await arch.click('.card.show .name'); await sleep(150);
     check('a click elsewhere closes the menu', await arch.evaluate(() => document.querySelector('.card.show .menu').hidden));
     check('the menu lists Rename, Duplicate, Export, Archive and Delete, Delete last and in red', await arch.evaluate(() => { const c = document.querySelector('.card.show'), it = [...c.querySelectorAll('.menu .item')].map((e) => e.textContent.trim()), d = c.querySelector('.menu .item.danger'); return it.length === 5 && /^Rename/.test(it[0]) && /^Delete/.test(it[4]) && !!d && getComputedStyle(d).color !== getComputedStyle(document.body).color; }));
     // Export is fetched and saved by the page, so a failure can be explained (a plain link leaves the browser's own "download failed").

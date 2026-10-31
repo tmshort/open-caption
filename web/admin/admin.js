@@ -1301,7 +1301,7 @@
       an.missing.forEach((m) => { (miss[m.name] = miss[m.name] || []).push(...m.lines.map((n) => n + tag)); });
     });
     const a = { assets: rs[0].data.analysis.assets, used, missing: Object.keys(miss).sort().map((name) => ({ name, lines: miss[name] })) };
-    p.append(h('h2', {}, __('Images')), h('p', { class: 'hint' }, __('PNG, JPG, GIF or WebP, up to 10 MB each. Images are sent to every device as they are, so keep them under about 1 MB (about 1920 pixels wide is plenty).')));
+    p.append(h('h2', {}, __('Images')));
 
     async function upload(files, renameTo) {
       const fd = new FormData();
@@ -1317,7 +1317,8 @@
         ...a.missing.map((m) => h('div', { class: 'row' }, h('b', {}, m.name), h('span', { class: 'hint' }, __('used on line {lines}', { lines: m.lines.join(', ') })),
           ...fileButton(__('Upload this image…'), { accept: IMAGE_TYPES, title: __('Choose the picture for {name} from this computer', { name: m.name }), label: __('Upload {name}', { name: m.name }) }, (files) => upload([files[0]], m.name))))));
     }
-    const dz = h('div', { class: 'dropzone' }, h('p', {}, __('Drag images here, or ')), ...fileButton(__('Upload images…'), { accept: IMAGE_TYPES, multiple: true, title: __('Choose one or more pictures from this computer') }, (files) => upload(files)));
+    const dz = h('div', { class: 'dropzone' }, h('p', {}, __('Drag images here, or ')), ...fileButton(__('Upload images…'), { accept: IMAGE_TYPES, multiple: true, title: __('Choose one or more pictures from this computer') }, (files) => upload(files)),
+      h('p', { class: 'hint' }, __('PNG, JPG, GIF or WebP, up to 10 MB each. Images are sent to every device as they are, so keep them under about 1 MB (about 1920 pixels wide is plenty).')));
     dz.addEventListener('dragover', (e) => { e.preventDefault(); dz.classList.add('drop'); });
     dz.addEventListener('dragleave', () => dz.classList.remove('drop'));
     dz.addEventListener('drop', (e) => { e.preventDefault(); dz.classList.remove('drop'); upload(e.dataTransfer.files); });
@@ -1404,16 +1405,16 @@
     const lookChanged = () => { A.lookDirty = JSON.stringify(t) !== savedSnap; paintBar(); };
     Object.values(ctl).forEach((i) => i.addEventListener('input', () => { read(); paint(); lookChanged(); }));
     const presets = h('div', { class: 'presets' }, ...PRESETS.map(([n, bg, fg, ac]) => h('button', { class: 'swatch', ref: (b) => { b.style.background = bg; b.style.color = fg; b.style.borderColor = ac; }, title: __('Use these colors'), onclick: () => { Object.assign(t, { bg, fg, accent: ac }); write(); paint(); read(); lookChanged(); } }, __(n))));
-    const saveLook = h('button', { class: 'primary', onclick: async () => {
+    const saveLook = h('button', { class: 'primary', title: __('Writes these choices into the [settings] block of the show file (which you can also edit by hand in the Show file step), and applies them to connected devices straight away.'), onclick: async () => {
             if (A.text !== A.saved && A.loadedLang === '') { toast(__('You have unsaved changes in the Show file step. Save them first: saving the look rewrites the settings in the saved show file.')); return; }
             read(); const s = await api('PUT', '/api/admin/shows/' + show.id, { theme: t }); if (!s.ok) return fail(s); A.analysis = null; A.text = A.saved = ''; savedSnap = JSON.stringify(t); A.lookDirty = false; markLookSaved(); toast(__('Look saved in the show file'));
           } }, __('Save look'));
     const lk = tabSet('lk', __('Look sections'), [
-      ['col', __('Colors'), [fields(L('bg'), L('fg'), wide(h('div', { class: 'contrastrow' }, ratio)), L('accent'))]],
+      ['col', __('Colors'), [fields(L('bg'), L('fg'), wide(h('div', { class: 'contrastrow' }, ratio)), L('accent')), h('p', { class: 'hint' }, __('Large, high-contrast text is the default and is best for accessibility.'))]],
       ['txt', __('Text'), [fields(L('font'), wide(L('scalePct')), wide(L('speakers')), wide(L('speakerPosition')))]],
       ['msg', __('Messages'), [fields(wide(L('idleMessage')), ...idleLabels.map(wide), L('loopSeconds'), L('scrollbackLines'))]]]);
     lk.pick(0, false);
-    p.append(h('h2', {}, __('Look')), h('p', { class: 'hint' }, __('Large, high-contrast text is the default and is best for accessibility. Saving writes these choices into the [settings] block of the show file (which you can also edit by hand in the Show file step), and applies them to connected devices straight away.')),
+    p.append(h('h2', {}, __('Look')),
       h('div', { class: 'looktools' }, presets, saveLook),
       h('div', { class: 'look-grid' },
         h('div', { class: 'card looktabs' }, lk.tabs, lk.panels),

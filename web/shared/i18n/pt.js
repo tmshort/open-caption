@@ -969,4 +969,6 @@ OCI18n.add("pt", {
  "Look sections": "Seções do visual",
  "Colors": "Cores",
  "Messages": "Mensagens",
+ "Writes these choices into the [settings] block of the show file (which you can also edit by hand in the Show file step), and applies them to connected devices straight away.": "Grava estas escolhas no bloco [settings] do arquivo do espetáculo (que você também pode editar à mão na etapa Arquivo do espetáculo) e as aplica de imediato aos dispositivos conectados.",
+ "Large, high-contrast text is the default and is best for accessibility.": "O texto grande e de alto contraste é o padrão e o melhor para a acessibilidade.",
 });
