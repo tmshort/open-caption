@@ -1169,8 +1169,11 @@
       { label: __('Earlier versions…'), hint: __('Each save keeps the version it replaced'), run: showHistory },
       { label: __('Characters…'), hint: __('Every speaker name used, to check for misspellings'), run: showCharacters }], { label: __('File'), ariaLabel: __('File actions'), left: true });
     const tools = h('div', { class: 'tools' }, fileMenu, fileInput, h('span', { class: 'tools-sep', 'aria-hidden': 'true' }, '|'),
-      ...[['Clear', 'clear'], ['Blank', 'blank'], ['Fullscreen text', 'fullscreen'], ['Section', 'section'], ['Operator note', 'note'], ['Pace', 'pace', 'How long the next line usually stays up: a reminder for the operator'], ['Comment', 'comment'], ['Loop', 'loop']].map(([l, k, t]) => h('button', { onclick: () => insert(SNIPPETS[k]), title: t ? __(t) : false }, __(l))),
-      h('button', { onclick: pickImage }, __('Image…')),
+      ...[[__('Clear'), 'clear', __('Clear the captions from the audience screens: [clear]')], [__('Blank'), 'blank', __('Blank the audience screen until the next line: [blank]')],
+        [__('Fullscreen'), 'fullscreen', __('Show a message on the whole screen, such as INTERMISSION: [fullscreen: text]')], [__('Section'), 'section', __('A bookmark for the operator, such as Act 2: [section: name]')],
+        [__('Note'), 'note', __('A reminder shown to the operator only: [note: text]')], [__('Pace'), 'pace', __('How long the next line usually stays up: a reminder for the operator')],
+        [__('Comment'), 'comment', __('A comment that is never shown to anyone: <!-- text -->')], [__('Loop'), 'loop', __('Lines that repeat on a timer, such as a welcome message: [loop] … [/loop]')]].map(([l, k, t]) => h('button', { onclick: () => insert(SNIPPETS[k]), title: t }, l)),
+      h('button', { onclick: pickImage, title: __('Put one of this show’s images on the whole screen: [image: file]') }, __('Image…')),
       h('button', { onclick: insertSettings, title: __('Title, colors, font, size and other options for the whole show') }, __('Settings')),
       h('span', { class: 'tools-sep', 'aria-hidden': 'true' }, '|'),
       h('button', { onclick: () => insert(SNIPPETS.song), title: __('A song: every line becomes a sung lyric') }, __('🎵 Song')),

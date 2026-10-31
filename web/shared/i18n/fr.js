@@ -956,4 +956,13 @@ OCI18n.add("fr", {
  "Operator steps": "Étapes de l’opérateur",
  "Cheat sheet": "Aide-mémoire",
  "Editor side panels": "Panneaux à côté de l’éditeur",
+ "Clear the captions from the audience screens: [clear]": "Efface les sous-titres des écrans du public : [clear]",
+ "Blank the audience screen until the next line: [blank]": "Met l’écran du public en blanc jusqu’à la ligne suivante : [blank]",
+ "Fullscreen": "Plein écran",
+ "Show a message on the whole screen, such as INTERMISSION: [fullscreen: text]": "Affiche un message sur tout l’écran, comme ENTRACTE : [fullscreen: texte]",
+ "A bookmark for the operator, such as Act 2: [section: name]": "Un repère pour l’opérateur, comme Acte 2 : [section: nom]",
+ "A reminder shown to the operator only: [note: text]": "Un rappel visible seulement par l’opérateur : [note: texte]",
+ "A comment that is never shown to anyone: <!-- text -->": "Un commentaire que personne ne voit jamais : <!-- texte -->",
+ "Lines that repeat on a timer, such as a welcome message: [loop] … [/loop]": "Des lignes qui se répètent avec une minuterie, comme un message de bienvenue : [loop] … [/loop]",
+ "Put one of this show’s images on the whole screen: [image: file]": "Met une des images de ce spectacle sur tout l’écran : [image: fichier]",
 });

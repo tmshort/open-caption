@@ -14,16 +14,6 @@
   "Web port (HTTP)",
   "Web port (HTTPS)"
  ],
- "editor toolbar": [
-  "Clear",
-  "Blank",
-  "Fullscreen text",
-  "Section",
-  "Operator note",
-  "Pace",
-  "Comment",
-  "Loop"
- ],
  "log detail": [
   "Errors only",
   "Problems (warnings and errors)",

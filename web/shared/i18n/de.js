@@ -956,4 +956,13 @@ OCI18n.add("de", {
  "Operator steps": "Schritte des Operators",
  "Cheat sheet": "Spickzettel",
  "Editor side panels": "Seitenfelder neben dem Editor",
+ "Clear the captions from the audience screens: [clear]": "Löscht die Untertitel von den Bildschirmen des Publikums: [clear]",
+ "Blank the audience screen until the next line: [blank]": "Schaltet den Bildschirm des Publikums bis zur nächsten Zeile leer: [blank]",
+ "Fullscreen": "Vollbild",
+ "Show a message on the whole screen, such as INTERMISSION: [fullscreen: text]": "Zeigt eine Nachricht auf dem ganzen Bildschirm, etwa PAUSE: [fullscreen: Text]",
+ "A bookmark for the operator, such as Act 2: [section: name]": "Ein Lesezeichen für den Operator, etwa Akt 2: [section: Name]",
+ "A reminder shown to the operator only: [note: text]": "Eine Erinnerung, die nur der Operator sieht: [note: Text]",
+ "A comment that is never shown to anyone: <!-- text -->": "Ein Kommentar, den nie jemand sieht: <!-- Text -->",
+ "Lines that repeat on a timer, such as a welcome message: [loop] … [/loop]": "Zeilen, die sich per Zeitschaltung wiederholen, etwa eine Begrüßung: [loop] … [/loop]",
+ "Put one of this show’s images on the whole screen: [image: file]": "Zeigt eines der Bilder dieser Show im Vollbild: [image: Datei]",
 });
