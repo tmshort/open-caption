@@ -209,11 +209,11 @@ Der Schritt **Erscheinungsbild** der Einrichtung schreibt diesen Block für Sie,
 
 ### Die Namen der Figuren prüfen
 
-Klicken Sie über dem Editor auf **Figuren…**, um alle als Sprecher verwendeten Namen zu sehen, die am häufigsten verwendeten zuerst, mit der Zahl ihrer Zeilen. So finden Sie schnell einen falsch geschriebenen Namen: **ALCE** mit einer Zeile neben **ALICE** mit vierzig wird mit *Meinten Sie ALICE?* markiert. Klicken Sie auf einen Namen, um zu seiner ersten Zeile zu gehen. Eine Gruppe wie `ALICE & BOB:` zählt für jeden ihrer Namen.
+Klicken Sie über dem Editor auf **Datei ▾ → Figuren…**, um alle als Sprecher verwendeten Namen zu sehen, die am häufigsten verwendeten zuerst, mit der Zahl ihrer Zeilen. So finden Sie schnell einen falsch geschriebenen Namen: **ALCE** mit einer Zeile neben **ALICE** mit vierzig wird mit *Meinten Sie ALICE?* markiert. Klicken Sie auf einen Namen, um zu seiner ersten Zeile zu gehen. Eine Gruppe wie `ALICE & BOB:` zählt für jeden ihrer Namen.
 
 ### Zurückgehen
 
-Jedes Speichern bewahrt die ersetzte Version auf (die letzten 50). **Frühere Versionen …** über dem Editor listet sie auf; **Laden** legt eine in den Editor, und **Speichern** macht sie aktuell. **Vergleichen** zeigt Zeile für Zeile, was das Laden einer Version ändern würde, und eine Version, der Sie einen Namen geben (oder **Behalten** für das, was jetzt gespeichert ist), wird nie vergessen. Exportieren Sie vor der Show trotzdem: Die früheren Versionen liegen im Datenordner, nicht im Export.
+Jedes Speichern bewahrt die ersetzte Version auf (die letzten 50). **Datei ▾ → Frühere Versionen …** über dem Editor listet sie auf; **Laden** legt eine in den Editor, und **Speichern** macht sie aktuell. **Vergleichen** zeigt Zeile für Zeile, was das Laden einer Version ändern würde, und eine Version, der Sie einen Namen geben (oder **Behalten** für das, was jetzt gespeichert ist), wird nie vergessen. Exportieren Sie vor der Show trotzdem: Die früheren Versionen liegen im Datenordner, nicht im Export.
 
 ### Zwei Personen bearbeiten gleichzeitig
 

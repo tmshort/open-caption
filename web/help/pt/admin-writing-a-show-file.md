@@ -29,11 +29,11 @@ OPHELIA: My *lord*?
 
 ## Conferir os nomes dos personagens
 
-Clique em **Personagens…** acima do editor para ver todos os nomes usados como personagem, os mais usados primeiro, com o número de linhas de cada um. É a forma rápida de achar um nome escrito errado: **ALCE** com uma linha ao lado de **ALICE** com quarenta é marcado com *Você quis dizer ALICE?*. Clique em um nome para ir à primeira linha dele. Um grupo como `ALICE & BOB:` conta para cada um de seus nomes.
+Clique em **Arquivo ▾ → Personagens…** acima do editor para ver todos os nomes usados como personagem, os mais usados primeiro, com o número de linhas de cada um. É a forma rápida de achar um nome escrito errado: **ALCE** com uma linha ao lado de **ALICE** com quarenta é marcado com *Você quis dizer ALICE?*. Clique em um nome para ir à primeira linha dele. Um grupo como `ALICE & BOB:` conta para cada um de seus nomes.
 
 ## Voltar a uma versão anterior
 
-A cada salvamento, a versão substituída é guardada (as últimas 50 de cada idioma). Clique em **Versões anteriores…** acima do editor, escolha um horário e clique em **Carregar**. Isso só coloca o texto antigo no editor; nada muda até você clicar em **Salvar**, então você pode olhar antes. **Comparar** mostra, linha a linha, o que mudaria ao carregar uma versão. Uma versão a que você dá um nome (na caixa ao lado, ou com **Guardar** para dar nome ao que está salvo agora) nunca é esquecida, por mais salvamentos que se sigam. A exportação não inclui as versões anteriores.
+A cada salvamento, a versão substituída é guardada (as últimas 50 de cada idioma). Clique em **Arquivo ▾ → Versões anteriores…** acima do editor, escolha um horário e clique em **Carregar**. Isso só coloca o texto antigo no editor; nada muda até você clicar em **Salvar**, então você pode olhar antes. **Comparar** mostra, linha a linha, o que mudaria ao carregar uma versão. Uma versão a que você dá um nome (na caixa ao lado, ou com **Guardar** para dar nome ao que está salvo agora) nunca é esquecida, por mais salvamentos que se sigam. A exportação não inclui as versões anteriores.
 
 ## Configurações do espetáculo: o título e a aparência
 

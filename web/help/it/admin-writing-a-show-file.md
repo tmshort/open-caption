@@ -29,11 +29,11 @@ OPHELIA: My *lord*?
 
 ## Controllare i nomi dei personaggi
 
-Fai clic su **Personaggi…** sopra l'editor per vedere tutti i nomi usati come personaggio, i più usati per primi, con il numero di righe di ciascuno. È il modo rapido per trovare un nome scritto male: **ALCE** con una riga accanto a **ALICE** con quaranta è segnalato con *Intendevi ALICE?*. Fai clic su un nome per andare alla sua prima riga. Un gruppo come `ALICE & BOB:` conta per ciascuno dei suoi nomi.
+Fai clic su **File ▾ → Personaggi…** sopra l'editor per vedere tutti i nomi usati come personaggio, i più usati per primi, con il numero di righe di ciascuno. È il modo rapido per trovare un nome scritto male: **ALCE** con una riga accanto a **ALICE** con quaranta è segnalato con *Intendevi ALICE?*. Fai clic su un nome per andare alla sua prima riga. Un gruppo come `ALICE & BOB:` conta per ciascuno dei suoi nomi.
 
 ## Tornare a una versione precedente
 
-A ogni salvataggio viene conservata la versione sostituita (le ultime 50 per ogni lingua). Fai clic su **Versioni precedenti…** sopra l'editor, scegli un'ora e premi **Carica**. Questo mette solo il vecchio testo nell'editor; nulla cambia finché non premi **Salva**, quindi puoi prima guardare. **Confronta** mostra, riga per riga, cosa cambierebbe caricando una versione. Una versione a cui dai un nome (nella casella accanto, oppure con **Conserva** per dare un nome a ciò che è salvato adesso) non viene mai dimenticata, per quanti salvataggi seguano. L'esportazione non include le versioni precedenti.
+A ogni salvataggio viene conservata la versione sostituita (le ultime 50 per ogni lingua). Fai clic su **File ▾ → Versioni precedenti…** sopra l'editor, scegli un'ora e premi **Carica**. Questo mette solo il vecchio testo nell'editor; nulla cambia finché non premi **Salva**, quindi puoi prima guardare. **Confronta** mostra, riga per riga, cosa cambierebbe caricando una versione. Una versione a cui dai un nome (nella casella accanto, oppure con **Conserva** per dare un nome a ciò che è salvato adesso) non viene mai dimenticata, per quanti salvataggi seguano. L'esportazione non include le versioni precedenti.
 
 ## Impostazioni dello spettacolo: il titolo e l'aspetto
 

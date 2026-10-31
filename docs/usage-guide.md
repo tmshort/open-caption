@@ -209,11 +209,11 @@ The **Look** step in Setup writes this block for you, and you can edit it by han
 
 ### Checking the character names
 
-Click **Characters…** above the editor to see every name used as a speaker, the most used first, with how many lines each speaks on. It is the quick way to find a misspelled name: **ALCE** with one line beside **ALICE** with forty is marked *Did you mean ALICE?*. Click a name to go to its first line. A group such as `ALICE & BOB:` counts for each of its names.
+Click **File ▾ → Characters…** above the editor to see every name used as a speaker, the most used first, with how many lines each speaks on. It is the quick way to find a misspelled name: **ALCE** with one line beside **ALICE** with forty is marked *Did you mean ALICE?*. Click a name to go to its first line. A group such as `ALICE & BOB:` counts for each of its names.
 
 ### Going back
 
-Each save keeps the version it replaced (the last 50). **Earlier versions…** above the editor lists them; **Load** puts one in the editor, and **Save** makes it current. **Compare** shows line by line what loading one would change, and a version you give a name to (or **Keep** for what is saved now) is never forgotten. Export before the show anyway: the earlier versions live in the data folder, not in the export.
+Each save keeps the version it replaced (the last 50). **File ▾ → Earlier versions…** above the editor lists them; **Load** puts one in the editor, and **Save** makes it current. **Compare** shows line by line what loading one would change, and a version you give a name to (or **Keep** for what is saved now) is never forgotten. Export before the show anyway: the earlier versions live in the data folder, not in the export.
 
 ### Two people editing
 

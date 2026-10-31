@@ -838,9 +838,9 @@
   let openMenu = null;
   function closeMenu() { if (openMenu) { openMenu.menu.hidden = true; openMenu.btn.setAttribute('aria-expanded', 'false'); openMenu = null; } }
   document.addEventListener('click', (e) => { if (openMenu && !openMenu.box.contains(e.target)) closeMenu(); });
-  function moreMenu(forName, items) {
+  function moreMenu(forName, items, opts) {
     const box = h('div', { class: 'moremenu' });
-    const btn = h('button', { type: 'button', class: 'more', 'aria-haspopup': 'menu', 'aria-expanded': 'false', 'aria-label': __('More actions for {name}', { name: forName }) }, __('More'), ' ▾');
+    const btn = h('button', { type: 'button', class: 'more', 'aria-haspopup': 'menu', 'aria-expanded': 'false', 'aria-label': opts && opts.ariaLabel ? opts.ariaLabel : __('More actions for {name}', { name: forName }) }, opts && opts.label ? opts.label : __('More'), ' ▾');
     const menu = h('div', { class: 'menu', role: 'menu', hidden: '' });
     const live = [];
     items.forEach((it) => {
@@ -870,6 +870,7 @@
       else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); closeMenu(); btn.focus(); }
       else if (e.key === 'Tab') closeMenu();
     });
+    if (opts && opts.left) box.classList.add('left'); // the menu opens under its button's left edge instead of its right
     box.append(btn, menu);
     return box;
   }
@@ -1160,7 +1161,13 @@
     editor.addEventListener('dragleave', () => editor.classList.remove('drop'));
     editor.addEventListener('drop', (e) => { e.preventDefault(); editor.classList.remove('drop'); readFile(e.dataTransfer.files[0]); });
 
-    const tools = h('div', { class: 'tools' },
+    const [uploadBtn, fileInput] = fileButton(__('Upload a show file…'), { accept: '.txt,.md,text/plain,text/markdown', title: __('Choose a .txt or .md file from this computer to put in the editor (nothing is saved until you press Save)') }, (files) => readFile(files[0]));
+    const fileMenu = moreMenu('', [
+      { label: __('Upload a show file…'), hint: __('Choose a .txt or .md file from this computer to put in the editor (nothing is saved until you press Save)'), run: () => uploadBtn.click() },
+      { label: __('Download the show file'), hint: __('Edit it in any text editor, then bring it back with Upload a show file'), href: '/api/admin/shows/' + show.id + '/showfile/download' + q, download: show.id + (A.lang ? '.' + A.lang : '') + '.md' },
+      { label: __('Earlier versions…'), hint: __('Each save keeps the version it replaced'), run: showHistory },
+      { label: __('Characters…'), hint: __('Every speaker name used, to check for misspellings'), run: showCharacters }], { label: __('File'), ariaLabel: __('File actions'), left: true });
+    const tools = h('div', { class: 'tools' }, fileMenu, fileInput, h('span', { class: 'tools-sep', 'aria-hidden': 'true' }, '|'),
       ...[['Clear', 'clear'], ['Blank', 'blank'], ['Fullscreen text', 'fullscreen'], ['Section', 'section'], ['Operator note', 'note'], ['Pace', 'pace', 'How long the next line usually stays up: a reminder for the operator'], ['Comment', 'comment'], ['Loop', 'loop']].map(([l, k, t]) => h('button', { onclick: () => insert(SNIPPETS[k]), title: t ? __(t) : false }, __(l))),
       h('button', { onclick: pickImage }, __('Image…')),
       h('button', { onclick: insertSettings, title: __('Title, colors, font, size and other options for the whole show') }, __('Settings')),
@@ -1168,7 +1175,8 @@
       h('button', { onclick: () => insert(SNIPPETS.song), title: __('A song: every line becomes a sung lyric') }, __('🎵 Song')),
       h('button', { onclick: () => insert(SNIPPETS.together), title: __('Two or more singers at the same time') }, __('Together')),
       h('button', { onclick: () => insertInline('♪ '), title: __('Insert a music note'), 'aria-label': __('Insert a music note') }, '♪'),
-      h('button', { onclick: () => insertInline('♫ '), title: __('Insert beamed music notes'), 'aria-label': __('Insert beamed music notes') }, '♫'));
+      h('button', { onclick: () => insertInline('♫ '), title: __('Insert beamed music notes'), 'aria-label': __('Insert beamed music notes') }, '♫'),
+      h('span', { class: 'savebar' }, status, saveBtn));
     // The [settings] block goes at the top (after a [language: …] line), and only once.
     function insertSettings() {
       const at = ta.value.search(/^\s*\[settings\]/im);
@@ -1184,7 +1192,6 @@
       const sel = h('select', {}, ...names.map((n) => h('option', { value: n }, n)));
       if (await ask(__('Insert an image'), h('label', { class: 'field' }, h('span', {}, __('Which image?')), sel), __('Insert'))) insert('[image: ' + sel.value + ']\n');
     }
-    const [uploadBtn, fileInput] = fileButton(__('Upload a show file…'), { accept: '.txt,.md,text/plain,text/markdown', title: __('Choose a .txt or .md file from this computer to put in the editor (nothing is saved until you press Save)') }, (files) => readFile(files[0]));
 
     // --- language tabs and translation helpers ---
     const tabList = h('div', { class: 'tablist', role: 'tablist', 'aria-label': __('Languages') });
@@ -1234,7 +1241,6 @@
     p.append(
       h('h2', {}, A.lang ? __('Show file — {name}', { name: cur.name }) : __('Show file')),
       tabs, ...(translating ? [translating] : []), // (append() would print a null as the word "null")
-      h('div', { class: 'row filebar' }, uploadBtn, fileInput, h('a', { class: 'btn', href: '/api/admin/shows/' + show.id + '/showfile/download' + q, download: show.id + (A.lang ? '.' + A.lang : '') + '.md', title: __('Edit it in any text editor, then bring it back with Upload a show file') }, __('Download the show file')), h('button', { onclick: showHistory, title: __('Each save keeps the version it replaced') }, __('Earlier versions…')), h('button', { onclick: showCharacters, title: __('Every speaker name used, to check for misspellings') }, __('Characters…')), h('span', { class: 'grow' }), h('span', { class: 'savebar' }, status, saveBtn)),
       tools,
       h('div', { class: 'editor-grid' }, editor, h('div', {}, h('div', { class: 'card' }, diagTitle, diagList), h('div', { class: 'card' }, h('h3', {}, __('What the operator will step through')), cueList))),
       cheatSheet());

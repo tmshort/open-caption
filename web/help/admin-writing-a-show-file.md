@@ -29,11 +29,11 @@ OPHELIA: My *lord*?
 
 ## Checking the character names
 
-Click **Characters…** above the editor to see every name used as a speaker, the most used first, with how many lines each speaks on. It is the quick way to find a misspelled name: **ALCE** with one line beside **ALICE** with forty is marked *Did you mean ALICE?*. Click a name to go to its first line. A group such as `ALICE & BOB:` counts for each of its names.
+Click **File ▾ → Characters…** above the editor to see every name used as a speaker, the most used first, with how many lines each speaks on. It is the quick way to find a misspelled name: **ALCE** with one line beside **ALICE** with forty is marked *Did you mean ALICE?*. Click a name to go to its first line. A group such as `ALICE & BOB:` counts for each of its names.
 
 ## Going back to an earlier version
 
-Every time you save, the version it replaced is kept (the last 50 for each language). Click **Earlier versions…** above the editor, choose a time and press **Load**. That only puts the old text in the editor; nothing changes until you press **Save**, so you can look first. **Compare** shows, line by line, what loading a version would change. A version you give a name to (in the box beside it, or with **Keep** to name what is saved now) is never forgotten, however many saves follow. Export does not include the earlier versions.
+Every time you save, the version it replaced is kept (the last 50 for each language). Click **File ▾ → Earlier versions…** above the editor, choose a time and press **Load**. That only puts the old text in the editor; nothing changes until you press **Save**, so you can look first. **Compare** shows, line by line, what loading a version would change. A version you give a name to (in the box beside it, or with **Keep** to name what is saved now) is never forgotten, however many saves follow. Export does not include the earlier versions.
 
 ## Show settings: the title and the look
 

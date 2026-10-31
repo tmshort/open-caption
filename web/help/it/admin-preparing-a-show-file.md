@@ -43,9 +43,9 @@ Segna il tuo punto e lascia promemoria senza disturbare il pubblico: `[section: 
 
 Non sei mai obbligato a scrivere nell'editor del passaggio File dello spettacolo. Invece:
 
-1. Nel passaggio **File dello spettacolo**, premi **Scarica il file dello spettacolo**. Ottieni un file `.md` di testo semplice.
+1. Nel passaggio **File dello spettacolo**, premi **File ▾ → Scarica il file dello spettacolo**. Ottieni un file `.md` di testo semplice.
 2. Aprilo nel tuo programma, modificalo e salvalo. Tienilo come testo semplice.
-3. Tornato nel passaggio File dello spettacolo, usa **Carica un file dello spettacolo…** e scegli il tuo. Il suo testo sostituisce quello dell'editor e l'elenco dei problemi si aggiorna subito. Nulla cambia in via definitiva finché non premi **Salva**.
+3. Tornato nel passaggio File dello spettacolo, usa **File ▾ → Carica un file dello spettacolo…** e scegli il tuo. Il suo testo sostituisce quello dell'editor e l'elenco dei problemi si aggiorna subito. Nulla cambia in via definitiva finché non premi **Salva**.
 4. Premi **Salva**. La versione sostituita viene conservata in **Versioni precedenti**, dove puoi confrontarla con quella nuova, quindi un errore si può sempre annullare.
 
 Lo stesso vale per una traduzione: scegli prima la scheda della lingua, poi scarica e apri il file di quella lingua. Puoi anche trascinare un file sull'editor.

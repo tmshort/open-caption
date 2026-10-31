@@ -43,9 +43,9 @@ Merken Sie sich Ihre Stelle und hinterlassen Sie Erinnerungen, ohne das Publikum
 
 Sie müssen nie im Editor des Schritts Show-Datei tippen. Stattdessen:
 
-1. Drücken Sie im Schritt **Show-Datei** auf **Show-Datei herunterladen**. Sie erhalten eine reine `.md`-Datei.
+1. Drücken Sie im Schritt **Show-Datei** auf **Datei ▾ → Show-Datei herunterladen**. Sie erhalten eine reine `.md`-Datei.
 2. Öffnen Sie sie in Ihrem eigenen Programm, bearbeiten und speichern Sie sie. Behalten Sie sie als reinen Text.
-3. Verwenden Sie zurück im Schritt Show-Datei **Show-Datei hochladen …** und wählen Sie Ihre Datei. Ihr Text ersetzt den im Editor, und die Problemliste wird sofort aktualisiert. Erst mit **Speichern** wird etwas endgültig geändert.
+3. Verwenden Sie zurück im Schritt Show-Datei **Datei ▾ → Show-Datei hochladen …** und wählen Sie Ihre Datei. Ihr Text ersetzt den im Editor, und die Problemliste wird sofort aktualisiert. Erst mit **Speichern** wird etwas endgültig geändert.
 4. Drücken Sie **Speichern**. Die ersetzte Version bleibt unter **Frühere Versionen** erhalten, wo Sie sie mit der neuen vergleichen können, ein Fehler lässt sich also immer rückgängig machen.
 
 Dasselbe gilt für eine Übersetzung: Wählen Sie zuerst den Sprachreiter, laden Sie dann die Datei dieser Sprache herunter und öffnen Sie sie. Sie können eine Datei auch auf den Editor ziehen.

@@ -949,4 +949,7 @@ OCI18n.add("de", {
  "Troubleshoot sections": "Abschnitte der Fehlersuche",
  "Passwords are never written to the log. The support bundle below has this log and more, for sending to someone who is helping.": "Passwörter werden nie ins Protokoll geschrieben. Das Supportpaket unten enthält dieses Protokoll und mehr, zum Senden an jemanden, der hilft.",
  "Paste your show file here, or drop a .txt / .md file onto this box.\n\nThis file holds everything about the show except its images: its title and look in a [settings] block, and the lines themselves. Each line is one caption; one press of the spacebar sends one line. Click a problem in the list to jump to its line.": "Fügen Sie hier Ihre Show-Datei ein oder ziehen Sie eine .txt- / .md-Datei auf dieses Feld.\n\nDiese Datei enthält alles zur Show außer den Bildern: Titel und Erscheinungsbild in einem [settings]-Block und die Zeilen selbst. Jede Zeile ist ein Untertitel; ein Druck auf die Leertaste sendet eine Zeile. Klicken Sie in der Liste auf ein Problem, um zu seiner Zeile zu springen.",
+ "File": "Datei",
+ "File actions": "Dateiaktionen",
+ "How to write a show file": "So schreibt man eine Show-Datei",
 });

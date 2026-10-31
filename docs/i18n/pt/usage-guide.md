@@ -209,11 +209,11 @@ A etapa **Aparência** da Configuração escreve esse bloco para você, e você 
 
 ### Conferir os nomes dos personagens
 
-Clique em **Personagens…** acima do editor para ver todos os nomes usados como personagem, os mais usados primeiro, com o número de linhas de cada um. É a forma rápida de achar um nome escrito errado: **ALCE** com uma linha ao lado de **ALICE** com quarenta é marcado com *Você quis dizer ALICE?*. Clique em um nome para ir à primeira linha dele. Um grupo como `ALICE & BOB:` conta para cada um de seus nomes.
+Clique em **Arquivo ▾ → Personagens…** acima do editor para ver todos os nomes usados como personagem, os mais usados primeiro, com o número de linhas de cada um. É a forma rápida de achar um nome escrito errado: **ALCE** com uma linha ao lado de **ALICE** com quarenta é marcado com *Você quis dizer ALICE?*. Clique em um nome para ir à primeira linha dele. Um grupo como `ALICE & BOB:` conta para cada um de seus nomes.
 
 ### Voltar atrás
 
-Cada salvamento guarda a versão que substituiu (as últimas 50). **Versões anteriores…** acima do editor as lista; **Carregar** coloca uma no editor, e **Salvar** a torna atual. **Comparar** mostra linha a linha o que mudaria ao carregar uma, e uma versão a que você dá um nome (ou **Guardar** para o que está salvo agora) nunca é esquecida. Exporte antes do espetáculo de qualquer jeito: as versões anteriores ficam na pasta de dados, não na exportação.
+Cada salvamento guarda a versão que substituiu (as últimas 50). **Arquivo ▾ → Versões anteriores…** acima do editor as lista; **Carregar** coloca uma no editor, e **Salvar** a torna atual. **Comparar** mostra linha a linha o que mudaria ao carregar uma, e uma versão a que você dá um nome (ou **Guardar** para o que está salvo agora) nunca é esquecida. Exporte antes do espetáculo de qualquer jeito: as versões anteriores ficam na pasta de dados, não na exportação.
 
 ### Duas pessoas editando
 

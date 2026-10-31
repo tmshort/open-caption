@@ -43,9 +43,9 @@ Mark your place and leave reminders without disturbing the audience: `[section: 
 
 You never have to type in the editor on the Show file step. Instead:
 
-1. On the **Show file** step, press **Download the show file**. You get a plain `.md` file.
+1. On the **Show file** step, press **File ▾ → Download the show file**. You get a plain `.md` file.
 2. Open it in your own program, edit it and save it. Keep the file as plain text.
-3. Back on the Show file step, use **Upload a show file…** and choose your file. Its text replaces what is in the editor, and the list of problems is updated at once. Nothing is changed for good until you press **Save**.
+3. Back on the Show file step, use **File ▾ → Upload a show file…** and choose your file. Its text replaces what is in the editor, and the list of problems is updated at once. Nothing is changed for good until you press **Save**.
 4. Press **Save**. The version it replaces is kept under **Earlier versions**, where you can compare it with the new one, so a mistake can always be undone.
 
 The same works for a translation: choose the language tab first, then download and open the file for that language. You can also drop a file onto the editor.
