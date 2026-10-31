@@ -48,7 +48,7 @@ Vous n'êtes jamais obligé de taper dans l'éditeur de l'étape Fichier du spec
 3. De retour à l'étape Fichier du spectacle, utilisez **Fichier ▾ → Téléverser un fichier de spectacle…** et choisissez le vôtre. Son texte remplace celui de l'éditeur et la liste des problèmes est mise à jour aussitôt. Rien n'est changé pour de bon avant que vous appuyiez sur **Enregistrer**.
 4. Appuyez sur **Enregistrer**. La version remplacée est conservée sous **Versions antérieures**, où vous pouvez la comparer à la nouvelle : une erreur peut donc toujours être annulée.
 
-Il en va de même pour une traduction : choisissez d'abord l'onglet de la langue, puis téléchargez et ouvrez le fichier de cette langue. Vous pouvez aussi déposer un fichier sur l'éditeur.
+Il en va de même pour une traduction : choisissez d'abord la langue (dans le menu de langue, à gauche de la barre d'outils), puis téléchargez et ouvrez le fichier de cette langue. Vous pouvez aussi déposer un fichier sur l'éditeur.
 
 Pour créer un **nouveau spectacle** à partir d'un fichier, utilisez **Importer un spectacle** à l'étape Spectacle et choisissez le fichier. Il devient un nouveau spectacle, nommé d'après la ligne `title:` de son bloc `[settings]`, ou d'après le nom du fichier s'il n'y en a pas. Les images ne font pas partie d'un fichier texte : envoyez-les à l'étape Images, avec les mêmes noms que dans vos lignes `[image: ...]`.
 

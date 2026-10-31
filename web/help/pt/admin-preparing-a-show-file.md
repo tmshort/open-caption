@@ -48,7 +48,7 @@ Você nunca é obrigado a digitar no editor da etapa Arquivo do espetáculo. Em 
 3. De volta à etapa Arquivo do espetáculo, use **Arquivo ▾ → Enviar um arquivo do espetáculo…** e escolha o seu. O texto dele substitui o do editor e a lista de problemas é atualizada na hora. Nada muda em definitivo até você pressionar **Salvar**.
 4. Pressione **Salvar**. A versão substituída fica guardada em **Versões anteriores**, onde você pode compará-la com a nova, então um erro sempre pode ser desfeito.
 
-O mesmo vale para uma tradução: escolha primeiro a aba do idioma, depois baixe e abra o arquivo desse idioma. Você também pode soltar um arquivo sobre o editor.
+O mesmo vale para uma tradução: escolha primeiro o idioma (no menu de idioma, à esquerda da barra de ferramentas), depois baixe e abra o arquivo desse idioma. Você também pode soltar um arquivo sobre o editor.
 
 Para começar um **espetáculo novo** a partir de um arquivo, use **Importar um espetáculo** na etapa Espetáculo e escolha o arquivo. Ele vira um espetáculo novo, com o nome da linha `title:` do seu bloco `[settings]`, ou o nome do arquivo se não houver. As imagens não fazem parte de um arquivo de texto: envie-as na etapa Imagens, com os mesmos nomes das suas linhas `[image: ...]`.
 

@@ -4,7 +4,7 @@ Un spectacle peut proposer ses sous-titres dans plusieurs langues. Chaque langue
 
 ## Ajouter une langue
 
-1. À l'étape **Fichier du spectacle**, cliquez sur **＋ Ajouter une langue** à côté des onglets de langue.
+1. À l'étape **Fichier du spectacle**, ouvrez le menu de langue à gauche de la barre d'outils au-dessus de l'éditeur et choisissez **＋ Ajouter une langue**.
 2. Choisissez la langue (ou « Autre langue… » et saisissez un code court comme `cy`).
 3. Laissez cochée la case **Partir d'une copie du fichier principal du spectacle**. Vous obtenez une copie de la bonne forme, il ne reste qu'à remplacer les mots.
 4. Traduisez, puis **Enregistrez**.

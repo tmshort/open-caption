@@ -48,7 +48,7 @@ You never have to type in the editor on the Show file step. Instead:
 3. Back on the Show file step, use **File ▾ → Upload a show file…** and choose your file. Its text replaces what is in the editor, and the list of problems is updated at once. Nothing is changed for good until you press **Save**.
 4. Press **Save**. The version it replaces is kept under **Earlier versions**, where you can compare it with the new one, so a mistake can always be undone.
 
-The same works for a translation: choose the language tab first, then download and open the file for that language. You can also drop a file onto the editor.
+The same works for a translation: choose the language first (in the language menu at the left of the toolbar), then download and open the file for that language. You can also drop a file onto the editor.
 
 To start a **new show** from a file, use **Import a show** on the Shows step and choose the file. It becomes a new show, named by the `title:` line in its `[settings]` block, or by the file's name if there is none. Pictures are not part of a plain text file; upload them on the Images step, using the same names as in your `[image: ...]` lines.
 

@@ -4,7 +4,7 @@ Um espetáculo pode oferecer suas legendas em mais de um idioma. Cada idioma é 
 
 ## Adicionar um idioma
 
-1. Na etapa **Arquivo do espetáculo**, clique em **＋ Adicionar um idioma** ao lado das abas de idioma.
+1. Na etapa **Arquivo do espetáculo**, abra o menu de idioma à esquerda da barra de ferramentas acima do editor e escolha **＋ Adicionar um idioma**.
 2. Escolha o idioma (ou «Outro idioma…» e digite um código curto como `cy`).
 3. Deixe marcada a caixa **Começar com uma cópia do arquivo principal do espetáculo**. Você recebe uma cópia na forma certa, então só precisa trocar as palavras.
 4. Traduza e depois **Salve**.

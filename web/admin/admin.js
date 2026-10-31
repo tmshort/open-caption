@@ -1128,7 +1128,7 @@
     }
     async function refreshLangs() {
       const x = await api('GET', '/api/admin/shows/' + show.id + '/languages');
-      if (x.ok) { A.langs = x.data.languages; renderTabs(); }
+      if (x.ok) { A.langs = x.data.languages; const nb = makeLangMenu(); langBox.replaceWith(nb); langBox = nb; }
     }
     // Put text in place of s..e the way typing would, so the browser's own Undo (Cmd/Ctrl+Z) and Redo take it back: setting the value
     // or using setRangeText leaves the undo history out. execCommand is deprecated but is still the only way to do this in a
@@ -1163,12 +1163,21 @@
     editor.addEventListener('drop', (e) => { e.preventDefault(); editor.classList.remove('drop'); readFile(e.dataTransfer.files[0]); });
 
     const [uploadBtn, fileInput] = fileButton(__('Upload a show file…'), { accept: '.txt,.md,text/plain,text/markdown', title: __('Choose a .txt or .md file from this computer to put in the editor (nothing is saved until you press Save)') }, (files) => readFile(files[0]));
+    // The language being edited is a menu at the left of the toolbar: every language (a warning mark on one held back for not matching the
+    // main show file), and adding another. It replaces a row of tabs above the editor.
+    function makeLangMenu() {
+      const items = A.langs.map((l) => ({ label: (l.code === cur.code ? '✓ ' : '') + l.name + (l.primary ? __(' main') : '') + (l.available ? '' : ' ⚠'), run: () => (l.code === cur.code ? null : switchTo(l.code)),
+        hint: l.available ? '' : __('Not shown to the audience until its structure matches the main show file') }));
+      items.push({ sep: true }, { label: __('＋ Add a language'), run: addLanguage });
+      return moreMenu('', items, { label: cur.name + (cur.available === false ? ' ⚠' : ''), ariaLabel: __('Language being edited: {name}', { name: cur.name }), left: true });
+    }
+    let langBox = makeLangMenu();
     const fileMenu = moreMenu('', [
       { label: __('Upload a show file…'), hint: __('Choose a .txt or .md file from this computer to put in the editor (nothing is saved until you press Save)'), run: () => uploadBtn.click() },
       { label: __('Download the show file'), hint: __('Edit it in any text editor, then bring it back with Upload a show file'), href: '/api/admin/shows/' + show.id + '/showfile/download' + q, download: show.id + (A.lang ? '.' + A.lang : '') + '.md' },
       { label: __('Earlier versions…'), hint: __('Each save keeps the version it replaced'), run: showHistory },
       { label: __('Characters…'), hint: __('Every speaker name used, to check for misspellings'), run: showCharacters }], { label: __('File'), ariaLabel: __('File actions'), left: true });
-    const tools = h('div', { class: 'tools' }, fileMenu, fileInput, h('span', { class: 'tools-sep', 'aria-hidden': 'true' }, '|'),
+    const tools = h('div', { class: 'tools' }, langBox, fileMenu, fileInput, h('span', { class: 'tools-sep', 'aria-hidden': 'true' }, '|'),
       ...[[__('Clear'), 'clear', __('Clear the captions from the audience screens: [clear]')], [__('Blank'), 'blank', __('Blank the audience screen until the next line: [blank]')],
         [__('Fullscreen'), 'fullscreen', __('Show a message on the whole screen, such as INTERMISSION: [fullscreen: text]')], [__('Section'), 'section', __('A bookmark for the operator, such as Act 2: [section: name]')],
         [__('Note'), 'note', __('A reminder shown to the operator only: [note: text]')], [__('Pace'), 'pace', __('How long the next line usually stays up: a reminder for the operator')],
@@ -1198,17 +1207,9 @@
     }
 
     // --- language tabs and translation helpers ---
-    const tabList = h('div', { class: 'tablist', role: 'tablist', 'aria-label': __('Languages') });
-    const tabs = h('div', { class: 'langtabs' }, tabList);
     async function switchTo(code) {
       if (ta.value !== A.saved && !await confirmBox(__('Discard your unsaved changes?'), __('The show file in the editor has changes that are not saved.'), __('Discard changes'), true)) return;
       A.lang = code === main.code ? '' : code; A.analysis = null; A.text = A.saved = ''; render();
-    }
-    function renderTabs() {
-      tabList.replaceChildren(...A.langs.map((l) => h('button', { role: 'tab', class: (l.code === cur.code ? 'on ' : '') + (l.available ? '' : 'bad'), 'aria-selected': String(l.code === cur.code), onclick: () => switchTo(l.code),
-        title: l.available ? '' : __('Not shown to the audience until its structure matches the main show file') },
-        l.name, l.primary ? h('small', {}, __(' main')) : null, l.available ? null : ' ⚠')));
-      if (!tabs.querySelector('.addlang')) tabs.append(h('button', { class: 'quiet addlang', onclick: addLanguage }, __('＋ Add a language')));
     }
     async function addLanguage() {
       const have = new Set(A.langs.map((l) => l.code));
@@ -1233,7 +1234,6 @@
       if (!r.ok) return fail(r);
       A.lang = ''; A.analysis = null; A.text = A.saved = ''; toast(__('{name} removed', { name: cur.name })); render();
     }
-    renderTabs();
     let translating = null;
     if (A.lang) {
       const mainText = h('pre', { class: 'maintext' }, __('Loading…'));
@@ -1252,7 +1252,7 @@
     side.pick(sideFirst, false);
     p.append(
       h('h2', { class: 'sronly' }, A.lang ? __('Show file — {name}', { name: cur.name }) : __('Show file')),
-      tabs, ...(translating ? [translating] : []), // (append() would print a null as the word "null")
+      ...(translating ? [translating] : []), // (append() would print a null as the word "null")
       tools,
       h('div', { class: 'editor-grid' }, editor, h('div', { class: 'side' }, h('div', { class: 'side-inner' }, side.tabs, side.panels))));
     lines(); setStatus(); showAnalysis();

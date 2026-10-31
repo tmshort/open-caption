@@ -158,9 +158,9 @@ async function main() {
       check('the whole editor is in view above the bottom bar with no page scrolling, at a tall and a short window (taller when the window is)', f950.fits && f760.fits && f950.h > f760.h, [f950, f760]);
     }
     check('every insert button has a hint (tooltip) and the buttons are called Fullscreen and Note, not Fullscreen text and Operator note', await admin.evaluate(() => { const b = [...document.querySelectorAll('.tools > button')], names = b.map((x) => x.textContent); return b.every((x) => x.title || x.getAttribute('aria-label')) && names.includes('Fullscreen') && names.includes('Note') && !names.includes('Fullscreen text') && !names.includes('Operator note'); }));
-    check('the Show file step has no visible title (a screen reader still gets the heading), so the language tabs start right under the steps', await admin.evaluate(() => { const h = document.querySelector('#panel h2'), t = document.querySelector('.langtabs').getBoundingClientRect(), s = document.getElementById('steps').getBoundingClientRect(); return !!h && h.getBoundingClientRect().width <= 2 && h.textContent === 'Show file' && t.top - s.bottom < 40; }));
-    const tabs = await admin.evaluate(() => [...document.querySelectorAll('.langtabs button')].map((x) => x.textContent.trim()));
-    check('English (main) and Español tabs are offered', tabs.some((t) => t.startsWith('English')) && tabs.some((t) => t.startsWith('Español')), tabs);
+    check('the Show file step has no visible title (a screen reader still gets the heading), and no row of language tabs: the toolbar starts right under the steps', await admin.evaluate(() => { const h = document.querySelector('#panel h2'), t = document.querySelector('.tools').getBoundingClientRect(), s = document.getElementById('steps').getBoundingClientRect(); return !!h && h.getBoundingClientRect().width <= 2 && h.textContent === 'Show file' && !document.querySelector('.langtabs') && t.top - s.bottom < 40; }));
+    const langs = await admin.evaluate(() => { const m = document.querySelector('.tools .moremenu'); return { button: m.querySelector('button.more').textContent, items: [...m.querySelectorAll('[role=menuitem]')].map((x) => x.textContent.trim()) }; });
+    check('the language being edited is a menu at the left of the toolbar, listing English (main) and Español and adding another', /^English/.test(langs.button) && langs.items.some((t) => t.startsWith('✓ English')) && langs.items.some((t) => t.startsWith('Español')) && langs.items.some((t) => /Add a language/.test(t)), langs);
     {
       const before = await admin.evaluate(() => document.querySelector('.editor textarea').value);
       await admin.evaluate(() => { const ta = document.querySelector('.editor textarea'); ta.focus(); ta.setSelectionRange(0, 0); [...document.querySelectorAll('.tools button')].find((x) => x.textContent === 'Pace').click(); });
@@ -904,7 +904,7 @@ async function main() {
     check('the file chooser is behind an Upload item in the File menu, with the save state and Save together in the same toolbar as the insert buttons', await arch.evaluate(() => {
       const b = [...document.querySelectorAll('#panel button')].find((x) => x.textContent === 'Upload a show file…'), f = document.querySelector('#panel input[type=file]');
       const st = [...document.querySelectorAll('#panel .savebar span')][0], sv = [...document.querySelectorAll('#panel .savebar button')][0];
-      const fb = document.querySelector('#panel .tools .moremenu > button'), blank = [...document.querySelectorAll('#panel .tools button')].find((x) => x.textContent === 'Blank');
+      const fb = [...document.querySelectorAll('#panel .tools .moremenu > button')].find((x) => x.textContent.startsWith('File')), blank = [...document.querySelectorAll('#panel .tools button')].find((x) => x.textContent === 'Blank');
       return !!b && !!fb && fb.textContent.startsWith('File') && !!b.closest('.moremenu') && f.hidden && !!st && !!sv && Math.abs(st.getBoundingClientRect().top - sv.getBoundingClientRect().top) < 30 && !!sv.closest('.tools') && !!blank;
     }));
     await (await arch.$('input[type=file]')).uploadFile(offline);

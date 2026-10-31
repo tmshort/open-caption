@@ -48,7 +48,7 @@ Sie müssen nie im Editor des Schritts Show-Datei tippen. Stattdessen:
 3. Verwenden Sie zurück im Schritt Show-Datei **Datei ▾ → Show-Datei hochladen …** und wählen Sie Ihre Datei. Ihr Text ersetzt den im Editor, und die Problemliste wird sofort aktualisiert. Erst mit **Speichern** wird etwas endgültig geändert.
 4. Drücken Sie **Speichern**. Die ersetzte Version bleibt unter **Frühere Versionen** erhalten, wo Sie sie mit der neuen vergleichen können, ein Fehler lässt sich also immer rückgängig machen.
 
-Dasselbe gilt für eine Übersetzung: Wählen Sie zuerst den Sprachreiter, laden Sie dann die Datei dieser Sprache herunter und öffnen Sie sie. Sie können eine Datei auch auf den Editor ziehen.
+Dasselbe gilt für eine Übersetzung: Wählen Sie zuerst die Sprache (im Sprachmenü links in der Werkzeugleiste), laden Sie dann die Datei dieser Sprache herunter und öffnen Sie sie. Sie können eine Datei auch auf den Editor ziehen.
 
 Um aus einer Datei eine **neue Show** zu beginnen, verwenden Sie im Schritt Show **Show importieren** und wählen die Datei. Sie wird zu einer neuen Show, benannt nach der Zeile `title:` in ihrem Block `[settings]`, oder nach dem Dateinamen, falls es keine gibt. Bilder sind nicht Teil einer reinen Textdatei; laden Sie sie im Schritt Bilder hoch, mit denselben Namen wie in Ihren `[image: ...]`-Zeilen.
 

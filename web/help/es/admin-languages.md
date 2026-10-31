@@ -4,7 +4,7 @@ Un espectáculo puede ofrecer sus subtítulos en más de un idioma. Cada idioma 
 
 ## Añadir un idioma
 
-1. En el paso **Archivo del espectáculo**, pulse **＋ Añadir un idioma** junto a las pestañas de idioma.
+1. En el paso **Archivo del espectáculo**, abra el menú de idioma a la izquierda de la barra de herramientas sobre el editor y elija **＋ Añadir un idioma**.
 2. Elija el idioma (o elija «Otro idioma…» y escriba un código corto como `cy`).
 3. Deje marcada la casilla **Empezar con una copia del archivo principal del espectáculo**. Obtiene una copia con la forma correcta, así que solo tiene que reemplazar las palabras.
 4. Traduzca y luego **Guarde**.

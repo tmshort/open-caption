@@ -4,7 +4,7 @@ Eine Show kann ihre Untertitel in mehr als einer Sprache anbieten. Jede Sprache 
 
 ## Eine Sprache hinzufügen
 
-1. Klicken Sie im Schritt **Show-Datei** neben den Sprach-Tabs auf **＋ Sprache hinzufügen**.
+1. Öffnen Sie im Schritt **Show-Datei** das Sprachmenü links in der Werkzeugleiste über dem Editor und wählen Sie **＋ Sprache hinzufügen**.
 2. Wählen Sie die Sprache (oder „Andere Sprache …“ und geben Sie einen kurzen Code wie `cy` ein).
 3. Lassen Sie **Mit einer Kopie der Haupt-Show-Datei beginnen** angekreuzt. Sie erhalten eine Kopie in der richtigen Form und müssen nur die Wörter ersetzen.
 4. Übersetzen Sie und **speichern** Sie dann.

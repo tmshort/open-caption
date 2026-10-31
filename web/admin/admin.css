@@ -26,12 +26,7 @@ main.wide { max-width: none; } /* the Show file step grows with the window */
 .show .name { font-weight: 600; font-size: 1.05rem; flex: 1 1 14rem; }
 
 /* script editor */
-.langtabs { display: flex; gap: .3rem; flex-wrap: wrap; margin: 0 0 .8rem; align-items: center; }
-.langtabs button.on { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); font-weight: 600; }
-.langtabs button.bad { border-color: var(--bad); }
-.langtabs small { opacity: .9; }
 select.uilang { min-height: 28px; }
-.langtabs .tablist { display: contents; }
 .maintext { max-height: 16rem; overflow: auto; background: var(--bg); padding: .6rem; border-radius: 8px; font: .85rem/1.4 var(--mono); white-space: pre-wrap; }
 .editor-grid { display: grid; grid-template-columns: minmax(28rem, 1fr) minmax(16rem, 24rem); gap: 1rem; align-items: start; } /* the editor takes every pixel the side panel does not need */
 @media (max-width: 900px) { .editor-grid { grid-template-columns: 1fr; } }

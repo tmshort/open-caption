@@ -48,7 +48,7 @@ Nunca está obligado a escribir en el editor del paso Archivo del espectáculo. 
 3. De vuelta en el paso Archivo del espectáculo, use **Archivo ▾ → Subir un archivo del espectáculo…** y elija el suyo. Su texto reemplaza lo que hay en el editor y la lista de problemas se actualiza al instante. Nada cambia definitivamente hasta que pulse **Guardar**.
 4. Pulse **Guardar**. La versión que sustituye se conserva en **Versiones anteriores**, donde puede compararla con la nueva, así que un error siempre se puede deshacer.
 
-Lo mismo vale para una traducción: elija primero la pestaña del idioma y luego descargue y abra el archivo de ese idioma. También puede soltar un archivo sobre el editor.
+Lo mismo vale para una traducción: elija primero el idioma (en el menú de idioma, a la izquierda de la barra de herramientas) y luego descargue y abra el archivo de ese idioma. También puede soltar un archivo sobre el editor.
 
 Para empezar un **espectáculo nuevo** a partir de un archivo, use **Importar un espectáculo** en el paso Espectáculo y elija el archivo. Se convierte en un espectáculo nuevo, con el nombre de la línea `title:` de su bloque `[settings]`, o con el nombre del archivo si no la hay. Las imágenes no forman parte de un archivo de texto; súbalas en el paso Imágenes, con los mismos nombres que en sus líneas `[image: ...]`.
 

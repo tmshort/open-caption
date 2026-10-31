@@ -965,4 +965,5 @@ OCI18n.add("pt", {
  "A comment that is never shown to anyone: <!-- text -->": "Um comentário que ninguém vê: <!-- texto -->",
  "Lines that repeat on a timer, such as a welcome message: [loop] … [/loop]": "Linhas que se repetem com um temporizador, como uma mensagem de boas-vindas: [loop] … [/loop]",
  "Put one of this show’s images on the whole screen: [image: file]": "Coloca uma das imagens deste espetáculo em toda a tela: [image: arquivo]",
+ "Language being edited: {name}": "Idioma em edição: {name}",
 });

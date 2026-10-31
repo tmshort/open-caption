@@ -4,7 +4,7 @@ A show can offer its captions in more than one language. Each language is its **
 
 ## Adding a language
 
-1. In the **Show file** step, click **＋ Add a language** next to the language tabs.
+1. In the **Show file** step, open the language menu at the left of the toolbar above the editor and choose **＋ Add a language**.
 2. Choose the language (or pick "Another language…" and type a short code such as `cy`).
 3. Leave **Start from a copy of the main show file** ticked. You get a copy with the right shape, so you only have to replace the words.
 4. Translate, then **Save**.

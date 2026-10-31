@@ -221,7 +221,7 @@ If someone else saves a show file while you have it open, the program warns you 
 
 ### More than one language
 
-A show can offer captions in several languages. In Setup → Show file, click **＋ Add a language**, keep "Start from a copy of the main show file" ticked, and translate the words. Each language is its own show file with the same lines, commands and blank screens in the same order, so one press of Space shows the same moment in every language. The operator follows the main language only. Audience devices get the language their phone is set to (or the main one) and can switch from the small 🌐 menu, or be given a link ending in `?lang=es`. A translation that stops matching the main show file is reported and held back until it is fixed. The sample show includes a Spanish translation to look at. See the *Languages* help topic.
+A show can offer captions in several languages. In Setup → Show file, open the language menu at the left of the toolbar and choose **＋ Add a language**, keep "Start from a copy of the main show file" ticked, and translate the words. Each language is its own show file with the same lines, commands and blank screens in the same order, so one press of Space shows the same moment in every language. The operator follows the main language only. Audience devices get the language their phone is set to (or the main one) and can switch from the small 🌐 menu, or be given a link ending in `?lang=es`. A translation that stops matching the main show file is reported and held back until it is fixed. The sample show includes a Spanish translation to look at. See the *Languages* help topic.
 
 ### Changing things during rehearsals and shows
 

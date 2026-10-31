@@ -48,7 +48,7 @@ Non sei mai obbligato a scrivere nell'editor del passaggio File dello spettacolo
 3. Tornato nel passaggio File dello spettacolo, usa **File ▾ → Carica un file dello spettacolo…** e scegli il tuo. Il suo testo sostituisce quello dell'editor e l'elenco dei problemi si aggiorna subito. Nulla cambia in via definitiva finché non premi **Salva**.
 4. Premi **Salva**. La versione sostituita viene conservata in **Versioni precedenti**, dove puoi confrontarla con quella nuova, quindi un errore si può sempre annullare.
 
-Lo stesso vale per una traduzione: scegli prima la scheda della lingua, poi scarica e apri il file di quella lingua. Puoi anche trascinare un file sull'editor.
+Lo stesso vale per una traduzione: scegli prima la lingua (nel menu della lingua, a sinistra della barra degli strumenti), poi scarica e apri il file di quella lingua. Puoi anche trascinare un file sull'editor.
 
 Per iniziare uno **spettacolo nuovo** da un file, usa **Importa uno spettacolo** nel passaggio Spettacolo e scegli il file. Diventa uno spettacolo nuovo, con il nome della riga `title:` del suo blocco `[settings]`, oppure con il nome del file se non c'è. Le immagini non fanno parte di un file di testo: caricale nel passaggio Immagini, con gli stessi nomi delle tue righe `[image: ...]`.
 
