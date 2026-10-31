@@ -972,7 +972,7 @@
       A.text = A.saved = r.data.text; A.analysis = r.data.analysis; A.version = r.data.version; A.loadedLang = A.lang;
       if (!A.lang) A.mainAnalysis = A.analysis;
     }
-    const ta = h('textarea', { spellcheck: 'false', 'aria-label': __('Show file'), wrap: 'off', placeholder: __('Paste your show file here, or drop a .txt / .md file onto this box.\n\nEach line becomes one caption.') });
+    const ta = h('textarea', { spellcheck: 'false', 'aria-label': __('Show file'), wrap: 'off', placeholder: __('Paste your show file here, or drop a .txt / .md file onto this box.\n\nThis file holds everything about the show except its images: its title and look in a [settings] block, and the lines themselves. Each line is one caption; one press of the spacebar sends one line. Click a problem in the list to jump to its line.') });
     ta.value = A.text;
     const gutter = h('pre', { class: 'gutter', 'aria-hidden': 'true' });
     const status = h('span', { class: 'hint' });
@@ -1234,7 +1234,6 @@
     p.append(
       h('h2', {}, A.lang ? __('Show file — {name}', { name: cur.name }) : __('Show file')),
       tabs, ...(translating ? [translating] : []), // (append() would print a null as the word "null")
-      h('p', { class: 'hint' }, __('This file holds everything about the show except its images: its title and look in a [settings] block, and the lines themselves. Each line is one caption; one press of the spacebar sends one line. You can paste, type, or drop a .txt or .md file. Click a problem to jump to its line.')),
       h('div', { class: 'row filebar' }, uploadBtn, fileInput, h('a', { class: 'btn', href: '/api/admin/shows/' + show.id + '/showfile/download' + q, download: show.id + (A.lang ? '.' + A.lang : '') + '.md', title: __('Edit it in any text editor, then bring it back with Upload a show file') }, __('Download the show file')), h('button', { onclick: showHistory, title: __('Each save keeps the version it replaced') }, __('Earlier versions…')), h('button', { onclick: showCharacters, title: __('Every speaker name used, to check for misspellings') }, __('Characters…')), h('span', { class: 'grow' }), h('span', { class: 'savebar' }, status, saveBtn)),
       tools,
       h('div', { class: 'editor-grid' }, editor, h('div', {}, h('div', { class: 'card' }, diagTitle, diagList), h('div', { class: 'card' }, h('h3', {}, __('What the operator will step through')), cueList))),

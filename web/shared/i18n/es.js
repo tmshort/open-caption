@@ -948,4 +948,5 @@ OCI18n.add("es", {
  "Warnings and errors": "Avisos y errores",
  "Troubleshoot sections": "Secciones de Solucionar problemas",
  "Passwords are never written to the log. The support bundle below has this log and more, for sending to someone who is helping.": "Las contraseñas nunca se escriben en el registro. El paquete de soporte de abajo contiene este registro y más, para enviarlo a quien esté ayudando.",
+ "Paste your show file here, or drop a .txt / .md file onto this box.\n\nThis file holds everything about the show except its images: its title and look in a [settings] block, and the lines themselves. Each line is one caption; one press of the spacebar sends one line. Click a problem in the list to jump to its line.": "Pegue aquí su archivo del espectáculo, o suelte un archivo .txt / .md sobre este cuadro.\n\nEste archivo contiene todo sobre el espectáculo excepto sus imágenes: su título y aspecto en un bloque [settings], y las propias líneas. Cada línea es un subtítulo; una pulsación de la barra espaciadora envía una línea. Pulse un problema de la lista para saltar a su línea.",
 });
