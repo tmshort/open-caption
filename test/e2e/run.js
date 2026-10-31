@@ -151,6 +151,7 @@ async function main() {
       document.getElementById('edtab-cheat').click(); const cheat = getComputedStyle(document.getElementById('edpanel-cheat')).visibility === 'visible' && !!document.querySelector('#edpanel-cheat table.cheat') && !document.querySelector('#panel > details, #panel > table.cheat');
       document.getElementById('edtab-prob').click();
       return names === 'Problems|Operator steps|Cheat sheet' && first && Math.abs(side.height - ed.height) < 3 && cheat; }));
+    check('the Show file step has no visible title (a screen reader still gets the heading), so the language tabs start right under the steps', await admin.evaluate(() => { const h = document.querySelector('#panel h2'), t = document.querySelector('.langtabs').getBoundingClientRect(), s = document.getElementById('steps').getBoundingClientRect(); return !!h && h.getBoundingClientRect().width <= 2 && h.textContent === 'Show file' && t.top - s.bottom < 40; }));
     const tabs = await admin.evaluate(() => [...document.querySelectorAll('.langtabs button')].map((x) => x.textContent.trim()));
     check('English (main) and Español tabs are offered', tabs.some((t) => t.startsWith('English')) && tabs.some((t) => t.startsWith('Español')), tabs);
     {

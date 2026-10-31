@@ -1248,7 +1248,7 @@
     try { const last = localStorage.getItem('oc.editor.tab'); const k = ['prob', 'steps', 'cheat'].indexOf(last); if (k >= 0) sideFirst = k; } catch (e) { /* storage unavailable */ }
     side.pick(sideFirst, false);
     p.append(
-      h('h2', {}, A.lang ? __('Show file — {name}', { name: cur.name }) : __('Show file')),
+      h('h2', { class: 'sronly' }, A.lang ? __('Show file — {name}', { name: cur.name }) : __('Show file')),
       tabs, ...(translating ? [translating] : []), // (append() would print a null as the word "null")
       tools,
       h('div', { class: 'editor-grid' }, editor, h('div', { class: 'side' }, h('div', { class: 'side-inner' }, side.tabs, side.panels))));
