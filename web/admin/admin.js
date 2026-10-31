@@ -883,6 +883,8 @@
   let openMenu = null;
   function closeMenu() { if (openMenu) { openMenu.menu.hidden = true; openMenu.btn.setAttribute('aria-expanded', 'false'); openMenu = null; } }
   document.addEventListener('click', (e) => { if (openMenu && !openMenu.box.contains(e.target)) closeMenu(); });
+  window.addEventListener('resize', closeMenu);
+  window.addEventListener('scroll', (e) => { if (openMenu && !openMenu.menu.contains(e.target)) closeMenu(); }, true); // a menu fixed in the window would be left behind by the thing it belongs to
   function moreMenu(forName, items, opts) {
     const box = h('div', { class: 'moremenu' });
     const btn = h('button', { type: 'button', class: 'more', 'aria-haspopup': 'menu', 'aria-expanded': 'false', 'aria-label': opts && opts.ariaLabel ? opts.ariaLabel : __('More actions for {name}', { name: forName }) }, opts && opts.label ? opts.label : __('More'), ' ▾');
@@ -903,7 +905,16 @@
       });
       menu.append(el); live.push(el);
     });
-    const show = (focusIdx) => { closeMenu(); menu.hidden = false; btn.setAttribute('aria-expanded', 'true'); openMenu = { box, menu, btn }; if (live[focusIdx]) live[focusIdx].focus(); };
+    // The menu is placed in the window (position: fixed), not inside its box: a list that scrolls, like the shows, would otherwise clip it.
+    // It opens downward, or upward when there is no room below, and stays inside the window.
+    const place = () => {
+      const r = btn.getBoundingClientRect(), mh = menu.offsetHeight, mw = menu.offsetWidth, vh = window.innerHeight, vw = window.innerWidth;
+      const top = vh - r.bottom - 8 >= mh || r.top < mh + 8 ? r.bottom + 4 : r.top - mh - 4;
+      const left = opts && opts.left ? r.left : r.right - mw;
+      menu.style.position = 'fixed'; menu.style.right = 'auto';
+      menu.style.top = Math.max(8, Math.min(top, vh - mh - 8)) + 'px'; menu.style.left = Math.max(8, Math.min(left, vw - mw - 8)) + 'px';
+    };
+    const show = (focusIdx) => { closeMenu(); menu.hidden = false; place(); btn.setAttribute('aria-expanded', 'true'); openMenu = { box, menu, btn }; if (live[focusIdx]) live[focusIdx].focus({ preventScroll: true }); };
     btn.addEventListener('click', () => { if (openMenu && openMenu.menu === menu) { closeMenu(); } else show(0); });
     btn.addEventListener('keydown', (e) => { if (e.key === 'ArrowDown') { e.preventDefault(); show(0); } else if (e.key === 'ArrowUp') { e.preventDefault(); show(live.length - 1); } });
     menu.addEventListener('keydown', (e) => {

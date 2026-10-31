@@ -831,6 +831,18 @@ async function main() {
       await arch.setViewport({ width: 1300, height: 950 }); await sleep(300);
       check('on the Shows step the add bar is above the list and a long list scrolls inside, not the page', sl.barAbove && sl.scrolls && sl.inView && sl.pageFixed, sl);
     }
+    {
+      // the More menu of the last show in a short, scrolling list is not clipped by the list: it is whole, inside the window, and what is under its middle is the menu itself
+      await arch.keyboard.press('Escape'); await arch.setViewport({ width: 1300, height: 480 }); await sleep(400);
+      await arch.evaluate(() => { const l = document.querySelector('.showlist'); l.scrollTop = l.scrollHeight; }); await sleep(150);
+      await arch.evaluate(() => { [...document.querySelectorAll('.showlist > .card.show')].pop().scrollIntoView({ block: 'end' }); }); await sleep(300);
+      await arch.evaluate(() => { [...document.querySelectorAll('.showlist > .card.show')].pop().querySelector('button.more').click(); }); await sleep(200);
+      const mm = await arch.evaluate(() => { const m = [...document.querySelectorAll('.showlist .menu')].find((x) => !x.hidden); if (!m) return null; const r = m.getBoundingClientRect(), e = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+        return { inside: r.top >= 0 && r.bottom <= innerHeight && r.left >= 0 && r.right <= innerWidth, top: !!e && m.contains(e), h: Math.round(r.height) }; });
+      await arch.keyboard.press('Escape'); await arch.setViewport({ width: 1300, height: 950 }); await sleep(300);
+      check('the More menu of a show at the end of a short scrolling list opens whole and on top, not clipped by the list', !!mm && mm.inside && mm.top, mm);
+      await arch.click('.card.show button.more'); await sleep(150);
+    }
     check('a click elsewhere closes the menu', await arch.evaluate(() => document.querySelector('.card.show .menu').hidden));
     check('the menu lists Rename, Duplicate, Export, Archive and Delete, Delete last and in red', await arch.evaluate(() => { const c = document.querySelector('.card.show'), it = [...c.querySelectorAll('.menu .item')].map((e) => e.textContent.trim()), d = c.querySelector('.menu .item.danger'); return it.length === 5 && /^Rename/.test(it[0]) && /^Delete/.test(it[4]) && !!d && getComputedStyle(d).color !== getComputedStyle(document.body).color; }));
     // Export is fetched and saved by the page, so a failure can be explained (a plain link leaves the browser's own "download failed").
