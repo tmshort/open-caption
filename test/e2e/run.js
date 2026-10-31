@@ -151,6 +151,12 @@ async function main() {
       document.getElementById('edtab-cheat').click(); const cheat = getComputedStyle(document.getElementById('edpanel-cheat')).visibility === 'visible' && !!document.querySelector('#edpanel-cheat table.cheat') && !document.querySelector('#panel > details, #panel > table.cheat');
       document.getElementById('edtab-prob').click();
       return names === 'Problems|Operator steps|Cheat sheet' && first && Math.abs(side.height - ed.height) < 3 && cheat; }));
+    {
+      // the editor takes the rest of the window: all of it is in view above the bottom bar and the page does not scroll, at any window height
+      const fits = () => admin.evaluate(() => { const e = document.querySelector('.editor').getBoundingClientRect(), b = document.getElementById('stepbar').getBoundingClientRect(); return { fits: e.bottom <= b.top && document.documentElement.scrollHeight <= innerHeight + 1, h: Math.round(e.height), vh: innerHeight }; });
+      const f950 = await fits(); await admin.setViewport({ width: 1300, height: 760 }); await sleep(300); const f760 = await fits(); await admin.setViewport({ width: 1300, height: 950 }); await sleep(300);
+      check('the whole editor is in view above the bottom bar with no page scrolling, at a tall and a short window (taller when the window is)', f950.fits && f760.fits && f950.h > f760.h, [f950, f760]);
+    }
     check('the Show file step has no visible title (a screen reader still gets the heading), so the language tabs start right under the steps', await admin.evaluate(() => { const h = document.querySelector('#panel h2'), t = document.querySelector('.langtabs').getBoundingClientRect(), s = document.getElementById('steps').getBoundingClientRect(); return !!h && h.getBoundingClientRect().width <= 2 && h.textContent === 'Show file' && t.top - s.bottom < 40; }));
     const tabs = await admin.evaluate(() => [...document.querySelectorAll('.langtabs button')].map((x) => x.textContent.trim()));
     check('English (main) and Español tabs are offered', tabs.some((t) => t.startsWith('English')) && tabs.some((t) => t.startsWith('Español')), tabs);

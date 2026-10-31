@@ -1253,8 +1253,20 @@
       tools,
       h('div', { class: 'editor-grid' }, editor, h('div', { class: 'side' }, h('div', { class: 'side-inner' }, side.tabs, side.panels))));
     lines(); setStatus(); showAnalysis();
+    fitEditor(); requestAnimationFrame(fitEditor); // after the layout has settled (fonts, the bar)
     window.onbeforeunload = () => (ta.value !== A.saved ? __('You have unsaved changes.') : undefined);
   }
+
+  // The editor takes the rest of the window: from where it starts down to the room kept under the bottom bar, so the whole of it is in
+  // view and the page itself does not scroll (the tabs beside it follow its height). Never shorter than 22 rem; below that the page scrolls.
+  function fitEditor() {
+    const ed = document.querySelector('#panel .editor');
+    if (!ed) return;
+    const top = ed.getBoundingClientRect().top + window.scrollY, pad = parseFloat(getComputedStyle($('panel')).paddingBottom) || 0;
+    const min = 22 * (parseFloat(getComputedStyle(document.documentElement).fontSize) || 16);
+    ed.style.height = Math.max(min, Math.floor(window.innerHeight - top - pad)) + 'px';
+  }
+  window.addEventListener('resize', fitEditor);
 
   function cheatSheet() {
     const rows = [
