@@ -618,6 +618,14 @@ async function main() {
     check('Settings → Passwords has no button that shows a password', await guard.evaluate(() => ![...document.querySelectorAll('#dlg button')].some((x) => /Show|Hide/.test(x.textContent) && /password/i.test(x.textContent))));
     await guard.evaluate(() => document.getElementById('dlgok').click()); await sleep(300);
     await step(guard, 'Share'); await sleep(900);
+    {
+      // two columns: the address with its QR code, and beside it whether the show is ready and the way to the Run page; at 1366x768 all of it is in view
+      await guard.setViewport({ width: 1366, height: 768 }); await sleep(300);
+      const sh = await guard.evaluate(() => { const l = document.querySelector('.share-grid > .card').getBoundingClientRect(), r = document.querySelector('.share-side .card.ready').getBoundingClientRect(), b = document.getElementById('stepbar').getBoundingClientRect(), run = document.querySelector('.share-side .startbox .big').getBoundingClientRect();
+        return { cols: r.left >= l.right && Math.abs(l.top - r.top) < 30, runInView: run.bottom <= b.top, addressInView: l.bottom <= b.top }; });
+      await guard.setViewport({ width: 1300, height: 950 }); await sleep(300);
+      check('the Share step is two columns (address and QR, then readiness and the Run page), with the address, its QR code and the Run page button in view at 1366x768', sh.cols && sh.runInView && sh.addressInView, sh);
+    }
     check('the Share step lists the .local name only as a plain link row, with no on/off box or Rename button of its own', await guard.evaluate(() => !document.querySelector('.urls input[aria-label="Announce this computer by name"]') && ![...document.querySelectorAll('.urls button')].some((b) => /Rename/.test(b.textContent))));
     await guard.evaluate(() => [...document.querySelectorAll('#panel a')].find((a) => /Choose which network interfaces are used/.test(a.textContent)).click()); await guard.waitForSelector('#setpanel-net:not(.inactive)'); await sleep(200);
     check('the Network tab has the .local name: a Use a name box, the name and an Apply button', await guard.evaluate(() => { const p = document.getElementById('setpanel-net'); return /Name on the network/.test(p.innerText) && !!p.querySelector('input[aria-label="Announce this computer by name"]') && !!p.querySelector('input[aria-label="Name"]') && [...p.querySelectorAll('button')].some((b) => b.textContent === 'Apply'); }));

@@ -755,7 +755,7 @@
     refreshNav();
     warmAnalysis();
     const panel = $('panel'); panel.replaceChildren();
-    panel.classList.toggle('wide', A.step === 'showfile' || A.step === 'look'); // the editor uses the whole width of the window
+    panel.classList.toggle('wide', A.step === 'showfile' || A.step === 'look' || A.step === 'golive'); // the editor uses the whole width of the window
     document.title = __('Setup') + ' — ' + __((STEPS.find((x) => x[0] === A.step) || ['', ''])[1]);
     paintBar();
     try { await ({ show: stepShow, showfile: stepShowFile, images: stepImages, look: stepLook, test: stepTest, golive: stepGoLive, report: stepReport })[A.step](panel); } catch (e) { if (e.message !== 'login' && e.message !== 'network') console.error(e); }
@@ -1516,16 +1516,20 @@
       ...(hasHttps ? [group(__('Secure (https)'), ...certRows, ...(certRows.length ? [h('div', { class: 'hint namehint' }, __('The name in the HTTPS certificate. It works on devices that can find this computer by that name.'))] : []), ...numeric('https')),
         group(__('Plain (http)'), ...plain)] : plain),
       projRow, followRow);
-    p.append(h('h2', {}, __('Share')), checks,
-      h('div', { class: 'card' }, h('h3', {}, __('Tell the audience this address')), big,
-        h('div', { class: 'row' }, h('button', { onclick: async () => { try { await navigator.clipboard.writeText(chosen); toast(__('Copied')); } catch (e) { toast(__('Select the address and copy it')); } } }, __('Copy address')),
-          printLink),
-        h('div', { class: 'row qrrow' }, qrBox, list), hereLine,
-        ...(net.data.warnings || []).map((w) => h('div', { class: 'check warn' }, w)),
-        h('p', { class: 'hint' }, __('Audience devices must be on the same WiFi as this computer. Devices connected right now: '), h('b', { id: 'audcount' }, String(A.audience))),
-        reportLink,
-        h('p', { class: 'hint' }, __('Two networks, or the wrong address? '), h('a', { href: '#', onclick: (e) => { e.preventDefault(); openSettings('net'); } }, __('Choose which network interfaces are used')))),
-      h('p', { class: 'hint' }, __('Something not working? '), h('a', { href: '#', onclick: (e) => { e.preventDefault(); showTroubleshoot(); } }, __('Troubleshoot'))));
+    // Two columns: the address with its QR code and the other addresses on the left; whether the show is ready, the way to the Run page and the notes on
+    // the right, so the step fits one screen.
+    p.append(h('h2', {}, __('Share')),
+      h('div', { class: 'share-grid' },
+        h('div', { class: 'card' }, h('h3', {}, __('Tell the audience this address')), big,
+          h('div', { class: 'row' }, h('button', { onclick: async () => { try { await navigator.clipboard.writeText(chosen); toast(__('Copied')); } catch (e) { toast(__('Select the address and copy it')); } } }, __('Copy address')),
+            printLink),
+          h('div', { class: 'row qrrow' }, qrBox, list), hereLine),
+        h('div', { class: 'share-side' }, checks,
+          ...(net.data.warnings || []).map((w) => h('div', { class: 'check warn' }, w)),
+          h('p', { class: 'hint' }, __('Audience devices must be on the same WiFi as this computer. Devices connected right now: '), h('b', { id: 'audcount' }, String(A.audience))),
+          reportLink,
+          h('p', { class: 'hint' }, __('Two networks, or the wrong address? '), h('a', { href: '#', onclick: (e) => { e.preventDefault(); openSettings('net'); } }, __('Choose which network interfaces are used'))),
+          h('p', { class: 'hint' }, __('Something not working? '), h('a', { href: '#', onclick: (e) => { e.preventDefault(); showTroubleshoot(); } }, __('Troubleshoot'))))));
   }
   // ---- step 7: report (REQ-070) ----
   // How many devices used the audience page while the show was on the air: the same report as the stand-alone page, drawn by

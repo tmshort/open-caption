@@ -170,6 +170,12 @@ label.tick input { flex: none; margin-top: .3rem; }
 .startbox { flex: 0 1 18rem; display: flex; flex-direction: column; gap: .6rem; align-items: stretch; margin-left: auto; text-align: center; }
 .startbox button.big { font-size: 1.25rem; padding: .8rem 1.2rem; white-space: normal; }
 .startbox .hint { margin: 0; }
+.share-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(19rem, 26rem); gap: 1rem; align-items: start; }
+@media (max-width: 1000px) { .share-grid { grid-template-columns: 1fr; } }
+.share-side > .card.ready { flex-direction: column; align-items: stretch; margin-bottom: .8rem; }
+.share-side .readylist { flex: none; width: 100%; }
+.share-side .startbox { flex: none; width: 100%; margin-left: 0; }
+.share-side > .hint { margin: .4rem 0; }
 .qrrow { margin-top: 1rem; gap: 1.2rem; }
 .card .urlbig + .row { margin-top: .5rem; }
 /* the look controls: two columns, wide ones across both */
