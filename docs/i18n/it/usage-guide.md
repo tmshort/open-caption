@@ -144,7 +144,7 @@ Se `config.yaml` ha un errore (un'impostazione scritta male, un numero fuori int
 Apri la pagina di configurazione e segui i sei passi in alto (un settimo, **Rapporto**, è per dopo lo spettacolo). Il pulsante **Aiuto** spiega ciascuno.
 
 1. **Spettacoli.** Crea uno spettacolo (o lo spettacolo di esempio, per provare).
-2. **File dello spettacolo.** Incolla il file dello spettacolo o trascina un file `.txt` o `.md`. Ogni riga diventa un sottotitolo. Correggi ciò che è elencato sotto *Problemi e note*; fai clic su uno per saltare alla sua riga. Salva.
+2. **File dello spettacolo.** Incolla il file dello spettacolo o trascina un file `.txt` o `.md`. Ogni riga diventa un sottotitolo. Correggi ciò che è elencato nella scheda *Problemi* accanto all'editor; fai clic su uno per saltare alla sua riga. Salva.
 3. **Immagini.** Carica le immagini che il file dello spettacolo usa (PNG, JPG, GIF o WebP, idealmente sotto 1 MB ciascuna).
 4. **Aspetto.** Scegli colori, carattere e dimensione del testo. I valori predefiniti (bianco su nero, grande) vanno meglio per la maggior parte delle persone. Sono incorporati due caratteri per la leggibilità: uno adatto alla dislessia (OpenDyslexic) e uno ad alta leggibilità (Atkinson Hyperlegible, progettato per l'ipovisione). Anche i singoli spettatori possono scegliere l'uno o l'altro per il proprio dispositivo dal piccolo controllo **Aa**.
 5. **Prova.** Fai una prova privata: premi Spazio come farebbe l'operatore, e vedi accanto lo schermo del pubblico. Nulla raggiunge il pubblico.
@@ -189,7 +189,7 @@ EDWIN: Whistling all day long
 - I **testi delle canzoni** tra note `♪`, in corsivo: inizia una riga con `~`, oppure racchiudi la canzone in `[song]`…`[/song]`. Per due cantanti insieme (un duetto o contrappunto), metti le loro righe tra `[together]` e `[/together]`, oppure uniscile con ` || ` su una riga; entrambe compaiono insieme con una pressione di Spazio. I pulsanti **♪**, **♫** e **🎵 Canzone** dell'editor li inseriscono. Vedi l'argomento di aiuto *Musical*.
 - I **cicli** (pre-spettacolo e intervallo) ripetono immagini e testo finché l'operatore non va avanti. Un ciclo proprio all'inizio del file dello spettacolo parte quando l'operatore mette lo spettacolo in onda (AVVIA).
 - Le **note** `[note: …]` e i segnalibri `[section: …]` sono solo per l'operatore. `[pace: 8s]` dice all'operatore quanto resta di solito la riga successiva, e una riga che inizia con `# ` è un titolo che funziona come un segnalibro.
-- L'argomento di aiuto **Scrivere un file dello spettacolo** elenca tutto, con esempi, e il *promemoria del file dello spettacolo* dell'editor lo riassume.
+- L'argomento di aiuto **Scrivere un file dello spettacolo** elenca tutto, con esempi, e la scheda *Promemoria* accanto all'editor lo riassume.
 
 ### Impostazioni dello spettacolo (titolo, aspetto e altro)
 

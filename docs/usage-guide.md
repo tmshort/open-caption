@@ -144,7 +144,7 @@ If `config.yaml` has a mistake (a misspelled setting, a number out of range, a b
 Open the setup page and follow the six steps along the top (a seventh, **Report**, is for after the show). The **Help** button explains each one.
 
 1. **Shows.** Create a show (or the sample show, to try things out).
-2. **Show file.** Paste the show file or drop in a `.txt` or `.md` file. Each line becomes one caption. Fix anything listed under *Problems and notes*; click one to jump to its line. Save.
+2. **Show file.** Paste the show file or drop in a `.txt` or `.md` file. Each line becomes one caption. Fix anything listed in the *Problems* tab beside the editor; click one to jump to its line. Save.
 3. **Images.** Upload the pictures the show file uses (PNG, JPG, GIF or WebP, ideally under 1 MB each).
 4. **Look.** Choose colors, font and text size. The defaults (white on black, large) are best for most people. Two readability fonts are built in: a dyslexia-friendly one (OpenDyslexic) and a high-legibility one (Atkinson Hyperlegible, designed for low vision). Individual audience members can also pick either for their own device from the small **Aa** control.
 5. **Test.** Run a private rehearsal: you press Space as the operator would, and see the audience screen next to it. Nothing reaches the audience.
@@ -189,7 +189,7 @@ EDWIN: Whistling all day long
 - **Lyrics** between `♪` notes, in italics: start a line with `~`, or wrap the song in `[song]`…`[/song]`. For two singers at the same time (a duet or counterpoint), put their lines between `[together]` and `[/together]`, or join them with ` || ` on one line; both show at once on one press of Space. The editor's **♪**, **♫** and **🎵 Song** buttons insert these. See the *Musicals* help topic.
 - **Loops** (pre-show and intermission) repeat pictures and text until the operator moves on. A loop at the very start of the show file starts when the operator puts the show on air (START).
 - **Notes** `[note: …]` and bookmarks `[section: …]` are for the operator only. `[pace: 8s]` tells the operator how long the next line usually stays up, and a line starting with `# ` is a heading that works like a bookmark.
-- The **Writing a show file** help topic lists everything, with examples, and the editor's *Show file cheat sheet* summarizes it.
+- The **Writing a show file** help topic lists everything, with examples, and the *Cheat sheet* tab beside the editor summarizes it.
 
 ### Show settings (title, look and more)
 

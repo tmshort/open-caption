@@ -952,4 +952,8 @@ OCI18n.add("es", {
  "File": "Archivo",
  "File actions": "Acciones del archivo",
  "How to write a show file": "Cómo escribir un archivo de espectáculo",
+ "Problems": "Problemas",
+ "Operator steps": "Pasos del operador",
+ "Cheat sheet": "Chuleta",
+ "Editor side panels": "Paneles junto al editor",
 });

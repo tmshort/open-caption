@@ -86,7 +86,7 @@
       if (focus) btns[i].focus();
       if (onPick) onPick(i, defs[i][0]);
     }
-    return { tabs: h('div', { class: 'tabs', role: 'tablist', 'aria-label': ariaLabel }, ...btns), panels: h('div', { class: 'tabpanels' }, ...panels), pick, selected: () => (current >= 0 ? defs[current][0] : '') };
+    return { tabs: h('div', { class: 'tabs', role: 'tablist', 'aria-label': ariaLabel }, ...btns), panels: h('div', { class: 'tabpanels' }, ...panels), pick, buttons: btns, selected: () => (current >= 0 ? defs[current][0] : '') };
   }
 
   // A reusable dialog. body: node; resolves true on OK, false on cancel.
@@ -993,7 +993,8 @@
       const a = A.analysis;
       const shown = a.diagnostics.filter((d) => d.line > 0);
       const summary = a.diagnostics.find((d) => d.line === 0);
-      diagTitle.textContent = shown.length ? __('Problems and notes ({n})', { n: shown.length }) : __('No problems found ✓');
+      diagTitle.textContent = __('No problems found ✓'); diagTitle.hidden = shown.length > 0; // the tab says how many
+      side.buttons[0].textContent = shown.length ? __('Problems') + ' (' + shown.length + ')' : __('Problems');
       paintBar();
       diagList.replaceChildren(...shown.map((d) => h('li', { class: d.severity, onclick: () => jump(d.line) }, h('span', { class: 'ln' }, __('Line {n}', { n: d.line })), __(d.message))),
         ...(summary ? [h('li', { class: 'info' }, __(summary.message))] : []));
@@ -1238,12 +1239,19 @@
         h('p', {}, h('b', {}, __('Translating into {name}.', { name: cur.name }) + ' '), __('Keep every line, command and blank screen in the same order as the {name} show file; change only the words. A problem is shown below if the shapes stop matching.', { name: main.name })),
         h('div', { class: 'row' }, h('details', {}, h('summary', {}, __('Show the {name} show file for reference', { name: main.name })), mainText), h('span', { class: 'grow' }), h('button', { class: 'danger quiet', onclick: removeLanguage }, __('Remove {name}…', { name: cur.name }))));
     }
+    // The right-hand column is three tabs, so nothing is stacked: what is wrong, what the operator will step through, and the cheat sheet.
+    const side = tabSet('ed', __('Editor side panels'), [
+      ['prob', __('Problems'), [diagTitle, diagList]],
+      ['steps', __('Operator steps'), [h('p', { class: 'hint' }, __('What the operator will step through')), cueList]],
+      ['cheat', __('Cheat sheet'), [cheatSheet()]]], (i, id) => { try { localStorage.setItem('oc.editor.tab', id); } catch (e) { /* storage unavailable */ } });
+    let sideFirst = 0;
+    try { const last = localStorage.getItem('oc.editor.tab'); const k = ['prob', 'steps', 'cheat'].indexOf(last); if (k >= 0) sideFirst = k; } catch (e) { /* storage unavailable */ }
+    side.pick(sideFirst, false);
     p.append(
       h('h2', {}, A.lang ? __('Show file — {name}', { name: cur.name }) : __('Show file')),
       tabs, ...(translating ? [translating] : []), // (append() would print a null as the word "null")
       tools,
-      h('div', { class: 'editor-grid' }, editor, h('div', {}, h('div', { class: 'card' }, diagTitle, diagList), h('div', { class: 'card' }, h('h3', {}, __('What the operator will step through')), cueList))),
-      cheatSheet());
+      h('div', { class: 'editor-grid' }, editor, h('div', { class: 'side' }, h('div', { class: 'side-inner' }, side.tabs, side.panels))));
     lines(); setStatus(); showAnalysis();
     window.onbeforeunload = () => (ta.value !== A.saved ? __('You have unsaved changes.') : undefined);
   }
@@ -1257,7 +1265,7 @@
       ['~ lyric ~', 'A sung line, shown between ♪ notes'], ['[song: Title] … [/song]', 'A whole song: every line inside is a sung lyric'], ['[together] … [/together]', 'Voices shown at the same time (a duet or counterpoint), one press of Space. Also  A: ~ one ~ || B: ~ two ~  on a single line'], ['♪  ♫', 'Music notes can be typed or pasted anywhere; the ♪ and ♫ buttons insert them'],
       ['[settings] … [/settings]', 'The show’s title and look (font, colors, size, speaker names) and other options, as lines like  font: dyslexic. Usually at the top. The Look step writes it for you. A translation may only set  idle message'], ['[loop: 10s] … [/loop]', 'Repeating items for pre-show or intermission. Add  | 15s  to an item to change its time'], ['# …', 'Reserved for headings; the line is ignored'],
     ];
-    return h('details', { class: 'card' }, h('summary', {}, __('Show file cheat sheet')), h('table', { class: 'cheat' }, ...rows.map(([a, b]) => h('tr', {}, h('td', {}, __(a)), h('td', {}, __(b))))));
+    return h('table', { class: 'cheat' }, ...rows.map(([a, b]) => h('tr', {}, h('td', {}, __(a)), h('td', {}, __(b)))));
   }
 
   // ---- step 3: images ----

@@ -144,7 +144,7 @@ Si `config.yaml` contient une erreur (un réglage mal orthographié, un nombre h
 Ouvrez la page de configuration et suivez les six étapes en haut (une septième, **Rapport**, est pour après le spectacle). Le bouton **Aide** explique chacune.
 
 1. **Spectacles.** Créez un spectacle (ou le spectacle d'exemple, pour essayer).
-2. **Fichier du spectacle.** Collez le fichier du spectacle ou déposez un fichier `.txt` ou `.md`. Chaque ligne devient un sous-titre. Corrigez ce qui est listé sous *Problèmes et remarques* ; cliquez sur l'un d'eux pour aller à sa ligne. Enregistrez.
+2. **Fichier du spectacle.** Collez le fichier du spectacle ou déposez un fichier `.txt` ou `.md`. Chaque ligne devient un sous-titre. Corrigez ce qui est listé dans l'onglet *Problèmes* à côté de l'éditeur ; cliquez sur l'un d'eux pour aller à sa ligne. Enregistrez.
 3. **Images.** Téléversez les images utilisées par le fichier du spectacle (PNG, JPG, GIF ou WebP, idéalement de moins de 1 Mo chacune).
 4. **Apparence.** Choisissez les couleurs, la police et la taille du texte. Les valeurs par défaut (blanc sur noir, grand) sont les meilleures pour la plupart des gens. Deux polices de lisibilité sont intégrées : une adaptée à la dyslexie (OpenDyslexic) et une de haute lisibilité (Atkinson Hyperlegible, conçue pour la basse vision). Chaque spectateur peut aussi choisir l'une ou l'autre pour son propre appareil avec le petit contrôle **Aa**.
 5. **Test.** Faites une répétition privée : vous appuyez sur Espace comme le ferait l'opérateur, et voyez l'écran du public à côté. Rien n'atteint le public.
@@ -189,7 +189,7 @@ EDWIN: Whistling all day long
 - Les **paroles** entre des notes `♪`, en italique : commencez une ligne par `~`, ou entourez la chanson de `[song]`…`[/song]`. Pour deux chanteurs en même temps (un duo ou un contrepoint), placez leurs lignes entre `[together]` et `[/together]`, ou joignez-les avec ` || ` sur une seule ligne ; les deux s'affichent en même temps d'une seule pression sur Espace. Les boutons **♪**, **♫** et **🎵 Chanson** de l'éditeur les insèrent. Voir la rubrique d'aide *Comédies musicales*.
 - Les **boucles** (avant-spectacle et entracte) répètent des images et du texte jusqu'à ce que l'opérateur passe à la suite. Une boucle tout au début du fichier du spectacle démarre quand l'opérateur met le spectacle à l'antenne (DÉMARRER).
 - Les **notes** `[note: …]` et les signets `[section: …]` ne sont que pour l'opérateur. `[pace: 8s]` indique à l'opérateur combien de temps la ligne suivante reste d'ordinaire affichée, et une ligne qui commence par `# ` est un titre qui fonctionne comme un signet.
-- La rubrique d'aide **Écrire un fichier du spectacle** liste tout, avec des exemples, et l'*aide-mémoire du fichier du spectacle* de l'éditeur le résume.
+- La rubrique d'aide **Écrire un fichier du spectacle** liste tout, avec des exemples, et l'onglet *Aide-mémoire* à côté de l'éditeur le résume.
 
 ### Réglages du spectacle (titre, apparence et plus)
 

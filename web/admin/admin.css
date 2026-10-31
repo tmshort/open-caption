@@ -38,7 +38,14 @@ select.uilang { min-height: 28px; }
 .editor { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--panel); height: 62vh; min-height: 22rem; }
 .editor .gutter { margin: 0; padding: .5rem .4rem; text-align: right; color: var(--dim); background: var(--bg); font: .9rem/1.45 var(--mono); overflow: hidden; user-select: none; min-width: 3rem; }
 .editor textarea { flex: 1; border: none; border-radius: 0; resize: none; font: .9rem/1.45 var(--mono); padding: .5rem; white-space: pre; overflow: auto; background: var(--panel); outline-offset: -3px; }
-.editor-grid + .card { margin-top: 1rem; } /* the cheat sheet, a gap below the editor like the gap between the panels */
+/* the column beside the editor: its height is the editor's (it is filled by an absolutely placed box, so its tabs never make the row taller), and each tab scrolls inside */
+.side { position: relative; min-height: 22rem; align-self: stretch; }
+.side-inner { position: absolute; top: 0; right: 0; bottom: 0; left: 0; display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); overflow: hidden; }
+.side-inner .tabs { margin: 0; }
+.side-inner .tabpanels { flex: 1; min-height: 0; grid-template-rows: minmax(0, 1fr); grid-template-columns: minmax(0, 1fr); }
+.side-inner .tabpanel { overflow: auto; padding: .6rem; }
+.side-inner .diags, .side-inner .cues { max-height: none; }
+.side-inner h3 { margin: 0 0 .4rem; }
 .editor.drop { outline: 3px dashed var(--accent); }
 .tools { display: flex; gap: .3rem; flex-wrap: wrap; align-items: center; margin: .6rem 0; }
 .moremenu.left .menu { right: auto; left: 0; }

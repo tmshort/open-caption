@@ -144,7 +144,7 @@ Hat `config.yaml` einen Fehler (eine falsch geschriebene Einstellung, eine Zahl 
 Öffnen Sie die Einrichtungsseite und folgen Sie den sechs Schritten oben (ein siebter, **Bericht**, ist für nach der Show). Die **Hilfe**-Schaltfläche erklärt jeden.
 
 1. **Shows.** Legen Sie eine Show an (oder die Beispiel-Show zum Ausprobieren).
-2. **Show-Datei.** Fügen Sie die Show-Datei ein oder ziehen Sie eine `.txt`- oder `.md`-Datei hinein. Jede Zeile wird zu einem Untertitel. Beheben Sie, was unter *Probleme und Hinweise* aufgeführt ist; klicken Sie eines an, um zu seiner Zeile zu springen. Speichern.
+2. **Show-Datei.** Fügen Sie die Show-Datei ein oder ziehen Sie eine `.txt`- oder `.md`-Datei hinein. Jede Zeile wird zu einem Untertitel. Beheben Sie, was im Reiter *Probleme* neben dem Editor aufgeführt ist; klicken Sie eines an, um zu seiner Zeile zu springen. Speichern.
 3. **Bilder.** Laden Sie die Bilder hoch, die die Show-Datei verwendet (PNG, JPG, GIF oder WebP, idealerweise unter 1 MB je Bild).
 4. **Erscheinungsbild.** Wählen Sie Farben, Schrift und Textgröße. Die Voreinstellungen (weiß auf schwarz, groß) sind für die meisten am besten. Zwei Lesbarkeitsschriften sind eingebaut: eine legasthenie-freundliche (OpenDyslexic) und eine mit hoher Lesbarkeit (Atkinson Hyperlegible, für Sehbehinderung entworfen). Einzelne Zuschauer können über das kleine Steuerelement **Aa** auch für ihr eigenes Gerät eine der beiden wählen.
 5. **Test.** Machen Sie eine private Probe: Sie drücken die Leertaste wie der Operator und sehen daneben den Bildschirm des Publikums. Nichts erreicht das Publikum.
@@ -189,7 +189,7 @@ EDWIN: Whistling all day long
 - **Liedtexte** zwischen `♪`-Noten, kursiv: Beginnen Sie eine Zeile mit `~` oder fassen Sie das Lied in `[song]`…`[/song]`. Für zwei Singende gleichzeitig (ein Duett oder Kontrapunkt) setzen Sie ihre Zeilen zwischen `[together]` und `[/together]` oder verbinden Sie sie mit ` || ` in einer Zeile; beide erscheinen mit einem Druck auf die Leertaste zugleich. Die Schaltflächen **♪**, **♫** und **🎵 Lied** des Editors fügen diese ein. Siehe das Hilfethema *Musicals*.
 - **Schleifen** (vor der Show und Pause) wiederholen Bilder und Text, bis der Bediener weitermacht. Eine Schleife ganz am Anfang der Show-Datei startet, wenn der Bediener die Show auf Sendung bringt (START).
 - **Notizen** `[note: …]` und Lesezeichen `[section: …]` sind nur für den Operator. `[pace: 8s]` sagt dem Operator, wie lange die nächste Zeile üblicherweise stehen bleibt, und eine Zeile, die mit `# ` beginnt, ist eine Überschrift, die wie ein Lesezeichen funktioniert.
-- Das Hilfethema **Eine Show-Datei schreiben** listet alles mit Beispielen auf, und der *Spickzettel zur Show-Datei* des Editors fasst es zusammen.
+- Das Hilfethema **Eine Show-Datei schreiben** listet alles mit Beispielen auf, und der Reiter *Spickzettel* neben dem Editor fasst es zusammen.
 
 ### Show-Einstellungen (Titel, Erscheinungsbild und mehr)
 

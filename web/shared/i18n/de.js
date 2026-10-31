@@ -952,4 +952,8 @@ OCI18n.add("de", {
  "File": "Datei",
  "File actions": "Dateiaktionen",
  "How to write a show file": "So schreibt man eine Show-Datei",
+ "Problems": "Probleme",
+ "Operator steps": "Schritte des Operators",
+ "Cheat sheet": "Spickzettel",
+ "Editor side panels": "Seitenfelder neben dem Editor",
 });

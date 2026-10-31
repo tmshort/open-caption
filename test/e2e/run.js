@@ -145,6 +145,12 @@ async function main() {
     }
     await click(admin, 'sample'); await admin.waitForSelector('.editor textarea'); await sleep(900);
     check('the sample show file has no problems', (await admin.evaluate(() => document.querySelector('.diags').innerText)).includes('No problems') || (await admin.evaluate(() => document.getElementById('panel').innerText)).includes('No problems found'));
+    check('beside the editor are three tabs (Problems, Operator steps, Cheat sheet) as tall as the editor, and the cheat sheet is one of them, not below the page', await admin.evaluate(() => {
+      const tabs = [...document.querySelectorAll('.side [role=tab]')], ed = document.querySelector('.editor').getBoundingClientRect(), side = document.querySelector('.side').getBoundingClientRect();
+      const names = tabs.map((t) => t.textContent.replace(/ \(\d+\)/, '')).join('|'), first = tabs[0].getAttribute('aria-selected') === 'true';
+      document.getElementById('edtab-cheat').click(); const cheat = getComputedStyle(document.getElementById('edpanel-cheat')).visibility === 'visible' && !!document.querySelector('#edpanel-cheat table.cheat') && !document.querySelector('#panel > details, #panel > table.cheat');
+      document.getElementById('edtab-prob').click();
+      return names === 'Problems|Operator steps|Cheat sheet' && first && Math.abs(side.height - ed.height) < 3 && cheat; }));
     const tabs = await admin.evaluate(() => [...document.querySelectorAll('.langtabs button')].map((x) => x.textContent.trim()));
     check('English (main) and Español tabs are offered', tabs.some((t) => t.startsWith('English')) && tabs.some((t) => t.startsWith('Español')), tabs);
     {

@@ -144,7 +144,7 @@ Si `config.yaml` tiene un error (un ajuste mal escrito, un número fuera de rang
 Abra la página de configuración y siga los seis pasos de la parte superior (un séptimo, **Informe**, es para después del espectáculo). El botón **Ayuda** explica cada uno.
 
 1. **Espectáculos.** Cree un espectáculo (o el de ejemplo, para probar).
-2. **Archivo del espectáculo.** Pegue el archivo del espectáculo o suelte un archivo `.txt` o `.md`. Cada línea se convierte en un subtítulo. Corrija lo que aparezca en *Problemas y avisos*; pulse uno para saltar a su línea. Guarde.
+2. **Archivo del espectáculo.** Pegue el archivo del espectáculo o suelte un archivo `.txt` o `.md`. Cada línea se convierte en un subtítulo. Corrija lo que aparezca en la pestaña *Problemas* junto al editor; pulse uno para saltar a su línea. Guarde.
 3. **Imágenes.** Suba las imágenes que usa el archivo del espectáculo (PNG, JPG, GIF o WebP, idealmente de menos de 1 MB cada una).
 4. **Aspecto.** Elija colores, fuente y tamaño del texto. Los valores por defecto (blanco sobre negro, grande) son los mejores para la mayoría. Hay dos fuentes de legibilidad integradas: una apta para dislexia (OpenDyslexic) y una de alta legibilidad (Atkinson Hyperlegible, diseñada para baja visión). Cada miembro del público también puede elegir cualquiera para su propio dispositivo con el pequeño control **Aa**.
 5. **Prueba.** Haga un ensayo privado: usted pulsa Espacio como lo haría el operador, y ve la pantalla del público al lado. Nada llega al público.
@@ -189,7 +189,7 @@ EDWIN: Whistling all day long
 - Las **letras** entre notas `♪`, en cursiva: empiece una línea con `~`, o envuelva la canción en `[song]`…`[/song]`. Para dos cantantes a la vez (un dúo o contrapunto), ponga sus líneas entre `[together]` y `[/together]`, o únalas con ` || ` en una línea; ambas se muestran a la vez con una pulsación de Espacio. Los botones **♪**, **♫** y **🎵 Canción** del editor los insertan. Consulte el tema de ayuda *Musicales*.
 - Los **bucles** (previa y descanso) repiten imágenes y texto hasta que el operador continúa. Un bucle justo al principio del archivo del espectáculo arranca cuando el operador pone el espectáculo en el aire (INICIAR).
 - Las **notas** `[note: …]` y los marcadores `[section: …]` son solo para el operador. `[pace: 8s]` indica al operador cuánto suele quedarse la línea siguiente, y una línea que empieza por `# ` es un encabezado que funciona como un marcador.
-- El tema de ayuda **Escribir un archivo del espectáculo** lo enumera todo, con ejemplos, y la *chuleta del archivo del espectáculo* del editor lo resume.
+- El tema de ayuda **Escribir un archivo del espectáculo** lo enumera todo, con ejemplos, y la pestaña *Chuleta* junto al editor lo resume.
 
 ### Ajustes del espectáculo (título, aspecto y más)
 
