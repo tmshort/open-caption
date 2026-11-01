@@ -1552,7 +1552,7 @@
       const out = [];
       // the note sits beside the link, like the projector link's
       if (nameU) out.push(h('div', { class: 'row projrow' }, h('label', { class: 'row' }, radio(nameU), link(nameU.url)),
-        !m.error && !m.renamed ? h('span', { class: 'hint' }, '(' + __('If a phone cannot open this name (some Android phones and guest WiFi networks cannot), give it the numeric address or the QR code instead.') + ')') : null));
+        !m.error && !m.renamed ? h('span', { class: 'hint' }, __('If a phone cannot open this name (some Android phones and guest WiFi networks cannot), give it the numeric address or the QR code instead.')) : null));
       if (m.error) out.push(h('div', { class: 'check warn' }, __('Could not announce this name: {error}', { error: m.error })));
       else if (m.renamed) out.push(h('div', { class: 'check warn' }, __('Another computer on this network already uses {name}.local, so this one is http://{host}/', { name: m.requested, host: m.host })));
       return out;
@@ -1565,9 +1565,9 @@
     // The page for a second device that only watches (a stage manager's tablet): shown when a viewer password is set
     const followBase = projBase ? new URL(projBase).origin + '/follow' : '';
     const followRow = net.data.viewerPasswordSet && followBase ? h('div', { class: 'row projrow' }, link(followBase),
-      h('span', { class: 'hint' }, __('(for a second device that only watches, such as a stage manager’s tablet; it signs in with the viewer password)'))) : null;
+      h('span', { class: 'hint' }, __('For a second device that only watches, such as a stage manager’s tablet; it signs in with the viewer password.'))) : null;
     const projRow = projU ? h('div', { class: 'row projrow' }, h('label', { class: 'row' }, radio(projU), link(projU.url)),
-      h('span', { class: 'hint' }, __('(for a projector or shared screen; open it on that computer)'))) : null;
+      h('span', { class: 'hint' }, __('For a projector or shared screen; open it on that computer.'))) : null;
     const where = (u) => (u.adapter === 'wifi' ? ' (' + __('Wi-Fi') + ')' : u.adapter === 'ethernet' ? ' (' + __('Ethernet') + ')' : '');
     const addrRow = (u) => h('div', { class: 'row' }, h('label', { class: 'row' }, radio(u), link(u.url), where(u)));
     const numeric = (kind) => net.data.urls.filter((u) => !u.name && !u.cert && u.public && u.kind === kind).map(addrRow);
@@ -1582,7 +1582,7 @@
     api('GET', '/api/operator/report').then((x) => { if (x.ok) reportLink.hidden = false; }).catch(() => {});
     const plain = [...nameRows(), ...numeric('http')]; // the .local name first, then the numeric addresses
     const list = h('div', { class: 'urls' },
-      ...(hasHttps ? [group(__('Secure (https)'), ...certRows.map((r, i) => (i ? r : h('div', { class: 'row projrow' }, ...r.childNodes, h('span', { class: 'hint' }, '(' + __('The name in the HTTPS certificate. It works on devices that can find this computer by that name.') + ')')))), ...numeric('https')),
+      ...(hasHttps ? [group(__('Secure (https)'), ...certRows.map((r, i) => (i ? r : h('div', { class: 'row projrow' }, ...r.childNodes, h('span', { class: 'hint' }, __('The name in the HTTPS certificate. It works on devices that can find this computer by that name.'))))), ...numeric('https')),
         group(__('Plain (http)'), ...plain)] : plain),
       projRow, followRow);
     // Two columns: the address with its QR code and the other addresses on the left; whether the show is ready, the way to the Run page and the notes on
