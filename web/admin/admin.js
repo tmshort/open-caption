@@ -1550,8 +1550,9 @@
     const nameU = net.data.urls.find((u) => u.name);
     const nameRows = () => { // the name is set in Settings > Network; here it is only listed when it is being announced
       const out = [];
-      if (nameU) out.push(h('div', { class: 'row' }, h('label', { class: 'row' }, radio(nameU), link(nameU.url))));
-      if (nameU && !m.error && !m.renamed) out.push(h('div', { class: 'hint namehint' }, __('If a phone cannot open this name (some Android phones and guest WiFi networks cannot), give it the numeric address or the QR code instead.')));
+      // the note sits beside the link, like the projector link's
+      if (nameU) out.push(h('div', { class: 'row projrow' }, h('label', { class: 'row' }, radio(nameU), link(nameU.url)),
+        !m.error && !m.renamed ? h('span', { class: 'hint' }, '(' + __('If a phone cannot open this name (some Android phones and guest WiFi networks cannot), give it the numeric address or the QR code instead.') + ')') : null));
       if (m.error) out.push(h('div', { class: 'check warn' }, __('Could not announce this name: {error}', { error: m.error })));
       else if (m.renamed) out.push(h('div', { class: 'check warn' }, __('Another computer on this network already uses {name}.local, so this one is http://{host}/', { name: m.requested, host: m.host })));
       return out;
@@ -1581,7 +1582,7 @@
     api('GET', '/api/operator/report').then((x) => { if (x.ok) reportLink.hidden = false; }).catch(() => {});
     const plain = [...nameRows(), ...numeric('http')]; // the .local name first, then the numeric addresses
     const list = h('div', { class: 'urls' },
-      ...(hasHttps ? [group(__('Secure (https)'), ...certRows, ...(certRows.length ? [h('div', { class: 'hint namehint' }, __('The name in the HTTPS certificate. It works on devices that can find this computer by that name.'))] : []), ...numeric('https')),
+      ...(hasHttps ? [group(__('Secure (https)'), ...certRows.map((r, i) => (i ? r : h('div', { class: 'row projrow' }, ...r.childNodes, h('span', { class: 'hint' }, '(' + __('The name in the HTTPS certificate. It works on devices that can find this computer by that name.') + ')')))), ...numeric('https')),
         group(__('Plain (http)'), ...plain)] : plain),
       projRow, followRow);
     // Two columns: the address with its QR code and the other addresses on the left; whether the show is ready, the way to the Run page and the notes on
