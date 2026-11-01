@@ -791,7 +791,16 @@
     }
   }
 
-  async function render() {
+  // A step fills the panel after its requests return, so two renders at once (the first one and the one a state change
+  // from the event stream asks for) would both append and double the content. They run one after another, and a render that a
+  // newer one has overtaken is skipped.
+  function render() {
+    const mine = A.renderId = (A.renderId || 0) + 1;
+    const run = (A.renderQueue || Promise.resolve()).then(() => (mine === A.renderId ? renderNow() : null));
+    A.renderQueue = run.catch(() => {});
+    return run;
+  }
+  async function renderNow() {
     clearTimeout(A.reportTimer); // the Report step refreshes itself while the show is on the air; any other step does not
     paintWorking();
     refreshNav();

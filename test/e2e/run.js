@@ -634,6 +634,16 @@ async function main() {
       await guard.setViewport({ width: 1300, height: 950 }); await sleep(300);
       check('the Share step is two columns (address and QR, then readiness and the Run page), with the address, its QR code and the Run page button in view at 1366x768', sh.cols && sh.runInView && sh.addressInView, sh);
     }
+    {
+      // two renders at once (a reload, then the event stream's first report of the show's state) used to append the step twice
+      // slow the show file down so the stream's first report arrives while the step is still loading
+      await guard.setRequestInterception(true);
+      const slow = (rq) => { if (/\/showfile$/.test(rq.url())) setTimeout(() => rq.continue().catch(() => {}), 1500); else rq.continue().catch(() => {}); };
+      guard.on('request', slow);
+      await guard.reload(); await guard.waitForSelector('.share-grid', { timeout: 15000 }); await sleep(3500);
+      guard.off('request', slow); await guard.setRequestInterception(false);
+      check('a slow Share step that the event stream also asks to redraw is drawn once, not twice', await guard.evaluate(() => document.querySelectorAll('.share-grid').length === 1 && document.querySelectorAll('#panel > h2').length === 1));
+    }
     check('the Share step lists the .local name only as a plain link row, with no on/off box or Rename button of its own', await guard.evaluate(() => !document.querySelector('.urls input[aria-label="Announce this computer by name"]') && ![...document.querySelectorAll('.urls button')].some((b) => /Rename/.test(b.textContent))));
     await guard.evaluate(() => [...document.querySelectorAll('#panel a')].find((a) => /Choose which network interfaces are used/.test(a.textContent)).click()); await guard.waitForSelector('#setpanel-net:not(.inactive)'); await sleep(200);
     check('the Network tab has the .local name: a Use a name box, the name and an Apply button', await guard.evaluate(() => { const p = document.getElementById('setpanel-net'); return /Name on the network/.test(p.innerText) && !!p.querySelector('input[aria-label="Announce this computer by name"]') && !!p.querySelector('input[aria-label="Name"]') && [...p.querySelectorAll('button')].some((b) => b.textContent === 'Apply'); }));
