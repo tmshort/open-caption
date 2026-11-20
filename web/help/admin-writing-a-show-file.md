@@ -199,8 +199,8 @@ The Show file step lists problems with line numbers. Click one to jump to the li
 - **"[settings] was opened but never closed"** — add `[/settings]`; everything after an unclosed block is read as settings.
 - **"[song] was opened but never closed"** — add `[/song]` after the last lyric. The lyrics you wrote are still kept.
 
-Errors never stop you from saving.
+Errors never stop you from saving. The part with the error is skipped, and the rest of the show file still works.
 
 ## If two people edit the same show file
 
-If someone else saves the show file while you have it open, the program will not quietly overwrite their work. When you save, it tells you the show file was changed by someone else and lets you **use their version** (replacing what is in your editor) or **save yours anyway**. Copy anything you want to keep before choosing. The part with the error is skipped, and the rest of the show file still works.
+If someone else saves the show file while you have it open, the program will not quietly overwrite their work. When you save, it tells you the show file was changed by someone else and lets you **use their version** (replacing what is in your editor) or **save yours anyway**. Copy anything you want to keep before choosing.

@@ -199,8 +199,8 @@ L'étape Fichier du spectacle liste les problèmes avec leurs numéros de ligne.
 - **« [settings] a été ouvert mais jamais fermé »** — ajoutez `[/settings]` ; tout ce qui suit un bloc non fermé est lu comme des réglages.
 - **« [song] a été ouvert mais jamais fermé »** — ajoutez `[/song]` après la dernière parole. Les paroles que vous avez écrites sont tout de même conservées.
 
-Les erreurs ne vous empêchent jamais d'enregistrer.
+Les erreurs ne vous empêchent jamais d'enregistrer. La partie qui contient l'erreur est ignorée, et le reste du fichier du spectacle fonctionne toujours.
 
 ## Si deux personnes modifient le même fichier du spectacle
 
-Si quelqu'un d'autre enregistre le fichier du spectacle pendant que vous l'avez ouvert, le programme n'écrasera pas discrètement son travail. Quand vous enregistrez, il vous dit que le fichier du spectacle a été modifié par quelqu'un d'autre et vous laisse **utiliser sa version** (en remplaçant ce qui est dans votre éditeur) ou **enregistrer la vôtre quand même**. Copiez ce que vous voulez garder avant de choisir. La partie qui contient l'erreur est ignorée, et le reste du fichier du spectacle fonctionne toujours.
+Si quelqu'un d'autre enregistre le fichier du spectacle pendant que vous l'avez ouvert, le programme n'écrasera pas discrètement son travail. Quand vous enregistrez, il vous dit que le fichier du spectacle a été modifié par quelqu'un d'autre et vous laisse **utiliser sa version** (en remplaçant ce qui est dans votre éditeur) ou **enregistrer la vôtre quand même**. Copiez ce que vous voulez garder avant de choisir.

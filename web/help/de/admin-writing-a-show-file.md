@@ -199,8 +199,8 @@ Der Schritt Show-Datei listet Probleme mit Zeilennummern auf. Klicken Sie eines 
 - **„[settings] wurde geöffnet, aber nie geschlossen“** — fügen Sie `[/settings]` hinzu; alles nach einem nicht geschlossenen Block wird als Einstellungen gelesen.
 - **„[song] wurde geöffnet, aber nie geschlossen“** — fügen Sie nach dem letzten Liedtext `[/song]` hinzu. Die geschriebenen Texte bleiben trotzdem erhalten.
 
-Fehler hindern Sie nie am Speichern.
+Fehler hindern Sie nie am Speichern. Der Teil mit dem Fehler wird übersprungen, und der Rest der Show-Datei funktioniert weiter.
 
 ## Wenn zwei Personen dieselbe Show-Datei bearbeiten
 
-Speichert jemand anderes die Show-Datei, während Sie sie geöffnet haben, überschreibt das Programm seine Arbeit nicht stillschweigend. Beim Speichern sagt es Ihnen, dass die Show-Datei von jemand anderem geändert wurde, und lässt Sie **deren Version verwenden** (ersetzt, was in Ihrem Editor steht) oder **Ihre trotzdem speichern**. Kopieren Sie vor der Wahl, was Sie behalten möchten. Der Teil mit dem Fehler wird übersprungen, und der Rest der Show-Datei funktioniert weiter.
+Speichert jemand anderes die Show-Datei, während Sie sie geöffnet haben, überschreibt das Programm seine Arbeit nicht stillschweigend. Beim Speichern sagt es Ihnen, dass die Show-Datei von jemand anderem geändert wurde, und lässt Sie **deren Version verwenden** (ersetzt, was in Ihrem Editor steht) oder **Ihre trotzdem speichern**. Kopieren Sie vor der Wahl, was Sie behalten möchten.

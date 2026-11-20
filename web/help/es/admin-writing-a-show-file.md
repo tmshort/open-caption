@@ -199,8 +199,8 @@ El paso Archivo del espectáculo enumera los problemas con números de línea. P
 - **«[settings] se abrió pero nunca se cerró»** — añada `[/settings]`; todo lo que sigue a un bloque sin cerrar se lee como ajustes.
 - **«[song] se abrió pero nunca se cerró»** — añada `[/song]` tras la última letra. Las letras que escribió se conservan igualmente.
 
-Los errores nunca le impiden guardar.
+Los errores nunca le impiden guardar. La parte con el error se omite, y el resto del archivo del espectáculo sigue funcionando.
 
 ## Si dos personas editan el mismo archivo del espectáculo
 
-Si otra persona guarda el archivo del espectáculo mientras usted lo tiene abierto, el programa no sobrescribirá en silencio su trabajo. Cuando guarda, le dice que el archivo del espectáculo fue cambiado por otra persona y le permite **usar su versión** (reemplazando lo que hay en su editor) o **guardar la suya de todos modos**. Copie lo que quiera conservar antes de elegir. La parte con el error se omite, y el resto del archivo del espectáculo sigue funcionando.
+Si otra persona guarda el archivo del espectáculo mientras usted lo tiene abierto, el programa no sobrescribirá en silencio su trabajo. Cuando guarda, le dice que el archivo del espectáculo fue cambiado por otra persona y le permite **usar su versión** (reemplazando lo que hay en su editor) o **guardar la suya de todos modos**. Copie lo que quiera conservar antes de elegir.

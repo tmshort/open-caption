@@ -199,8 +199,8 @@ Il passo File dello spettacolo elenca i problemi con i numeri di riga. Fai clic 
 - **«[settings] è stato aperto ma mai chiuso»** — aggiungi `[/settings]`; tutto ciò che segue un blocco non chiuso viene letto come impostazioni.
 - **«[song] è stato aperto ma mai chiuso»** — aggiungi `[/song]` dopo l'ultimo testo. I testi che hai scritto vengono comunque conservati.
 
-Gli errori non ti impediscono mai di salvare.
+Gli errori non ti impediscono mai di salvare. La parte con l'errore viene saltata, e il resto del file dello spettacolo continua a funzionare.
 
 ## Se due persone modificano lo stesso file dello spettacolo
 
-Se qualcun altro salva il file dello spettacolo mentre tu lo hai aperto, il programma non sovrascrive in silenzio il suo lavoro. Quando salvi, ti dice che il file dello spettacolo è stato modificato da qualcun altro e ti lascia **usare la sua versione** (sostituendo ciò che c'è nel tuo editor) oppure **salvare comunque la tua**. Copia ciò che vuoi tenere prima di scegliere. La parte con l'errore viene saltata, e il resto del file dello spettacolo continua a funzionare.
+Se qualcun altro salva il file dello spettacolo mentre tu lo hai aperto, il programma non sovrascrive in silenzio il suo lavoro. Quando salvi, ti dice che il file dello spettacolo è stato modificato da qualcun altro e ti lascia **usare la sua versione** (sostituendo ciò che c'è nel tuo editor) oppure **salvare comunque la tua**. Copia ciò che vuoi tenere prima di scegliere.

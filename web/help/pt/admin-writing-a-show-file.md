@@ -199,8 +199,8 @@ A etapa Arquivo do espetáculo lista os problemas com números de linha. Clique 
 - **«[settings] foi aberto mas nunca fechado»** — acrescente `[/settings]`; tudo o que vem depois de um bloco não fechado é lido como configurações.
 - **«[song] foi aberto mas nunca fechado»** — acrescente `[/song]` depois da última letra. As letras que você escreveu continuam sendo mantidas.
 
-Os erros nunca impedem você de salvar.
+Os erros nunca impedem você de salvar. A parte com o erro é ignorada, e o resto do arquivo do espetáculo continua funcionando.
 
 ## Se duas pessoas editarem o mesmo arquivo do espetáculo
 
-Se outra pessoa salvar o arquivo do espetáculo enquanto você o tem aberto, o programa não sobrescreve em silêncio o trabalho dela. Quando você salva, ele avisa que o arquivo do espetáculo foi alterado por outra pessoa e deixa você **usar a versão dela** (substituindo o que está no seu editor) ou **salvar a sua mesmo assim**. Copie o que quiser guardar antes de escolher. A parte com o erro é ignorada, e o resto do arquivo do espetáculo continua funcionando.
+Se outra pessoa salvar o arquivo do espetáculo enquanto você o tem aberto, o programa não sobrescreve em silêncio o trabalho dela. Quando você salva, ele avisa que o arquivo do espetáculo foi alterado por outra pessoa e deixa você **usar a versão dela** (substituindo o que está no seu editor) ou **salvar a sua mesmo assim**. Copie o que quiser guardar antes de escolher.
