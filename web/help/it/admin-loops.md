@@ -15,7 +15,7 @@ Ogni riga dentro il ciclo è un elemento:
 - una semplice riga di testo viene mostrata come testo a schermo intero;
 - funzionano anche `[image: file.png]`, `![didascalia](file.png)` e `[fullscreen: testo]`;
 - `[blank: 3s]` è una breve pausa su schermo vuoto;
-- aggiungi `| 15s` alla fine di un elemento per cambiare quanto resta;
+- aggiungi `| 15s` alla fine di un elemento per cambiare quanto tempo resta sullo schermo;
 - `[loop: 10s]` imposta il tempo per gli elementi che non lo indicano. Se non dai alcun tempo, si usa il valore predefinito di `config.yaml` (10 secondi).
 - un tempo può essere al massimo di 3600 secondi (un'ora); uno più lungo viene ridotto a questo valore, con un avviso.
 
@@ -23,7 +23,7 @@ Sottotitoli, `[clear]`, sezioni, note e altri cicli non possono stare dentro un 
 
 ## Quando un ciclo parte e si ferma
 
-- Se la **prima cosa** nel file dello spettacolo è un ciclo, parte quando l'operatore mette lo spettacolo in onda (**AVVIA**), così il pubblico vede il pre-spettacolo mentre la gente cerca il posto.
+- Se la **prima cosa** nel file dello spettacolo è un ciclo, parte quando l'operatore mette lo spettacolo in onda (**AVVIA**), così il pubblico vede il pre-spettacolo mentre le persone prendono posto.
 - Qualsiasi altro ciclo (per esempio nell'intervallo) parte quando l'operatore preme la barra spaziatrice su di esso.
 - La barra spaziatrice termina il ciclo e invia la riga successiva. **Maiusc+Q** ferma il ciclo e lascia lo schermo vuoto. **Indietro** torna al ciclo e lo riavvia dal primo elemento.
 
@@ -41,10 +41,10 @@ Back in {timer}
 [/loop]
 ```
 
-Il valore di un timer è una di due cose:
+Un timer può avere due tipi di valore:
 
 - Un **numero di minuti**, come `timer 15` o `timer 15 minutes`: per un intervallo. Il conto alla rovescia parte nel momento in cui parte il ciclo (quando l'operatore preme la barra spaziatrice su di esso) e riparte dal tempo intero se l'operatore torna indietro nel ciclo.
-- Un **orario**, come `timer 7:30pm`, `timer 7pm` o `timer 19:30`: per il prima dello spettacolo. Gli schermi contano alla rovescia fino a quell'ora di oggi. Si usano l'orologio e il fuso orario del computer che esegue il programma, quindi controllali. Un orario già passato mostra 0:00.
+- Un **orario**, come `timer 7:30pm`, `timer 7pm` o `timer 19:30`: per il pre-spettacolo. Gli schermi contano alla rovescia fino a quell'ora di oggi. Si usano l'orologio e il fuso orario del computer che esegue il programma, quindi controllali. Un orario già passato mostra 0:00.
 
 Le opzioni condividono le parentesi, separate da virgole, in qualsiasi ordine.
 
@@ -64,7 +64,7 @@ The show begins in {timer}
 
 ## Dare un nome a un ciclo
 
-Dai un **nome** a un ciclo e il rapporto sul pubblico lo usa per etichettarlo nel suo grafico. Senza nome, il rapporto lo indovina dalla posizione del ciclo (prima della prima riga: *prima dello spettacolo*; tra le righe: *intervallo*; dopo l'ultima riga: *dopo lo spettacolo*).
+Dai un **nome** a un ciclo e il rapporto sul pubblico lo usa per etichettarlo nel suo grafico. Senza nome, il rapporto lo deduce dalla posizione del ciclo (prima della prima riga: *prima dello spettacolo*; tra le righe: *intervallo*; dopo l'ultima riga: *dopo lo spettacolo*).
 
 ```showfile
 [loop: 12s, name Intermission]

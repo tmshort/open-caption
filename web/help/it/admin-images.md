@@ -3,14 +3,14 @@
 Carica le immagini nel passo **Immagini** e usale nel file dello spettacolo con `[image: nome.png]`.
 
 - Tipi accettati: PNG, JPG, GIF e WebP. Gli altri tipi, compreso SVG, non sono accettati.
-- Ogni file può pesare fino a 10 MB, ma **tienili sotto circa 1 MB**. Ogni dispositivo del pubblico scarica l'immagine intera, e 100 dispositivi che richiedono una grande immagine nello stesso momento possono essere lenti. Circa 1920 pixel di larghezza bastano.
+- Ogni file può pesare fino a 10 MB, ma **tienili sotto circa 1 MB**. Ogni dispositivo del pubblico scarica l'immagine intera, e se 100 dispositivi scaricano insieme un'immagine pesante il caricamento può essere lento. Circa 1920 pixel di larghezza bastano.
 - Il programma non ridimensiona le immagini. I browser le riducono per adattarle a ogni schermo.
 - Un'immagine **senza didascalia riempie l'intero schermo**, da bordo a bordo: viene scalata per adattarsi senza mai essere ritagliata, e il colore di sfondo compare nelle bande se le proporzioni sono diverse. Aggiungi una didascalia (`[image: curtain.jpg | Act 1]`) e l'immagine mantiene un margine con le parole sotto.
 - Le immagini in arrivo vengono scaricate in background prima di essere mostrate, così compaiono all'istante.
 
 ## Nomi
 
-Il file dello spettacolo si riferisce a un'immagine con il suo nome di file, come `sipario.jpg`. I nomi con spazi funzionano. Se il file dello spettacolo usa un nome che non hai caricato, il passo Immagini lo elenca sotto «Immagini che il file dello spettacolo usa ma che non hai caricato», con un pulsante per caricare il file giusto con quel nome. Un errore lieve come `siparo.jpg` viene segnalato con un suggerimento.
+Il file dello spettacolo si riferisce a un'immagine con il suo nome di file, come `sipario.jpg`. I nomi con spazi funzionano. Se il file dello spettacolo usa un nome che non hai caricato, il passo Immagini lo elenca sotto «Immagini che il file dello spettacolo usa ma che non hai caricato», con un pulsante per caricare il file giusto con quel nome. Un nome quasi giusto, come `siparo.jpg`, viene segnalato con un suggerimento.
 
 ## Sostituire ed eliminare
 
@@ -18,4 +18,4 @@ Caricare un file con lo stesso nome lo sostituisce. Eliminare un'immagine che il
 
 ## In un ciclo
 
-Le immagini di un ciclo si alternano sullo schermo: `[image: sponsor.png | 15s]` mostra quella per 15 secondi. Vedi [Cicli](admin-loops.md).
+Le immagini di un ciclo si alternano sullo schermo: `[image: sponsor.png | 15s]` mostra quell'immagine per 15 secondi. Vedi [Cicli](admin-loops.md).

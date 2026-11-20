@@ -12,14 +12,14 @@ Per controllare un file dello spettacolo, o prepararlo nel tuo editor di testo, 
 |--------|---------|
 | `**forte**` | testo in **grassetto** |
 | `*a parte*` o `_a parte_` | testo in *corsivo* |
-| `***very loud***` | testo in grassetto e corsivo |
-| `~~old line~~` | testo barrato (una correzione, o una battuta cancellata) |
-| `(thunder rumbles)` | un'intera riga tra parentesi viene mostrata come suono o indicazione di scena |
-| `HAMLET: To be, or not to be` | un'etichetta del personaggio sopra la riga (il nome deve essere in MAIUSCOLO seguito da due punti; va bene anche un gruppo: `ALICE & BOB:`, `ALL (EXCEPT BOB):`) |
+| `***molto forte***` | testo in grassetto e corsivo |
+| `~~vecchia battuta~~` | testo barrato (una correzione, o una battuta cancellata) |
+| `(rimbomba il tuono)` | un'intera riga tra parentesi viene mostrata come suono o indicazione di scena |
+| `AMLETO: Essere o non essere` | un'etichetta del personaggio sopra la riga (il nome deve essere in MAIUSCOLO seguito da due punti; va bene anche un gruppo: `ALICE & BOB:`, `ALL (EXCEPT BOB):`) |
 
 **Barrare il testo.** Metti due tilde per lato, `~~così~~`, e le parole vengono mostrate barrate. Subito dentro ogni coppia ci deve essere un carattere che non sia uno spazio (`~~ x ~~` resta com'è). Una riga cantata inizia con una sola `~` seguita da uno spazio, quindi le due cose non si confondono mai; per iniziare una riga normale con una tilde, scrivi `\~`.
 
-Tutto il resto viene mostrato com'è scritto. Link, elenchi, tabelle e titoli non sono supportati. Neanche l'HTML puro è supportato: se scrivi `<b>`, appare letteralmente, e la pagina mostra una nota che suggerisce la forma Markdown. Sottolineatura, apici e pedici non hanno un marcatore, ma qualsiasi carattere che puoi digitare funziona così com'è: scrivi direttamente H₂O, x², 1ˢᵗ o ½.
+Tutto il resto viene mostrato com'è scritto. Link, elenchi, tabelle e titoli non sono supportati. Non è supportato nemmeno il codice HTML: se scrivi `<b>`, appare letteralmente, e la pagina mostra una nota che suggerisce la forma Markdown. Sottolineatura, apici e pedici non hanno un marcatore, ma qualsiasi carattere che puoi digitare funziona così com'è: scrivi direttamente H₂O, x², 1ˢᵗ o ½.
 
 ```showfile
 HAMLET: To be, or not to be, **that** is the question.
@@ -37,7 +37,7 @@ A ogni salvataggio viene conservata la versione sostituita (le ultime 50 per ogn
 
 ## Impostazioni dello spettacolo: il titolo e l'aspetto
 
-Tutto ciò che riguarda uno spettacolo tranne le immagini è conservato nel file dello spettacolo, compresi il suo **titolo** e l'**aspetto** dei sottotitoli. Va in un blocco `[settings]`, di solito in cima, con un `nome: valore` per riga:
+Tutto ciò che riguarda uno spettacolo tranne le immagini è conservato nel file dello spettacolo, compresi il suo **titolo** e l'**aspetto** dei sottotitoli. Vanno in un blocco `[settings]`, di solito in cima, con un `nome: valore` per riga:
 
 ```showfile
 [settings]
@@ -79,7 +79,7 @@ Per un musical, mostra i testi tra note musicali (♪). Ci sono tre modi, dal pi
 
 - **Scrivi o incolla tu le note.** ♪ e ♫ funzionano ovunque nel file dello spettacolo. Nell'editor, i pulsanti **♪** e **♫** le inseriscono al cursore.
 - **Inizia una riga con `~`.** La riga è trattata come un testo cantato: viene mostrata in corsivo con un ♪ aggiunto a ogni estremità, e la `~` stessa non viene mostrata. Serve solo la `~` iniziale: il ♪ finale viene aggiunto per te, e una `~` di chiusura è ammessa ma non cambia nulla. Funziona anche dopo il nome di un personaggio.
-- **Racchiudi un'intera canzone in `[song]` e `[/song]`.** Ogni riga all'interno è cantata, quindi non serve una `~` su ognuna. Il titolo dopo i due punti è un segnalibro solo per l'operatore. Note, clear e blank possono comunque stare all'interno.
+- **Racchiudi un'intera canzone in `[song]` e `[/song]`.** Ogni riga all'interno è cantata, quindi non serve una `~` su ognuna. Il titolo dopo i due punti è un segnalibro solo per l'operatore. Note, `[clear]` e `[blank]` possono comunque stare all'interno.
 
 ```showfile
 OLIVER: ~ Where is love? ~
@@ -94,7 +94,7 @@ EDWIN: Whistling all day long
 
 ### Due o più voci insieme (duetti e contrappunto)
 
-Quando i cantanti cantano righe diverse **nello stesso momento**, mettili in `[together]` … `[/together]`. Ogni riga all'interno viene mostrata in una volta, affiancata su uno schermo largo e impilata su un telefono, e l'operatore le invia con una sola pressione di Spazio. Ognuna mantiene il proprio nome di personaggio. Per un breve scambio puoi scrivere le voci su una riga, separate da ` || ` (uno spazio, due barre verticali, uno spazio). `[duet]` e `[counterpoint]` significano come `[together]`.
+Quando i cantanti cantano righe diverse **nello stesso momento**, mettili in `[together]` … `[/together]`. Tutte le righe all'interno vengono mostrate insieme, affiancata su uno schermo largo e impilata su un telefono, e l'operatore le invia con una sola pressione di Spazio. Ognuna mantiene il proprio nome di personaggio. Per un breve scambio puoi scrivere le voci su una riga, separate da ` || ` (uno spazio, due barre verticali, uno spazio). `[duet]` e `[counterpoint]` hanno lo stesso significato di `[together]`.
 
 ```showfile
 [together]
@@ -127,8 +127,8 @@ Gently down the stream
 
 - `<!-- così -->` è un **commento**. Nessuno lo vede, e può occupare più righe.
 - `[note: testo]` è un promemoria mostrato **solo all'operatore**, per esempio `[note: hold for applause]`.
-- `[section: Act 2, Scene 1]` aggiunge un segnalibro nell'elenco dell'operatore. Note e sezioni non consumano mai una pressione della barra spaziatrice.
-- `[pace: 8s]` dice quanto la riga successiva resta di solito sullo schermo, come promemoria **solo per l'operatore**. La pagina di conduzione lo mostra accanto a quella riga (`⏱ about 8 s`) e, una volta inviata la riga, fa il conto alla rovescia fino a quando è dovuta la pressione successiva, diventando gialla quando lo è. Non invia mai nulla da sola. Il tempo è superiore a 0 secondi. Appartiene alla prossima riga che l'operatore invia (sezioni e note vengono saltate) e non può stare dentro un ciclo né dentro un blocco `[together]`. Se il tempo è molto più lungo di quello che serve a leggere la riga, l'elenco dei problemi aggiunge una nota, nel caso fosse un errore di battitura. Il pulsante **Ritmo** dell'editor ne inserisce uno.
+- `[section: Act 2, Scene 1]` aggiunge un segnalibro nell'elenco dell'operatore. Note e sezioni non richiedono mai di premere la barra spaziatrice.
+- `[pace: 8s]` dice quanto la riga successiva resta di solito sullo schermo, come promemoria **solo per l'operatore**. La pagina Regia lo mostra accanto a quella riga (`⏱ circa 8 s`) e, una volta inviata la riga, conta alla rovescia fino al momento di premere di nuovo, e diventa gialla quando quel momento arriva. Non invia mai nulla da sola. Il tempo deve essere superiore a 0 secondi. Appartiene alla prossima riga che l'operatore invia (sezioni e note vengono saltate) e non può stare dentro un ciclo né dentro un blocco `[together]`. Se il tempo è molto più lungo di quello che serve a leggere la riga, l'elenco dei problemi aggiunge una nota, nel caso fosse un errore di battitura. Il pulsante **Ritmo** dell'editor ne inserisce uno.
 - Una riga che inizia con `#` e uno spazio è un **titolo** e funziona come `[section: …]`: `# Act 2` (o `## Scene 1`, con fino a sei `#`) aggiunge un segnalibro nell'elenco dell'operatore e non viene mai mostrata al pubblico. Un `#` senza spazio dopo (un hashtag, per esempio) viene ignorato, con una nota; per iniziare un sottotitolo con `#`, scrivi `\#`. I titoli non possono stare dentro un ciclo.
 
 ```showfile
@@ -145,7 +145,7 @@ Una riga tra parentesi quadre è un comando. I nomi non distinguono maiuscole e 
 | Comando | Cosa fa |
 |---------|---------|
 | `[clear]` | Cancella i sottotitoli dallo schermo |
-| `[blank]` | Svuota lo schermo (i sottotitoli vengono conservati) |
+| `[blank]` | Oscura lo schermo (i sottotitoli vengono conservati) |
 | `[image: file.png]` | Mostra un'immagine a schermo intero. Aggiungi una didascalia con `[image: file.png \| text]` |
 | `![caption](file.png)` | Lo stesso, scritto alla maniera di Markdown |
 | `[fullscreen: text]` | Mostra un testo grande a schermo intero. Per più righe usa `[fullscreen]` … `[/fullscreen]` |
@@ -158,7 +158,7 @@ Una riga tra parentesi quadre è un comando. I nomi non distinguono maiuscole e 
 | `[language: es]` | Segna un file dello spettacolo tradotto. Vedi [Lingue](admin-languages.md) |
 | `[settings]` … `[/settings]` | Il titolo e l'aspetto dello spettacolo. Vedi *Impostazioni dello spettacolo* sopra |
 
-Le opzioni di tempo hanno senso solo dentro un [ciclo](admin-loops.md): `| 15s` dopo un'immagine o un testo a schermo intero, e `[blank: 3s]`. Fuori da un ciclo un'immagine o un testo a schermo intero resta finché l'operatore non passa oltre, il tempo viene ignorato e segnalato come avviso, come un tempo su `[blank]`.
+Le opzioni di tempo hanno senso solo dentro un [ciclo](admin-loops.md): `| 15s` dopo un'immagine o un testo a schermo intero, e `[blank: 3s]`. Fuori da un ciclo, un'immagine o un testo a schermo intero resta finché l'operatore non va avanti; un eventuale tempo viene ignorato e segnalato con un avviso, e lo stesso vale per un tempo su `[blank]`.
 
 ```showfile
 [clear]
@@ -188,7 +188,7 @@ TIME\: ten o'clock
 
 Il passo File dello spettacolo elenca i problemi con i numeri di riga. Fai clic su uno per saltare alla riga.
 
-- **«Comando sconosciuto [x]»** — una riga tra parentesi quadre che non è un comando. Se doveva essere un sottotitolo come un effetto sonoro, scrivila con le parentesi tonde, come `(laughter)`.
+- **«Comando sconosciuto [x]»** — una riga tra parentesi quadre che non è un comando. Se doveva essere un sottotitolo, per esempio un effetto sonoro, scrivila tra parentesi tonde, come `(laughter)`.
 - **«Immagine … non trovata»** — l'immagine non è stata caricata, o il nome è scritto in modo diverso. Caricala nel passo Immagini.
 - **«[loop] è stato aperto ma mai chiuso»** — aggiungi `[/loop]` dopo l'ultimo elemento. Lo stesso vale per i blocchi `[fullscreen]`, i blocchi `[[` e i commenti.
 - **«L'HTML non è supportato»** — usa `**grassetto**` e `*corsivo*` invece dei tag.
