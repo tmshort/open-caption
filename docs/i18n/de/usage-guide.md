@@ -79,7 +79,7 @@ Dem Programm ist egal, in welchem Netzwerk es ist, solange Publikumsgeräte es e
 - **Machen Sie ihn langweilig:** Stellen Sie den Computer so ein, dass er im Netzbetrieb *nie in den Ruhezustand* geht, schalten Sie automatische Neustarts für Updates rund um die Vorstellungstermine ab, schließen Sie andere Programme und lassen Sie den Deckel offen oder so eingestellt, dass er nicht den Ruhezustand auslöst.
 - **Firewall:** Erlauben Sie das Programm in **privaten Netzwerken** (Windows fragt beim ersten Mal; erlauben Sie unter macOS eingehende Verbindungen dafür).
 - **Adresse:** per Kabel und reserviert (siehe oben). Ändert sich die Adresse, funktionieren gedruckte QR-Codes nicht mehr.
-- **Uhrzeit:** Die Uhr spielt keine Rolle.
+- **Uhrzeit:** Halte Uhr und Zeitzone korrekt. Ein Countdown bis zu einer Tageszeit, die Zeiten im Publikumsbericht und HTTPS-Zertifikate hängen davon ab. Die Telefone brauchen keine richtig gestellte Uhr.
 
 ### Wer sitzt wo
 

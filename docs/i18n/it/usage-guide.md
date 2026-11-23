@@ -79,7 +79,7 @@ Al programma non importa su quale rete sia, purché i dispositivi del pubblico p
 - **Niente sorprese:** imposta il computer perché non vada *mai in sospensione* quando è alimentato, disattiva i riavvii automatici per gli aggiornamenti intorno alle date degli spettacoli, chiudi gli altri programmi e tieni il coperchio aperto o impostato per non andare in sospensione.
 - **Firewall:** consenti il programma sulle **reti private** (Windows lo chiede la prima volta; su macOS consenti le connessioni in entrata per il programma).
 - **Indirizzo:** cablato e riservato (vedi sopra). Se l'indirizzo cambia, i codici QR stampati smettono di funzionare.
-- **Ora:** l'orologio non conta.
+- **Ora:** tieni corretti l'orologio e il fuso orario. Un conto alla rovescia fino a un'ora del giorno, gli orari del rapporto sul pubblico e i certificati HTTPS dipendono da essi. I telefoni non hanno bisogno di avere l'orologio giusto.
 
 ### Chi sta dove
 

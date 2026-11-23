@@ -79,7 +79,7 @@ Al programa no le importa en qué red esté, mientras los dispositivos del públ
 - **Hágalo aburrido:** configure el equipo para que *nunca se suspenda* mientras está enchufado, desactive los reinicios automáticos por actualizaciones en torno a las fechas de función, cierre otros programas y mantenga la tapa abierta o configurada para no suspender.
 - **Cortafuegos:** permita el programa en **redes privadas** (Windows lo pregunta la primera vez; en macOS permita las conexiones entrantes para él).
 - **Dirección:** por cable y reservada (véase arriba). Si la dirección cambia, los códigos QR impresos dejan de funcionar.
-- **Hora:** el reloj no importa.
+- **Hora:** mantén el reloj y la zona horaria correctos. Una cuenta atrás hasta una hora del día, las horas del informe de audiencia y los certificados HTTPS dependen de ellos. Los teléfonos no necesitan tener el reloj en hora.
 
 ### Quién se sienta dónde
 

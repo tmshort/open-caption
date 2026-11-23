@@ -79,7 +79,7 @@ Le programme se moque du réseau sur lequel il est, tant que les appareils du pu
 - **Rendez-le ennuyeux :** réglez l'ordinateur pour qu'il ne se mette *jamais en veille* quand il est branché, désactivez les redémarrages automatiques pour mises à jour autour des dates de spectacle, fermez les autres programmes et gardez l'écran ouvert ou réglé pour ne pas se mettre en veille à la fermeture.
 - **Pare-feu :** autorisez le programme sur les **réseaux privés** (Windows le demande la première fois ; sous macOS, autorisez les connexions entrantes pour lui).
 - **Adresse :** filaire et réservée (voir plus haut). Si l'adresse change, les codes QR imprimés cessent de fonctionner.
-- **Heure :** l'horloge n'a pas d'importance.
+- **Heure :** gardez l'horloge et le fuseau horaire corrects. Un compte à rebours jusqu'à une heure du jour, les heures du rapport d'audience et les certificats HTTPS en dépendent. Les téléphones n'ont pas besoin d'avoir l'horloge à l'heure.
 
 ### Qui s'assoit où
 

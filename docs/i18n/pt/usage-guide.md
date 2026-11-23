@@ -79,7 +79,7 @@ O programa não se importa com a rede em que está, desde que os dispositivos do
 - **Deixe-o entediante:** configure o computador para *nunca suspender* quando ligado na tomada, desative as reinicializações automáticas para atualizações perto das datas de espetáculo, feche outros programas e mantenha a tampa aberta ou configurada para não suspender.
 - **Firewall:** permita o programa em **redes privadas** (o Windows pergunta na primeira vez; no macOS, permita as conexões de entrada para ele).
 - **Endereço:** por cabo e reservado (veja acima). Se o endereço mudar, os códigos QR impressos deixam de funcionar.
-- **Hora:** o relógio não importa.
+- **Hora:** mantenha o relógio e o fuso horário corretos. Uma contagem regressiva até uma hora do dia, as horas do relatório de audiência e os certificados HTTPS dependem deles. Os telefones não precisam de ter o relógio certo.
 
 ### Quem fica onde
 

@@ -79,7 +79,7 @@ The program does not care which network it is on, as long as audience devices ca
 - **Make it boring:** set the computer to *never sleep* while plugged in, disable automatic restarts for updates around show dates, close other programs, and keep the lid open or set the lid not to sleep.
 - **Firewall:** allow the program on **private networks** (Windows asks the first time; on macOS allow incoming connections for it).
 - **Address:** wired and reserved (see above). If the address changes, printed QR codes stop working.
-- **Time:** the clock does not matter.
+- **Time:** keep the clock and time zone correct. A countdown to a time of day, the audience report's times and HTTPS certificates all depend on it. Phones do not need a correct clock.
 
 ### Who sits where
 
