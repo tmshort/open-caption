@@ -1,8 +1,8 @@
 # Guida all'uso di open-caption
 
-open-caption mostra sottotitoli in diretta sui telefoni, tablet e schermi del pubblico durante una commedia o un musical. Un **operatore** volontario segue lo spettacolo e preme la barra spaziatrice a ogni riga; ogni dispositivo sul WiFi del locale mostra la riga un istante dopo. Sui dispositivi del pubblico non si installa nulla, e nessuno deve toccare niente.
+open-caption mostra sottotitoli in diretta sui telefoni, tablet e schermi del pubblico durante uno spettacolo di prosa o un musical. Un **operatore** volontario segue lo spettacolo e preme la barra spaziatrice a ogni riga; ogni dispositivo sulla rete Wi-Fi della sala mostra la riga un istante dopo. Sui dispositivi del pubblico non si installa nulla, e nessuno deve toccare niente.
 
-Questa guida spiega cosa comprare e come disporlo ([Installazione](#raccomandazioni-di-installazione)), come preparare uno spettacolo, come condurlo, e contiene una lista di controllo per il giorno dello spettacolo. Il pulsante **Aiuto** del programma copre gli stessi argomenti in pezzi più piccoli, e [venue-network-guide.md](venue-network-guide.md) è scritta per chi gestisce il WiFi dell'edificio.
+Questa guida spiega cosa comprare e come disporlo ([Installazione](#raccomandazioni-di-installazione)), come preparare uno spettacolo, come condurlo, e contiene una lista di controllo per il giorno dello spettacolo. Il pulsante **Aiuto** del programma tratta gli stessi argomenti in sezioni più brevi, e [venue-network-guide.md](venue-network-guide.md) è scritta per chi gestisce il Wi-Fi dell'edificio.
 
 Indice: [Le componenti](#le-componenti) · [Raccomandazioni di installazione](#raccomandazioni-di-installazione) · [Installazione e avvio](#installazione-e-avvio) · [Preparare uno spettacolo](#preparare-uno-spettacolo) · [Condurre lo spettacolo](#condurre-lo-spettacolo) · [Lista di controllo del giorno dello spettacolo](#lista-di-controllo-del-giorno-dello-spettacolo) · [Risoluzione dei problemi](#risoluzione-dei-problemi) · [Manutenzione](#manutenzione) · [Scheda rapida dell'operatore](#scheda-rapida-dell-operatore)
 
@@ -13,7 +13,7 @@ Indice: [Le componenti](#le-componenti) · [Raccomandazioni di installazione](#r
 | **Il server** | Il programma `open-caption`, in esecuzione su un computer (macOS, Windows o Linux). Conserva il file dello spettacolo e invia le righe a tutti. |
 | **Pagina di configurazione** (`/admin`) | Dove i volontari preparano uno spettacolo: file dello spettacolo, immagini, aspetto, prova. Password amministratore. |
 | **Pagina dell'operatore** (`/operator`) | Dove l'operatore segue lo spettacolo e invia le righe. Password operatore. Il passo **Condividi** della configurazione e il suo link nel menu la aprono. |
-| **Pagina di seguimento** (`/follow`) | Un secondo dispositivo, come il tablet del direttore di scena, che si limita a guardare lo spettacolo: vede le righe, le note e la posizione e non può inviare nulla. Password spettatore facoltativa; la aprono anche le password di operatore e amministratore. Il passo **Condividi** della configurazione la elenca. |
+| **Pagina Segui** (`/follow`) | Un secondo dispositivo, come il tablet del direttore di scena, che si limita a guardare lo spettacolo: vede le righe, le note e la posizione e non può inviare nulla. Password spettatore facoltativa; la aprono anche le password di operatore e amministratore. Il passo **Condividi** della configurazione la elenca. |
 | **Pagina del pubblico** (`/`) | Ciò che il pubblico apre sui propri dispositivi. Nessuna password. Un browser su un proiettore o un grande monitor può mostrare la stessa pagina per tutta la sala. |
 
 Tutto gira su un solo computer. Il pubblico, l'operatore e i volontari della configurazione usano normali browser web.
@@ -22,19 +22,19 @@ Tutto gira su un solo computer. Il pubblico, l'operatore e i volontari della con
 
 ### La versione breve
 
-1. **Usa un punto di accesso WiFi dedicato ai sottotitoli** a meno che la rete ospiti del locale non sia nota per funzionare (vedi sotto). Elimina il rischio maggiore: una rete che non controlli.
+1. **Usa un punto di accesso Wi-Fi dedicato ai sottotitoli** a meno che non si sappia già che la rete per gli ospiti della sala funziona (vedi sotto). Elimina il rischio maggiore: una rete che non controlli.
 2. **Metti il server su una connessione cablata** verso quel punto di accesso, con un indirizzo riservato.
 3. **Usa un punto di accesso fatto per le folle** (adatto a più di 100 dispositivi) collocato nell'area del pubblico.
-4. **Tieni il computer server collegato alla corrente, sveglio e per il resto inattivo** durante lo spettacolo.
-5. **Stampa il codice QR** e mettilo nel programma di sala e nell'ingresso.
-6. **Prova con alcuni telefoni veri** nella sala vera prima della prima.
+4. **Tieni il computer server collegato alla corrente, sempre acceso (senza sospensione) e senza altri programmi in uso** durante lo spettacolo.
+5. **Stampa il codice QR** e mettilo nel programma di sala e all'ingresso.
+6. **Prova con alcuni telefoni veri** nella sala vera prima del debutto.
 
 ### Opzioni di rete
 
 | Opzione | Quando usarla | Note |
 |---------|---------------|------|
-| **A. Punto di accesso dedicato (consigliato)** | Qualsiasi locale, specie se non puoi cambiare la rete dell'edificio | Porti tu un router o un punto di accesso. Il pubblico si collega al suo WiFi (per esempio «Theater Captions»). Non serve connessione a internet. Controlli tu capacità, prenotazioni e firewall. |
-| **B. Il WiFi ospiti del locale** | Il personale di rete del locale conferma che i dispositivi ospiti possono raggiungere il tuo computer | Il più economico. Chiedi un indirizzo riservato per il tuo computer e che sia consentito il traffico dagli ospiti al server. Vedi [venue-network-guide.md](venue-network-guide.md). |
+| **A. Punto di accesso dedicato (consigliato)** | Qualsiasi sala, specie se non puoi cambiare la rete dell'edificio | Porti tu un router o un punto di accesso. Il pubblico si collega alla sua rete Wi-Fi (per esempio «Theater Captions»). Non serve connessione a internet. Controlli tu capacità, prenotazioni e firewall. |
+| **B. La rete Wi-Fi per gli ospiti della sala** | Il personale di rete della sala conferma che i dispositivi ospiti possono raggiungere il tuo computer | Il più economico. Chiedi un indirizzo riservato per il tuo computer e che sia consentito il traffico dagli ospiti al server. Vedi [venue-network-guide.md](venue-network-guide.md). |
 | **C. L'hotspot del tuo portatile** | Solo prove e pubblici minuscoli | Gli hotspot dei portatili di solito reggono solo una manciata di dispositivi. Non per una sala piena. |
 
 ### L'opzione A in dettaglio (punto di accesso dedicato)
@@ -54,37 +54,37 @@ Tutto gira su un solo computer. Il pubblico, l'operatore e i volontari della con
 
 - **Attrezzatura:** un punto di accesso o router professionale o semiprofessionale progettato per molti dispositivi simultanei (cerca più di 100 client nelle specifiche e il supporto ai 5 GHz), con una porta Ethernet. I router domestici economici faticano spesso oltre 30–50 dispositivi. Per una sala di circa 150 posti, prevedi un punto di accesso capace, e un secondo per una sala lunga o larga.
 - **Impostazioni:**
-  - Crea un SSID con un nome breve e una passphrase WPA2 semplice e stampabile, oppure senza passphrase se il locale consente una rete aperta. Stampala sul cartello QR.
+  - Crea un SSID con un nome breve e una passphrase WPA2 semplice e stampabile, oppure senza passphrase se la sala consente una rete aperta. Stampala sul cartello QR.
   - Attiva i **5 GHz**, e preferiscili. Usa larghezze di canale di 20 o 40 MHz in un edificio affollato.
-  - Lascia attivo l'**isolamento dei client** se è offerto. I dispositivi del pubblico parlano solo con il server, mai tra loro.
+  - Lascia attivo l'**isolamento dei client** se è offerto. I dispositivi del pubblico comunicano solo con il server, mai tra loro.
   - Dai al computer dei sottotitoli una **prenotazione DHCP** (o un indirizzo fisso) perché l'indirizzo non cambi mai, e stampa l'indirizzo sul cartello.
   - Non serve una connessione a internet, e il programma non ne usa mai una.
-- **Collocazione:** metti il punto di accesso nell'area del pubblico, in alto e lontano dai muri, non in un retro né nell'ingresso. Non metterlo dietro il palco o il rack delle luci. Un portatile su un tavolo lontano va bene: è collegato via cavo.
+- **Collocazione:** metti il punto di accesso nell'area del pubblico, in alto e lontano dai muri, non in un ripostiglio né all'ingresso. Non metterlo dietro il palco o il rack delle luci. Il portatile può stare su un tavolo lontano: è collegato via cavo.
 - **Alimentazione:** usa una ciabatta con protezione dalle sovratensioni. Un piccolo UPS sul punto di accesso e sul server elimina il rischio di una spina scollegata.
 
-### L'opzione B in dettaglio (il WiFi ospiti del locale)
+### L'opzione B in dettaglio (la rete Wi-Fi per gli ospiti della sala)
 
 Al programma non importa su quale rete sia, purché i dispositivi del pubblico possano raggiungerlo. Prima di farci affidamento:
 
 - Chiedi l'**accesso degli ospiti al server**: il tuo computer deve essere raggiungibile dall'SSID ospiti, sulla porta TCP 80 (e 443 se attivi HTTPS). L'«isolamento dei client» tra ospiti va bene; impedire agli ospiti di raggiungere *il tuo computer* no.
 - Chiedi un **indirizzo riservato** per la scheda di rete del tuo computer.
 - Collega il computer alla rete via **Ethernet** se possibile.
-- Prova con un telefono sul WiFi ospiti con largo anticipo (il passo Condividi mostra l'indirizzo).
-- Tieni l'opzione A in una borsa come riserva se lo spettacolo è importante.
+- Prova con un telefono collegato alla rete Wi-Fi per gli ospiti con largo anticipo (il passo Condividi mostra l'indirizzo).
+- Se lo spettacolo è importante, tieni in borsa l'attrezzatura dell'opzione A come riserva.
 
 ### Il computer dei sottotitoli
 
 - **Qualsiasi portatile o mini-PC normale** va bene. Il programma usa pochissima memoria (decine di megabyte) e quasi nessun processore. Usa un computer che puoi tenere collegato alla corrente.
 - **Sistema operativo:** macOS, Windows o Linux. Usa lo stesso computer per tutti gli spettacoli se puoi, così password, spettacoli e indirizzo restano gli stessi.
-- **Rendilo noioso:** imposta il computer perché non vada *mai in stop* quando è alimentato, disattiva i riavvii automatici per gli aggiornamenti intorno alle date degli spettacoli, chiudi gli altri programmi e tieni il coperchio aperto o impostato per non andare in stop.
-- **Firewall:** consenti il programma sulle **reti private** (Windows lo chiede la prima volta; su macOS consenti le connessioni in entrata per esso).
+- **Niente sorprese:** imposta il computer perché non vada *mai in sospensione* quando è alimentato, disattiva i riavvii automatici per gli aggiornamenti intorno alle date degli spettacoli, chiudi gli altri programmi e tieni il coperchio aperto o impostato per non andare in sospensione.
+- **Firewall:** consenti il programma sulle **reti private** (Windows lo chiede la prima volta; su macOS consenti le connessioni in entrata per il programma).
 - **Indirizzo:** cablato e riservato (vedi sopra). Se l'indirizzo cambia, i codici QR stampati smettono di funzionare.
 - **Ora:** l'orologio non conta.
 
 ### Chi sta dove
 
 - **L'operatore** ha bisogno di una vista libera sul palco e di un dispositivo affidabile. La disposizione più semplice è il computer dei sottotitoli stesso al banco tecnico. La pagina dell'operatore è pensata per un computer con tastiera (Spazio invia la riga successiva). Usa il computer dei sottotitoli o un altro portatile sulla stessa rete (`http://<indirizzo del computer>/operator`), così l'operatore può sedersi dove vede il palco. Un telefono o un tablet mostrano la pagina, ma **non sono consigliati**: su un touch screen è facile toccare per sbaglio durante lo spettacolo. Un telecomando Bluetooth o una tastiera è una buona alternativa.
-- **Solo un operatore alla volta controlla lo spettacolo.** Chiunque altro apra la pagina dell'operatore può guardare, e può usare **Subentra** se l'operatore gli passa la mano.
+- **Solo un operatore alla volta controlla lo spettacolo.** Chiunque altro apra la pagina dell'operatore può guardare, e può usare **Subentra** se l'operatore gli cede il controllo.
 - **I volontari della configurazione** usano la pagina di configurazione da qualsiasi computer della rete prima dello spettacolo, o dal computer dei sottotitoli.
 - **Uno schermo condiviso** per tutta la sala: apri l'indirizzo del pubblico su un computer collegato a un proiettore o a un grande monitor, aggiungi `?display=projector` all'indirizzo per un testo grande e nessun ingombro sullo schermo, e metti il browser a schermo intero (`F11`, oppure avvia Chrome con `--kiosk`).
 
@@ -94,14 +94,14 @@ Per la maggior parte dei teatri, il modo più semplice è il migliore: avvia il 
 
 Se il computer deve avviare il server da solo dopo un riavvio, la cartella [`deploy/`](../../../deploy/) contiene file pronti per Linux (systemd), macOS (launchd) e Windows (Utilità di pianificazione). Ognuno comincia con i propri passi di installazione.
 
-### Portare la gente alla pagina
+### Far arrivare il pubblico alla pagina
 
 In ordine di affidabilità:
 
 1. **Il codice QR e il cartello** (Configurazione → Condividi → *Stampa un cartello con codice QR per l'ingresso*). Mettilo al muro, nel programma di sala e sul cartoncino dietro le poltrone. È su questo che bisogna contare.
-2. **Un indirizzo breve.** Sulla porta 80 non c'è un `:porta` da scrivere. Il programma si annuncia anche come **`open-caption.local`** (cambialo in Configurazione → Impostazioni → Rete → *Usa un nome*): dove la rete ospiti lo permette, `http://open-caption.local/` funziona sulla maggior parte dei telefoni senza configurare nulla. Alcune reti ospiti bloccano questo tipo di annuncio, quindi non stampare solo il nome; il cartello QR usa l'indirizzo numerico. Un nome nel DNS del router (come `captions.theater`) funziona ovunque ma richiede che il locale lo aggiunga.
+2. **Un indirizzo breve.** Sulla porta 80 non c'è un `:porta` da scrivere. Il programma si annuncia anche come **`open-caption.local`** (cambialo in Configurazione → Impostazioni → Rete → *Usa un nome*): dove la rete per gli ospiti lo permette, `http://open-caption.local/` funziona sulla maggior parte dei telefoni senza configurare nulla. Alcune reti per gli ospiti bloccano questo tipo di annuncio, quindi non stampare solo il nome; il cartello QR usa l'indirizzo numerico. Un nome nel DNS del router (come `captions.theater`) funziona ovunque ma richiede che la sala lo aggiunga.
 3. **La pagina di benvenuto del punto di accesso** (un «portale ospiti» o «captive portal» che reindirizza al tuo indirizzo dopo il collegamento). Si configura sul router o punto di accesso, non in questo programma. Vedi [venue-network-guide.md](venue-network-guide.md).
-4. **Opzione 114 del DHCP e `/captive-api` (avanzato, sperimentale).** L'opzione 114 è un'impostazione DHCP che indirizza i dispositivi a una «API del captive portal». Il programma risponde a quell'API su `/captive-api` (per esempio `https://<indirizzo>/captive-api`) con «questa rete non è captive» e l'indirizzo della pagina. Due avvertenze: **non fa aprire ai telefoni la pagina dei sottotitoli da soli**, e lo standard (RFC 8910/8908) richiede **HTTPS con un certificato di cui i dispositivi si fidano**, quindi un'impostazione con `http://` semplice o il certificato autofirmato del programma viene ignorata. Configurala solo se il locale usa già l'opzione 114 e può fornire un certificato fidato. Non è stata provata su dispositivi reali.
+4. **Opzione 114 del DHCP e `/captive-api` (avanzato, sperimentale).** L'opzione 114 è un'impostazione DHCP che indirizza i dispositivi a una «API del captive portal». Il programma risponde a quell'API su `/captive-api` (per esempio `https://<indirizzo>/captive-api`) con «questa rete non è captive» e l'indirizzo della pagina. Due avvertenze: **non fa aprire ai telefoni la pagina dei sottotitoli da soli**, e lo standard (RFC 8910/8908) richiede **HTTPS con un certificato di cui i dispositivi si fidano**, quindi un'impostazione con `http://` semplice o il certificato autofirmato del programma viene ignorata. Configurala solo se la sala usa già l'opzione 114 e può fornire un certificato attendibile. Non è stata provata su dispositivi reali.
 
 ### Porte e indirizzi
 
@@ -112,9 +112,9 @@ In ordine di affidabilità:
 ### Sicurezza
 
 - La pagina del pubblico può solo leggere. Non può cambiare lo spettacolo né raggiungere le pagine di configurazione e dell'operatore.
-- Configurazione e operatore richiedono ciascuno la propria password (conservata in `config.yaml` solo come hash, un'impronta a senso unico che non si può rileggere; il file viene inoltre creato leggibile solo da te). Una password **spettatore** facoltativa (in **Impostazioni**) lascia che un secondo dispositivo, come il tablet di un direttore di scena, apra la pagina di visione (`/follow`; la aprono anche le password di operatore e di amministratore) e guardi lo spettacolo senza poter inviare nulla. Dai la password operatore all'operatore, non quella amministratore. Le password si possono cambiare da **Impostazioni** nella configurazione.
-- Sul computer che esegue il programma, Configurazione e la pagina dell'operatore si aprono **senza password** quando l'indirizzo inizia con `localhost`, `127.0.0.1` o `[::1]` (la persona a quel computer è considerata amministratore). Gli altri computer, e qualsiasi richiesta inoltrata da un proxy, accedono ancora con una password. Imposta `access.local_auto_login: false` in `config.yaml` se altre persone possono accedere a questo computer.
-- **Chiunque riesca a raggiungere il server può aprire le pagine di accesso della configurazione e dell'operatore, e con `http://` semplice le password viaggiano non cifrate sul WiFi.** Su un WiFi ospiti condiviso questo significa che uno spettatore curioso potrebbe catturare una password e prendere il controllo dei sottotitoli. Riduci il rischio, in quest'ordine:
+- Configurazione e operatore richiedono ciascuno la propria password (conservata in `config.yaml` solo come hash, un'impronta a senso unico che non si può rileggere; il file viene inoltre creato leggibile solo da te). Una password **spettatore** facoltativa (in **Impostazioni**) lascia che un secondo dispositivo, come il tablet di un direttore di scena, apra la pagina Segui (`/follow`; la aprono anche le password di operatore e di amministratore) e guardi lo spettacolo senza poter inviare nulla. Dai la password operatore all'operatore, non quella amministratore. Le password si possono cambiare da **Impostazioni** nella configurazione.
+- Sul computer che esegue il programma, Configurazione e la pagina dell'operatore si aprono **senza password** quando l'indirizzo inizia con `localhost`, `127.0.0.1` o `[::1]` (chi usa quel computer è considerato l'amministratore). Gli altri computer, e qualsiasi richiesta inoltrata da un proxy, accedono ancora con una password. Imposta `access.local_auto_login: false` in `config.yaml` se altre persone possono accedere a questo computer.
+- **Chiunque riesca a raggiungere il server può aprire le pagine di accesso della configurazione e dell'operatore, e con `http://` semplice le password viaggiano non cifrate sul Wi-Fi.** Su una rete Wi-Fi per gli ospiti condivisa questo significa che uno spettatore curioso potrebbe catturare una password e prendere il controllo dei sottotitoli. Riduci il rischio, in quest'ordine:
   1. **Limita quali computer possono aprirle.** In `config.yaml`:
      ```yaml
      access:
@@ -129,7 +129,7 @@ In ordine di affidabilità:
 
 ## Installazione e avvio
 
-1. **Procurati il programma.** Scarica la versione per il tuo computer dalla pagina *Releases* del repository e decomprimila (oppure costruiscila tu: vedi le guide alla compilazione nella cartella `docs` del repository dei sorgenti). Mettila in una cartella che conserverai, per esempio `Documenti/open-caption`.
+1. **Procurati il programma.** Scarica la versione per il tuo computer dalla pagina *Releases* del repository e decomprimila (oppure compilala tu: vedi le guide alla compilazione nella cartella `docs` del repository dei sorgenti). Mettila in una cartella che conserverai, per esempio `Documenti/open-caption`.
 2. **Primo avvio.** Eseguilo: doppio clic su Windows, oppure in un terminale `./open-caption` (macOS/Linux). Il programma non è firmato, quindi al primo avvio può servire un clic in più: su macOS *clic destro → Apri* (oppure **Apri comunque** in Impostazioni di Sistema → Privacy e sicurezza), su Windows *Ulteriori informazioni → Esegui comunque* nella finestra di SmartScreen.
 3. **Annota le password.** La prima volta, il programma stampa le password **amministratore** e **operatore** e dove si trova `config.yaml`. Restano in quel file.
 4. La pagina di configurazione si apre nel tuo browser. Se non succede, apri `http://localhost/admin` (o `http://localhost:8080/admin` se la console dice di aver usato la porta 8080).
@@ -147,16 +147,16 @@ Apri la pagina di configurazione e segui i sei passi in alto (un settimo, **Rapp
 2. **File dello spettacolo.** Incolla il file dello spettacolo o trascina un file `.txt` o `.md`. Ogni riga diventa un sottotitolo. Correggi ciò che è elencato nella scheda *Problemi* accanto all'editor; fai clic su uno per saltare alla sua riga. Salva.
 3. **Immagini.** Carica le immagini che il file dello spettacolo usa (PNG, JPG, GIF o WebP, idealmente sotto 1 MB ciascuna).
 4. **Aspetto.** Scegli colori, carattere e dimensione del testo. I valori predefiniti (bianco su nero, grande) vanno meglio per la maggior parte delle persone. Sono incorporati due caratteri per la leggibilità: uno adatto alla dislessia (OpenDyslexic) e uno ad alta leggibilità (Atkinson Hyperlegible, progettato per l'ipovisione). Anche i singoli spettatori possono scegliere l'uno o l'altro per il proprio dispositivo dal piccolo controllo **Aa**.
-5. **Prova.** Fai una prova privata: premi Spazio come farebbe l'operatore, e vedi accanto lo schermo del pubblico. Nulla raggiunge il pubblico.
-6. **Condividi.** Controlla l'elenco di preparazione, stampa il cartello QR e premi **Apri la pagina Conduci**.
+5. **Verifica.** Fai una prova privata: premi Spazio come farebbe l'operatore, e vedi accanto lo schermo del pubblico. Nulla raggiunge il pubblico.
+6. **Condividi.** Controlla l'elenco di preparazione, stampa il cartello QR e premi **Apri la pagina Regia**.
 
-**Lavorare su uno spettacolo non significa renderlo lo spettacolo attivo.** *Lavora su questo spettacolo* sceglie solo quale spettacolo modifica la configurazione (il suo nome è nell'intestazione). Lo spettacolo che il pubblico riceve, quello **attivo** (segnato ATTIVO nel passo Spettacoli e mostrato nell'intestazione dall'etichetta Attivo, ambra in attesa e rossa in onda), cambia solo quando premi **Apri la pagina Conduci** nel passo Condividi di quello spettacolo. Uno spettacolo in onda viene sostituito solo dopo una richiesta di conferma.
+**Lavorare su uno spettacolo non significa renderlo lo spettacolo attivo.** *Lavora su questo spettacolo* sceglie solo quale spettacolo stai modificando nella configurazione (il suo nome è nell'intestazione). Lo spettacolo che il pubblico riceve, quello **attivo** (segnato ATTIVO nel passo Spettacoli e mostrato nell'intestazione dall'etichetta Attivo, ambra in attesa e rossa in onda), cambia solo quando premi **Apri la pagina Regia** nel passo Condividi di quello spettacolo. Uno spettacolo in onda viene sostituito solo dopo una richiesta di conferma.
 
-Aprire la pagina dell'operatore carica lo spettacolo **in attesa**: il pubblico vede la schermata di attesa della sala (un logo e un messaggio, impostati una sola volta in **Impostazioni → Schermo del pubblico**) e nulla dello spettacolo, così puoi preparare, provare e controllare la pagina dell'operatore con calma. Quando sei pronto, premi **Spazio** (il pulsante dice **AVVIA**) nella pagina dell'operatore per mettere lo spettacolo in onda. **Metti in attesa…** lo ritira di nuovo senza perdere il punto.
+Aprire la pagina dell'operatore carica lo spettacolo **in attesa**: il pubblico vede la schermata di attesa della sala (un logo e un messaggio, impostati una sola volta in **Impostazioni → Schermo del pubblico**) e nulla dello spettacolo, così puoi preparare, provare e controllare la pagina dell'operatore con calma. Quando è tutto pronto, premi **Spazio** (il pulsante dice **AVVIA**) nella pagina dell'operatore per mettere lo spettacolo in onda. **Metti in attesa…** lo toglie di nuovo dall'onda senza perdere il punto in cui era.
 
 ### Scrivere il file dello spettacolo
 
-Chi prepara il file dello spettacolo non ha bisogno di leggere il resto di questa guida: [Preparare un file dello spettacolo](../../../web/help/admin-preparing-a-show-file.md) copre il lavoro dal copione al file finito, compresa la modifica nel tuo programma, e [Primi passi](../../../web/help/admin-getting-started.md) percorre i sei passaggi della Configurazione.
+Chi prepara il file dello spettacolo non ha bisogno di leggere il resto di questa guida: [Preparare un file dello spettacolo](../../../web/help/it/admin-preparing-a-show-file.md) copre il lavoro dal copione al file finito, compresa la modifica nel tuo programma, e [Primi passi](../../../web/help/it/admin-getting-started.md) descrive i sei passi della configurazione.
 
 Un file dello spettacolo è testo semplice. La versione breve:
 
@@ -188,8 +188,8 @@ EDWIN: Whistling all day long
 - Le **indicazioni di scena** tra `(parentesi)` vengono mostrate in corsivo.
 - I **testi delle canzoni** tra note `♪`, in corsivo: inizia una riga con `~`, oppure racchiudi la canzone in `[song]`…`[/song]`. Per due cantanti insieme (un duetto o contrappunto), metti le loro righe tra `[together]` e `[/together]`, oppure uniscile con ` || ` su una riga; entrambe compaiono insieme con una pressione di Spazio. I pulsanti **♪**, **♫** e **🎵 Canzone** dell'editor li inseriscono. Vedi l'argomento di aiuto *Musical*.
 - I **cicli** (pre-spettacolo e intervallo) ripetono immagini e testo finché l'operatore non va avanti. Un ciclo proprio all'inizio del file dello spettacolo parte quando l'operatore mette lo spettacolo in onda (AVVIA).
-- Le **note** `[note: …]` e i segnalibri `[section: …]` sono solo per l'operatore. `[pace: 8s]` dice all'operatore quanto resta di solito la riga successiva, e una riga che inizia con `# ` è un titolo che funziona come un segnalibro.
-- L'argomento di aiuto **Scrivere un file dello spettacolo** elenca tutto, con esempi, e la scheda *Promemoria* accanto all'editor lo riassume.
+- Le **note** `[note: …]` e i segnalibri `[section: …]` sono solo per l'operatore. `[pace: 8s]` dice all'operatore quanto resta di solito sullo schermo la riga successiva, e una riga che inizia con `# ` è un titolo che funziona come un segnalibro.
+- L'argomento di aiuto **Scrivere un file dello spettacolo** elenca tutto, con esempi, e la scheda *Guida rapida* accanto all'editor lo riassume.
 
 ### Impostazioni dello spettacolo (titolo, aspetto e altro)
 
@@ -213,26 +213,26 @@ Fai clic su **File ▾ → Personaggi…** sopra l'editor per vedere tutti i nom
 
 ### Tornare indietro
 
-Ogni salvataggio conserva la versione sostituita (le ultime 50). **File ▾ → Versioni precedenti…** sopra l'editor le elenca; **Carica** ne mette una nell'editor, e **Salva** la rende attuale. **Confronta** mostra riga per riga cosa cambierebbe caricandone una, e una versione a cui dai un nome (o **Conserva** per ciò che è salvato adesso) non viene mai dimenticata. Esporta comunque prima dello spettacolo: le versioni precedenti vivono nella cartella dati, non nell'esportazione.
+Ogni salvataggio conserva la versione sostituita (le ultime 50). **File ▾ → Versioni precedenti…** sopra l'editor le elenca; **Carica** ne mette una nell'editor, e **Salva** la rende attuale. **Confronta** mostra riga per riga cosa cambierebbe caricandone una, e una versione a cui dai un nome (o **Conserva** per ciò che è salvato adesso) non viene mai dimenticata. Esporta comunque prima dello spettacolo: le versioni precedenti sono conservate nella cartella dati, non nell'esportazione.
 
-### Due persone che modificano
+### Due persone che modificano lo stesso file
 
 Se qualcun altro salva un file dello spettacolo mentre tu lo hai aperto, il programma ti avvisa al salvataggio invece di sovrascrivere il suo lavoro, e ti lascia prendere la sua versione o tenere la tua.
 
 ### Più di una lingua
 
-Uno spettacolo può offrire sottotitoli in più lingue. In Configurazione → File dello spettacolo, apri il menu della lingua a sinistra della barra degli strumenti e scegli **＋ Aggiungi una lingua**, lascia spuntata «Parti da una copia del file principale dello spettacolo» e traduci le parole. Ogni lingua è un proprio file dello spettacolo con le stesse righe, comandi e schermate vuote nello stesso ordine, così una pressione di Spazio mostra lo stesso momento in ogni lingua. L'operatore segue solo la lingua principale. I dispositivi del pubblico ricevono la lingua impostata sul loro telefono (o la principale) e possono cambiare dal piccolo menu 🌐, oppure ricevere un link che finisce con `?lang=es`. Una traduzione che smette di coincidere con il file principale dello spettacolo viene segnalata e trattenuta finché non è corretta. Lo spettacolo di esempio include una traduzione in spagnolo da guardare. Vedi l'argomento di aiuto *Lingue*.
+Uno spettacolo può offrire sottotitoli in più lingue. In Configurazione → File dello spettacolo, apri il menu della lingua a sinistra della barra degli strumenti e scegli **＋ Aggiungi una lingua**, lascia spuntata «Parti da una copia del file principale dello spettacolo» e traduci le parole. Ogni lingua ha un proprio file dello spettacolo con le stesse righe, comandi e schermate vuote nello stesso ordine, così, premendo Spazio una volta, in ogni lingua compare lo stesso momento. L'operatore segue solo la lingua principale. I dispositivi del pubblico ricevono la lingua impostata sul loro telefono (o la principale) e possono cambiare dal piccolo menu 🌐, oppure ricevere un link che finisce con `?lang=es`. Una traduzione che smette di coincidere con il file principale dello spettacolo viene segnalata e non viene mostrata al pubblico finché non è corretta. Lo spettacolo di esempio include una traduzione in spagnolo da guardare. Vedi l'argomento di aiuto *Lingue*.
 
 ### Cambiare cose durante le prove e gli spettacoli
 
-Puoi modificare e risalvare un file dello spettacolo mentre uno spettacolo è in diretta (per esempio per correggere un refuso). Il programma ti chiede di scrivere il nome dello spettacolo per sicurezza, mantiene il punto dell'operatore per numero di riga, e avvisa se il numero di righe è cambiato.
+Puoi modificare e risalvare un file dello spettacolo mentre uno spettacolo è in onda (per esempio per correggere un refuso). Il programma ti chiede di scrivere il nome dello spettacolo per sicurezza, mantiene il punto dell'operatore per numero di riga, e avvisa se il numero di righe è cambiato.
 
 ## Condurre lo spettacolo
 
 ### Prima che arrivi il pubblico
 
 1. Avvia il server e apri la **pagina dell'operatore**; accedi. Dovrebbe dire **Hai il controllo**.
-2. In Configurazione → Condividi premi **Apri la pagina Conduci**. Lo spettacolo viene caricato in attesa: il pubblico vede la schermata di attesa della sala. Quando sei pronto, premi **Spazio** (AVVIA) nella pagina dell'operatore per metterlo in onda. Un ciclo di pre-spettacolo, se il file dello spettacolo ne ha uno, parte allora su ogni schermo.
+2. In Configurazione → Condividi premi **Apri la pagina Regia**. Lo spettacolo viene caricato in attesa: il pubblico vede la schermata di attesa della sala. Quando è tutto pronto, premi **Spazio** (AVVIA) nella pagina dell'operatore per metterlo in onda. Un ciclo di pre-spettacolo, se il file dello spettacolo ne ha uno, parte allora su ogni schermo.
 3. Apri l'indirizzo del pubblico sul tuo telefono e, se ne hai uno, sul proiettore. Controlla che il conteggio degli spettatori sulla pagina dell'operatore salga.
 4. Metti il cartello QR dove la gente lo veda.
 
@@ -240,15 +240,15 @@ Puoi modificare e risalvare un file dello spettacolo mentre uno spettacolo è in
 
 - **Spazio** invia la riga successiva (anche Freccia destra, Pag giù, Invio e la maggior parte dei telecomandi).
 - **Backspace** annulla l'ultima cosa che hai inviato.
-- **B** svuota gli schermi del pubblico (nasconde tutto; gli stessi sottotitoli tornano quando premi di nuovo **B**). **C** li cancella (cancella i sottotitoli, così la riga successiva inizia su uno schermo vuoto). **Backspace** annulla entrambe le cose.
+- **B** oscura gli schermi del pubblico (nasconde tutto; gli stessi sottotitoli tornano quando premi di nuovo **B**). **C** cancella i sottotitoli, così la riga successiva inizia su uno schermo vuoto. **Backspace** annulla entrambe le cose.
 - **Maiusc+Q** ferma un ciclo di intervallo o di pre-spettacolo (schermo vuoto). **Spazio** continua.
-- **Annuncio…** mette un avviso singolo su ogni schermo («Lo spettacolo riprenderà a breve»). **Indietro** lo toglie.
+- **Annuncio…** mette un annuncio occasionale su ogni schermo («Lo spettacolo riprenderà a breve»). **Indietro** lo toglie.
 - Fai clic su una riga e conferma per saltare ovunque. **/** cerca nel file dello spettacolo.
 - La riga con la freccia gialla è la *successiva*. Il punto verde segna ciò che è sullo schermo adesso.
 
 ### Quando lo spettacolo finisce
 
-Premi `Ctrl+C` nella finestra del programma (o ferma il servizio). La posizione viene salvata. Per rifare lo spettacolo dall'inizio, usa **Riavvia lo spettacolo…** nella pagina dell'operatore, oppure **Riavvia lo spettacolo…** in Configurazione → Condividi. Entrambi lo riportano in attesa. **Quante persone l'hanno usato?** Quando lo spettacolo arriva alla fine, il banner della pagina dell'operatore dice *Fine dello spettacolo.* con un link **Rapporto sul pubblico** (il passo **Rapporto** della configurazione mostra l'ultimo). Conta i dispositivi diversi che hanno usato la pagina del pubblico mentre lo spettacolo era in onda, per quanto sia rimasto ciascuno (un telefono che è caduto dal WiFi ed è tornato conta una volta), con un grafico dei dispositivi nel tempo (che mostra quando sono andati i cicli prima dello spettacolo e nell'intervallo), il momento di maggiore affluenza, le lingue e una riga per dispositivo; si può stampare o scaricare come file CSV. I dispositivi si distinguono per indirizzo e tipo di browser, quindi è una stima. I rapporti sono conservati nella cartella `reports` della cartella dei dati.
+Premi `Ctrl+C` nella finestra del programma (o ferma il servizio). La posizione viene salvata. Per rifare lo spettacolo dall'inizio, usa **Riavvia lo spettacolo…** nella pagina dell'operatore, oppure **Riavvia lo spettacolo…** in Configurazione → Condividi. Entrambi lo riportano in attesa. **Quante persone l'hanno usato?** Quando lo spettacolo arriva alla fine, il banner della pagina dell'operatore dice *Fine dello spettacolo.* con un link **Rapporto sul pubblico** (il passo **Rapporto** della configurazione mostra l'ultimo). Conta i dispositivi diversi che hanno usato la pagina del pubblico mentre lo spettacolo era in onda, indipendentemente da quanto tempo sia rimasto collegato ciascuno (un telefono che ha perso il Wi-Fi e si è ricollegato conta una sola volta), con un grafico dei dispositivi nel tempo (con evidenziati i cicli del pre-spettacolo e dell'intervallo), il momento di maggiore affluenza, le lingue e una riga per dispositivo; si può stampare o scaricare come file CSV. I dispositivi si distinguono per indirizzo e tipo di browser, quindi è una stima. I rapporti sono conservati nella cartella `reports` della cartella dei dati.
 
 ## Lista di controllo del giorno dello spettacolo
 
@@ -257,16 +257,16 @@ Premi `Ctrl+C` nella finestra del programma (o ferma il servizio). La posizione 
 - [ ] Esporta lo spettacolo (Configurazione → Spettacoli → **Altro ▾** → **Esporta**) e conserva lo `.zip` in un posto sicuro, come una chiavetta USB.
 - [ ] Conferma che l'indirizzo del computer dei sottotitoli sia riservato e che il cartello QR lo mostri.
 
-**Al locale, un'ora prima**
-- [ ] Alimentazione: computer e punto di accesso collegati; computer impostato per non andare mai in stop.
+**In sala, un'ora prima**
+- [ ] Alimentazione: computer e punto di accesso collegati; computer impostato per non andare mai in sospensione.
 - [ ] Punto di accesso acceso, al suo posto, con il nome giusto; il computer collegato via cavo.
 - [ ] Avvia il programma; annota l'indirizzo stampato (e quello in Condividi).
-- [ ] Un telefono sul WiFi del pubblico può aprire l'indirizzo e mostra «I sottotitoli inizieranno a breve».
-- [ ] Configurazione → Prova: fai una prova rapida; i tasti dell'operatore funzionano.
+- [ ] Un telefono sulla rete Wi-Fi del pubblico può aprire l'indirizzo e mostra «I sottotitoli inizieranno a breve».
+- [ ] Configurazione → Verifica: fai una prova rapida; i tasti dell'operatore funzionano.
 - [ ] Browser del proiettore (se usato) aperto su `…/?display=projector`, a schermo intero.
 - [ ] Premi **AVVIA** nella pagina dell'operatore. Il ciclo di pre-spettacolo (se c'è) è su ogni schermo.
 - [ ] L'operatore seduto dove può vedere il palco; telecomando o tastiera provati.
-- [ ] Cartello QR sistemato; un volontario conosce il nome del WiFi e l'indirizzo per chi chiede.
+- [ ] Cartello QR sistemato; un volontario conosce il nome della rete Wi-Fi e l'indirizzo per chi chiede.
 
 **Dopo lo spettacolo**
 - [ ] `Ctrl+C` nella finestra del programma.
@@ -276,12 +276,12 @@ Premi `Ctrl+C` nella finestra del programma (o ferma il servizio). La posizione 
 
 | Problema | Cosa provare |
 |----------|--------------|
-| Nessuno riesce ad aprire l'indirizzo | Il telefono è sul WiFi giusto (non sui dati mobili)? L'indirizzo include `:8080` se il programma ha usato quella porta? Il traffico dagli ospiti al server è consentito? Il firewall del computer consente il programma sulle reti private? Vedi [venue-network-guide.md](venue-network-guide.md). |
+| Nessuno riesce ad aprire l'indirizzo | Il telefono è sulla rete Wi-Fi giusta (non sui dati mobili)? L'indirizzo include `:8080` se il programma ha usato quella porta? Il traffico dagli ospiti al server è consentito? Il firewall del computer consente il programma sulle reti private? Vedi [venue-network-guide.md](venue-network-guide.md). |
 | Alcuni dispositivi si connettono e altri no | Il punto di accesso potrebbe aver raggiunto il suo limite di dispositivi. Aggiungi un secondo punto di accesso, oppure sposta il primo nella sala. |
 | I sottotitoli arrivano in ritardo o si bloccano su alcuni telefoni | Segnale debole o canale occupato. Quei telefoni si ricollegano da soli. Migliora la collocazione del punto di accesso; usa i 5 GHz. |
 | Qualcuno ha perso una riga | Può far scorrere i sottotitoli verso l'alto per rileggerla; le nuove righe aspettano dietro un pulsante **Torna in diretta** finché non lo tocca. |
 | Una pagina dice «Questo browser è troppo vecchio» | Il browser del dispositivo è sotto ciò che la pagina richiede: circa iOS 12 per la pagina del pubblico, iOS 14.1 / Chrome 87 per la configurazione e la pagina dell'operatore. Aggiorna il dispositivo, oppure usane un altro. |
-| Gli schermi dei telefoni si spengono | I telefoni bloccano lo schermo. La pagina tiene acceso lo schermo con il blocco di attivazione del browser dove può e, dove non può (HTTP semplice), con un minuscolo video invisibile in ciclo. Chi preferisce lasciar dormire il proprio telefono (per la batteria scarica, per esempio) può disattivare *Lo schermo resta acceso* nel pannello «Aa». Alcuni telefoni in modalità risparmio energetico rifiutano entrambi: la pagina mostra allora un suggerimento per disattivare il blocco automatico per la serata. |
+| Gli schermi dei telefoni si spengono | I telefoni bloccano lo schermo. La pagina tiene acceso lo schermo con la funzione del browser apposita (Wake Lock) dove può e, dove non può (HTTP semplice), con un minuscolo video invisibile in ciclo. Chi preferisce lasciare che il telefono si spenga (per la batteria scarica, per esempio) può disattivare *Lo schermo resta acceso* nel pannello «Aa». Alcuni telefoni in modalità risparmio energetico rifiutano entrambi: la pagina mostra allora un suggerimento per disattivare il blocco automatico per la serata. |
 | È stata inviata la riga sbagliata | **Backspace** la annulla. |
 | La pagina dell'operatore dice che un altro operatore ha il controllo | Usa **Subentra**, se sei tu l'operatore. |
 | Il computer si è bloccato o è stato riavviato a metà spettacolo | Riavvia il programma. La pagina dell'operatore si ricollega, resta connessa e riprende il controllo da sola, lo spettacolo è dove l'avevi lasciato, e i dispositivi del pubblico si ricollegano da soli. Un ciclo riparte dal primo elemento. **Backspace** può ancora annullare le ultime cose inviate prima del riavvio. |
@@ -303,13 +303,13 @@ Premi `Ctrl+C` nella finestra del programma (o ferma il servizio). La posizione 
 
 Stampala e tienila accanto all'operatore.
 
-| Tasto | Fa |
+| Tasto | Azione |
 |-------|----|
 | **Spazio** | Invia la riga successiva |
 | **Backspace** | Annulla l'ultima cosa inviata |
-| **S** | Saltare la riga successiva senza inviarla (Backspace lo annulla) |
+| **S** | Salta la riga successiva senza inviarla (Backspace annulla il salto) |
 | **Maiusc+Q** | Ferma un ciclo (schermo vuoto) |
-| **B** | Schermo vuoto: nasconde tutto, i sottotitoli tornano quando riattivi |
+| **B** | Oscura: nasconde tutto, i sottotitoli tornano quando ripristini |
 | **C** | Cancella: cancella i sottotitoli per ripartire da zero |
 | **/** | Cerca nel file dello spettacolo |
 | **?** | Aiuto (i tasti sono in pausa mentre è aperto) |
@@ -317,4 +317,4 @@ Stampala e tienila accanto all'operatore.
 - Freccia gialla = riga successiva. Punto verde = sullo schermo adesso.
 - Riga sbagliata? **Backspace.** Hai perso il segno? Fai clic sulla riga che vuoi e conferma.
 - Devi dire qualcosa al pubblico? **Annuncio…**
-- Spettacolo interrotto? **B** per svuotare gli schermi, **Annuncio…** per spiegare.
+- Spettacolo interrotto? **B** per oscurare gli schermi, **Annuncio…** per spiegare.
