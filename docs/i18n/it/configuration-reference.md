@@ -1,13 +1,13 @@
 # Riferimento di `config.yaml`
 
-`config.yaml` contiene tutto ciò che riguarda *questo computer e questo locale*: le password, le porte, HTTPS, chi può aprire la configurazione e i valori predefiniti che uno spettacolo usa quando il suo file non dice nulla. Tutto ciò che riguarda *un singolo spettacolo* (titolo, colori, durata dei cicli, messaggio pre-spettacolo…) sta invece nel file di quello spettacolo (vedi [Scrivere un file dello spettacolo](../../../web/help/admin-writing-a-show-file.md), «Impostazioni dello spettacolo»); i livelli sono spiegati più sotto in «Dove si decide un'impostazione».
+`config.yaml` contiene tutto ciò che riguarda *questo computer e questa sala*: le password, le porte, HTTPS, chi può aprire la configurazione e i valori predefiniti che uno spettacolo usa quando il suo file non dice nulla. Tutto ciò che riguarda *un singolo spettacolo* (titolo, colori, durata dei cicli, messaggio pre-spettacolo…) sta invece nel file di quello spettacolo (vedi [Scrivere un file dello spettacolo](../../../web/help/it/admin-writing-a-show-file.md), «Impostazioni dello spettacolo»); i livelli sono spiegati più sotto in «Dove si decide un'impostazione».
 
 ## Il file
 
 - **Dove si trova.** `<cartella dati>/config.yaml`; la cartella dati è `data_dir`, `--data`, oppure quella predefinita `<la tua cartella di configurazione utente>/open-caption` (su macOS `~/Library/Application Support/open-caption`, su Windows `%AppData%\open-caption`, su Linux `~/.config/open-caption`). Le prime righe che il programma stampa dicono quale file sta usando. `--config` indica un altro file.
-- **Primo avvio.** Se non c'è il file, il programma ne scrive uno con password casuali di **amministratore** e di **operatore** e le stampa una sola volta nella console. Il file ha modalità 0600 (privato per il tuo account) e contiene solo gli **hash** delle password (vedi «Password» più avanti), che quindi non vi si possono rileggere: annotale quando vengono stampate. Se le perdi, impostane di nuove nella configurazione, che si apre senza password sul computer su cui gira il programma (`access.local_auto_login`), oppure con `--hash-password`.
+- **Primo avvio.** Se non c'è il file, il programma ne scrive uno con password casuali di **amministratore** e di **operatore** e le stampa una sola volta nella console. Il file ha modalità 0600 (privato per il tuo account) e contiene solo gli **hash** delle password (vedi «Password» più avanti), quindi non è possibile rileggerle dal file: annotale quando vengono stampate. Se le perdi, impostane di nuove nella configurazione, che si apre senza password sul computer su cui gira il programma (`access.local_auto_login`), oppure con `--hash-password`.
 - **Ti servono solo le chiavi che cambi.** Una chiave mancante mantiene il suo valore predefinito (le tabelle qui sotto). Il file generato elenca tutto.
-- **Rigoroso.** Una chiave scritta male, un valore del tipo sbagliato o fuori intervallo ferma il programma all'avvio elencando **tutti** i problemi, ciascuno con il nome dell'impostazione (per esempio `audience.max_clients: 0 is not a client count: use 1 to 100000`). Non si indovina nulla. L'unica eccezione: in un file marcato con un `config_version` più recente di quello che il programma conosce, le chiavi sconosciute vengono ignorate, con un avviso.
+- **Rigoroso.** Una chiave scritta male, un valore del tipo sbagliato o fuori intervallo ferma il programma all'avvio elencando **tutti** i problemi, ciascuno con il nome dell'impostazione (per esempio `audience.max_clients: 0 is not a client count: use 1 to 100000`). Il programma non tenta mai di indovinare. L'unica eccezione: in un file contrassegnato con un `config_version` più recente di quello che il programma conosce, le chiavi sconosciute vengono ignorate, con un avviso.
 - **La configurazione ne modifica una parte.** Cambiare le password, il nome `.local`, il messaggio di attesa o il livello del registro nella configurazione riscrive quelle chiavi nel file e conserva i tuoi commenti e tutte le altre impostazioni. Tutto il resto si modifica a mano, poi **riavvia il programma**. (Un file di certificato rinnovato è l'unica cosa recepita senza riavvio; vedi `https.cert_file`.)
 - **I booleani** sono `yes`/`no`/`true`/`false`. **Gli elenchi** si scrivono `[a, b]` o con un `- elemento` per riga.
 
@@ -22,7 +22,7 @@ Un'opzione, o la sua variabile d'ambiente, ha la precedenza sul file per quell'e
 | `--http-addr ADDR` | `OPEN_CAPTION_HTTP_ADDR` | Ha la precedenza su `http.addr`, per esempio `:80` o `:8080` |
 | `--https-addr ADDR` | `OPEN_CAPTION_HTTPS_ADDR` | **Attiva** HTTPS a questo indirizzo (ha la precedenza su `https.enabled` e `https.addr`) |
 | `--log-level LEVEL` | `OPEN_CAPTION_LOG_LEVEL` | Ha la precedenza su `log.level` a ogni avvio del programma (la configurazione lo dice quando è in vigore) |
-| `--log-file FILE` | `OPEN_CAPTION_LOG` | Aggiunge anche il registro a questo file |
+| `--log-file FILE` | `OPEN_CAPTION_LOG` | Scrive il registro anche in questo file |
 | `--network-interfaces LIST` | `OPEN_CAPTION_NETWORK_INTERFACES` | Ha la precedenza su `network.interfaces` a ogni avvio del programma: un elenco separato da virgole di nomi di interfaccia, come `Ethernet` o `en0,en4` (la configurazione lo dice quando è in vigore) |
 | `--network-restrict` | `OPEN_CAPTION_NETWORK_RESTRICT` | Rifiuta anche le connessioni fatte a indirizzi non offerti, a ogni avvio del programma (come `network.restrict_listening: yes`). La variabile conta quando vale `yes`, `true`, `on` o `1` |
 | `--no-browser` | | Non apre la configurazione in un browser all'avvio (come `defaults.open_browser: no`) |
@@ -32,7 +32,7 @@ Un'opzione, o la sua variabile d'ambiente, ha la precedenza sul file per quell'e
 | `--assets FOLDER` | | La cartella delle immagini per `--check-show` (predefinita: la cartella `assets` accanto al file dello spettacolo) |
 | `--strict` | | Con `--check-show`: anche gli avvisi danno lo stato di uscita 1 |
 | `--hash-password` | | Legge una password dallo standard input e la stampa come hash `sha256:` per `admin_password` o `operator_password`, poi termina: nessun server e nessun `config.yaml`. Vedi «Password» più avanti |
-| `--dev`, `--show-file` | | **Solo per sviluppatori**: punti di accesso di prova senza autenticazione su questo computer, senza attesa; non usarli mai in un locale |
+| `--dev`, `--show-file` | | **Solo per sviluppatori**: endpoint di prova senza autenticazione su questo computer, senza la modalità di attesa; non usarli mai in una sala |
 
 ## Password
 
@@ -71,7 +71,7 @@ missing images: curtain.jpg (line 8 of show.md)
 ```
 
 - Ogni problema ha la forma `file:line: severity: message` (gravità `error`, `warning` o `note`), quella che capiscono gli editor e i sistemi di integrazione continua. Una riga che riguarda tutto il file non ha numero di riga.
-- I file dopo il primo sono **traduzioni**: ciascuno viene analizzato come traduzione e confrontato con il file principale (lo stesso numero e tipo di indicazioni, nello stesso ordine), come fa la configurazione. La lingua è la riga `[language]` del file o il suo nome (`show.es.md`); due file per la stessa lingua sono un errore.
+- I file dopo il primo sono **traduzioni**: ciascuno viene analizzato come traduzione e confrontato con il file principale (lo stesso numero e tipo di elementi, nello stesso ordine), come fa la configurazione. La lingua è la riga `[language]` del file o il suo nome (`show.es.md`); due file per la stessa lingua sono un errore.
 - Le immagini vengono controllate nella cartella `assets` accanto al file principale, oppure in `--assets FOLDER`. Senza cartella non vengono controllate, e il rapporto lo dice. Un'immagine mancante indica la cartella in cui è stata cercata (l'editor della configurazione dice invece di caricarla nel passo Immagini).
 - Un'immagine della cartella che nessun file dello spettacolo mostra viene elencata come `unused images (…): name.png` e contata come nota, non come avviso (il passo Immagini della configurazione dice «Non usata» sotto). Le immagini usate solo da una traduzione contano come usate.
 - `-` come nome del file legge lo standard input.
@@ -79,7 +79,7 @@ missing images: curtain.jpg (line 8 of show.md)
 
 ## Impostazioni
 
-I valori predefiniti sono quelli che ottieni senza la chiave. «Configurazione» dice dove la configurazione può cambiarla.
+I valori predefiniti sono quelli che ottieni senza la chiave. La nota *Configurazione: …* indica dove si può cambiare la chiave dalla pagina Configurazione (`/admin`).
 
 ### Livello principale
 
@@ -104,11 +104,11 @@ HTTPS è **disattivato** per impostazione predefinita. Ci sono tre modi per otte
 
 | Chiave | Predefinito | Significato |
 |---|---|---|
-| `https.enabled` | `no` | Serve HTTPS oltre a HTTP, su porte separate (non c'è reindirizzamento). Richiede uno dei tre qui sotto |
+| `https.enabled` | `no` | Fornisce HTTPS oltre a HTTP, su porte separate (non c'è reindirizzamento). Richiede uno dei tre qui sotto |
 | `https.addr` | `:443` | La porta HTTPS. Obbligatoria se attivato |
 | `https.fallback_addr` | `:8443` | Usata se `addr` non si può aprire |
 | `https.self_signed` | `yes` | Senza file di certificato e senza `acme`: il programma crea un proprio certificato (conservato in `<cartella dati>/tls/`). I browser lo segnalano finché non viene accettato. `no` senza file è un errore |
-| `https.cert_file`, `https.key_file` | vuoto | Il tuo certificato e la chiave (PEM). Indica **entrambi** o nessuno; entrambi i file devono esistere. **I file sono sorvegliati**: quando vengono sostituiti (per esempio da `certbot`), la nuova coppia viene usata per le nuove connessioni entro circa 30 secondi, senza riavvio. Una coppia che non si può caricare mantiene il vecchio certificato e registra un solo avviso |
+| `https.cert_file`, `https.key_file` | vuoto | Il tuo certificato e la chiave (PEM). Indica **entrambi** o nessuno; entrambi i file devono esistere. **I file vengono controllati periodicamente**: quando vengono sostituiti (per esempio da `certbot`), la nuova coppia viene usata per le nuove connessioni entro circa 30 secondi, senza riavvio. Una coppia che non si può caricare mantiene il vecchio certificato e registra un solo avviso |
 
 ### `https.acme` (certificati automatici)
 
@@ -120,7 +120,7 @@ Disattivato salvo `enabled: yes`. Richiede `https.enabled: yes`, un nome di domi
 | `https.acme.domain` | | Il nome pubblico, per esempio `captions.example.org`. Un solo nome: niente caratteri jolly, niente `.local`/`.lan`/`.internal`, niente indirizzo IP. Deve risolvere, per i telefoni del pubblico, all'indirizzo di questo computer |
 | `https.acme.email` | | Dove l'autorità di certificazione invia gli avvisi di scadenza |
 | `https.acme.agree_to_terms` | `no` | **Deve essere `yes`**: registra che accetti i termini di servizio dell'autorità di certificazione |
-| `https.acme.directory` | `letsencrypt` | `letsencrypt`, `letsencrypt-staging` (per provare: i browser non si fidano) o l'indirizzo `https://` di un'altra directory ACME |
+| `https.acme.directory` | `letsencrypt` | `letsencrypt`, `letsencrypt-staging` (per le prove: i browser non lo considerano attendibile) o l'indirizzo `https://` di un'altra directory ACME |
 | `https.acme.renew_before_days` | `30` | Rinnova quando mancano questi giorni o meno (da 1 a 60) |
 | `https.acme.dns.provider` | | Il provider DNS, con il suo [nome in lego](https://go-acme.github.io/lego/dns/) (`cloudflare`, `godaddy`, `easydns`, …). Deve essere incluso nel programma (`--version` li elenca) |
 | `https.acme.dns.credentials` | vuoto | Le impostazioni proprie del provider, come mappa: per EasyDNS `EASYDNS_TOKEN: …` e `EASYDNS_KEY: …`. I nomi sono lettere maiuscole, cifre e trattini bassi. L'ambiente e `credentials_file` prevalgono su queste |
@@ -129,7 +129,7 @@ Disattivato salvo `enabled: yes`. Richiede `https.enabled: yes`, un nome di domi
 
 ### `defaults`
 
-Ciò che uno spettacolo usa quando il suo file non lo dice. Il blocco `[settings]` del file dello spettacolo prevale su ogni valore qui (vedi [Scrivere un file dello spettacolo](../../../web/help/admin-writing-a-show-file.md)). Il passo Aspetto della configurazione scrive il file dello spettacolo, non questi.
+Ciò che uno spettacolo usa quando il suo file non lo dice. Il blocco `[settings]` del file dello spettacolo prevale su ogni valore qui (vedi [Scrivere un file dello spettacolo](../../../web/help/it/admin-writing-a-show-file.md)). Il passo Aspetto della configurazione scrive il file dello spettacolo, non questi.
 
 | Chiave | Predefinito | Significato |
 |---|---|---|
@@ -158,10 +158,10 @@ Chi può aprire la configurazione e la pagina dell'operatore. La pagina del pubb
 
 | Chiave | Predefinito | Significato |
 |---|---|---|
-| `access.admin_allow` | `[localhost]` | Computer autorizzati ad aprire la configurazione; per impostazione predefinita solo il computer che esegue il programma. Un elenco vuoto (`[]`) significa che **qualsiasi computer della rete può provare la password**; il programma lo segnala con un avviso. Voci: `localhost`, `private` (le usuali reti domestiche e d'ufficio), un indirizzo (`192.168.1.50`) o una rete (`192.168.1.0/24`). Esempio: `[localhost]` *Configurazione: Impostazioni → Accesso* |
+| `access.admin_allow` | `[localhost]` | Computer autorizzati ad aprire la configurazione; per impostazione predefinita solo il computer che esegue il programma. Un elenco vuoto (`[]`) significa che **qualsiasi computer della rete può provare ad accedere con la password**; il programma lo segnala con un avviso. Voci: `localhost`, `private` (le usuali reti domestiche e d'ufficio), un indirizzo (`192.168.1.50`) o una rete (`192.168.1.0/24`). Esempio: `[localhost]` *Configurazione: Impostazioni → Accesso* |
 | `access.operator_allow` | `[]` | Lo stesso, per la pagina dell'operatore *Configurazione: Impostazioni → Accesso* |
-| `access.viewer_allow` | `[]` | Lo stesso per la pagina di seguimento (`/follow`), ad esempio solo il tablet del direttore di scena. Possono aprirla anche i computer consentiti per la pagina dell'operatore o la configurazione. Le password di operatore e di amministratore, che `/follow` accetta pure, sono accettate solo da un computer consentito per la pagina dell'operatore. Vuota = qualsiasi computer *Configurazione: Impostazioni → Accesso* |
-| `access.local_auto_login` | `yes` | Un browser sul computer che esegue il programma (aperto a `localhost`, `127.0.0.1` o `[::1]`) entra come amministratore senza password. Gli altri computer usano sempre una password. Disattivalo su un computer in cui possono accedere altre persone *Configurazione: Impostazioni → Accesso* |
+| `access.viewer_allow` | `[]` | Lo stesso per la pagina Segui (`/follow`), ad esempio solo il tablet del direttore di scena. Possono aprirla anche i computer consentiti per la pagina dell'operatore o la configurazione. Le password di operatore e di amministratore, che `/follow` accetta pure, sono accettate solo da un computer consentito per la pagina dell'operatore. Vuota = qualsiasi computer *Configurazione: Impostazioni → Accesso* |
+| `access.local_auto_login` | `yes` | Un browser sul computer che esegue il programma (aperto all'indirizzo `localhost`, `127.0.0.1` o `[::1]`) entra come amministratore senza password. Gli altri computer usano sempre una password. Disattivalo su un computer a cui possono accedere altre persone *Configurazione: Impostazioni → Accesso* |
 
 ### `log`, `mdns`, `standby`
 
@@ -171,20 +171,20 @@ Chi può aprire la configurazione e la pagina dell'operatore. La pagina del pubb
 | `mdns.enabled` | `yes` | Annuncia questo computer come `<nome>.local` sulla rete locale |
 | `mdns.name` | `open-caption` | Il nome: solo lettere, cifre e trattini, fino a 63 caratteri (viene aggiunto `.local`). *Configurazione: Impostazioni → Rete* |
 | `standby.message` | vuoto | La riga che il pubblico vede sulla schermata di attesa. Vuoto significa «Captions will begin shortly» nella lingua di ogni spettatore. Una riga, fino a 200 caratteri. *Configurazione: Impostazioni → Schermo del pubblico* (il logo è un file scelto lì, non un'impostazione) |
-| `setup.tour_done` | `no` | Indica se il giro guidato di Configurazione è stato completato o saltato. Finché è `no`, il giro parte da solo la prima volta che si apre Configurazione senza spettacoli, e Configurazione lo imposta a `yes` alla fine. Rimettilo a `no` per rivedere il giro. *Configurazione: Guida → Giro di questo passo* (nel passo Spettacoli) lo mostra quando vuoi, e in ogni altro passo offre un breve giro di quel passo; nessuno dei due cambia questo valore |
+| `setup.tour_done` | `no` | Indica se la visita guidata della configurazione è stata completata o saltato. Finché è `no`, la visita guidata parte da sola la prima volta che si apre Configurazione senza spettacoli, e Configurazione lo imposta a `yes` alla fine. Rimettilo a `no` per rivederla. *Configurazione: Aiuto → Visita guidata di questo passo* (nel passo Spettacoli) lo mostra quando vuoi, e in ogni altro passo mostra brevemente quel passo; nessuno dei due cambia questo valore |
 
 ### `network`
 
 | Chiave | Predefinito | Significato |
 |---|---|---|
-| `network.interfaces` | `[]` | Le interfacce di rete usate, per nome (`Ethernet`, `Wi-Fi`, `en0`, `eth0`): solo i loro indirizzi vengono dati al pubblico, elencati nella configurazione, messi in un nuovo certificato HTTPS autofirmato e annunciati come `<nome>.local`. Vuoto significa che non è stata fatta alcuna scelta: si usano tutte le interfacce. Fatta una scelta, un'interfaccia che compare dopo (un adattatore USB, una VPN) resta spenta finché non viene aggiunta. Quando due interfacce usate sono sulla stessa rete (un cavo e il Wi-Fi insieme) viene offerto un solo indirizzo: quello cablato, altrimenti quello della connessione principale; lascia fuori l'altra per scegliere. *Configurazione: Impostazioni → Rete* |
-| `network.restrict_listening` | `no` | **Rifiuta anche le connessioni** fatte a un indirizzo di un'interfaccia non usata (un telefono che la usa viene respinto), invece di lasciare l'indirizzo solo fuori dagli elenchi. Le connessioni al computer stesso (`localhost`) sono sempre servite, quindi la configurazione si può aprire per cambiarlo. La configurazione non disattiva mai l'interfaccia attraverso cui la usi. *Configurazione: Impostazioni → Rete* |
+| `network.interfaces` | `[]` | Le interfacce di rete usate, per nome (`Ethernet`, `Wi-Fi`, `en0`, `eth0`): solo i loro indirizzi vengono dati al pubblico, elencati nella configurazione, messi in un nuovo certificato HTTPS autofirmato e annunciati come `<nome>.local`. Vuoto significa che non è stata fatta alcuna scelta: si usano tutte le interfacce. Fatta una scelta, un'interfaccia che compare dopo (un adattatore USB, una VPN) resta esclusa finché non viene aggiunta. Quando due interfacce usate sono sulla stessa rete (un cavo e il Wi-Fi insieme) viene offerto un solo indirizzo: quello cablato, altrimenti quello della connessione principale; escludi l'altra per scegliere. *Configurazione: Impostazioni → Rete* |
+| `network.restrict_listening` | `no` | **Rifiuta anche le connessioni** fatte a un indirizzo di un'interfaccia non usata (un telefono che la usa viene respinto), invece di limitarsi a non elencare l'indirizzo. Le connessioni al computer stesso (`localhost`) sono sempre servite, quindi la configurazione si può aprire per cambiarlo. La configurazione non disattiva mai l'interfaccia attraverso cui la usi. *Configurazione: Impostazioni → Rete* |
 
-Gli indirizzi di un'interfaccia non usata non compaiono nel passo Condividi né all'avvio, non vengono dati al pubblico, non sono annunciati come `<nome>.local` e non entrano in un nuovo certificato HTTPS autofirmato. Vengono elencate solo le interfacce connesse, e si offre un solo indirizzo per rete. Per impostazione predefinita questo sceglie solo ciò che viene *offerto*: il server accetta comunque connessioni su tutti gli indirizzi, finché non si attiva `network.restrict_listening`.
+Gli indirizzi di un'interfaccia non usata non compaiono nel passo Condividi né all'avvio, non vengono dati al pubblico, non sono annunciati come `<nome>.local` e non entrano in un nuovo certificato HTTPS autofirmato. Vengono elencate solo le interfacce connesse, e si offre un solo indirizzo per rete. Per impostazione predefinita questa scelta riguarda solo gli indirizzi *offerti*: il server accetta comunque connessioni su tutti gli indirizzi, finché non si attiva `network.restrict_listening`.
 
 ## Dove si decide un'impostazione
 
-Dal più debole al più forte: il valore incorporato nel programma → `config.yaml` (`defaults`, `defaults.look`, `audience.scrollback_lines`) → il `[settings]` del file dello spettacolo. Un'opzione della riga di comando o una variabile d'ambiente prevale sul file. Le impostazioni del locale (porte, HTTPS, password, `access`, `data_dir`, `audience.max_clients`, `mdns`, `network`, `standby`, `log`) esistono solo qui.
+Dalla priorità più bassa alla più alta: il valore incorporato nel programma → `config.yaml` (`defaults`, `defaults.look`, `audience.scrollback_lines`) → il `[settings]` del file dello spettacolo. Un'opzione della riga di comando o una variabile d'ambiente prevale sul file. Le impostazioni della sala (porte, HTTPS, password, `access`, `data_dir`, `audience.max_clients`, `mdns`, `network`, `standby`, `log`) esistono solo qui.
 
 ## Un esempio completo
 

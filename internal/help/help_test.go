@@ -420,7 +420,7 @@ func TestEveryTopicAndGuideIsTranslatedIntoEveryLanguageWithTheSameShape(t *test
 					}
 				}
 			}
-			if strings.Join(s.targets, " ") != strings.Join(es.targets, " ") && strings.ReplaceAll(strings.Join(s.targets, " "), "docs/i18n/"+lang+"/", "docs/") != strings.Join(es.targets, " ") { // a guide is the translated file
+			if strings.Join(s.targets, " ") != strings.Join(es.targets, " ") && strings.NewReplacer("docs/i18n/"+lang+"/", "docs/", "web/help/"+lang+"/", "web/help/").Replace(strings.Join(s.targets, " ")) != strings.Join(es.targets, " ") { // a guide or help topic is the translated file
 				t.Errorf("%s/%s: links differ: %v, English %v", lang, id, s.targets, es.targets)
 			}
 			if len(s.anchors) != len(es.anchors) {
