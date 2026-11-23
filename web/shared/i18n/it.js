@@ -342,7 +342,7 @@ OCI18n.add("it", {
  "Another [pace] already applies to this line; this one replaced it.": "Un altro [pace] si applica già a questa riga; questo lo ha sostituito.",
  "[pace: {0}s] is much longer than this line suggests (about {1} s to read). Check the time.": "[pace: {0}s] è molto più lungo di quanto suggerisca questa riga (circa {1} s di lettura). Controlla il tempo.",
  "CLEAR SCREEN": "CANCELLA SCHERMO",
- "BLANK SCREEN": "SCHERMO VUOTO",
+ "BLANK SCREEN": "OSCURA SCHERMO",
  "IMAGE: {name}": "IMMAGINE: {name}",
  "FULLSCREEN": "SCHERMO INTERO",
  "default time": "tempo predefinito",

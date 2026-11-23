@@ -21,7 +21,7 @@ Entrambi lasciano vuoti gli schermi del pubblico, ma non sono la stessa cosa:
 | Usalo per | Un buio, una pausa, o nascondere i sottotitoli per un momento | Una nuova scena, o dopo una canzone, perché le vecchie righe non si accumulino |
 | Annulla | `B` di nuovo, o **Backspace** | **Backspace** |
 
-Un file dello spettacolo può fare lo stesso con i comandi `[blank]` e `[clear]`; nel tuo elenco appaiono come `SCHERMO VUOTO` e `CANCELLA SCHERMO`.
+Un file dello spettacolo può fare lo stesso con i comandi `[blank]` e `[clear]`; nel tuo elenco appaiono come `OSCURA SCHERMO` e `CANCELLA SCHERMO`.
 
 ## Le parole di questa pagina
 
