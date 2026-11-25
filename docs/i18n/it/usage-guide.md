@@ -86,7 +86,7 @@ Al programma non importa su quale rete sia, purché i dispositivi del pubblico p
 - **L'operatore** ha bisogno di una vista libera sul palco e di un dispositivo affidabile. La disposizione più semplice è il computer dei sottotitoli stesso al banco tecnico. La pagina dell'operatore è pensata per un computer con tastiera (Spazio invia la riga successiva). Usa il computer dei sottotitoli o un altro portatile sulla stessa rete (`http://<indirizzo del computer>/operator`), così l'operatore può sedersi dove vede il palco. Un telefono o un tablet mostrano la pagina, ma **non sono consigliati**: su un touch screen è facile toccare per sbaglio durante lo spettacolo. Un telecomando Bluetooth o una tastiera è una buona alternativa.
 - **Solo un operatore alla volta controlla lo spettacolo.** Chiunque altro apra la pagina dell'operatore può guardare, e può usare **Subentra** se l'operatore gli cede il controllo.
 - **I volontari della configurazione** usano la pagina di configurazione da qualsiasi computer della rete prima dello spettacolo, o dal computer dei sottotitoli.
-- **Uno schermo condiviso** per tutta la sala: apri l'indirizzo del pubblico su un computer collegato a un proiettore o a un grande monitor, aggiungi `?display=projector` all'indirizzo per un testo grande e nessun ingombro sullo schermo, e metti il browser a schermo intero (`F11`, oppure avvia Chrome con `--kiosk`).
+- **Uno schermo condiviso** per tutta la sala: apri l'indirizzo del pubblico su un computer collegato a un proiettore o a un grande monitor, aggiungi `?display=projector` all'indirizzo per avere un testo grande e nient'altro sullo schermo, e metti il browser a schermo intero (`F11`, oppure avvia Chrome con `--kiosk`).
 
 ### Far funzionare il server
 

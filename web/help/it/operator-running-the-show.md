@@ -6,7 +6,7 @@ La pagina mostra il file dello spettacolo come un elenco. Le righe già inviate 
 
 1. **Spazio** invia la riga successiva.
 2. **Backspace** annulla l'ultima cosa che hai inviato.
-3. **Maiusc+Q** ferma un ciclo di pre-spettacolo o di intervallo e svuota lo schermo.
+3. **Maiusc+Q** ferma un ciclo di pre-spettacolo o di intervallo e oscura lo schermo.
 
 Segui gli attori e premi **Spazio** a ogni battuta. Puoi usare un telecomando per presentazioni (clicker): i suoi pulsanti avanti e indietro funzionano come Spazio e Backspace.
 

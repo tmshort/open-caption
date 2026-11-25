@@ -60,7 +60,7 @@ https:
 
 **6. Verifica che abbia funzionato.** Apri **Configurazione → Impostazioni → Certificato**. Lo stato passa da *In attesa del primo certificato* a **Valido** entro pochi minuti, e mostra il nome, chi l'ha emesso e la data di scadenza. Il registro del programma dice `HTTPS: got a certificate for … valid until …`. Se dice *L'ultimo tentativo non è riuscito*, leggi **Ultimo problema** e la tabella qui sotto.
 
-**7. Passa al certificato vero.** Cambia `directory: letsencrypt-staging` in `directory: letsencrypt` (o cancella la riga) e riavvia il programma. Il certificato vero arriva allo stesso modo. Apri `https://captions.mytheater.org/` da un telefono sul WiFi della sala: nessun avviso. (Se la porta 443 era occupata, il programma ha usato quella di riserva, `:8443`; l'indirizzo richiede allora la porta, `https://captions.mytheater.org:8443/`, e il registro mostra l'indirizzo esatto.)
+**7. Passa al certificato vero.** Cambia `directory: letsencrypt-staging` in `directory: letsencrypt` (o cancella la riga) e riavvia il programma. Il certificato vero arriva allo stesso modo. Apri `https://captions.mytheater.org/` da un telefono sulla rete Wi-Fi della sala: nessun avviso. (Se la porta 443 era occupata, il programma ha usato quella di riserva, `:8443`; l'indirizzo richiede allora la porta, `https://captions.mytheater.org:8443/`, e il registro mostra l'indirizzo esatto.)
 
 **8. Dai l'indirizzo alle persone.** Il passo Condividi della configurazione elenca gli indirizzi numerici e il nome `.local`, ma non ancora questo. Per stampare un cartello con codice QR per questo indirizzo, dopo aver effettuato l'accesso alla configurazione, apri
 `http://localhost/admin?print=qr&url=https%3A%2F%2Fcaptions.mytheater.org%2F` (cambia il nome; aggiungi la porta se serve) e stampa quella pagina.
@@ -85,7 +85,7 @@ La configurazione mostra **Ultimo problema**; il registro ha lo stesso testo. I 
 | *In attesa del primo certificato* per molto tempo, o un messaggio che il record non è stato trovato | Il nuovo record DNS è lento a propagarsi. Aggiungi `propagation_wait: 3m` sotto `dns:` e premi **Rinnova ora** |
 | `too many certificates already issued` o `rate limit` | Let's Encrypt limita le richieste ripetute. Aspetta (il messaggio dice quanto) e usa `letsencrypt-staging` mentre provi |
 | Il browser avvisa ancora | Stai usando il servizio di prova (passa a `letsencrypt`), oppure hai aperto l'indirizzo numerico o un altro nome invece di `https://captions…`, oppure l'orologio del computer o del telefono è sbagliato |
-| Un telefono non riesce ad aprire il nome | Alcune reti WiFi per ospiti e router bloccano i nomi pubblici che rispondono con indirizzi privati («protezione DNS rebinding»). Chiedi al responsabile della rete di consentire `captions.mytheater.org`, oppure usa l'indirizzo numerico e il codice QR come prima |
+| Un telefono non riesce ad aprire il nome | Alcune reti Wi-Fi per gli ospiti e alcuni router bloccano i nomi pubblici che rispondono con indirizzi privati («protezione DNS rebinding»). Chiedi al responsabile della rete di consentire `captions.mytheater.org`, oppure usa l'indirizzo numerico e il codice QR come prima |
 | `https.acme: cannot be used together with cert_file/key_file` | Hai impostato entrambi. Togline uno: certificati automatici **oppure** i tuoi file |
 | Il programma rifiuta di partire ed elenca problemi in `config.yaml` | Ogni riga nomina l'impostazione e cosa non va. Correggili tutti e riavvia |
 
